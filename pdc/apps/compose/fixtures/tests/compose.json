@@ -1,0 +1,17 @@
+[
+  {
+    "model": "compose.Compose",
+    "pk": 1,
+    "fields": {
+      "release": 1,
+      "compose_id": "compose-1",
+      "compose_date": "2014-09-03",
+      "compose_type": 1,
+      "compose_respin": 1,
+      "compose_label": null,
+      "dt_imported": "2014-09-03T11:45:00+00:00",
+      "deleted": false,
+      "acceptance_testing": 1
+    }
+  }
+]

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2 class="page-header">{% trans "Images" %} for {{compose}}</h2>
+<h3 class="sub-header">{% trans "Variant" %}: {{ variant }}{% if arch %} - {{ arch }}{% endif %}</h3>
+
+{% if not compose_image_list %}
+    <p>There are no images here.</p>
+{% else %}
+    <div class="clearfix">
+    <form method="GET" class="pull-left">
+      {% csrf_token %}
+      {{ form.search }}
+      <input type="submit" value="{% trans "Search" %}" />
+    </form>
+    </div>
+
+    {% include "pagination.html" %}
+    {% include "compose_image_list_include.html" %}
+    {% include "pagination.html" %}
+{% endif %}
+
+{% endblock %}

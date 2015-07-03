@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2 class="page-header">{% trans 'Compose' %} #{{ compose.id }}: {{ compose.compose_id }}</h2>
+
+<div class="row">
+  <div class="col-md-6">
+    <dl class="details dl-horizontal">
+        <dt>{% trans "ID" %}</dt>
+        <dd>{{ compose.id }}</dd>
+        <dt>{% trans "Compose ID" %}</dt>
+        <dd>{{ compose.compose_id }}</dd>
+        <dt>{% trans "Release" %}</dt>
+        <dd><a href="{% url "release/detail" compose.release_id %}">{{ compose.release }}</a></dd>
+        <dt>{% trans "Date" %}</dt>
+        <dd>{{ compose.compose_date|date:"Y-m-d" }}</dd>
+        <dt>{% trans "Type" %}</dt>
+        <dd>{{ compose.compose_type }}</dd>
+        <dt>{% trans "Respin" %}</dt>
+        <dd>{{ compose.compose_respin }}</dd>
+        <dt>{% trans "Label" %}</dt>
+        <dd>{% if compose.compose_label %}{{ compose.compose_label }}{% endif %}</dd>
+        <dt>{% trans "Imported Date" %}</dt>
+        <dd>{{ compose.dt_imported|date:"Y-m-d H:i:s" }}</dd>
+        <dt>{% trans "SigKeys" %}</dt>
+        <dd>{{ compose.sigkeys|join:", " }}
+    </dl>
+  </div>
+  <div class="col-md-6">
+    {% if compose.linked_releases.all %}
+      <h3 class="sub-header">{% trans 'Linked releases' %}</h3>
+      <ul>
+        {% for release in compose.linked_releases.all %}
+          <li>
+            <a href="{% url "release/detail" release.id %}">{{ release }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+</div>
+
+<h3 class="sub-header">{% trans 'Variants' %}</h3>
+<table class="table table-striped">
+ <thead>
+  <tr>
+    <th>{% trans "UID" %}</th>
+    <th>{% trans "ID" %}</th>
+    <th>{% trans "Name" %}</th>
+    <th>{% trans "Type" %}</th>
+    <th>{% trans "Arches" %}</th>
+  </tr>
+ </thead>
+ <tbody>
+{% for variant in compose.variant_set.all %}
+  <tr>
+    <td>{{ variant.variant_uid }}</td>
+    <td>{{ variant.variant_id }}</td>
+    <td>{{ variant.variant_name }}</td>
+    <td>{{ variant.variant_type }}</td>
+    <td>
+      <dl class="compose-links dl-horizontal">
+        {% for arch in variant.arches %}
+          <dt><strong>{{ arch.name }}</strong>:</dt>
+          <dd>
+              <a href="{% url "compose/id/rpms/variant/arch" compose.id variant.variant_uid arch.name %}">rpms</a>
+              <a href="{% url "compose/id/images/variant/arch" compose.id variant.variant_uid arch.name %}">images</a>
+          </dd>
+        {% endfor %}
+      </dl>
+    </td>
+  </tr>
+{% endfor %}
+ </tbody>
+</table>
+
+{% endblock %}
+
+{% block head %}
+<style>
+.compose-links {
+    margin-bottom: 0;
+}
+.compose-links.dl-horizontal dt {
+    width: 4em;
+}
+.compose-links.dl-horizontal dd {
+    margin-left: 4.5em;
+}
+</style>
+{% endblock %}

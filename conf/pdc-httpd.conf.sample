@@ -1,0 +1,126 @@
+# Apache vhost configuration
+
+
+# NOTES:
+# Replace PDC_HOSTNAME with the proper hostname
+# Replace EXAMPLE.COM with the proper kerberos domain
+
+
+WSGISocketPrefix /var/run/wsgi
+WSGIPythonOptimize 1
+
+<VirtualHost PDC_HOSTNAME:80>
+    ServerName PDC_HOSTNAME
+    RewriteEngine On
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=permanent,L]
+</VirtualHost>
+
+<VirtualHost PDC_HOSTNAME:443>
+    ServerName PDC_HOSTNAME
+
+    SSLEngine on
+    SSLCipherSuite ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:EXP
+    SSLCertificateFile /etc/httpd/conf/ssl.crt/PDC_HOSTNAME.crt
+    SSLCertificateKeyFile /etc/httpd/conf/ssl.key/PDC_HOSTNAME.key
+
+    CustomLog /var/log/httpd/pdc-access.log combined
+    ErrorLog /var/log/httpd/pdc-error.log
+
+    Alias /static/ /usr/share/pdc/static/
+    Alias /docs/ /usr/share/doc/pdc/docs/build/html/
+
+    WSGIDaemonProcess pdc user=apache group=apache maximum-requests=1000 display-name=pdc processes=2 threads=1 shutdown-timeout=10
+
+    # Using SetEnv here will not work as expected as it does not change
+    # os.environ in the application itself. For more details see:
+    # http://stackoverflow.com/a/9017610/1576064
+    #
+    # To override settings provide wsgi.py file with your preferred settings
+    # and point the following directive to it.
+    WSGIScriptAlias /  /usr/lib/python2.7/site-packages/pdc/wsgi.py
+
+    <Location "/">
+        SetHandler wsgi-script
+
+        LimitRequestBody 31457280
+        AddOutputFilterByType DEFLATE text/html text/plain text/xml text/javascript application/x-javascript text/css
+        Require all granted
+    </Location>
+
+    <Location /auth/krb5login>
+        WSGIProcessGroup pdc
+
+        # Kerberos authentication:
+        AuthType Kerberos
+        AuthName "PDC - Kerberos login"
+        KrbMethodNegotiate on
+        KrbMethodK5Passwd on
+        KrbAuthoritative on
+        KrbServiceName HTTP
+        KrbAuthRealm EXAMPLE.COM
+        KrbVerifyKDC on
+        Krb5Keytab /etc/httpd/conf/httpd.keytab
+        KrbSaveCredentials off
+        Require valid-user
+    </Location>
+
+    WSGIPassAuthorization On
+    <Location /rest_api/v1/auth/token>
+        WSGIProcessGroup pdc
+
+        # Kerberos authentication:
+        AuthType Kerberos
+        AuthName "PDC - Kerberos login"
+        KrbMethodNegotiate on
+        KrbMethodK5Passwd off
+        KrbAuthoritative on
+        KrbServiceName HTTP
+        KrbAuthRealm EXAMPLE.COM
+        KrbVerifyKDC on
+        Krb5Keytab /etc/httpd/conf/httpd.keytab
+        KrbSaveCredentials off
+        Require valid-user
+    </Location>
+
+    <Location "/static">
+        SetHandler None
+
+        # Disable auth on the static content, so that we're aren't forced to
+        # use Kerberos.  Doing so would remove "Expires" headers from the static
+        # content, which would lead to poor page-load times.
+        AuthType none
+        Satisfy Any
+        Require all granted
+
+        # Many file types are likely to benefit from compression
+        # Enable gzip compression on them:
+        AddOutputFilterByType DEFLATE text/html text/plain text/xml text/javascript application/x-javascript text/css
+
+        # Set far-future Expires headers on static content
+        # (trac 184):
+        ExpiresActive On
+        ExpiresDefault "access plus 10 years"
+    </Location>
+
+    <Location "/docs">
+        SetHandler None
+
+        # Disable auth on the static content, so that we're aren't forced to
+        # use Kerberos.  Doing so would remove "Expires" headers from the static
+        # content, which would lead to poor page-load times.
+        AuthType none
+        Satisfy Any
+        Require all granted
+
+        # Many file types are likely to benefit from compression
+        # Enable gzip compression on them:
+        AddOutputFilterByType DEFLATE text/html text/plain text/xml text/javascript application/x-javascript text/css
+
+        # Set far-future Expires headers on static content
+        # (trac 184):
+        ExpiresActive On
+        ExpiresDefault "access plus 2 weeks"
+    </Location>
+
+
+</VirtualHost>

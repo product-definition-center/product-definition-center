@@ -1,0 +1,39 @@
+{% load i18n %}
+
+{% if page_obj.has_other_pages %}
+<div class="pull-right">
+  {% trans "Page" %} {{ page_obj.number }}/{{ paginator.num_pages }}. {% trans "Records" %} {{ page_obj.start_index }}&ndash;{{ page_obj.end_index }} {% trans "of" %} {{ paginator.count }}.
+  <div class="btn-group">
+    {% if page_obj.has_previous %}
+      <a class="btn btn-default" href="?page=1{{ get_vars }}">
+        <span class="glyphicon glyphicon-fast-backward"></span>
+      </a>
+      <a class="btn btn-default" href="?page={{ page_obj.previous_page_number }}{{ get_vars }}">
+        <span class="glyphicon glyphicon-backward"></span>
+      </a>
+    {% else %}
+      <a class="btn btn-default disabled" href="#">
+        <span class="glyphicon glyphicon-fast-backward"></span>
+      </a>
+      <a class="btn btn-default disabled" href="#">
+        <span class="glyphicon glyphicon-backward"></span>
+      </a>
+    {% endif %}
+    {% if page_obj.has_next %}
+      <a class="btn btn-default" href="?page={{ page_obj.next_page_number }}{{ get_vars }}">
+        <span class="glyphicon glyphicon-forward"></span>
+      </a>
+      <a class="btn btn-default" href="?page={{ paginator.num_pages }}{{ get_vars }}">
+        <span class="glyphicon glyphicon-fast-forward"></span>
+      </a>
+    {% else %}
+      <a class="btn btn-default disabled" href="#">
+        <span class="glyphicon glyphicon-forward"></span>
+      </a>
+      <a class="btn btn-default disabled" href="#">
+        <span class="glyphicon glyphicon-fast-forward"></span>
+      </a>
+    {% endif %}
+  </div>
+</div>
+{% endif %}

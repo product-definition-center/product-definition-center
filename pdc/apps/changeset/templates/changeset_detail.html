@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<h1 class="page-header">{{ changeset }}</h1>
+
+<dl class="dl-horizontal">
+<dt>{% trans "Author" %}</dt>
+<dd>{{ changeset.author }}</dd>
+<dt>{% trans "Date" %}</dt>
+<dd>{{ changeset.committed_on|date:"Y-m-d H:i:s" }}</dd>
+</dl>
+
+<h2 class="sub-header">{% trans "Changes" %}</h2>
+
+<ul>
+{% for change in changeset.change_set.all %}
+  <li>
+    {% if change.is_insert %}
+      Inserted {{ change.target_class }} #{{ change.target_id }} with data
+      <code>{{ change.new_value }}</code>
+    {% endif %}
+    {% if change.is_delete %}
+      Deleted {{ change.target_class }} #{{ change.target_id }} with data
+      <code>{{ change.old_value }}</code>
+    {% endif %}
+    {% if change.is_update %}
+      Changed {{ change.target_class }} #{{ change.target_id }} from
+      <code>{{ change.old_value }}</code> to
+      <code>{{ change.new_value }}</code>
+    {% endif %}
+  </li>
+{% endfor %}
+</ul>
+
+{% endblock %}

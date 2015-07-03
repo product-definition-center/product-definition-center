@@ -1,0 +1,26 @@
+[
+{
+   "pk": 1, 
+   "model": "component.bugzillacomponent", 
+   "fields": {
+      "level": 0,
+      "tree_id": 1,
+      "lft": 0,
+      "rght": 3,
+      "name": "python",
+      "parent_component": null
+   }
+},
+{
+   "pk": 2, 
+   "model": "component.bugzillacomponent", 
+   "fields": {
+      "level": 1,
+      "tree_id": 1,
+      "lft": 1,
+      "rght": 2,
+      "name": "lib",
+      "parent_component": 1
+   }
+}
+]

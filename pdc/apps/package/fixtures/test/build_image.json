@@ -1,0 +1,30 @@
+[
+{
+    "pk": 1,
+    "model": "package.buildimage",
+    "fields": {
+        "image_format": 11,
+        "rpms": [],
+        "archives": [
+            1,
+            2
+        ],
+        "image_id": "my-server-docker-1.0-27",
+        "md5": "0123456789abcdef0123456789abcdef"
+    }
+},
+{
+    "pk": 2,
+    "model": "package.buildimage",
+    "fields": {
+        "image_format": 11,
+        "rpms": [1, 2],
+        "archives": [
+            3,
+            4
+        ],
+        "image_id": "my-client-docker",
+        "md5": "abcdef0123456789abcdef0123456789"
+    }
+}
+]

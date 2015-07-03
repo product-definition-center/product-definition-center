@@ -1,0 +1,25 @@
+{% load i18n %}
+<table class="table table-striped">
+ <thead>
+  <tr>
+    <th>{% trans "Id" %}</th>
+    <th>{% trans "Name" %}</th>
+    <th>{% trans "Short Name" %}</th>
+    <th>{% trans "Version" %}</th>
+    <th>{% trans "Active" %}</th>
+    <th>{% trans "Releases [active/total]" %}</th>
+  </tr>
+ </thead>
+ <tbody>
+{% for version in product_version_list %}
+  <tr>
+    <td><a href="{% url "product_version/detail" version.id %}">{{ version.product_version_id }}</a></td>
+    <td>{{ version.name }}</td>
+    <td>{{ version.short }}</td>
+    <td>{{ version.version }}</td>
+    <td>{{ version.active }}</td>
+    <td>{{ version.active_release_count }} / {{ version.release_count }}</td>
+  </tr>
+{% endfor %}
+ </tbody>
+</table>

@@ -1,0 +1,49 @@
+[
+{
+    "pk": 1, 
+    "model": "changeset.changeset", 
+    "fields": {
+        "committed_on": "2015-02-03T01:55:18.659Z"
+    }
+},
+{
+    "pk": 2, 
+    "model": "changeset.changeset", 
+    "fields": {
+        "committed_on": "2015-02-03T05:51:17.262Z"
+    }
+},
+{
+    "pk": 1, 
+    "model": "changeset.change", 
+    "fields": {
+        "new_value": "{\"name\": \"fedora 21\", \"contacts\": [], \"global_component\": \"global component 1\", \"bugzilla_component\": \"BZ component1\", \"release\": \"release-3.0\", \"dist_git_branch\": null}", 
+        "changeset": 1, 
+        "target_class": "contact", 
+        "target_id": 1, 
+        "old_value": "null"
+    }
+},
+{
+    "pk": 2, 
+    "model": "changeset.change", 
+    "fields": {
+        "new_value": "new", 
+        "changeset": 1, 
+        "target_class": "person", 
+        "target_id": 2, 
+        "old_value": "old"
+    }
+},
+{
+    "pk": 3, 
+    "model": "changeset.change", 
+    "fields": {
+        "new_value": "new", 
+        "changeset": 2, 
+        "target_class": "person", 
+        "target_id": 2, 
+        "old_value": "old"
+    }
+}
+]

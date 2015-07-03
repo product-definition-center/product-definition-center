@@ -1,0 +1,18 @@
+[
+{
+    "fields": {
+        "name": "type1",
+        "description": "group type 1"
+    },
+    "model": "component.grouptype",
+    "pk": 1
+},
+{
+"fields": {
+    "name": "type2",
+    "description": "group type 2"
+},
+"model": "component.grouptype",
+"pk": 2
+}
+]

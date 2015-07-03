@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3 class="page-header">Product information</h3>
+<ul>
+    <li><a href="{% url 'product/index' %}">Products</a></li>
+    <li><a href="{% url 'product_version/index' %}">Product Versions</a></li>
+</li>
+{% endblock %}

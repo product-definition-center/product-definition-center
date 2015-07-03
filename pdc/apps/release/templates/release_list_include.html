@@ -1,0 +1,35 @@
+{% load i18n %}
+<table class="table table-striped">
+ <thead>
+  <tr>
+    <th>{% trans "Release ID" %}</th>
+    <th>{% trans "Name" %}</th>
+    <th>{% trans "Short Name" %}</th>
+    <th>{% trans "Version" %}</th>
+    <th>{% trans "Base Product" %}</th>
+    <th>{% trans "Product Version" %}</th>
+    <th>{% trans "Release Type" %}</th>
+    <th>{% trans "Active" %}</th>
+  </tr>
+ </thead>
+ <tbody>
+{% for release in release_list %}
+  <tr>
+    <td><a href="{% url "release/detail" release.id %}">{{ release.release_id }}</a></td>
+    <td>{{ release.name }}</td>
+    <td>{{ release.short }}</td>
+    <td>{{ release.version }}</td>
+    <td>{% if release.base_product %}<a href="{% url "base_product/detail" release.base_product.id %}">{{ release.base_product }}</a>{% endif %}</td>
+    <td>
+        {% if release.product_version %}
+            <a href="{% url "product_version/detail" release.product_version.id %}">
+                {{ release.product_version }}
+            </a>
+        {% endif %}
+    </td>
+    <td>{{ release.release_type }}</td>
+    <td>{{ release.active }}</td>
+  </tr>
+{% endfor %}
+ </tbody>
+</table>

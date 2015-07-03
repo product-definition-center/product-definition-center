@@ -1,0 +1,162 @@
+[
+    {
+        "model": "release.ReleaseType",
+        "pk": 1,
+        "fields": {
+            "short": "ga",
+            "name": "Release",
+            "suffix": ""
+        }
+    },
+    {
+        "model": "release.Product",
+        "pk": 1,
+        "fields": {
+            "name": "X only active",
+            "short": "x"
+        }
+    },
+    {
+        "model": "release.Product",
+        "pk": 2,
+        "fields": {
+            "name": "Y mixed",
+            "short": "y"
+        }
+    },
+    {
+        "model": "release.Product",
+        "pk": 3,
+        "fields": {
+            "name": "Z only inactive",
+            "short": "z"
+        }
+    },
+    {
+        "model": "release.ProductVersion",
+        "pk": 1,
+        "fields": {
+            "name": "X-1 only active",
+            "short": "x",
+            "version": "1",
+            "product_version_id": "p1-1",
+            "product": 1
+        }
+    },
+    {
+        "model": "release.ProductVersion",
+        "pk": 2,
+        "fields": {
+            "name": "Y-1 active",
+            "short": "y",
+            "version": "1",
+            "product_version_id": "p2-1",
+            "product": 2
+        }
+    },
+    {
+        "model": "release.ProductVersion",
+        "pk": 3,
+        "fields": {
+            "name": "Y-2 mixed",
+            "short": "y",
+            "version": "2",
+            "product_version_id": "p2-2",
+            "product": 2
+        }
+    },
+    {
+        "model": "release.ProductVersion",
+        "pk": 4,
+        "fields": {
+            "name": "Y-3 inactive",
+            "short": "y",
+            "version": "3",
+            "product_version_id": "p2-3",
+            "product": 2
+        }
+    },
+    {
+        "model": "release.ProductVersion",
+        "pk": 5,
+        "fields": {
+            "name": "Z-1 inactive",
+            "short": "z",
+            "version": "1",
+            "product_version_id": "p3-1",
+            "product": 3
+        }
+    },
+    {
+        "model": "release.Release",
+        "pk": 1,
+        "fields": {
+            "release_type": 1,
+            "short": "x",
+            "name": "Our awesome product",
+            "version": "1.0",
+            "product_version": 1,
+            "active": true
+        }
+    },
+    {
+        "model": "release.Release",
+        "pk": 2,
+        "fields": {
+            "release_type": 1,
+            "short": "y",
+            "name": "Our awesome product",
+            "version": "1.0",
+            "product_version": 2,
+            "active": true
+        }
+    },
+    {
+        "model": "release.Release",
+        "pk": 3,
+        "fields": {
+            "release_type": 1,
+            "short": "y",
+            "name": "Our awesome product",
+            "version": "2.0",
+            "product_version": 3,
+            "active": true
+        }
+    },
+    {
+        "model": "release.Release",
+        "pk": 4,
+        "fields": {
+            "release_type": 1,
+            "short": "y",
+            "name": "Our awesome product",
+            "version": "2.1",
+            "product_version": 3,
+            "active": false
+        }
+    },
+    {
+        "model": "release.Release",
+        "pk": 5,
+        "fields": {
+            "release_type": 1,
+            "short": "y",
+            "name": "Our awesome product",
+            "version": "3.0",
+            "product_version": 4,
+            "active": false
+        }
+    },
+    {
+        "model": "release.Release",
+        "pk": 6,
+        "fields": {
+            "release_type": 1,
+            "short": "z",
+            "name": "Our awesome product",
+            "version": "1.0",
+            "product_version": 5,
+            "active": false
+        }
+    }
+]

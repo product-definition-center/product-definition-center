@@ -1,0 +1,14 @@
+include setup.py
+include Makefile
+include AUTHORS
+include LICENSE
+include README
+include manage.py
+recursive-include pdc *
+recursive-include requirements *
+recursive-include conf *
+recursive-include contrib *
+recursive-include docs *
+recursive-exclude docs/build *
+exclude pdc/settings_local.py
+global-exclude .pyc .pyo

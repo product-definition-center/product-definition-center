@@ -1,0 +1,24 @@
+[
+    {
+        "model": "release.ProductVersion",
+        "pk": 1,
+        "fields": {
+            "name": "Product Version",
+            "short": "product",
+            "version": "1",
+            "product_version_id": "product-1",
+            "product": 1
+        }
+    },
+    {
+        "model": "release.ProductVersion",
+        "pk": 2,
+        "fields": {
+            "name": "Product Version",
+            "short": "product",
+            "version": "0",
+            "product_version_id": "product-0",
+            "product": 1
+        }
+    }
+]

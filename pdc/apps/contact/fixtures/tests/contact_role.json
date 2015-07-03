@@ -1,0 +1,16 @@
+[
+    {
+        "model": "contact.ContactRole",
+        "pk": 1,
+        "fields": {
+            "name": "qe_ack"
+        }
+    },
+    {
+        "model": "contact.ContactRole",
+        "pk": 2,
+        "fields": {
+            "name": "pm"
+        }
+    }
+]

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1>Logged in as <strong id="username">{{ user }}</strong></h1>
+
+<dl class="dl-horizontal">
+<dt>Full name</dt>
+<dd id="fullname">{{ user.first_name }} {{ user.last_name }}</dd>
+<dt>E-mail</dt>
+<dd id="e-mail">{{ user.email }}</dd>
+<dt>Is superuser</dt>
+<dd id="is_superuser">{{ user.is_superuser|yesno }}</dd>
+<dt>Is staff</dt>
+<dd id="is_staff">{{ user.is_staff|yesno }}</dd>
+</dl>
+
+<h3>Groups</h3>
+<div id="groups">
+{% if user.groups.all %}
+  <ul class="group-list">
+  {% for group in user.groups.all %}
+    <li>{{ group }}</li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <p><em>Empty</em></p>
+{% endif %}
+</div>
+
+<h3>Permissions</h3>
+<div id="permissions">
+{% if user.get_all_permissions %}
+  <ul>
+  {% for perm in user.get_all_permissions %}
+    <li>{{ perm }}</li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <p><em>Empty</em></p>
+{% endif %}
+</div>
+
+{% if has_ldap %}
+  <form action="{% url "auth/refresh_ldap" %}" method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-default">
+      <span class="pficon pficon-refresh"></span>
+      <span>Sync with LDAP</span>
+    </button>
+  </form>
+{% endif %}
+
+{% endblock %}
+
+{% block javascript %}
+  {% if has_ldap %}
+    <script src="{% static "js/user_profile.js" %}"></script>
+  {% endif %}
+{% endblock %}

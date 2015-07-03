@@ -1,0 +1,17 @@
+[
+  {
+    "model": "compose.OverrideRPM",
+    "pk": 1,
+    "fields": {
+      "release": 1,
+      "variant": "Server",
+      "arch": "x86_64",
+      "srpm_name": "bash",
+      "rpm_name": "bash-doc",
+      "rpm_arch": "x86_64",
+      "include": false,
+      "comment": "",
+      "do_not_delete": false
+    }
+  }
+]

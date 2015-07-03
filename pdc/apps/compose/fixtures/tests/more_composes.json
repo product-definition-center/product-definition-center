@@ -1,0 +1,127 @@
+[
+  {
+    "model": "compose.Compose",
+    "pk": 20,
+    "fields": {
+      "release": 1,
+      "compose_id": "compose-2",
+      "compose_date": "2014-09-08",
+      "compose_type": 1,
+      "compose_respin": 1,
+      "compose_label": null,
+      "dt_imported": "2014-09-03T11:45:00+00:00",
+      "deleted": false,
+      "acceptance_testing": 1
+    }
+  },
+  {
+    "model": "compose.Variant",
+    "pk": 2,
+    "fields": {
+      "compose": 20,
+      "variant_id": "Client",
+      "variant_uid": "Client",
+      "variant_name": "Client",
+      "variant_type": 1
+    }
+  },
+  {
+    "model": "compose.VariantArch",
+    "pk": 3,
+    "fields": {
+      "variant": 2,
+      "arch": 1
+    }
+  },
+  {
+    "model": "compose.Compose",
+    "pk": 3,
+    "fields": {
+      "release": 1,
+      "compose_id": "compose-3",
+      "compose_date": "2014-09-09",
+      "compose_type": 2,
+      "compose_respin": 1,
+      "compose_label": null,
+      "dt_imported": "2014-09-03T11:45:00+00:00",
+      "deleted": false,
+      "acceptance_testing": 1
+    }
+  },
+  {
+    "model": "compose.Variant",
+    "pk": 3,
+    "fields": {
+      "compose": 3,
+      "variant_id": "Client",
+      "variant_uid": "Client",
+      "variant_name": "Client",
+      "variant_type": 1
+    }
+  },
+  {
+    "model": "compose.VariantArch",
+    "pk": 4,
+    "fields": {
+      "variant": 3,
+      "arch": 1
+    }
+  },
+  {
+    "model": "compose.ComposeRPM",
+    "pk": 2,
+    "fields": {
+      "variant_arch": 3,
+      "rpm": 1,
+      "sigkey": 1,
+      "content_category": 1,
+      "path": 2
+    }
+  },
+  {
+    "model": "compose.ComposeRPM",
+    "pk": 3,
+    "fields": {
+      "variant_arch": 4,
+      "rpm": 2,
+      "sigkey": 1,
+      "content_category": 1,
+      "path": 2
+    }
+  },
+  {
+    "model": "package.RPM",
+    "pk": 2,
+    "fields": {
+      "name": "bash",
+      "epoch": 0,
+      "version": "5.6.7",
+      "release": "8",
+      "arch": "x86_64",
+      "srpm_name": "bash",
+      "srpm_nevra": null,
+      "filename": "bash-5.6.7-8.x86_64.rpm"
+    }
+  },
+  {
+    "model": "package.RPM",
+    "pk": 3,
+    "fields": {
+      "name": "bash",
+      "epoch": 0,
+      "version": "1.2.3",
+      "release": "4.b1",
+      "arch": "src",
+      "srpm_name": "bash",
+      "srpm_nevra": null,
+      "filename": "bash-1.2.3-4.b1.src.rpm"
+    }
+  },
+  {
+    "model": "compose.Path",
+    "pk": 2,
+    "fields": {
+        "path": "Client/packages/somewhere"
+    }
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "pk": 1,
+    "model": "compose.Variant",
+    "fields": {
+      "compose": 1,
+      "variant_id": "Server",
+      "variant_uid": "Server",
+      "variant_name": "Server",
+      "deleted": false,
+      "variant_type": 1
+    }
+  }
+]

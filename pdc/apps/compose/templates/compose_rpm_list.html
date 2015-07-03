@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2 class="page-header">{% trans "RPMs" %} for {{compose}}</h2>
+<h3 class="sub-header">{% trans "Variant" %}: {{ variant }}{% if arch %} - {{ arch }}{% endif %}</h3>
+
+<form method="GET" style="float: left;">
+  {% csrf_token %}
+  {{ form.search }}
+  <input type="submit" value="{% trans "Search" %}" />
+</form>
+
+{% include "pagination.html" %}
+{% include "compose_rpm_list_include.html" %}
+{% include "pagination.html" %}
+
+{% endblock %}

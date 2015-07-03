@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<button class="btn btn-default btn-lg pull-right" data-toggle="modal" data-target="#helpOverlay">
+    <span class="glyphicon glyphicon-question-sign"></span> Help
+</button>
+
+<h1 class="page-header">Override management for <strong>{{ package }}</strong> in <strong>{{ release_id }}</strong></h1>
+
+<p>Based on <strong>{{ compose.compose_id }}</strong></p>
+
+{% if has_errors %}
+<div class="alert alert-danger" role="alert">
+There are errors in the form.
+</div>
+{% endif %}
+
+<form method="post">
+{% csrf_token %}
+
+{% for form in management_forms %}
+    {{ form }}
+{% endfor %}
+
+{% for variant, arch, formlets, newforms in forms %}
+<div class="variant-pair">
+<div class="row">
+    <div class="col-xs-12">
+        <h3 class="sub-header">{{ variant }}.{{ arch }}</h3>
+    </div>
+</div>
+<div class="row">
+  <div class="col-xs-1 btn-container">
+  </div>
+  <div class="col-xs-11 main-form">
+    <div class="row header-row">
+      <div class="col-xs-5"><h4>RPM Name</h4></div>
+      <div class="col-xs-5"><h4>RPM Arch</h4></div>
+      <div class="col-xs-2 center-align"><h4>Included</h4></div>
+    </div>
+    {% for form in formlets %}
+        <div class="row{% if form.override.value != 'orig' %} override-{{ form.override.value }}{% endif %}">
+          <div class="col-xs-5"><p class="form-control-static">{{ form.initial.rpm_name }}</p></div>
+          <div class="col-xs-5"><p class="form-control-static">{{ form.initial.rpm_arch }}</p></div>
+          <div class="col-xs-2 center-align" data-init={{ form.initial.included }}>
+            {% if form.errors %}{{ form.errors }}{% endif %}
+            {{ form.variant }}
+            {{ form.arch }}
+            {{ form.rpm_name }}
+            {{ form.rpm_arch }}
+            {{ form.included }}
+          </div>
+        </div><!-- .row -->
+    {% endfor %}
+    {% for newform in newforms %}
+        <div class="row form-row{% if newform.non_field_errors %} bg-danger{% endif %}">
+          <div class="col-xs-5">
+            {{ newform.variant }}
+            {{ newform.arch }}
+            {{ newform.rpm_name }}
+            {% for error in newform.rpm_name.errors %}{{ error }}{% endfor %}
+          </div>
+          <div class="col-xs-5">
+            {{ newform.rpm_arch }}
+            {% for error in newform.rpm_arch.errors %}{{ error }}{% endfor %}
+          </div>
+          <div class="col-xs-2 center-align">
+            <button type="button" class="btn btn-danger btn-xs remove disabled">
+                <span class="glyphicon glyphicon-remove"></span>
+            </button>
+          </div>
+        </div><!-- .row -->
+        {% if newform.non_field_errors %}
+          <div class="row text-danger bg-danger">
+            <div class="col-xs-12">
+              {% for error in newform.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+            </div>
+          </div><!-- .row -->
+        {% endif %}
+    {% endfor %}
+  </div><!-- .col-xs-11 .main-form -->
+</div><!-- .row -->
+</div><!-- .variant-pair -->
+{% endfor %}
+
+{% for vararch_form, rpm_forms in vararch_forms %}
+<div class="new-variant-pair">
+<div class="row">
+  <div class="col-xs-12">
+    <h3 class="sub-header">New Variant.Arch</h3>
+    <div class="row"><div class="col-xs-11 col-xs-offset-1 headings">
+        <div class="row">
+          <div class="col-xs-5"><h4>Variant</h4></div>
+          <div class="col-xs-5"><h4>Arch</h4></div>
+        </div>
+        <div class="row form-row header-form{% if vararch_form.non_field_errors %} bg-danger{% endif %}">
+          <div class="col-xs-5">{{ vararch_form.variant }}</div>
+          <div class="col-xs-5">{{ vararch_form.arch }}</div>
+        </div>
+        {% if vararch_form.non_field_errors %}
+          <div class="row text-danger bg-danger">
+            <div class="col-xs-12">
+              {% for error in vararch_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+            </div>
+          </div>
+        {% endif %}
+    </div></div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-1 btn-container">
+  </div>
+  <div class="col-xs-11 main-form">
+    <div class="row">
+      <div class="col-xs-5"><h4>RPM Name</h4></div>
+      <div class="col-xs-5"><h4>RPM Arch</h4></div>
+      <div class="col-xs-2 center-align"><h4>Included</h4></div>
+    </div>
+    {% for rpm_form in rpm_forms %}
+        <div class="row form-row body-form{% if rpm_form.non_field_errors %} bg-danger{% endif %}">
+          <div class="col-xs-5">
+            {{ rpm_form.new_variant }}
+            {{ rpm_form.rpm_name }}
+            {% for error in rpm_form.rpm_name.errors %}{{ error }}{% endfor %}
+          </div>
+          <div class="col-xs-5">
+            {{ rpm_form.rpm_arch }}
+            {% for error in rpm_form.rpm_arch.errors %}{{ error }}{% endfor %}
+          </div>
+          <div class="col-xs-2 center-align">
+            <button type="button" class="btn btn-danger btn-xs remove disabled">
+                <span class="glyphicon glyphicon-remove"></span>
+            </button>
+          </div>
+        </div><!-- .row -->
+        {% if rpm_form.non_field_errors %}
+          <div class="row text-danger bg-danger">
+            <div class="col-xs-12">
+              {% for error in rpm_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+            </div>
+          </div><!-- .row -->
+        {% endif %}
+    {% endfor %}
+  </div><!-- .col-xs-11 .main-form -->
+</div><!-- .row -->
+</div><!-- .new-variant-pair -->
+{% endfor %}
+
+<div class="btn-group" role="toolbar">
+  <button type="button" class="btn btn-success add-variant">
+    <span class="glyphicon glyphicon-plus"></span> Add Variant.Arch
+  </button>
+
+  <input type="submit" value="Preview" class="btn btn-primary">
+</div>
+
+</form>
+
+
+{% if useless_overrides %}
+<h3>Unused overrides</h3>
+<ul>
+{% for override in useless_overrides %}
+  <li>
+    {{ override.variant }}.{{ override.arch }}
+    {{ override.rpm_name }}.{{ override.rpm_arch }}
+    {% if override.include %}<span class="glyphicon glyphicon-ok"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}
+    {% if override.comment %}<em>({{ override.comment }})</em>{% endif %}
+  </li>
+{% endfor %}
+</ul>
+{% endif %}
+
+
+<div class="modal fade" id="helpOverlay" tabindex="-1" role="dialog" aria-labelledby="helpOverlay" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">Help</h4>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="center-align">ComposeRPM</th>
+              <th class="center-align">Override</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="center-align"><span class="glyphicon glyphicon-ok"></span></td>
+              <td class="center-align"><span class="glyphicon glyphicon-remove"></span></td>
+              <td>Unchecking will create exclude override.</td>
+            </tr>
+            <tr class="bg-danger">
+              <td class="center-align"><span class="glyphicon glyphicon-ok"></span></td>
+              <td class="center-align">Exclude</td>
+              <td>Checking will remove the override.</td>
+            </tr>
+            <tr class="bg-success">
+              <td class="center-align"><span class="glyphicon glyphicon-remove"></span></td>
+              <td class="center-align">Include</td>
+              <td>Unchecking will remove the override.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Include overrides for existing compose RPM or exclude overrides for
+        non-existing compose RPM can only exist if they have
+        <code>do_not_delete</code> set to to <code>True</code>. Such overrides
+        are listed below the form.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="{% static "js/overrides_form.js" %}"></script>
+{% endblock %}
+
+{% block head %}
+<style>
+.center-align {
+    text-align: center;
+    position: relative;
+}
+.sub-header {
+    border-top: 1px solid #999;
+    margin-top: 6px;
+    margin-bottom: 0;
+}
+.btn-group {
+    margin-top: 1em;
+}
+.main-form .row, .headings .row {
+    border-top: 1px solid #ddd;
+}
+.main-form .row:first-child, .headings .row:first-child {
+    border-top: none;
+}
+input[type=checkbox], .form-control-static {
+    height: 18px;
+    line-height: 1;
+}
+.form-control-static {
+    padding-top: 2px !important;
+}
+input[type=text].form-control {
+    padding: 0 2px;
+    height: 24px;
+}
+.override-create {
+    background-color: #DFF0D8;
+}
+.override-delete {
+    background-color: #F2DEDE;
+}
+.label {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    margin-top: -8px;
+}
+.btn-container {
+    text-align: center;
+    vertical-align: bottom;
+}
+</style>
+{% endblock %}

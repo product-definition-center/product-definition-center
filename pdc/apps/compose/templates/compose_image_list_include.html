@@ -1,0 +1,30 @@
+{% load i18n %}
+{% load epochformat %}
+
+{% for compose_image in compose_image_list %}
+<h4>{{ compose_image.image.file_name }}</h4>
+<div class="row">
+<div class="col-md-4">
+<dl class="details dl-horizontal">
+    <dt>{% trans "Image Type" %}</dt><dd>{{ compose_image.image.image_type.name }}</dd>
+    <dt>{% trans "Image Format" %}</dt><dd>{{ compose_image.image.image_format.name }}</dd>
+    <dt>{% trans "Arch" %}</dt><dd>{{ compose_image.image.arch }}</dd>
+    <dt>{% trans "Disc" %}</dt><dd>{{ compose_image.image.disc_number }} / {{ compose_image.image.disc_count }}</dd>
+    <dt>{% trans "Mtime" %}</dt><dd>{{ compose_image.image.mtime }} ({{ compose_image.image.mtime|epochformat }})</dd>
+    <dt>{% trans "Size" %}</dt><dd>{{ compose_image.image.size }} ({{ compose_image.image.size|filesizeformat }})</dd>
+    <dt>{% trans "Bootable" %}</dt><dd>{{ compose_image.image.bootable }}</dd>
+    <dt>{% trans "Volume ID" %}</dt><dd>{{ compose_image.image.volume_id }}</dd>
+</dl>
+</div>
+
+<div class="col-md-8">
+<dl class="details dl-horizontal">
+    <dt>{% trans "Implant MD5" %}</dt><dd>{{ compose_image.image.implant_md5 }}</dd>
+    <dt>{% trans "MD5 Checksum" %}</dt><dd>{{ compose_image.image.md5 }}</dd>
+    <dt>{% trans "SHA1 Checksum" %}</dt><dd>{{ compose_image.image.sha1 }}</dd>
+    <dt>{% trans "SHA256 Checksum" %}</dt><dd>{{ compose_image.image.sha256 }}</dd>
+</dl>
+</div>
+
+</div>
+{% endfor %}

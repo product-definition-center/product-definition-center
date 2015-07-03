@@ -1,0 +1,335 @@
+[
+  {
+    "fields": {
+      "name": "production"
+    },
+    "model": "compose.composetype",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "compose_id": "compose-1",
+      "acceptance_testing": 1,
+      "compose_label": null,
+      "deleted": false,
+      "compose_respin": 0,
+      "compose_date": "2015-02-19",
+      "linked_releases": [
+        3,
+        2
+      ],
+      "compose_type": 1,
+      "release": 1,
+      "dt_imported": "2015-02-19T09:56:56.133Z"
+    },
+    "model": "compose.compose",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "compose_id": "compose-2",
+      "acceptance_testing": 1,
+      "compose_label": null,
+      "deleted": false,
+      "compose_respin": 0,
+      "compose_date": "2015-02-18",
+      "linked_releases": [
+        2
+      ],
+      "compose_type": 1,
+      "release": 1,
+      "dt_imported": "2015-02-19T09:58:33.646Z"
+    },
+    "model": "compose.compose",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "variant_id": "Server",
+      "variant_uid": "Server",
+      "variant_type": 1,
+      "deleted": false,
+      "variant_name": "Server",
+      "compose": 1
+    },
+    "model": "compose.variant",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "variant_id": "Client",
+      "variant_uid": "Client",
+      "variant_type": 1,
+      "deleted": false,
+      "variant_name": "Client",
+      "compose": 1
+    },
+    "model": "compose.variant",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "variant": 2,
+      "arch": 47,
+      "deleted": false
+    },
+    "model": "compose.variantarch",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "variant": 1,
+      "arch": 47,
+      "deleted": false
+    },
+    "model": "compose.variantarch",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "variant": 1,
+      "arch": 46,
+      "deleted": false
+    },
+    "model": "compose.variantarch",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "content_category": 1,
+      "sigkey": null,
+      "rpm": 1,
+      "variant_arch": 3,
+      "path": 1
+    },
+    "model": "compose.composerpm",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "content_category": 1,
+      "sigkey": null,
+      "rpm": 1,
+      "variant_arch": 2,
+      "path": 2
+    },
+    "model": "compose.composerpm",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "content_category": 1,
+      "sigkey": null,
+      "rpm": 1,
+      "variant_arch": 1,
+      "path": 3
+    },
+    "model": "compose.composerpm",
+    "pk": 3
+  },
+  {
+    "model": "compose.path",
+    "pk": 1,
+    "fields": {
+        "path": "first/path"
+    }
+  },
+  {
+    "model": "compose.path",
+    "pk": 2,
+    "fields": {
+        "path": "second/path"
+    }
+  },
+  {
+    "model": "compose.path",
+    "pk": 3,
+    "fields": {
+        "path": "third/path"
+    }
+  },
+  {
+    "fields": {
+      "rpm_name": "bash-doc",
+      "comment": "",
+      "rpm_arch": "x86_64",
+      "variant": "Server",
+      "srpm_name": "bash",
+      "do_not_delete": false,
+      "release": 3,
+      "include": true,
+      "arch": "x86_64"
+    },
+    "model": "compose.overriderpm",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "arch": "x86_64",
+      "release": "1",
+      "version": "4.3.39",
+      "epoch": 0,
+      "srpm_nevra": "bash-0:4.3.39-1.src",
+      "srpm_name": "bash",
+      "name": "bash"
+    },
+    "model": "package.rpm",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "suffix": "",
+      "name": "Release",
+      "short": "ga"
+    },
+    "model": "release.releasetype",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "suffix": "-updates",
+      "name": "Updates for a release",
+      "short": "updates"
+    },
+    "model": "release.releasetype",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "suffix": "-eus",
+      "name": "Extended Update Support (EUS)",
+      "short": "eus"
+    },
+    "model": "release.releasetype",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "release_type": 1,
+      "release_id": "product-1.0",
+      "name": "Our Awesome Product",
+      "product_version": null,
+      "short": "product",
+      "version": "1.0",
+      "active": true,
+      "base_product": null
+    },
+    "model": "release.release",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "release_type": 2,
+      "release_id": "product-1.0-updates",
+      "name": "Our Awesome Product",
+      "product_version": null,
+      "short": "product",
+      "version": "1.0",
+      "active": true,
+      "base_product": null
+    },
+    "model": "release.release",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "release_type": 3,
+      "release_id": "product-1.0-eus",
+      "name": "Our Awesome Product",
+      "product_version": null,
+      "short": "product",
+      "version": "1.0",
+      "active": true,
+      "base_product": null
+    },
+    "model": "release.release",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "name": "variant"
+    },
+    "model": "release.varianttype",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "release": 2,
+      "variant_id": "Server",
+      "variant_type": 1,
+      "deleted": false,
+      "variant_name": "Server",
+      "variant_uid": "Server"
+    },
+    "model": "release.variant",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "release": 3,
+      "variant_id": "Server",
+      "variant_type": 1,
+      "deleted": false,
+      "variant_name": "Server",
+      "variant_uid": "Server"
+    },
+    "model": "release.variant",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "release": 3,
+      "variant_id": "Client",
+      "variant_type": 1,
+      "deleted": false,
+      "variant_name": "Client",
+      "variant_uid": "Client"
+    },
+    "model": "release.variant",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "variant": 1,
+      "arch": 47,
+      "deleted": false
+    },
+    "model": "release.variantarch",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "variant": 2,
+      "arch": 47,
+      "deleted": false
+    },
+    "model": "release.variantarch",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "variant": 2,
+      "arch": 46,
+      "deleted": false
+    },
+    "model": "release.variantarch",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "variant": 3,
+      "arch": 47,
+      "deleted": false
+    },
+    "model": "release.variantarch",
+    "pk": 4
+  },
+  {
+    "fields": {
+      "description": "Binary",
+      "name": "binary"
+    },
+    "model": "repository.contentcategory",
+    "pk": 1
+  }
+]

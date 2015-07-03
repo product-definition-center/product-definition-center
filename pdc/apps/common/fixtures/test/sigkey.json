@@ -1,0 +1,11 @@
+[
+  {
+    "model": "common.SigKey",
+    "pk": 1,
+    "fields": {
+      "key_id": "ABCDEF",
+      "name": "Test SigKey",
+      "description": "Used for testing"
+    }
+  }
+]

@@ -1,0 +1,14 @@
+Django>=1.8.1
+requests
+requests-kerberos
+https://git.fedorahosted.org/cgit/kobo.git/snapshot/kobo-0.4.3.tar.gz#egg=kobo
+https://github.com/release-engineering/productmd/archive/master.tar.gz#egg=productmd
+# requires: openldap-devel
+python-ldap
+# django rest framework
+djangorestframework>=3.1
+Markdown
+django-filter==0.9.2
+django-mptt>=0.7.1
+beanbag>=1.9.2
+django-cors-headers

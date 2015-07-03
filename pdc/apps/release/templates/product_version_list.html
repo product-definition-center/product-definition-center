@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2 class="page-header">{% trans "Product Versions" %}</h2>
+
+<form method="GET" style="float: left;">
+  {% csrf_token %}
+  {{ form.search }}
+  <input type="submit" value="{% trans "Search" %}" />
+</form>
+
+{% include "pagination.html" %}
+{% include "product_version_list_include.html" %}
+{% include "pagination.html" %}
+
+{% endblock %}

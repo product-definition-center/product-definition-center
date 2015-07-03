@@ -1,0 +1,62 @@
+[
+{
+    "pk": 3,
+    "model": "contact.person",
+    "fields": {
+        "username": "person1",
+        "email": "person1@test.com"
+    }
+},
+{
+    "pk": 4,
+    "model": "contact.person",
+    "fields": {
+        "username": "person2",
+        "email": "person2@test.com"
+    }
+},
+{
+    "pk": 1,
+    "model": "contact.contact",
+    "fields": {
+        "active": true,
+        "content_type": [
+            "contact",
+            "maillist"
+        ]
+    }
+},
+{
+    "pk": 2,
+    "model": "contact.contact",
+    "fields": {
+        "active": true,
+        "content_type": [
+            "contact",
+            "maillist"
+        ]
+    }
+},
+{
+    "pk": 3,
+    "model": "contact.contact",
+    "fields": {
+        "active": true,
+        "content_type": [
+            "contact",
+            "person"
+        ]
+    }
+},
+{
+    "pk": 4,
+    "model": "contact.contact",
+    "fields": {
+        "active": true,
+        "content_type": [
+            "contact",
+            "person"
+        ]
+    }
+}
+]

@@ -1,0 +1,11 @@
+[
+{
+    "pk": 1, 
+    "model": "component.upstream", 
+    "fields": {
+        "homepage": "http://python.org", 
+        "scm_url": "http://svn.python.org/moduleX", 
+        "scm_type": "svn"
+    }
+}
+]

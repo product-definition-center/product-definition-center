@@ -1,0 +1,26 @@
+[
+  {
+    "model": "compose.ComposeImage",
+    "pk": 1,
+    "fields": {
+        "variant_arch": 1,
+        "image": 1
+    }
+  },
+  {
+    "model": "compose.ComposeImage",
+    "pk": 2,
+    "fields": {
+        "variant_arch": 1,
+        "image": 2
+    }
+  },
+  {
+    "model": "compose.ComposeImage",
+    "pk": 3,
+    "fields": {
+        "variant_arch": 1,
+        "image": 3
+    }
+  }
+]

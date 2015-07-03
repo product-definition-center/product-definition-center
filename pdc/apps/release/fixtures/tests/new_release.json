@@ -1,0 +1,15 @@
+[
+  {
+    "model": "release.Release",
+    "pk": 2,
+    "fields": {
+      "release_type": 1,
+      "release_id": "release-2.0",
+      "short": "release",
+      "name": "Test Release",
+      "version": "2.0",
+      "base_product": null,
+      "active": true
+    }
+  }
+]

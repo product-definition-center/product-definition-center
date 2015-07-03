@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+{% load static %}
+{% load i18n %}
+
+<html>
+  <head>
+    <title>{% block title %}Product Definition Center{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="{% static "css/patternfly.css" %}" rel="stylesheet" media="screen, print">
+    {% block style %}
+    <link href="{% static "pdc/style.css" %}" rel="stylesheet" type="text/css" media="screen, print">
+    {% endblock %}
+
+    <script type="text/javascript" src="{% static "components/jquery/jquery.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "components/bootstrap/dist/js/bootstrap.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "components/datatables/media/js/jquery.dataTables.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/patternfly.min.js" %}"></script>
+    <script>
+      // Initialize Datatables
+      $(document).ready( function() {
+        $('.datatable').dataTable();
+      });
+    </script>
+    {% block head %}
+    {% endblock %}
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-pf" role="navigation">
+      <!-- header -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        {% block brand %}
+        <a class="navbar-brand" href="/">Product Definition Center</a>
+        {% endblock %}
+      </div>
+
+      <div class="collapse navbar-collapse navbar-collapse-1">
+
+        <!-- user menu -->
+        <ul class="nav navbar-nav navbar-utility">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <span class="fa fa-star"></span>
+              Links  <b class="caret"></b>
+            </a>
+            {% block links %}
+            {% endblock %}
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <span class="pficon pficon-user"></span>
+              {{ user }} <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+            {% if user.is_authenticated %}
+                <li>
+                  <a href='{% url 'auth/profile' %}'>{% trans 'User profile' %}</a>
+                </li>
+                <li>
+                  <a href='{% url 'auth/logout' %}?next={{ request.path }}'>{% trans 'Log-out' %}</a>
+                </li>
+                {% if user.is_superuser %}
+                <li class="divider"></li>
+                <li>
+                  <a href='{% url 'home' %}admin/'>{% trans 'PDC Administration Interface' %}</a>
+                </li>
+                {% endif %}
+            {% else %}
+                <li>
+                    <a href='{% url 'auth/krb5login' %}?next={{ request.path }}'>{% trans 'Log-in' %}</a>
+                </li>
+            {% endif %}
+            </ul>
+          </li>
+        </ul>
+
+        <!-- menu -->
+        <ul class="nav navbar-nav navbar-primary">
+          {% for m in menu.items %}
+            {% if m.items %}
+              <li class="dropdown{% if m.active %} active{% endif %}">
+                <a href="{{ m.url }}" class="dropdown-toggle" data-toggle="dropdown">
+                  {{ m.title }}
+                  <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                  {% for i in m.items %}
+                    <li class="menu-item{% if i.active %} active{% endif %}">{{ i.as_a }}</li>
+                  {% endfor %}
+                </ul>
+              </li>
+            {% else %}
+                <li>{{ m.as_a }}</li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+
+      </div>
+    </nav>
+
+<div class="container-fluid">
+{% for message in messages %}
+  <div class="alert{% if message.tags %} alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}{% endif %} alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+        <span class="pficon pficon-close"></span>
+    </button>
+    {{ message }}
+  </div>
+{% endfor %}
+
+{% block content %}
+{% endblock %}
+</div><!-- /.container -->
+
+<div class="footer">
+  <div class="container">
+    {% block footer %}
+    {% endblock %}
+  </div><!-- /.container -->
+</div><!-- /.footer -->
+
+  {% block javascript %}
+  {% endblock %}
+  </body>
+</html>

@@ -1,0 +1,12 @@
+[
+    {
+        "model": "release.BaseProduct",
+        "pk": 1,
+        "fields": {
+            "base_product_id": "product-1",
+            "short": "product",
+            "version": "1",
+            "name": "Our awesome product"
+        }
+    }
+]

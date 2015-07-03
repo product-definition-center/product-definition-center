@@ -1,0 +1,35 @@
+{% load i18n %}
+<table class="table table-striped">
+ <thead>
+  <tr>
+    <th>{% trans "Compose ID" %}</th>
+    <th>{% trans "Release" %}</th>
+    <th>{% trans "Date" %}</th>
+    <th>{% trans "Type" %}</th>
+    <th>{% trans "Respin" %}</th>
+    <th>{% trans "Label" %}</th>
+    <th>{% trans "Imported Date" %}</th>
+    <th>{% trans "Linked releases" %}</tr>
+  </tr>
+ </thead>
+ <tbody>
+{% for compose in compose_list %}
+  <tr>
+    <td><a href="{% url "compose/detail" compose.id %}">{{ compose.compose_id }}</a></td>
+    <td><a href="{% url "release/detail" compose.release_id %}">{{ compose.release }}</a></td>
+    <td>{{ compose.compose_date|date:"Y-m-d" }}</td>
+    <td>{{ compose.compose_type }}</td>
+    <td>{{ compose.compose_respin }}</td>
+    <td>{% if compose.compose_label %}{{ compose.compose_label }}{% endif %}</td>
+    <td>{{ compose.dt_imported|date:"Y-m-d H:i:s" }}</td>
+    <td>
+      <ul class="list-inline">
+        {% for release in compose.linked_releases.all %}
+          <li><a href="{% url "release/detail" release.id %}">{{ release.release_id }}</a></li>
+        {% endfor %}
+      </ul>
+    </td>
+  </tr>
+{% endfor %}
+ </tbody>
+</table>

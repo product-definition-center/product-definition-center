@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2 class="page-header">{% trans ' Product' %} #{{ product.id }}: {{ product.short }}</h2>
+
+<dl class="details dl-horizontal">
+    <dt>{% trans "ID" %}</dt>
+    <dd>{{ product.id }}</dd>
+    <dt>{% trans "Product Name" %}</dt>
+    <dd>{{ product.name }}</dd>
+    <dt>{% trans "Short Name" %}</dt>
+    <dd>{{ product.short }}</dd>
+    <dt>{% trans "Active" %}</dt>
+    <dd>{{ product.active }}</dd>
+</dl>
+
+<h3 class="sub-header">{% trans 'Product Versions' %}</h3>
+{% include "product_version_list_include.html" %}
+
+{% endblock %}

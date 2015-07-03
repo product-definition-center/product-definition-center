@@ -1,0 +1,87 @@
+[
+  {
+    "model": "compose.Path",
+    "pk": 3,
+    "fields": {
+        "path": "somewhere/over/the/rainbow"
+    }
+  },
+  {
+    "model": "compose.ComposeRPM",
+    "pk": 3,
+    "fields": {
+        "variant_arch": 1,
+        "rpm": 3,
+        "sigkey": 1,
+        "content_category": 1,
+        "path": 3
+    }
+  },
+  {
+    "model": "compose.ComposeRPM",
+    "pk": 4,
+    "fields": {
+        "variant_arch": 1,
+        "rpm": 4,
+        "sigkey": 1,
+        "content_category": 1,
+        "path": 3
+    }
+  },
+  {
+    "model": "package.RPM",
+    "pk": 3,
+    "fields": {
+      "name": "bash-debuginfo",
+      "epoch": 0,
+      "version": "4.2.45",
+      "release": "5",
+      "arch": "x86_64",
+      "srpm_name": "bash",
+      "srpm_nevra": null
+    }
+  },
+  {
+    "model": "package.RPM",
+    "pk": 4,
+    "fields": {
+      "name": "bash-completion",
+      "epoch": 0,
+      "version": "4.2.45",
+      "release": "5",
+      "arch": "x86_64",
+      "srpm_name": "bash",
+      "srpm_nevra": null
+    }
+  },
+  {
+    "model": "compose.OverrideRPM",
+    "pk": 2,
+    "fields": {
+      "release": 1,
+      "variant": "Server",
+      "arch": "x86_64",
+      "srpm_name": "bash",
+      "rpm_name": "bash-debuginfo",
+      "rpm_arch": "x86_64",
+      "include": false,
+      "comment": "",
+      "do_not_delete": false
+    }
+  },
+  {
+    "model": "compose.OverrideRPM",
+    "pk": 3,
+    "fields": {
+      "release": 1,
+      "variant": "Server",
+      "arch": "x86_64",
+      "srpm_name": "bash",
+      "rpm_name": "bash-magic",
+      "rpm_arch": "x86_64",
+      "include": true,
+      "comment": "",
+      "do_not_delete": false
+    }
+  }
+]

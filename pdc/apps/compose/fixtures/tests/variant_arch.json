@@ -1,0 +1,10 @@
+[
+  {
+    "model": "compose.VariantArch",
+    "pk": 1,
+    "fields": {
+      "variant": 1,
+      "arch": 47
+    }
+  }
+]

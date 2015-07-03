@@ -1,0 +1,15 @@
+[
+  {
+    "model": "release.Release",
+    "pk": 2,
+    "fields": {
+      "release_type": 2,
+      "release_id": "release-1.0-updates",
+      "short": "release",
+      "name": "Our Awesome Product",
+      "version": "1.0",
+      "base_product": null,
+      "active": true
+    }
+  }
+]

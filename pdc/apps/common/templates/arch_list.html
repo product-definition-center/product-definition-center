@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% include "pagination.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2 class="page-header">{% trans "Arches" %}</h2>
+
+{% include "pagination.html" %}
+<table class="table table-striped">
+ <thead>
+  <tr>
+    <th>{% trans "Name" %}</th>
+  </tr>
+ </thead>
+ <tbody>
+{% for arch in arch_list %}
+  <tr>
+    <td>{{ arch.name }}</td>
+  </tr>
+{% endfor %}
+ </tbody>
+</table>
+{% include "pagination.html" %}
+
+{% endblock %}

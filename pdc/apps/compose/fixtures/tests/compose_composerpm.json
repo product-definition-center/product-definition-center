@@ -1,0 +1,31 @@
+[
+  {
+    "model": "compose.Path",
+    "pk": 1,
+    "fields": {
+       "path": "Server/packages/os"
+    }
+  },
+  {
+    "model": "compose.ComposeRPM",
+    "pk": 1,
+    "fields": {
+        "variant_arch": 1,
+        "rpm": 1,
+        "sigkey": 1,
+        "content_category": 1,
+        "path": 1
+    }
+  },
+  {
+    "model": "compose.ComposeRPM",
+    "pk": 2,
+    "fields": {
+        "variant_arch": 1,
+        "rpm": 2,
+        "sigkey": 1,
+        "content_category": 1,
+        "path": 1
+    }
+  }
+]

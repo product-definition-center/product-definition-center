@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2 class="page-header">{% trans 'Base Product' %} #{{ base_product.id }}: {{ base_product.short }}-{{ base_product.version }}</h2>
+
+<dl class="details dl-horizontal">
+    <dt>{% trans "ID" %}</dt>
+    <dd>{{ base_product.id }}</dd>
+    <dt>{% trans "Product Name" %}</dt>
+    <dd>{{ base_product.name }}</dd>
+    <dt>{% trans "Short Name" %}</dt>
+    <dd>{{ base_product.short }}</dd>
+    <dt>{% trans "Version" %}</dt>
+    <dd>{{ base_product.version }}</dd>
+</dl>
+
+<h3 class="sub-header">{% trans 'Releases' %}</h3>
+{% include "release_list_include.html" %}
+
+{% endblock %}

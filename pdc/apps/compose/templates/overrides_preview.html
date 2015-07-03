@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="page-header">
+    Override preview for <strong>{{ package }}</strong> in <strong>{{ release_id }}</strong>
+</h1>
+
+{% if has_errors %}
+<div class="alert alert-danger" role="alert">
+There are errors in the form.
+</div>
+{% endif %}
+
+
+{% if num_forms > 0 %}
+
+<form method="post">
+{% csrf_token %}
+{{ forms.management_form }}
+<input type="hidden" name="preview_submit" value="True">
+<input type="hidden" name="initial_data" value="{{ compressed }}">
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Variant</th>
+            <th>Arch</th>
+            <th>RPM Name</th>
+            <th>RPM Arch</th>
+            <th class="center-align">Include</th>
+            <th class="center-align">Do not delete</th>
+            <th>Comment</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for form in forms %}
+            <tr class="bg-{% if form.initial.action == 'create' %}success{% else %}danger{% endif %}">
+                <td>
+                {% if form.initial.warning %}
+                  <p class="form-control-static warning-sign" data-toggle="tooltip" data-placement="right" title="{{ form.initial.warning }}">
+                    <span class="glyphicon glyphicon-exclamation-sign"></span>
+                  </p>
+                {% endif %}
+                </td>
+                <td>
+                    {% for f in form.hidden_fields %}{{ f }}{% endfor %}
+                    <p class="form-control-static">{{ form.variant.value }}</p>
+                </td>
+                <td>
+                    <p class="form-control-static">{{ form.arch.value }}</p>
+                </td>
+                <td>
+                    <p class="form-control-static">{{ form.rpm_name.value }}</p>
+                </td>
+                <td>
+                    <p class="form-control-static">{{ form.rpm_arch.value }}</p>
+                </td>
+                <td class="center-align">
+                    <p class="form-control-static">
+                        {% if form.include.value %}
+                            <span data-icon="plus">+</span>
+                        {% else %}
+                            <span data-icon="minus">-</span>
+                        {% endif %}
+                    </p>
+                </td>
+                <td class="center-align">{{ form.do_not_delete }}</td>
+                <td>{{ form.comment }}</td>
+            </tr>
+            {% if form.non_field_errors %}
+                <tr class="error-row text-danger bg-danger">
+                    <td colspan=3 class="center-align">
+                    {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="panel panel-default">
+  <div class="panel-heading" data-toggle="collapse" data-target="#previewBody">
+    <h4 class="panel-title">Preview</h4>
+  </div>
+  <div id="previewBody" class="panel-collapse collapse">
+    <div class="panel-body">
+        <pre>{{ actions }}</pre>
+    </div>
+  </div>
+</div>
+
+<div class="btn-toolbar" role="toolbar">
+    <button type="button" class="btn btn-link back-btn">Back to form</button>
+    <input type="submit" class="btn btn-primary" value="Save">
+</div>
+
+</form>
+
+{% else %}<!-- num_forms > 0 -->
+
+<p>
+No changes.
+</p>
+
+{% endif %}<!-- num_forms > 0 -->
+
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+(function() {
+    "use strict";
+    $(document).ready(function () {
+        $(".back-btn").on('click', function () { window.history.back(); });
+        $("input[type=text]").on('blur', function (event) {
+            if ($(this).val()) {
+                $(this).parents('tr').find('input[type=checkbox]').prop('checked', true);
+            }
+        });
+        $(".center-align span").each(function () {
+            var icon = $(this).data("icon");
+            $(this).addClass("glyphicon").addClass("glyphicon-"+icon).text('');
+        });
+    });
+    $('.warning-sign').tooltip({});
+})();
+</script>
+{% endblock %}
+
+{% block head %}
+<style>
+.center-align {
+    text-align: center;
+}
+.error-row p {
+    margin-bottom: 0;
+}
+.warning-sign {
+    text-align: center;
+    color: #A94442;
+}
+</style>
+{% endblock %}

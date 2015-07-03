@@ -1,0 +1,62 @@
+[
+    {
+        "model": "package.Image",
+        "pk": 1,
+        "fields": {
+            "file_name": "image-1",
+            "image_format": 1,
+            "image_type": 1,
+            "disc_number": 1,
+            "disc_count": 1,
+            "arch": "src",
+            "mtime": 111111111,
+            "size": 444444444,
+            "bootable": false,
+            "implant_md5": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "volume_id": "image-1-volume_id",
+            "md5": "11111111111111111111111111111111",
+            "sha1": "1111111111111111111111111111111111111111",
+            "sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+        }
+    },
+    {
+        "model": "package.Image",
+        "pk": 2,
+        "fields": {
+            "file_name": "image-2",
+            "image_format": 2,
+            "image_type": 2,
+            "disc_number": 2,
+            "disc_count": 2,
+            "arch": "x86_64",
+            "mtime": 222222222,
+            "size": 555555555,
+            "bootable": true,
+            "implant_md5": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "volume_id": "image-2-volume_id",
+            "md5": "22222222222222222222222222222222",
+            "sha1": "2222222222222222222222222222222222222222",
+            "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+        }
+    },
+    {
+        "model": "package.Image",
+        "pk": 3,
+        "fields": {
+            "file_name": "image-3",
+            "image_format": 3,
+            "image_type": 3,
+            "disc_number": 3,
+            "disc_count": 3,
+            "arch": "ppc64",
+            "mtime": 333333333,
+            "size": 666666666,
+            "bootable": false,
+            "implant_md5": "cccccccccccccccccccccccccccccccc",
+            "volume_id": "image-3-volume_id",
+            "md5": "33333333333333333333333333333333",
+            "sha1": "3333333333333333333333333333333333333333",
+            "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+        }
+    }
+]

@@ -1,0 +1,64 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+Update all users in database with new information retrieved from LDAP server.
+"""
+
+import os
+import ldap
+import django
+
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pdc.settings')
+django.setup()
+
+
+from django.contrib.auth import get_user_model, models
+from django.conf import settings
+from pdc.apps.auth import backends
+
+
+def process_raw_ldap_data(groups):
+    """
+    Take data from LDAP and return mapping from group names to list of users.
+    """
+    result = {}
+    for group in groups[1:]:
+        if 'cn' not in group[1] or 'memberUid' not in group[1]:
+            continue
+        group_name = group[1]['cn'][0]
+        members = group[1]['memberUid']
+        if members == [group_name]:
+            continue    # Skip user groups
+        result[group_name] = members
+    return result
+
+
+if __name__ == '__main__':
+    try:
+        conn = ldap.initialize(settings.LDAP_URI)
+
+        groups = conn.search_s(settings.LDAP_GROUPS_DN, ldap.SCOPE_SUBTREE)
+        groups = process_raw_ldap_data(groups)
+
+        for user in get_user_model().objects.all():
+            data = backends.get_ldap_user(conn, user.username)
+            if not data:
+                continue
+            del data['login']
+            user_groups = set()
+
+            for group, members in groups.iteritems():
+                if user.username in members:
+                    g, _ = models.Group.objects.get_or_create(name=group)
+                    user_groups.add(g.id)
+
+            user.first_name = data["first_name"]
+            user.last_name = data["last_name"]
+            user.email = data["email"]
+            user.groups = sorted(user_groups)
+            user.save()
+
+    finally:
+        conn.unbind()

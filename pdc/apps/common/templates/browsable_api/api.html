@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load rest_framework %}
+
+{% block content %}
+    {% block breadcrumbs %}
+        <ol class="breadcrumb">
+            {% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
+                <li>
+                    <a href="{{ breadcrumb_url }}" {% if forloop.last %}class="active"{% endif %}>
+                        {{ breadcrumb_name }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ol>
+    {% endblock %}
+
+    <!-- Content -->
+
+    <div id="content">
+        <div class="content-main">
+            <div class="page-header">
+                <h1>{{ name }}</h1>
+            </div>
+            {% block description %}
+            {{ overview }}
+            {% if description %}
+            <h3>Documents & examples</h3>
+            <div class="tabbable">
+                <ul class="nav nav-tabs">
+                    {% for method in description.keys %}
+                    <li {% if forloop.first %}class="active"{% endif %}>
+                        <a href="#tab_{{ method }}" data-toggle="tab">{{ method.upper }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="tab-content">
+                    {% for method, docstring in description.items %}
+                    <div class="tab-pane {% if forloop.first %}active{% endif %}"
+                         id="tab_{{ method }}">
+                        <p>{{docstring}}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            {% endblock %}
+
+            {% if paginator %}
+                <nav style="float: right">
+                {% get_pagination_html paginator %}
+                </nav>
+            {% endif %}
+
+            <h3>Browsable GET</h3>
+            <div class="request-info" style="clear: both" >
+                <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
+            </div>
+            <div class="response-info">
+            <pre class="prettyprint"><span class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
+{% for key, val in response_headers.items %}<b>{{ key }}:</b> <span class="lit">{{ val|break_long_headers|urlize_quoted_links }}</span>
+{% endfor %}
+</span>{{ content|urlize_quoted_links }}</pre>{% endautoescape %}
+            </div>
+        </div>
+
+    </div>
+    <!-- END Content -->
+{% endblock %}

@@ -1,0 +1,103 @@
+[
+  {
+    "model": "release.Release",
+    "pk": 2,
+    "fields": {
+      "release_type": 1,
+      "release_id": "release-1.1",
+      "short": "release",
+      "name": "Our Awesome Product",
+      "version": "1.1",
+      "base_product": null,
+      "active": true
+    }
+  },
+  {
+    "pk": 2,
+    "model": "release.Variant",
+    "fields": {
+      "release": 2,
+      "variant_id": "Server",
+      "variant_uid": "Server",
+      "variant_name": "Server",
+      "deleted": false,
+      "variant_type": 1
+    }
+  },
+  {
+    "pk": 2,
+    "model": "release.VariantArch",
+    "fields": {
+      "variant": 2,
+      "arch": 47
+    }
+  },
+  {
+    "pk": 3,
+    "model": "release.Variant",
+    "fields": {
+      "release": 1,
+      "variant_id": "Client",
+      "variant_uid": "Client",
+      "variant_name": "Client",
+      "deleted": false,
+      "variant_type": 1
+    }
+  },
+  {
+    "pk": 3,
+    "model": "release.VariantArch",
+    "fields": {
+      "variant": 3,
+      "arch": 47
+    }
+  },
+  {
+    "pk": 4,
+    "model": "release.Variant",
+    "fields": {
+      "release": 2,
+      "variant_id": "Client",
+      "variant_uid": "Client",
+      "variant_name": "Client",
+      "deleted": false,
+      "variant_type": 1
+    }
+  },
+  {
+    "pk": 4,
+    "model": "release.VariantArch",
+    "fields": {
+      "variant": 4,
+      "arch": 47
+    }
+  },
+  {
+    "pk": 1,
+    "model": "repository.Repo",
+    "fields": {
+      "name": "test_repo_1",
+      "variant_arch": 1,
+      "service": 1,
+      "repo_family": 1,
+      "content_format": 1,
+      "content_category": 1,
+      "shadow": false,
+      "product_id": 11
+    }
+  },
+  {
+    "pk": 2,
+    "model": "repository.Repo",
+    "fields": {
+      "name": "test_repo_2-debug",
+      "variant_arch": 3,
+      "service": 2,
+      "repo_family": 2,
+      "content_format": 2,
+      "content_category": 2,
+      "shadow": true,
+      "product_id": 12
+    }
+  }
+]

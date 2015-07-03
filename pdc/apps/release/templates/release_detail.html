@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2 class="page-header">{% trans 'Release' %} #{{ release.id }}: <strong>{{ release.release_id }}</strong></h2>
+
+<div class="clearfix">
+
+<div class="pull-right">
+<h4 class="sub-header" style="margin-top: 0">RPM Override Management</h4>
+<form method="GET" action="{% url "override/manage" release.release_id %}">
+<div class="form-group">
+<label for="package">Package name</label>
+<input type="text" name="package" id="package" class="form-control">
+</div>
+<input type=submit value="Manage overrides" class="btn btn-primary">
+</form>
+</div>
+
+<dl class="details dl-horizontal pull-left">
+    <dt>{% trans "ID" %}</dt>
+    <dd>{{ release.id }}</dd>
+    <dt>{% trans "Release ID" %}</dt>
+    <dd>{{ release.release_id }}</dd>
+    <dt>{% trans "Name" %}</dt>
+    <dd>{{ release.name }}</dd>
+    <dt>{% trans "Short Name" %}</dt>
+    <dd>{{ release.short }}</dd>
+    <dt>{% trans "Version" %}</dt>
+    <dd>{{ release.version }}</dd>
+    <dt>{% trans "Release Type" %}</dt>
+    <dd>{{ release.release_type }}</dd>
+{% if release.base_product %}
+    <dt>{% trans "Base Product" %}</dt>
+    <dd>
+      <a href="{% url "base_product/detail" release.base_product.id %}">
+        {{ release.base_product.name }} ({{ release.base_product.short }}-{{ release.base_product.version }})
+      </a>
+    </dd>
+{% endif %}
+</dl>
+
+</div><!-- .clearfix -->
+
+<h3 class="sub-header">{% trans 'Variants' %}</h3>
+<table class="table table-striped">
+ <thead>
+  <tr>
+    <th>{% trans "UID" %}</th>
+    <th>{% trans "ID" %}</th>
+    <th>{% trans "Name" %}</th>
+    <th>{% trans "Type" %}</th>
+    <th>{% trans "Arches" %}</th>
+  </tr>
+ </thead>
+ <tbody>
+{% for variant in release.variant_set.all %}
+  <tr>
+    <td>
+        {{ variant.variant_uid }}
+        {% if variant.integrated_from %}
+            <span class="pull-right">(integrated from <a href="{% url "release/detail" variant.integrated_from.release.id %}">{{ variant.integrated_from.release.release_id }}</a>)</span>
+        {% elif variant.integrated_to %}
+            <span class="pull-right">(integrated to <a href="{% url "release/detail" variant.integrated_to.release.id %}">{{ variant.integrated_to.release }}</a>)</span>
+        {% endif %}
+    </td>
+    <td>{{ variant.variant_id }}</td>
+    <td>{{ variant.variant_name }}</td>
+    <td>{{ variant.variant_type }}</td>
+    <td>{{ variant.arches|join:", " }}</td>
+  </tr>
+{% endfor %}
+ </tbody>
+</table>
+
+<h3 class="sub-header">{% trans 'Repositories' %}</h3>
+<table class="table table-striped">
+ <thead>
+  <tr>
+    <th>{% trans "Variant.Arch" %}</th>
+    <th>{% trans "Service" %}</th>
+    <th>{% trans "Repo Family" %}</th>
+    <th>{% trans "Content Format" %}</th>
+    <th>{% trans "Content Category" %}</th>
+    <th>{% trans "Shadow" %}</th>
+    <th>{% trans "Repository" %}</th>
+    <th>{% trans "Product ID" %}</th>
+  </tr>
+ </thead>
+ <tbody>
+{% for variant in release.variant_set.all %}
+{% for variantarch in variant.variantarch_set.all %}
+{% for repo in variantarch.repos.all %}
+  <tr>
+    <td>{{ variant.variant_uid }}.{{ variantarch.arch }}</td>
+    <td>{{ repo.service }}</td>
+    <td>{{ repo.repo_family }}</td>
+    <td>{{ repo.content_format }}</td>
+    <td>{{ repo.content_category }}</td>
+    <td>{{ repo.shadow }}</td>
+    <td>{{ repo.name }}</td>
+    <td>{{ repo.product_id|default_if_none:"&mdash;" }}</td>
+  </tr>
+{% endfor %}
+{% endfor %}
+{% endfor %}
+ </tbody>
+</table>
+
+{% endblock %}

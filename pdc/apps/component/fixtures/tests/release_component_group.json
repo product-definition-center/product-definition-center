@@ -1,0 +1,14 @@
+[
+{
+    "fields": {
+        "release": 1,
+        "components": [
+            1
+        ],
+        "group_type": 1,
+        "description": "dd"
+    },
+    "model": "component.releasecomponentgroup",
+    "pk": 1
+}
+]

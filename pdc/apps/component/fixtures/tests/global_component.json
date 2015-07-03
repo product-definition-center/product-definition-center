@@ -1,0 +1,24 @@
+[
+{
+   "pk": 1, 
+   "model": "component.globalcomponent", 
+   "fields": {
+      "name": "python"
+   }
+},
+{
+   "pk": 2, 
+   "model": "component.globalcomponent", 
+   "fields": {
+      "name": "MySQL-python"
+   }
+},
+{
+   "pk": 3,
+   "model": "component.globalcomponent",
+   "fields": {
+      "name": "java",
+      "upstream": 1
+   }
+}
+]

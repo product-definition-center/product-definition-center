@@ -1,0 +1,23 @@
+{% load i18n %}
+<table class="table table-striped">
+ <thead>
+  <tr>
+    <th>{% trans "RPM N-V-R.A" %}</th>
+    <th>{% trans "Epoch" %}</th>
+    <th>{% trans "SRPM" %}</th>
+    <th>{% trans "SRPM N-E:V-R.A" %}</th>
+    <th>{% trans "SigKey" %}</th>
+  </tr>
+ </thead>
+ <tbody>
+{% for compose_rpm in compose_rpm_list %}
+  <tr>
+    <td>{{ compose_rpm.rpm.name }}-{{ compose_rpm.rpm.version }}-{{ compose_rpm.rpm.release }}.{{ compose_rpm.rpm.arch }}</td>
+    <td>{{ compose_rpm.rpm.epoch }}</td> 
+    <td>{{ compose_rpm.rpm.srpm_name }}</td>
+    <td>{% if compose_rpm.rpm.srpm_nevra %}{{ compose_rpm.rpm.srpm_nevra }}{% endif %}</td>
+    <td>{{ compose_rpm.sigkey }}</td>
+  </tr>
+{% endfor %}
+ </tbody>
+</table>

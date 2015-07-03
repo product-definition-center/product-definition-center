@@ -1,0 +1,18 @@
+[
+    {
+        "model": "release.Product",
+        "pk": 1,
+        "fields": {
+            "name": "Test Product",
+            "short": "product"
+        }
+    },
+    {
+        "model": "release.Product",
+        "pk": 2,
+        "fields": {
+            "name": "Dummy product",
+            "short": "dummy"
+        }
+    }
+]
