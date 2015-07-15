@@ -145,12 +145,21 @@ class GlobalComponent(models.Model):
         return result
 
 
+class ReleaseComponentType(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __unicode__(self):
+        return u"%s" % self.name
+
+
 class ReleaseComponent(models.Model):
     """Record which release is connecting to which components"""
 
     release                     = models.ForeignKey(Release)
     global_component            = models.ForeignKey(GlobalComponent)
     bugzilla_component          = models.ForeignKey(BugzillaComponent, blank=True, null=True, on_delete=models.SET_NULL)
+    type                        = models.ForeignKey(ReleaseComponentType, blank=True, null=True,
+                                                    on_delete=models.SET_NULL, related_name='release_components',)
     name                        = models.CharField(max_length=100)
     dist_git_branch             = models.CharField(max_length=100, blank=True, null=True)
     contacts                    = models.ManyToManyField(RoleContact, blank=True)
@@ -204,31 +213,29 @@ class ReleaseComponent(models.Model):
                                          fset=_set_inherited_dist_git_branch)
 
     def export(self, fields=None):
-        _fields = ['release', 'global_component', 'name', 'dist_git_branch',
+        _fields = ['release', 'global_component', 'name', 'dist_git_branch', 'type',
                    'contacts', 'bugzilla_component', 'brew_package', 'active'] if fields is None else fields
         result = dict()
-        if 'release' in _fields:
-            result['release'] = self.release.release_id
-        if 'global_component' in _fields:
-            result['global_component'] = self.global_component.name
-        if 'name' in _fields:
-            result['name'] = self.name
-        if 'dist_git_branch' in _fields:
+        for attr in ('name', 'dist_git_branch', 'brew_package', 'active'):
             # We do not use inherited_dist_git_branch here because changeset
             # need to log the real diffs.
             # And if we update dist_git_branch as the same as release,
             # changeset could be show the changes from null to current value.
-            result['dist_git_branch'] = self.dist_git_branch
+            if attr in _fields:
+                result[attr] = getattr(self, attr)
+
+        if 'type' in _fields:
+            result['type'] = self.type.name if self.type else None
+        if 'release' in _fields:
+            result['release'] = self.release.release_id
+        if 'global_component' in _fields:
+            result['global_component'] = self.global_component.name
         if 'bugzilla_component' in _fields:
             if self.bugzilla_component:
                 result['bugzilla_component'] = "{} (id:{})".format(self.bugzilla_component.name,
                                                                    self.bugzilla_component.id)
             else:
                 result['bugzilla_component'] = None
-        if 'brew_package' in _fields:
-            result['brew_package'] = self.brew_package
-        if 'active' in _fields:
-            result['active'] = self.active
         if 'contacts' in _fields:
             result['contacts'] = []
             contacts = self.contacts.all()

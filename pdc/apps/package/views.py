@@ -159,7 +159,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                         "release":       string,         # required
                         "arch":          string,         # required
                         "srpm_name":     string,         # required
-                        "srpm_nevra":    string,         # optional
+                        "srpm_nevra":    string,         # optional, the srpm_nevra field should be empty if and only if arch is "src".
                         "filename":      string          # optional
                     }
                     ...

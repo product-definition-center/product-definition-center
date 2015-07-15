@@ -10,7 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.forms import SelectMultiple
 
-from django_filters import FilterSet, MethodFilter
+from django_filters import FilterSet, MethodFilter, CharFilter
 
 from .models import GlobalComponent, ReleaseComponent, BugzillaComponent, ReleaseComponentGroup, GroupType
 from pdc.apps.contact.models import (Person,
@@ -87,8 +87,11 @@ class ComponentFilter(ComposeFilterSet):
 
     @value_is_not_empty
     def filter_together(self, qs, value):
-        email = value.get('email', None)
-        contact_role = value.get('contact_role', None)
+        email_str = self.data.get('email', None)
+        email = [email_str] if email_str else []
+
+        contact_role_str = self.data.get('contact_role', None)
+        contact_role = [contact_role_str] if contact_role_str else []
 
         if email:
             person_type = ContentType.objects.get_for_model(Person)
@@ -129,7 +132,6 @@ class ComponentFilter(ComposeFilterSet):
         model = GlobalComponent
         fields = ('name', 'dist_git_path', 'email', 'contact_role', 'label',
                   'upstream_homepage', 'upstream_scm_type', 'upstream_scm_url')
-        together = (('email', 'contact_role'),)
 
 
 class ReleaseComponentFilter(ComposeFilterSet):
@@ -141,11 +143,15 @@ class ReleaseComponentFilter(ComposeFilterSet):
     bugzilla_component = MultiValueFilter(name='bugzilla_component__name')
     brew_package = MultiValueFilter()
     active = CustomizeBooleanFilter()
+    type = CharFilter(name='type__name')
 
     @value_is_not_empty
     def filter_together(self, qs, value):
-        email = value.get('email', None)
-        contact_role = value.get('contact_role', None)
+        email_str = self.data.get('email', None)
+        email = [email_str] if email_str else []
+
+        contact_role_str = self.data.get('contact_role', None)
+        contact_role = [contact_role_str] if contact_role_str else []
 
         if email:
             person_type = ContentType.objects.get_for_model(Person)
@@ -245,8 +251,8 @@ class ReleaseComponentFilter(ComposeFilterSet):
 
     class Meta:
         model = ReleaseComponent
-        fields = ('name', 'release', 'email', 'contact_role', 'global_component', 'active', 'bugzilla_component')
-        together = (('email', 'contact_role'),)
+        fields = ('name', 'release', 'email', 'contact_role', 'global_component', 'active',
+                  'bugzilla_component', 'type')
 
 
 class BugzillaComponentFilter(ComposeFilterSet):

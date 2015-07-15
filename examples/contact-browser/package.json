@@ -1,0 +1,23 @@
+{
+  "name": "pdc-contact-browser",
+  "version": "0.1.0",
+  "license": "BSD-3-Clause",
+  "files": [
+    "index.html",
+    "css/",
+    "src/"
+  ],
+  "private": true,
+  "dependencies": {
+    "react": ">=0.13.3",
+    "react-bootstrap": ">=0.23.5",
+    "jquery": "~2.1.4"
+  },
+  "devDependencies": {
+    "react-tools": ">=0.13.3",
+    "browserify": "~10.2.4",
+    "reactify": "~1.1.1",
+    "uglify-js": "~2.4.23",
+    "resource-embedder": "~0.2.2"
+  }
+}

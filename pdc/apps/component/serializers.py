@@ -17,6 +17,7 @@ from rest_framework.validators import UniqueTogetherValidator
 from pdc.apps.contact.models import Contact, ContactRole
 from pdc.apps.contact.serializers import RoleContactSerializer
 from pdc.apps.common.serializers import DynamicFieldsSerializerMixin, LabelSerializer, StrictSerializerMixin
+from pdc.apps.common.fields import ChoiceSlugField
 from pdc.apps.release.models import Release
 from pdc.apps.release.serializers import ReleaseSerializer
 from .models import (GlobalComponent,
@@ -25,7 +26,8 @@ from .models import (GlobalComponent,
                      Upstream,
                      BugzillaComponent,
                      ReleaseComponentGroup,
-                     GroupType)
+                     GroupType,
+                     ReleaseComponentType)
 from . import signals
 
 
@@ -327,6 +329,7 @@ class ReleaseComponentSerializer(DynamicFieldsSerializerMixin,
     bugzilla_component = TreeForeignKeyField(read_only=False, required=False)
     brew_package = serializers.CharField(required=False)
     active = serializers.BooleanField(required=False, default=True)
+    type = ChoiceSlugField(slug_field='name', queryset=ReleaseComponentType.objects.all(), required=False)
 
     def update(self, instance, validated_data):
         signals.releasecomponent_serializer_extract_data.send(sender=self, validated_data=validated_data)
@@ -402,11 +405,17 @@ class ReleaseComponentSerializer(DynamicFieldsSerializerMixin,
             self._errors = {'name': 'This field is required.'}
         return value
 
+    def validate_type(self, value):
+        if not isinstance(value, ReleaseComponentType):
+            if value is not None and value.strip() != "":
+                value = get_object_or_404(ReleaseComponentType, name=value.strip())
+        return value
+
     class Meta:
         model = ReleaseComponent
         fields = ('url', 'release', 'bugzilla_component', 'brew_package', 'global_component',
                   'name', 'dist_git_branch', 'dist_git_web_url', 'active',
-                  'contacts')
+                  'contacts', 'type')
         validators = [UniqueTogetherValidator(
             queryset=ReleaseComponent.objects.all(),
             fields=('name', 'release', 'global_component')
@@ -418,7 +427,7 @@ class GroupTypeSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = GroupType
-        fields = ('name', 'description')
+        fields = ('id', 'name', 'description')
 
 
 class ReleaseComponentRelatedField(serializers.RelatedField):
@@ -456,15 +465,23 @@ class GroupSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     )
 
     def validate(self, value):
-        components = value.get('components', [])
-        release = value.get('release', None)
+        if not self.instance or not self.partial:
+            components = value.get('components')
+            release = value.get('release')
+        elif 'components' in value:
+            components = value.get('components')
+            release = self.instance.release
+        else:
+            components = self.instance.components.all()
+            release = value.get('release')
+
         for component in components:
-            if release is not None and component.release != release:
-                raise serializers.ValidationError({
-                    'detail': 'It is not allowed to group release_component[%s] <release[%s]> with other release[%s].'
-                              % (component.name, component.release.release_id, release.release_id)})
+                if component.release != release:
+                    raise serializers.ValidationError({
+                        'detail': 'Not allow to group release_component[%s] <release[%s]> with other release[%s].'
+                                  % (component.name, component.release.release_id, release.release_id)})
         return value
 
     class Meta:
         model = ReleaseComponentGroup
-        fields = ('group_type', 'description', 'release', 'components')
+        fields = ('id', 'group_type', 'description', 'release', 'components')

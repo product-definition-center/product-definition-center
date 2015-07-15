@@ -584,6 +584,24 @@ class OverridesRPMAPITestCase(APITestCase):
         self.assertEqual(models.OverrideRPM.objects.count(), 1)
         self.assertItemsEqual(response.data, [self.override_rpm])
 
+    def test_delete_with_extra_param(self):
+        models.OverrideRPM.objects.create(release=self.release, variant="Server", arch="x86_64",
+                                          rpm_name="bash-doc", rpm_arch="src", include=True,
+                                          do_not_delete=True, srpm_name="bash")
+
+        response = self.client.delete(reverse('overridesrpm-list'), {'release': 'release-1.0', 'variant': "Server",
+                                                                     'arch': 'x86_64', 'rpm_name': 'bash-doc',
+                                                                     'rpm_arch': 'src', 'srpm_name': 'bash'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_clear_with_extra_param(self):
+        models.OverrideRPM.objects.create(release=self.release, variant="Server", arch="x86_64",
+                                          rpm_name="bash-doc", rpm_arch="src", include=True,
+                                          do_not_delete=True, srpm_name="bash")
+
+        response = self.client.delete(reverse('overridesrpm-list'), {'release': 'release-1.0', 'srpm_name': 'bash'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_clear_force(self):
         models.OverrideRPM.objects.create(release=self.release, variant="Server", arch="x86_64",
                                           rpm_name="bash-doc", rpm_arch="src", include=True,

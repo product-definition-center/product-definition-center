@@ -641,7 +641,7 @@ class ComposeRPMView(StrictQueryParamMixin, viewsets.GenericViewSet):
 
             {
                 "release_id": string,
-                "compose_info": composeinfo,
+                "composeinfo": composeinfo,
                 "rpm_manifest": image_manifest
             }
 
@@ -803,7 +803,7 @@ class ComposeImportImagesView(StrictQueryParamMixin, viewsets.GenericViewSet):
 
             {
                 "release_id": string,
-                "compose_info": composeinfo,
+                "composeinfo": composeinfo,
                 "image_manifest": image_manifest
             }
 
@@ -1030,22 +1030,19 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
         """
         data = self.request.data
         keys = set(data.keys())
-        if "release" not in keys:
-            return Response(status=400, data={'detail': 'Missing "release" key.'})
-        release_obj = get_object_or_404(Release, release_id=data["release"])
+        keys_for_specific_override = set(['release', 'variant', 'arch', 'rpm_name', 'rpm_arch'])
+        keys_for_overrides_in_release = set(['release', 'force'])
+        if keys != keys_for_specific_override and keys - {'force'} != keys_for_overrides_in_release - {'force'}:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data=["Arguments should be: %s OR %s(optional, default false)" %
+                                  (", ".join(keys_for_specific_override),
+                                   ", ".join(keys_for_overrides_in_release))])
 
-        keys.discard('force')
-        keys.discard('release')
-        possible_keys = set(['variant', 'arch', 'rpm_name', 'rpm_arch'])
-        if possible_keys & keys:
-            missing = possible_keys - keys
-            if missing:
-                return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data=["Missing arguments: %s" % (", ".join(missing))])
+        release_obj = get_object_or_404(Release, release_id=data["release"])
+        if keys == keys_for_specific_override:
             return Response(status=status.HTTP_200_OK, data=self._delete(release_obj, data))
-        if not keys:
+        else:
             return Response(status=status.HTTP_200_OK, data=self._clear(release_obj, data))
-        return Response(status=status.HTTP_400_BAD_REQUEST, data=["Unrecognized arguments"])
 
     def _clear(self, release_obj, args):
         query = Q(release=release_obj)

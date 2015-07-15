@@ -722,6 +722,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
             active
             bugzilla_component
             srpm_name
+            type                           # The release component type
 
         __Response__:
 
@@ -756,7 +757,8 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
                         ],
                         "srpm": {
                             "name": string
-                        } OR null
+                        } OR null,
+                        "type": <string|null>
                     }
                     ...
             }
@@ -799,7 +801,8 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
                 ],
                 "srpm": {
                     "name": string
-                } OR null
+                } OR null,
+                "type": <string|null>
             }
 
         __NOTE__:
@@ -831,6 +834,8 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
                 "name": srpm name of release component
             } OR null, **OPTIONAL**
 
+        ``"type"``: release component type, **OPTIONAL**
+
         PATCH:
 
         ``name``: new release component's name, **OPTIONAL**
@@ -847,6 +852,8 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
             {
                 "name": srpm name of release component
             } OR null,  **OPTIONAL**
+
+        ``"type"``: release component type, **OPTIONAL**
 
         __URL__:
 
@@ -919,6 +926,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
                     {
                         "name":                  string,
                     } OR null,                                   # optional
+                'type':                          string,         # optional
             }
 
         __Response__:
@@ -948,7 +956,8 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
                 ],
                 "srpm": {
                     "name": string
-                } OR null
+                } OR null,
+                "type": <string|null>
             }
 
         __NOTE__:
@@ -1031,7 +1040,8 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
                     ],
                     "srpm": {
                         "name": string,
-                    } OR null
+                    } OR null,
+                    "type": <string|null>
                 },
                 ......
             ]
@@ -1754,8 +1764,10 @@ class GroupViewSet(viewsets.PDCModelViewSet):
                 "description":      string,         # required
                 "components":       list            # optional
             }
+
         __Note__:
 
+          * components: list of release_component id, eg: [1, 2]
           * group_type, release and release_components have to be existed before creating Release Component Group
           * It's not allowed to group release_components from different releases
 
@@ -1835,6 +1847,10 @@ class GroupViewSet(viewsets.PDCModelViewSet):
                 "description":      string,
                 "components":       list
             }
+
+        __Note__:
+
+          * components: list of release_component id, eg: [1, 2]
 
         __Response__:
 

@@ -55,6 +55,7 @@ class ChangesetRESTTestCase(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data.get('changes')), 2)
+        self.assertEqual(response.data.get("id"), 1)
 
     def test_list_order(self):
         url = reverse('changeset-list')

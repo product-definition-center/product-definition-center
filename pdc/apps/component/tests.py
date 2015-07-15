@@ -831,7 +831,20 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         del response.data['srpm']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         data.update({'contacts': [], 'dist_git_branch': "release_branch", 'url': url,
-                     'bugzilla_component': None, 'active': True})
+                     'bugzilla_component': None, 'active': True, 'type': None})
+        self.assertEqual(sorted(response.data), sorted(data))
+        self.assertNumChanges([1])
+
+    def test_create_release_component_with_type(self):
+        url = reverse('releasecomponent-list')
+        data = {'release': 'release-1.0', 'global_component': 'python', 'name': 'python26',
+                'brew_package': 'python-pdc', 'type': 'rpm'}
+        response = self.client.post(url, data, format='json')
+        del response.data['dist_git_web_url']
+        del response.data['srpm']
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        data.update({'contacts': [], 'dist_git_branch': "release_branch", 'url': url,
+                     'bugzilla_component': None, 'active': True, 'type': 'rpm'})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1])
 
@@ -943,6 +956,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         del response.data['url']
         del response.data['bugzilla_component']
         del response.data['brew_package']
+        del response.data['type']
         data.update({'active': True})
         self.assertEqual(response.data, data)
         self.assertNumChanges([1])
@@ -1012,7 +1026,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         del response.data['dist_git_web_url']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         data.update({'contacts': [], 'dist_git_branch': "release_branch", 'url': url,
-                     'bugzilla_component': None, 'srpm': None, 'active': True})
+                     'bugzilla_component': None, 'srpm': None, 'active': True, 'type': None})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1])
 
@@ -1022,7 +1036,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         del response.data['dist_git_web_url']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         data.update({'contacts': [], 'dist_git_branch': "release_branch", 'url': url,
-                     'bugzilla_component': None, 'srpm': None, 'active': True})
+                     'bugzilla_component': None, 'srpm': None, 'active': True, 'type': None})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1, 1])
 
@@ -1033,7 +1047,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         del response.data['dist_git_web_url']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         data.update({'contacts': [], 'dist_git_branch': "release_branch", 'url': url,
-                     'bugzilla_component': None, 'srpm': None, 'active': False})
+                     'bugzilla_component': None, 'srpm': None, 'active': False, 'type': None})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1])
 
@@ -1079,6 +1093,28 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         # The 2 bugzilla_component have same name but changeset should record the change
         self.assertEqual(response2.data['bugzilla_component']['name'], 'python')
         self.assertNumChanges([1, 1])
+
+    def test_update_release_component_with_valid_type(self):
+        url = reverse('releasecomponent-detail', kwargs={'pk': 2})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        data = {'name': 'MySQL-python', 'type': 'zip'}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.data['type'], 'zip')
+
+        data = {'name': 'MySQL-python', 'type': 'rpm'}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.data['type'], 'rpm')
+        self.assertNumChanges([1, 1])
+
+    def test_update_release_component_with_invalid_type(self):
+        url = reverse('releasecomponent-detail', kwargs={'pk': 2})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = {'name': 'python27', 'type': 'fake_type'}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_release_component_with_wrong_bugzilla_component(self):
         url = reverse('releasecomponent-detail', kwargs={'pk': 2})
@@ -2113,12 +2149,24 @@ class GroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('components')[0].get('name'), 'python27')
 
+    def test_update_group_with_other_release(self):
+        url = reverse('componentgroup-detail', kwargs={'pk': 1})
+        data = {'group_type': 'type1', 'release': 'release-2.0', 'description': 'dd', 'components': [1]}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_partial_update_group(self):
         url = reverse('componentgroup-detail', kwargs={'pk': 1})
         data = {'components': [1]}
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('components')[0].get('name'), 'python27')
+
+    def test_partial_update_other_release(self):
+        url = reverse('componentgroup-detail', kwargs={'pk': 1})
+        data = {'release': 'release-2.0'}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_delete_group(self):
         url = reverse('componentgroup-detail', kwargs={'pk': 1})

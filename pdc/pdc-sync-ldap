@@ -8,15 +8,7 @@ Update all users in database with new information retrieved from LDAP server.
 import os
 import ldap
 import django
-
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pdc.settings')
-django.setup()
-
-
-from django.contrib.auth import get_user_model, models
-from django.conf import settings
-from pdc.apps.auth import backends
+from optparse import OptionParser
 
 
 def process_raw_ldap_data(groups):
@@ -36,6 +28,18 @@ def process_raw_ldap_data(groups):
 
 
 if __name__ == '__main__':
+    usage = """%prog -s <Django settings module>"""
+    parser = OptionParser(usage)
+    parser.add_option("-s", "--settings", help="Django settings module, default is pdc.settings",
+                      dest='settings_module', default='pdc.settings')
+    options, args = parser.parse_args()
+
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', options.settings_module)
+    django.setup()
+    from django.contrib.auth import get_user_model, models
+    from django.conf import settings
+    from pdc.apps.auth import backends
+
     try:
         conn = ldap.initialize(settings.LDAP_URI)
 
