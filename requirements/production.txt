@@ -12,3 +12,6 @@ django-filter==0.9.2
 django-mptt>=0.7.1
 beanbag>=1.9.2
 django-cors-headers
+
+# libuuid-devel, swig
+python-qpid-proton

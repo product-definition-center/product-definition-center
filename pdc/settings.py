@@ -102,6 +102,7 @@ MIDDLEWARE_CLASSES = (
     'kobo.django.menu.middleware.MenuMiddleware',
     'pdc.apps.usage.middleware.UsageMiddleware',
     'pdc.apps.changeset.middleware.ChangesetMiddleware',
+    'pdc.apps.utils.middleware.MessagingMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (

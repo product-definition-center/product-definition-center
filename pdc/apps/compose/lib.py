@@ -6,6 +6,7 @@
 #
 
 import os
+import json
 
 import kobo
 
@@ -61,6 +62,18 @@ def _link_compose_to_integrated_product(compose, variant):
         compose.linked_releases.add(integrated_from_release)
 
 
+def _add_compose_create_msg(request, compose_obj):
+    """
+    Add compose create message to request.messagings.
+    """
+    msg = {'action': 'create',
+           'compose_id': compose_obj.compose_id,
+           'compose_date': compose_obj.compose_date.isoformat(),
+           'compose_type': compose_obj.compose_type.name,
+           'compose_respin': compose_obj.compose_respin}
+    request.messagings.append(('.compose', json.dumps(msg)))
+
+
 @transaction.atomic
 def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
     release_obj = release_models.Release.objects.get(release_id=release_id)
@@ -71,7 +84,7 @@ def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
     compose_date = "%s-%s-%s" % (ci.compose.date[:4], ci.compose.date[4:6], ci.compose.date[6:])
     compose_type = models.ComposeType.objects.get(name=ci.compose.type)
     acceptance_status = models.ComposeAcceptanceTestingState.objects.get(name='untested')
-    compose_obj, _ = models.Compose.objects.get_or_create(
+    compose_obj, created = models.Compose.objects.get_or_create(
         release=release_obj,
         compose_id=ci.compose.id,
         compose_date=compose_date,
@@ -80,6 +93,10 @@ def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
         compose_label=ci.compose.label or None,
         acceptance_testing=acceptance_status,
     )
+
+    if created and hasattr(request, 'messagings'):
+        # add message
+        _add_compose_create_msg(request, compose_obj)
 
     rpms_in_db = {}
     qs = package_models.RPM.objects.all()
@@ -132,7 +149,7 @@ def compose__import_images(request, release_id, composeinfo, image_manifest):
 
     compose_date = "%s-%s-%s" % (ci.compose.date[:4], ci.compose.date[4:6], ci.compose.date[6:])
     compose_type = models.ComposeType.objects.get(name=ci.compose.type)
-    compose_obj, _ = models.Compose.objects.get_or_create(
+    compose_obj, created = models.Compose.objects.get_or_create(
         release=release_obj,
         compose_id=ci.compose.id,
         compose_date=compose_date,
@@ -140,6 +157,10 @@ def compose__import_images(request, release_id, composeinfo, image_manifest):
         compose_respin=ci.compose.respin,
         compose_label=ci.compose.label or None,
     )
+
+    if created and hasattr(request, 'messagings'):
+        # add message
+        _add_compose_create_msg(request, compose_obj)
 
     for variant in ci.get_variants(recursive=True):
         _link_compose_to_integrated_product(compose_obj, variant)

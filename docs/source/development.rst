@@ -12,7 +12,6 @@ Source Code
 
     $ git clone https://github.com/release-engineering/product-definition-center.git
 
-
 Installation
 ------------
 
@@ -38,10 +37,11 @@ For development purposes, install following deps:
 * beanbag >= 1.9.2
 * django-cors-headers
 * productmd
+  REPOs: https://github.com/release-engineering/productmd.git
 * patternfly1
-
   REPOs: https://copr.fedoraproject.org/coprs/patternfly/patternfly1/
 * django-filter >= 0.9.2
+* python-qpid-proton
 
 
 Option 2: Start it on virtualenv
