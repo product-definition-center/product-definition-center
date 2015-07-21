@@ -26,7 +26,7 @@ class RepositorySerializerTestCase(APITestCase):
         self.fixture_data = {'content_format': 'rpm', 'content_category': 'binary',
                              'release_id': 'release-1.0', 'name': 'test_repo', 'service': 'rhn',
                              'arch': 'x86_64', 'shadow': False, 'variant_uid': 'Server',
-                             'repo_family': 'dist', 'product_id': 22}
+                             'repo_family': 'dist', 'product_id': 22, 'id': 1}
         self.data = {'content_format': 'rpm', 'content_category': 'binary',
                      'release_id': 'release-1.0', 'name': 'test_repo_2', 'service': 'rhn',
                      'arch': 'x86_64', 'shadow': False, 'variant_uid': 'Server',
@@ -123,10 +123,87 @@ class RepositoryRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                      "name": "repo-x86_64-server-7", "service": "rhn", "content_format": "rpm",
                      "content_category": "binary", "repo_family": "dist", "product_id": 11}
         self.existing = {
+            'id': 1,
             'release_id': 'release-1.0', 'variant_uid': 'Server', 'arch': 'x86_64',
             'service': 'rhn', 'repo_family': 'dist', 'content_format': 'rpm',
             'content_category': 'binary', 'name': 'test_repo', 'shadow': False, 'product_id': 22
         }
+
+    def test_retrieve(self):
+        response = self.client.get(reverse('repo-detail', args=[1]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(dict(response.data), self.existing)
+
+    def test_update(self):
+        variant = release_models.Variant.objects.create(
+            release=release_models.Release.objects.get(release_id='release-1.0'),
+            variant_type=release_models.VariantType.objects.get(name='variant'),
+            variant_uid='Client', variant_name='Client', variant_id='Client'
+        )
+        release_models.VariantArch.objects.create(
+            variant=variant,
+            arch_id=47  # x86_64
+        )
+        data = {
+            'release_id': 'release-1.0', 'variant_uid': 'Client', 'arch': 'x86_64',
+            'service': 'rhn', 'repo_family': 'dist', 'content_format': 'rpm',
+            'content_category': 'debug', 'name': 'test_repo-debug', 'shadow': False, 'product_id': 33
+        }
+        response = self.client.put(reverse('repo-detail', args=[1]),
+                                   data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNumChanges([1])
+
+    def test_update_without_product_id(self):
+        """The repo has product_id, update tries to change name with product_id unspecified in request."""
+        pid = self.existing.pop('product_id')
+        self.existing['name'] = 'new_name'
+        response = self.client.put(reverse('repo-detail', args=[1]), self.existing, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.existing['product_id'] = pid
+        self.assertDictEqual(dict(response.data), self.existing)
+        self.assertNumChanges([1])
+
+    def test_update_partial(self):
+        response = self.client.patch(reverse('repo-detail', args=[1]),
+                                     {'shadow': True},
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.existing['shadow'] = True
+        self.assertDictEqual(dict(response.data), self.existing)
+        self.assertNumChanges([1])
+
+    def test_update_partial_correct_variant(self):
+        variant = release_models.Variant.objects.create(
+            release=release_models.Release.objects.get(release_id='release-1.0'),
+            variant_type=release_models.VariantType.objects.get(name='variant'),
+            variant_uid='Client', variant_name='Client', variant_id='Client'
+        )
+        release_models.VariantArch.objects.create(
+            variant=variant,
+            arch_id=47  # x86_64
+        )
+        response = self.client.patch(reverse('repo-detail', args=[1]),
+                                     {'variant_uid': 'Client'},
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.existing['variant_uid'] = 'Client'
+        self.assertDictEqual(dict(response.data), self.existing)
+        self.assertNumChanges([1])
+
+    def test_update_partial_bad_name(self):
+        response = self.client.patch(reverse('repo-detail', args=[1]),
+                                     {'name': 'repo-debug-isos'},
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNumChanges([])
+
+    def test_update_partial_bad_variant(self):
+        response = self.client.patch(reverse('repo-detail', args=[1]),
+                                     {'variant_uid': 'foo', 'arch': 'bar'},
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNumChanges([])
 
     def test_create_duplicit(self):
         response = self.client.post(reverse('repo-list'), self.existing)
@@ -153,6 +230,8 @@ class RepositoryRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         real_results = {}
 
         for key, value in self.existing.iteritems():
+            if key == 'id':
+                continue
             response = self.client.get(reverse('repo-list'), {key: value})
             self.assertEqual(response.status_code, status.HTTP_200_OK,
                              msg='Query on %s failed' % key)
@@ -171,53 +250,15 @@ class RepositoryRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data['results'], [])
 
     def test_delete(self):
-        response = self.client.delete(reverse('repo-list'), self.existing, format='json')
+        response = self.client.delete(reverse('repo-detail', args=[self.existing['id']]))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertNumChanges([1])
         self.assertEqual(0, models.Repo.objects.count())
 
-    def test_delete_incomplete_data(self):
-        del self.existing['name']
-        response = self.client.delete(reverse('repo-list'), self.existing, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('name', response.data.get('detail'))
-        self.assertNumChanges([])
-        self.assertEqual(1, models.Repo.objects.count())
-
-    def test_delete_additional_data(self):
-        self.existing['hello'] = 'world'
-        response = self.client.delete(reverse('repo-list'), self.existing, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('hello', response.data.get('detail'))
-        self.assertNumChanges([])
-        self.assertEqual(1, models.Repo.objects.count())
-
     def test_delete_no_match(self):
-        self.data['shadow'] = False
-        response = self.client.delete(reverse('repo-list'), self.data, format='json')
+        response = self.client.delete(reverse('repo-detail', args=[999]))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertNumChanges([])
-
-    def test_delete_no_match_with_shadow(self):
-        self.existing['shadow'] = True
-        response = self.client.delete(reverse('repo-list'), self.existing, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertNumChanges([])
-        self.assertEqual(1, models.Repo.objects.count())
-
-    def test_delete_without_product_id(self):
-        del self.existing['product_id']
-        response = self.client.delete(reverse('repo-list'), self.existing, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertNumChanges([])
-        self.assertEqual(1, models.Repo.objects.count())
-
-    def test_delete_with_bad_product_id(self):
-        self.existing['product_id'] = 33
-        response = self.client.delete(reverse('repo-list'), self.existing, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertNumChanges([])
-        self.assertEqual(1, models.Repo.objects.count())
 
 
 class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
@@ -229,7 +270,8 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
     ]
 
     def setUp(self):
-        self.repo1 = {"shadow": False,
+        self.repo1 = {"id": 1,
+                      "shadow": False,
                       "release_id": "release-1.1",
                       "variant_uid": "Server",
                       "arch": "x86_64",
@@ -239,7 +281,8 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
                       "content_category": "binary",
                       "name": "test_repo_1",
                       "product_id": 11}
-        self.repo2 = {"shadow": True,
+        self.repo2 = {"id": 2,
+                      "shadow": True,
                       "release_id": "release-1.1",
                       "variant_uid": "Client",
                       "arch": "x86_64",
@@ -466,7 +509,7 @@ class RepoBulkTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([])
         self.assertEqual(models.Repo.objects.all().count(), 0)
 
-    def test_delete(self):
+    def test_delete_by_ids(self):
         args = [{'release_id': 'release-1.0',
                  'variant_uid': 'Server',
                  'arch': 'x86_64',
@@ -487,8 +530,11 @@ class RepoBulkTestCase(TestCaseWithChangeSetMixin, APITestCase):
                  'name': 'repo-1.0-beta-rpms',
                  'product_id': None,
                  'shadow': False}]
-        self.client.post(reverse('repo-list'), args, format='json')
-        response = self.client.delete(reverse('repo-list'), args, format='json')
+        response = self.client.post(reverse('repo-list'), args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.client.delete(reverse('repo-list'),
+                                      [r['id'] for r in response.data],
+                                      format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(models.Repo.objects.count(), 0)
         self.assertNumChanges([2, 2])

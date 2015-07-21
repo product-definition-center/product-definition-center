@@ -29,15 +29,20 @@ class RepoSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = models.Repo
-        fields = ('release_id', 'variant_uid', 'arch', 'service', 'repo_family',
+        fields = ('id', 'release_id', 'variant_uid', 'arch', 'service', 'repo_family',
                   'content_format', 'content_category', 'name', 'shadow', 'product_id')
 
     def validate(self, attrs):
         try:
             variant_arch = attrs.get('variant_arch', {})
             release_id  = variant_arch.get('variant', {}).get('release', {}).get('release_id', '')
-            variant_uid = variant_arch.get('variant', {}).get('variant_uid')
+            variant_uid = variant_arch.get('variant', {}).get('variant_uid', '')
             arch        = variant_arch.get('arch', {}).get('name', '')
+            if self.instance and self.partial:
+                variantarch = self.instance.variant_arch
+                release_id = release_id or variantarch.variant.release.release_id
+                variant_uid = variant_uid or variantarch.variant.variant_uid
+                arch = arch or variantarch.arch.name
             attrs['variant_arch'] = release_models.VariantArch.objects.get(
                 variant__release__release_id=release_id,
                 variant__variant_uid=variant_uid,
@@ -48,18 +53,19 @@ class RepoSerializer(StrictSerializerMixin, serializers.ModelSerializer):
                 'No VariantArch for release_id=%s, variant_uid=%s, arch=%s'
                 % (release_id, variant_uid, arch)
             )
-        # Validate repo name.
-        instance = models.Repo(**attrs)
-        instance.clean()
-        # Validate repo is unique.
-        try:
-            models.Repo.objects.get(**attrs)
-            raise serializers.ValidationError(
-                'Repo with this Variant arch, Service, Repo family, Content format, '
-                'Content category, Name and Shadow already exists.'
-            )
-        except models.Repo.DoesNotExist:
-            pass
+        if not self.instance:
+            # Validate repo name.
+            instance = models.Repo(**attrs)
+            instance.clean()
+            # Validate repo is unique.
+            try:
+                models.Repo.objects.get(**attrs)
+                raise serializers.ValidationError(
+                    'Repo with this Variant arch, Service, Repo family, Content format, '
+                    'Content category, Name and Shadow already exists.'
+                )
+            except models.Repo.DoesNotExist:
+                pass
         return super(RepoSerializer, self).validate(attrs)
 
 

@@ -129,7 +129,7 @@ class Repo(models.Model):
     def export(self):
         return {
             "release_id": self.variant_arch.variant.release.release_id,
-            "variant": self.variant_arch.variant.variant_uid,
+            "variant_uid": self.variant_arch.variant.variant_uid,
             "arch": self.variant_arch.arch.name,
             "service": self.service.name,
             "repo_family": self.repo_family.name,

@@ -1036,7 +1036,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
 
         """
         data = self.request.data
-        keys = set(data.keys())
+        keys = set(as_dict(data, 'input').keys())
         keys_for_specific_override = set(['release', 'variant', 'arch', 'rpm_name', 'rpm_arch'])
         keys_for_overrides_in_release = set(['release', 'force'])
         if keys != keys_for_specific_override and keys - {'force'} != keys_for_overrides_in_release - {'force'}:

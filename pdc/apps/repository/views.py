@@ -11,15 +11,19 @@ from rest_framework.response import Response
 from . import models
 from . import serializers
 from . import filters
-from pdc.apps.common.viewsets import ChangeSetCreateModelMixin, StrictQueryParamMixin
+from pdc.apps.common.viewsets import (ChangeSetCreateModelMixin, StrictQueryParamMixin,
+                                      ChangeSetUpdateModelMixin, ChangeSetDestroyModelMixin)
 from pdc.apps.release.models import Release
 from pdc.apps.common import hacks
 from pdc.apps.common.serializers import StrictSerializerMixin
 
 
 class RepoViewSet(ChangeSetCreateModelMixin,
+                  ChangeSetUpdateModelMixin,
+                  ChangeSetDestroyModelMixin,
                   StrictQueryParamMixin,
                   mixins.ListModelMixin,
+                  mixins.RetrieveModelMixin,
                   viewsets.GenericViewSet):
     """
     An API endpoint providing access to repositories.
@@ -89,6 +93,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
         __Response__:
 
             {
+                id:               int,
                 release_id:       string,
                 variant_uid:      string,
                 arch:             string,
@@ -103,76 +108,52 @@ class RepoViewSet(ChangeSetCreateModelMixin,
         """
         return super(RepoViewSet, self).list(*args, **kwargs)
 
-    def bulk_destroy(self, request):
+    def update(self, *args, **kwargs):
         """
-        This API call allows deleting repositories. It is an almost exact
-        mirror of `create` call. The same data must be fed into it.
+        __Method__: `PUT`, `PATCH`
 
-        __Method__: `DELETE`
-
-        __URL__: `/repos/`
+        __URL__: `/repos/{id}`
 
         __Data__:
 
             {
-                "release_id":       string,
-                "variant_uid":      string,
-                "arch":             string,
-                "service":          string,
-                "repo_family":      string,
-                "content_format":   string,
-                "content_category": string,
-                "name":             string,
-                "shadow":           bool,
-                "product_id":       <int|null>
+                release_id:       string,
+                variant_uid:      string,
+                arch:             string,
+                service:          string,
+                repo_family:      string,
+                content_format:   string,
+                content_category: string,
+                name:             string,
+                shadow:           bool,     # optional, default False
+                product_id:       int       # optional
             }
 
-        It is possible to send a list of these objects so that multiple
-        repositories can be deleted at the same time atomically.
+        __Response__:
 
-        __Response__: Nothing
+            {
+                id:               int,
+                release_id:       string,
+                variant_uid:      string,
+                arch:             string,
+                service:          string,
+                repo_family:      string,
+                content_format:   string,
+                content_category: string,
+                name:             string,
+                shadow:           bool,
+                product_id:       int
+            }
         """
-        data = request.data
-        in_bulk = True
-        if not isinstance(data, list):
-            data = [data]
-            in_bulk = False
+        return super(RepoViewSet, self).update(*args, **kwargs)
 
-        for idx, input in enumerate(data):
-            input_id = (' in input %d' % idx) if in_bulk else ''
-            allowed_keys = set(['release_id', 'variant_uid', 'arch', 'service',
-                                'repo_family', 'content_format', 'content_category',
-                                'name', 'shadow', 'product_id'])
-            missing_keys = allowed_keys - set(input.keys())
-            additional_keys = set(input.keys()) - allowed_keys
-            if missing_keys:
-                resp = Response(status=status.HTTP_400_BAD_REQUEST,
-                                data={'detail': 'Missing arguments: %s%s'
-                                      % (', '.join(missing_keys), input_id)})
-                resp.exception = True
-                return resp
-            if additional_keys:
-                resp = Response(status=status.HTTP_400_BAD_REQUEST,
-                                data={'detail': 'Unknown data fields: %s%s'
-                                      % (', '.join(additional_keys), input_id)})
-                resp.exception = True
-                return resp
+    def destroy(self, *args, **kwargs):
+        """
+        __Method__: `DELETE`
 
-            kwargs = {'variant_arch__arch__name': input['arch'],
-                      'variant_arch__variant__variant_uid': input['variant_uid'],
-                      'variant_arch__variant__release__release_id': input['release_id'],
-                      'service__name': input['service'],
-                      'repo_family__name': input['repo_family'],
-                      'content_format__name': input['content_format'],
-                      'content_category__name': input['content_category'],
-                      'name': input['name'],
-                      'shadow': hacks.convert_str_to_bool(input['shadow'], name='shadow'),
-                      'product_id': (hacks.convert_str_to_int(input['product_id'], name='product_id')
-                                     if input['product_id'] is not None else None)}
-            obj = models.Repo.objects.get(**kwargs)
-            request.changeset.add('Repo', obj.pk, json.dumps(obj.export()), 'null')
-            obj.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        __URL__: /repos/{id}
+        """
+        return super(RepoViewSet, self).destroy(*args, **kwargs)
 
 
 class RepoCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
