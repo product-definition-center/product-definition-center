@@ -310,6 +310,7 @@ class BuildImageRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
         'pdc/apps/package/fixtures/test/rpm.json',
         'pdc/apps/package/fixtures/test/archive.json',
+        'pdc/apps/package/fixtures/test/release.json',
         'pdc/apps/package/fixtures/test/build_image.json',
     ]
 
@@ -400,6 +401,24 @@ class BuildImageRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertNumChanges([2])
+
+    def test_create_with_exist_release_id(self):
+        url = reverse('buildimage-list')
+        data = {'image_id': 'new_build',
+                'image_format': 'docker',
+                'md5': "0123456789abcdef0123456789abcdef",
+                'releases': ["release-1.0", "release-2.0"]}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_with_non_exist_release_id(self):
+        url = reverse('buildimage-list')
+        data = {'image_id': 'new_build',
+                'image_format': 'docker',
+                'md5': "0123456789abcdef0123456789abcdef",
+                'releases': ["release-1.0-fake-name"]}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_with_exist_archives(self):
         url = reverse('buildimage-list')
@@ -568,13 +587,13 @@ class BuildImageRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_query_with_rpm_version(self):
         url = reverse('buildimage-list')
-        response = self.client.get(url + '?version=1.2.3', format='json')
+        response = self.client.get(url + '?rpm_version=1.2.3', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 1)
 
     def test_query_with_rpm_release(self):
         url = reverse('buildimage-list')
-        response = self.client.get(url + '?release=4.b1', format='json')
+        response = self.client.get(url + '?rpm_release=4.b1', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 1)
 
@@ -621,6 +640,25 @@ class BuildImageRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(url + '?archive_md5=22222222222222222222222222222222', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 2)
+
+    def test_query_with_release_id(self):
+        url = reverse('buildimage-list')
+        response = self.client.get(url + '?release_id=release-1.0', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+
+        response = self.client.get(url + '?release_id=release-2.0', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_update_image_with_release_id(self):
+        url = reverse('buildimage-detail', args=[1])
+        data = {"releases": ["release-1.0", "release-2.0"]}
+        response = self.client.patch(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('releases'), ["release-1.0", "release-2.0"])
+        self.assertNumChanges([1])
 
     def test_patch_update(self):
         url = reverse('buildimage-detail', args=[1])

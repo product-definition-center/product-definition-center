@@ -60,8 +60,8 @@ class BuildImageFilter(django_filters.FilterSet):
                                                           widget=SelectMultiple)
     else:
         component_name      = MultiValueFilter(name='rpms__srpm_name', distinct=True)
-    version                 = MultiValueFilter(name='rpms__version', distinct=True)
-    release                 = MultiValueFilter(name='rpms__release', distinct=True)
+    rpm_version                 = MultiValueFilter(name='rpms__version', distinct=True)
+    rpm_release                 = MultiValueFilter(name='rpms__release', distinct=True)
 
     image_id                = MultiValueFilter()
     image_format            = MultiValueFilter(name='image_format__name')
@@ -71,6 +71,7 @@ class BuildImageFilter(django_filters.FilterSet):
     archive_name            = MultiValueFilter(name='archives__name', distinct=True)
     archive_size            = MultiValueFilter(name='archives__size', distinct=True)
     archive_md5             = MultiValueFilter(name='archives__md5', distinct=True)
+    release_id              = MultiValueFilter(name='releases__release_id', distinct=True)
 
     def filter_by_component_name(self, queryset, value):
         from pdc.apps.bindings import models as binding_models
@@ -86,5 +87,5 @@ class BuildImageFilter(django_filters.FilterSet):
 
     class Meta:
         model = models.BuildImage
-        fields = ('component_name', 'version', 'release', 'image_id', 'image_format', 'md5', 'archive_build_nvr',
-                  'archive_name', 'archive_size', 'archive_md5')
+        fields = ('component_name', 'rpm_version', 'rpm_release', 'image_id', 'image_format', 'md5',
+                  'archive_build_nvr', 'archive_name', 'archive_size', 'archive_md5', 'release_id')

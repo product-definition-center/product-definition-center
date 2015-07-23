@@ -9,6 +9,7 @@
             1,
             2
         ],
+        "releases": [1],
         "image_id": "my-server-docker-1.0-27",
         "md5": "0123456789abcdef0123456789abcdef"
     }
@@ -23,6 +24,7 @@
             3,
             4
         ],
+        "releases": [1, 2],
         "image_id": "my-client-docker",
         "md5": "abcdef0123456789abcdef0123456789"
     }

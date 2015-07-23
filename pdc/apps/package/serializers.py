@@ -5,6 +5,7 @@
 #
 import json
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
@@ -132,11 +133,26 @@ class ArchiveRelatedField(serializers.RelatedField):
             raise serializers.ValidationError("Unsupported Archive input.")
 
 
+class ReleaseRelatedField(serializers.RelatedField):
+    def to_representation(self, value):
+        return value.release_id
+
+    def to_internal_value(self, data):
+        try:
+            return self.queryset.get(release_id=data)
+        except ObjectDoesNotExist:
+            raise serializers.ValidationError("release with release_id %s doesn't exist." % data)
+        except Exception as err:
+            raise serializers.ValidationError("Can not find release with release_id (%s): %s." %
+                                              (data, err))
+
+
 class BuildImageSerializer(StrictSerializerMixin, serializers.HyperlinkedModelSerializer):
     image_format = serializers.SlugRelatedField(slug_field='name', queryset=models.ImageFormat.objects.all())
     rpms = RPMRelatedField(many=True, read_only=False, queryset=models.RPM.objects.all(), required=False)
     archives = ArchiveRelatedField(many=True, read_only=False, queryset=models.Archive.objects.all(), required=False)
+    releases = ReleaseRelatedField(many=True, read_only=False, queryset=models.Release.objects.all(), required=False)
 
     class Meta:
         model = models.BuildImage
-        fields = ('url', 'image_id', 'image_format', 'md5', 'rpms', 'archives')
+        fields = ('url', 'image_id', 'image_format', 'md5', 'rpms', 'archives', 'releases')

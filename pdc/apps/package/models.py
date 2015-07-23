@@ -15,6 +15,7 @@ from pdc.apps.common.models import get_cached_id
 from pdc.apps.common.validators import validate_md5, validate_sha1, validate_sha256
 from pdc.apps.common.hacks import add_returning
 from pdc.apps.common.constants import ARCH_SRC
+from pdc.apps.release.models import Release
 
 
 class RPM(models.Model):
@@ -181,13 +182,14 @@ class BuildImage(models.Model):
 
     rpms                = models.ManyToManyField(RPM)
     archives            = models.ManyToManyField(Archive)
+    releases            = models.ManyToManyField(Release)
 
     def __unicode__(self):
         return u"%s" % self.image_id
 
     def export(self, fields=None):
         _fields = ['image_id', 'image_format', 'md5',
-                   'rpms', 'archives'] if fields is None else fields
+                   'rpms', 'archives', 'releases'] if fields is None else fields
         result = dict()
         if 'image_id' in _fields:
             result['image_id'] = self.image_id
@@ -195,14 +197,12 @@ class BuildImage(models.Model):
             result['md5'] = self.md5
         if 'image_format' in _fields:
             result['image_format'] = self.image_format.name
-        if 'rpms' in _fields:
-            result['rpms'] = []
-            rpms = self.rpms.all()
-            for rpm in rpms:
-                result['rpms'].append(rpm.export())
-        if 'archives' in _fields:
-            result['archives'] = []
-            archives = self.archives.all()
-            for archive in archives:
-                result['archives'].append(archive.export())
+
+        for field in ('rpms', 'archives', 'releases'):
+            if field in _fields:
+                result[field] = []
+                objects = getattr(self, field).all()
+                for obj in objects:
+                    result[field].append(obj.export())
+
         return result

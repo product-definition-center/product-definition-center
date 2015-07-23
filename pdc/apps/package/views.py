@@ -172,6 +172,10 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                         "md5":           string,         # required
                     }
                     ...
+                ],                                       # optional
+                'releases': [
+                        release_id,      string          # optional
+                        ......
                 ]                                        # optional
             }
 
@@ -197,6 +201,10 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                         "md5":           string,
                     }
                     ...
+                ],
+                'releases': [
+                        "release_id",   string
+                        ......
                 ]
             }
         """
@@ -211,8 +219,9 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
         __Query params__:
 
          * component_name: srpm_name or release_component_name if release_component srpm mapping exists
-         * version       : rpm nvr's version
-         * release       : rpm nvr's release
+         * rpm_version       : rpm nvr's version
+         * rpm_release       : rpm nvr's release
+         * release_id        : product release id
          * image_id
          * image_format
          * md5
@@ -246,6 +255,10 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                             "md5":           string,
                         }
                         ...
+                    ],
+                    'releases': [
+                        "release_id",   string
+                        ......
                     ]
                 },
                 ...
@@ -281,6 +294,10 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                         "md5":           string,
                     }
                     ...
+                ],
+                'releases': [
+                        "release_id",   string
+                        ......
                 ]
             }
         """
@@ -316,6 +333,10 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                         "md5":           string,
                     }
                     ...
+                ],
+                'releases': [
+                        "release_id",   string
+                        ......
                 ]
             }
 
@@ -350,6 +371,10 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                         "md5":           string,
                     }
                     ...
+                ],
+                'releases': [
+                        "release_id",   string
+                        ......
                 ]
             }
         """
