@@ -1224,7 +1224,7 @@ class FindComposeWithOlderPackageViewSet(StrictQueryParamMixin,
         if self.product_version:
             return Response(self._get_compose_for_product_version())
         return Response(status=status.HTTP_400_BAD_REQUEST,
-                        data={'detail': 'Either of release or compose argument are required.'})
+                        data={'detail': 'One of product_version, release or compose argument is required.'})
 
     def _packages_output(self, rpms):
         """

@@ -2018,6 +2018,7 @@ class BugzillaComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url4 = reverse('releasecomponent-detail', kwargs={'pk': 1})
         response4 = self.client.get(url4, format='json')
         self.assertIsNone(response4.data['bugzilla_component'])
+        self.assertNumChanges([1, 1, 2])
 
 
 class GroupTypeRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):

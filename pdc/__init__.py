@@ -6,7 +6,7 @@
 import os
 import subprocess
 
-VERSION = "0.4.0-0.2.beta"
+VERSION = "0.5.0-0.1.beta"
 
 # NOTE(xchu): use `git describe` when under git repository.
 if os.system('git rev-parse 2> /dev/null > /dev/null') == 0:

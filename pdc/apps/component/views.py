@@ -1629,7 +1629,23 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
                                        'null')
             del delete_obj_pk
             del delete_obj_desc
+
+        rc_queryset = ReleaseComponent.objects.filter(bugzilla_component=instance)
+
+        old_value_dict = {}
+        for rc in rc_queryset:
+            old_value_dict[rc.pk] = rc.export()
+
         super(BugzillaComponentViewSet, self).perform_destroy(instance)
+
+        for old_rc_pk in old_value_dict.keys():
+            m_rc = ReleaseComponent.objects.get(pk=old_rc_pk)
+            new_value = m_rc.export()
+            model_name = ContentType.objects.get_for_model(m_rc).model
+            self.request.changeset.add(model_name,
+                                       old_rc_pk,
+                                       json.dumps(old_value_dict[old_rc_pk]),
+                                       json.dumps(new_value))
 
 
 class GroupTypeViewSet(viewsets.PDCModelViewSet):
