@@ -326,7 +326,7 @@ class ReleaseComponentSerializer(DynamicFieldsSerializerMixin,
     contacts = HackedContactField(required=False, read_only=False, view_name='releasecomponentcontact-detail')
     dist_git_branch = serializers.CharField(source='inherited_dist_git_branch', required=False)
     dist_git_web_url = serializers.URLField(required=False, max_length=200, read_only=True)
-    bugzilla_component = TreeForeignKeyField(read_only=False, required=False)
+    bugzilla_component = TreeForeignKeyField(read_only=False, required=False, allow_null=True)
     brew_package = serializers.CharField(required=False)
     active = serializers.BooleanField(required=False, default=True)
     type = ChoiceSlugField(slug_field='name', queryset=ReleaseComponentType.objects.all(), required=False)

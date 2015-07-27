@@ -1094,6 +1094,20 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response2.data['bugzilla_component']['name'], 'python')
         self.assertNumChanges([1, 1])
 
+    def test_update_release_component_with_null_bugzilla_component(self):
+        models.BugzillaComponent.objects.create(name='python')
+        url = reverse('releasecomponent-list')
+        data = {'release': 'release-1.0', 'global_component': 'python', 'name': 'python26', 'brew_package': 'python', 'bugzilla_component': 'python'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        url1 = reverse('releasecomponent-detail', kwargs={'pk': 4})
+        data1 = {'bugzilla_component': None}
+        response1 = self.client.patch(url1, data1, format='json')
+        self.assertEqual(response1.status_code, status.HTTP_200_OK)
+        self.assertIsNone(response1.data['bugzilla_component'])
+        self.assertNumChanges([1, 1])
+
     def test_update_release_component_with_valid_type(self):
         url = reverse('releasecomponent-detail', kwargs={'pk': 2})
         response = self.client.get(url, format='json')
