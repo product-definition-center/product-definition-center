@@ -44,21 +44,20 @@ clean: FORCE
 FORCE:
 
 # Check code convention based on flake8
-CHECK_DIRS=pdc setup.py
-EXCLUDE_DIRS=pdc/settings*,static,templates,*migrations*
+CHECK_DIRS=.
 FLAKE8_CONFIG_DIR=tox.ini
 
 flake8:
-	flake8 $(CHECK_DIRS) --exclude $(EXCLUDE_DIRS) --config=$(FLAKE8_CONFIG_DIR)
+	flake8 $(CHECK_DIRS) --config=$(FLAKE8_CONFIG_DIR)
 
 run:
 	python manage.py runserver 0.0.0.0:8000
 
 test:
-	python manage.py test pdc contrib
+	python manage.py test --settings pdc.settings_test
 
 cover_test:
-	coverage run --parallel-mode --source=pdc,contrib manage.py test pdc contrib
+	coverage run --parallel-mode manage.py test --settings pdc.settings_test
 	coverage combine
 	coverage html --rcfile=tox.ini
 
