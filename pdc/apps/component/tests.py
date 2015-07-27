@@ -57,7 +57,7 @@ class GlobalComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         data = {'name': 'TestCaseComponent', 'dist_git_path': 'python'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        del response.data['url']
+        del response.data['id']
         del response.data['dist_git_web_url']
         data.update({'contacts': []})
         data.update({'labels': []})
@@ -76,7 +76,7 @@ class GlobalComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         data = {'name': 'TestCaseComponent', 'dist_git_path': 'python', 'labels': [{'name': 'label1', 'description': 'abc'}]}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        del response.data['url']
+        del response.data['id']
         del response.data['dist_git_web_url']
         data.update({'contacts': []})
         data.update({'labels': []})
@@ -90,7 +90,7 @@ class GlobalComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                              'scm_url': 'http://svn.python.org/moduleX'}}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        del response.data['url']
+        del response.data['id']
         del response.data['dist_git_web_url']
         data.update({'contacts': []})
         data.update({'labels': []})
@@ -102,7 +102,7 @@ class GlobalComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                              'scm_url': 'http://svn.python.org/moduleX22'}}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        del response.data['url']
+        del response.data['id']
         del response.data['dist_git_web_url']
         data.update({'contacts': []})
         data.update({'labels': []})
@@ -113,7 +113,7 @@ class GlobalComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         data = {'name': 'Updated', 'dist_git_path': 'python'}
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        del response.data['url']
+        del response.data['id']
         del response.data['dist_git_web_url']
         del response.data['contacts']
         del response.data['labels']
@@ -777,7 +777,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_filter_fields_not_affect_bugzilla_component(self):
         url = reverse('releasecomponent-list')
-        response = self.client.get(url + '?fields=bugzilla_component&fields=url', format='json')
+        response = self.client.get(url + '?fields=bugzilla_component', format='json')
         self.assertGreater(response.data['results'][0]['bugzilla_component'], 1)
 
     def test_filter_release_component_by_inactive(self):
@@ -830,7 +830,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         del response.data['dist_git_web_url']
         del response.data['srpm']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        data.update({'contacts': [], 'dist_git_branch': "release_branch", 'url': url,
+        data.update({'contacts': [], 'dist_git_branch': "release_branch", 'id': 3,
                      'bugzilla_component': None, 'active': True, 'type': None})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1])
@@ -843,7 +843,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         del response.data['dist_git_web_url']
         del response.data['srpm']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        data.update({'contacts': [], 'dist_git_branch': "release_branch", 'url': url,
+        data.update({'contacts': [], 'dist_git_branch': "release_branch", 'id': 3,
                      'bugzilla_component': None, 'active': True, 'type': 'rpm'})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1])
@@ -953,7 +953,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         del response.data['dist_git_branch']
         del response.data['contacts']
         del response.data['srpm']
-        del response.data['url']
+        del response.data['id']
         del response.data['bugzilla_component']
         del response.data['brew_package']
         del response.data['type']
@@ -1025,7 +1025,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(url, data, format='json')
         del response.data['dist_git_web_url']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        data.update({'contacts': [], 'dist_git_branch': "release_branch", 'url': url,
+        data.update({'contacts': [], 'dist_git_branch': "release_branch", 'id': 3,
                      'bugzilla_component': None, 'srpm': None, 'active': True, 'type': None})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1])
@@ -1035,7 +1035,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(url, data, format='json')
         del response.data['dist_git_web_url']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        data.update({'contacts': [], 'dist_git_branch': "release_branch", 'url': url,
+        data.update({'contacts': [], 'dist_git_branch': "release_branch", 'id': 3,
                      'bugzilla_component': None, 'srpm': None, 'active': True, 'type': None})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1, 1])
@@ -1046,7 +1046,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(url, data, format='json')
         del response.data['dist_git_web_url']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        data.update({'contacts': [], 'dist_git_branch': "release_branch", 'url': url,
+        data.update({'contacts': [], 'dist_git_branch': "release_branch", 'id': 3,
                      'bugzilla_component': None, 'srpm': None, 'active': False, 'type': None})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1])
