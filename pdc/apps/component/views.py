@@ -24,19 +24,22 @@ from .models import (GlobalComponent,
                      ReleaseComponent,
                      BugzillaComponent,
                      ReleaseComponentGroup,
-                     GroupType)
+                     GroupType,
+                     ReleaseComponentRelationship)
 from .serializers import (GlobalComponentSerializer,
                           ReleaseComponentSerializer,
                           HackedContactSerializer,
                           BugzillaComponentSerializer,
                           GroupSerializer,
-                          GroupTypeSerializer)
+                          GroupTypeSerializer,
+                          ReleaseComponentRelationshipSerializer)
 from .filters import (ComponentFilter,
                       ReleaseComponentFilter,
                       RoleContactFilter,
                       BugzillaComponentFilter,
                       GroupFilter,
-                      GroupTypeFilter)
+                      GroupTypeFilter,
+                      ReleaseComponentRelationshipFilter)
 from . import signals
 
 
@@ -1892,3 +1895,167 @@ class GroupViewSet(viewsets.PDCModelViewSet):
             }
         """
         return super(GroupViewSet, self).destroy(request, *args, **kwargs)
+
+
+class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
+    """
+    API endpoint that allows release component relationship to be viewed or edited.
+    """
+    serializer_class = ReleaseComponentRelationshipSerializer
+    queryset = ReleaseComponentRelationship.objects.all()
+    filter_class = ReleaseComponentRelationshipFilter
+
+    def create(self, request, *args, **kwargs):
+        """
+        __Method__: POST
+
+        __URL__: `/release-component-relationships/`
+
+        __Data__:
+
+            {
+                "from_component":       id,         # required
+                "type":                 string      # required
+                "to_component":         id,         # required
+            }
+
+        __Note__:
+
+          * from_component: release component id of 'from' side
+          * type: relationship type
+          * to_component: release component id of 'to' side
+
+        __Response__:
+
+            {
+                "from_component": {
+                    "id":       release component id,
+                    "name":     string,
+                    "release":  string
+                },
+                "id":   relationship id,
+                "to_component": {
+                    "id":       release component id,
+                    "name":     string,
+                    "release":  string
+                },
+                "type": string
+            }
+
+        """
+        return super(ReleaseComponentRelationshipViewSet, self).create(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: `/release-component-relationships/`
+
+        __Query params__:
+
+          * `type`                      relationship type
+          * `from_component_release`    release_id of 'from' release component's release
+          * `from_component_name`       name of 'from' release component's release
+          * `to_component_release`      release_id of 'to' release component's release
+          * `to_component_name`         name of 'to' release component's release
+
+        __Response__:
+
+            # paged list
+            {
+                "count": int,
+                "next": url,
+                "previous": url,
+                "results": [
+                    {
+                        "from_component": {
+                            "id":       release component id,
+                            "name":     string,
+                            "release":  string
+                        },
+                        "id":   relationship id,
+                        "to_component": {
+                            "id":       release component id,
+                            "name":     string,
+                            "release":  string
+                        },
+                        "type": string
+                    },
+                    ...
+                ]
+            }
+        """
+        return super(ReleaseComponentRelationshipViewSet, self).list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: `/release-component-relationships/{instance_pk}/`
+
+        __Response__:
+
+             {
+                "from_component": {
+                    "id":       release component id,
+                    "name":     string,
+                    "release":  string
+                },
+                "id":   relationship id,
+                "to_component": {
+                    "id":       release component id,
+                    "name":     string,
+                    "release":  string
+                },
+                "type":     string
+            }
+
+        """
+        return super(ReleaseComponentRelationshipViewSet, self).retrieve(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__: PUT, PATCH
+
+        __URL__: `/release-component-relationships/{instance_pk}/`
+
+        __Data__:
+
+            {
+                "from_component":       id,         # required
+                "type":                 string      # required
+                "to_component":         id,         # required
+            }
+
+        __Response__:
+
+            {
+                "from_component": {
+                    "id":       release component id,
+                    "name":     string,
+                    "release":  string
+                },
+                "id":   relationship id,
+                "to_component": {
+                    "id":       release component id,
+                    "name":     string,
+                    "release":  string
+                },
+                "type":     string
+            }
+        """
+        return super(ReleaseComponentRelationshipViewSet, self).update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        __Method__: DELETE
+
+        __URL__: `/release-component-relationships/{instance_pk}/`
+
+        __Response__:
+
+            {
+                "Response": "No content"
+            }
+        """
+        return super(ReleaseComponentRelationshipViewSet, self).destroy(request, *args, **kwargs)

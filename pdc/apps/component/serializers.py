@@ -27,7 +27,9 @@ from .models import (GlobalComponent,
                      BugzillaComponent,
                      ReleaseComponentGroup,
                      GroupType,
-                     ReleaseComponentType)
+                     ReleaseComponentType,
+                     ReleaseComponentRelationshipType,
+                     ReleaseComponentRelationship)
 from . import signals
 
 
@@ -485,3 +487,34 @@ class GroupSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = ReleaseComponentGroup
         fields = ('id', 'group_type', 'description', 'release', 'components')
+
+
+class RCForRelationshipRelatedField(ReleaseComponentRelatedField):
+    def to_representation(self, value):
+        result = dict()
+        if value:
+            result['id'] = value.id
+            result['name'] = value.name
+            result['release'] = value.release.release_id
+        return result
+
+
+class ReleaseComponentRelationshipSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+    type = serializers.SlugRelatedField(
+        queryset=ReleaseComponentRelationshipType.objects.all(),
+        slug_field='name',
+        required=True,
+        source='relation_type'
+    )
+    from_component = RCForRelationshipRelatedField(
+        required=True,
+        queryset=ReleaseComponent.objects.all()
+    )
+    to_component = RCForRelationshipRelatedField(
+        required=True,
+        queryset=ReleaseComponent.objects.all()
+    )
+
+    class Meta:
+        model = ReleaseComponentRelationship
+        fields = ('id', 'type', 'from_component', 'to_component')

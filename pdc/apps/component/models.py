@@ -294,6 +294,38 @@ class ReleaseComponentGroup(models.Model):
         return result
 
 
+class ReleaseComponentRelationshipType(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __unicode__(self):
+        return u"%s" % self.name
+
+
+class ReleaseComponentRelationship(models.Model):
+    relation_type = models.ForeignKey(ReleaseComponentRelationshipType)
+    from_component = models.ForeignKey(ReleaseComponent, related_name='from_release_components')
+    to_component = models.ForeignKey(ReleaseComponent, related_name='to_release_components')
+
+    def __unicode__(self):
+        return u'%s %s %s' % (unicode(self.from_component), self.relation_type, unicode(self.to_component))
+
+    class Meta:
+        unique_together = [
+            ('relation_type', 'from_component', 'to_component')
+        ]
+
+    def export(self, fields=None):
+        _fields = ['relation_type', 'from_component', 'to_component'] if fields is None else fields
+        result = dict()
+        if 'relation_type' in _fields:
+            result['relation_type'] = self.relation_type.name
+        if 'from_component' in _fields:
+            result['from_component'] = unicode(self.from_component)
+        if 'to_component' in _fields:
+            result['to_component'] = unicode(self.to_component)
+        return result
+
+
 @receiver(signals.release_clone)
 def clone_release_components_and_groups(sender, request, original_release, release, **kwargs):
     data = request.data
@@ -332,3 +364,14 @@ def clone_release_components_and_groups(sender, request, original_release, relea
             if new_rc:
                 group.components.add(new_rc)
         request.changeset.add('ReleaseComponentGroup', group.pk, 'null', json.dumps(group.export()))
+
+    for relationship in ReleaseComponentRelationship.objects.filter(from_component__release=original_release,
+                                                                    to_component__release=original_release):
+        if relationship.from_component.pk not in rc_map or relationship.to_component.pk not in rc_map:
+            continue
+        relationship.from_component = rc_map[relationship.from_component.pk]
+        relationship.to_component = rc_map[relationship.to_component.pk]
+        relationship.pk = None
+        relationship.save()
+        request.changeset.add('ReleaseComponentRelationship', relationship.pk, 'null',
+                              json.dumps(relationship.export()))

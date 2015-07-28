@@ -1673,7 +1673,8 @@ class ReleaseCloneWithComponentsTestCase(TestCaseWithChangeSetMixin, APITestCase
         "pdc/apps/component/fixtures/tests/release_component.json",
         "pdc/apps/contact/fixtures/tests/contact_role.json",
         'pdc/apps/component/fixtures/tests/group_type.json',
-        'pdc/apps/component/fixtures/tests/release_component_group.json'
+        'pdc/apps/component/fixtures/tests/release_component_group.json',
+        'pdc/apps/component/fixtures/tests/release_component_relationship.json'
     ]
 
     def test_clone_components(self):
@@ -1682,7 +1683,7 @@ class ReleaseCloneWithComponentsTestCase(TestCaseWithChangeSetMixin, APITestCase
                                     format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(models.ReleaseComponent.objects.filter(release__release_id='release-1.1').count(), 2)
-        self.assertNumChanges([4])
+        self.assertNumChanges([6])
 
     def test_clone_component_groups(self):
         response = self.client.post(reverse('releaseclone-list'),
@@ -1692,7 +1693,18 @@ class ReleaseCloneWithComponentsTestCase(TestCaseWithChangeSetMixin, APITestCase
         groups = models.ReleaseComponentGroup.objects.filter(release__release_id='release-1.1')
         self.assertEqual(groups.count(), 1)
         self.assertNotEqual(groups[0].id, 1)
-        self.assertNumChanges([4])
+        self.assertNumChanges([6])
+
+    def test_clone_release_component_relationship(self):
+        response = self.client.post(reverse('releaseclone-list'),
+                                    {'old_release_id': 'release-1.0', 'version': '1.1'},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        relations = models.ReleaseComponentRelationship.objects.filter(
+            from_component__release__release_id='release-1.1')
+        self.assertEqual(relations.count(), 2)
+        self.assertGreater(relations[0].id, 2)
+        self.assertNumChanges([6])
 
     def test_clone_component_with_contact(self):
         response = self.client.put(reverse('releasecomponent-list'),
@@ -1708,7 +1720,7 @@ class ReleaseCloneWithComponentsTestCase(TestCaseWithChangeSetMixin, APITestCase
                                     {'old_release_id': 'release-1.0', 'version': '1.1'},
                                     format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertNumChanges([3, 4])
+        self.assertNumChanges([3, 6])
         contacts = models.ReleaseComponent.objects.get(release__release_id='release-1.1',
                                                        name='python27').contacts.all()
         self.assertEqual(1, len(contacts))
@@ -1724,7 +1736,7 @@ class ReleaseCloneWithComponentsTestCase(TestCaseWithChangeSetMixin, APITestCase
                                     format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(models.ReleaseComponent.objects.filter(release__release_id='release-1.1').count(), 2)
-        self.assertNumChanges([4])
+        self.assertNumChanges([6])
         rcs = models.ReleaseComponent.objects.filter(release__release_id='release-1.1')
         self.assertEqual(['new_branch', 'new_branch'], [rc.dist_git_branch for rc in rcs])
 
@@ -1738,7 +1750,7 @@ class ReleaseCloneWithComponentsTestCase(TestCaseWithChangeSetMixin, APITestCase
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         rcs = models.ReleaseComponent.objects.filter(release__release_id='release-1.1')
         self.assertEqual(len(rcs), 2)
-        self.assertNumChanges([4])
+        self.assertNumChanges([6])
 
     def test_clone_components_include_inactive_explicitly(self):
         rc = models.ReleaseComponent.objects.get(name='python27')
@@ -1750,7 +1762,7 @@ class ReleaseCloneWithComponentsTestCase(TestCaseWithChangeSetMixin, APITestCase
                                     format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(models.ReleaseComponent.objects.filter(release__release_id='release-1.1').count(), 2)
-        self.assertNumChanges([4])
+        self.assertNumChanges([6])
 
     def test_clone_components_exclude_inactive_explicitly(self):
         rc = models.ReleaseComponent.objects.get(name='python27')
@@ -2188,3 +2200,127 @@ class GroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.delete(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertNumChanges([1])
+
+
+class ReleaseComponentRelationshipRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
+    fixtures = [
+        'pdc/apps/component/fixtures/tests/global_component.json',
+        'pdc/apps/component/fixtures/tests/upstream.json',
+        'pdc/apps/release/fixtures/tests/release.json',
+        'pdc/apps/release/fixtures/tests/new_release.json',
+        'pdc/apps/component/fixtures/tests/release_component_for_relationship.json',
+        'pdc/apps/component/fixtures/tests/release_component_relationship.json'
+    ]
+
+    def test_list_relationship(self):
+        url = reverse('rcrelationship-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+
+    def test_create_relationship(self):
+        url = reverse('rcrelationship-list')
+        data = {"from_component": "1", "to_component": "2", "type": "executes"}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNumChanges([1])
+
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 3)
+
+    def test_create_relationship_with_non_existed_release_component(self):
+        url = reverse('rcrelationship-list')
+        data = {"from_component": "1", "to_component": "20000", "type": "executes"}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNumChanges([])
+
+    def test_create_relationship_with_non_existed_type(self):
+        url = reverse('rcrelationship-list')
+        data = {"from_component": "1", "to_component": "2", "type": "fake-type"}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNumChanges([])
+
+    def test_query_relationship(self):
+        url = reverse('rcrelationship-list')
+        response = self.client.get(url + '?type=executes', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+        response = self.client.get(url + '?type=bundles', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+        response = self.client.get(url + '?from_component_release=release-1.0', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+
+        response = self.client.get(url + '?to_component_release=release-1.0', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+
+        response = self.client.get(url + '?from_component_name=python27', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+        response = self.client.get(url + '?to_component_name=MySQL-python', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+        response = self.client.get(url + '?type=executes&from_component_name=python27', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 0)
+
+        response = self.client.get(url + '?type=bundles&from_component_name=python27', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_update_relationship(self):
+        url = reverse('rcrelationship-detail', kwargs={'pk': 1})
+        # 2 name MySQL-python, 3 name java
+        data = {'type': 'executes', "from_component": 2, "to_component": 3}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('to_component').get('name'), 'java')
+
+    def test_update_relationship_with_non_exist_release_component(self):
+        url = reverse('rcrelationship-detail', kwargs={'pk': 1})
+        data = {'type': 'executes', "from_component": 2, "to_component": 20}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_partial_update_relationship_to_component(self):
+        url = reverse('rcrelationship-detail', kwargs={'pk': 1})
+        # 2 name MySQL-python, 3 name java
+        data = {"to_component": 3}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('to_component').get('name'), 'java')
+
+    def test_partial_update_relationship_from_component(self):
+        url = reverse('rcrelationship-detail', kwargs={'pk': 1})
+        # 2 name MySQL-python, 3 name java
+        data = {"from_component": 3}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('from_component').get('name'), 'java')
+
+    def test_partial_update_relationship_type(self):
+        url = reverse('rcrelationship-detail', kwargs={'pk': 1})
+        data = {"type": 'bundles'}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('type'), 'bundles')
+
+    def test_delete_group(self):
+        url = reverse('rcrelationship-detail', kwargs={'pk': 1})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.client.delete(url, format='json')
+        self.assertNumChanges([1])
+
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
