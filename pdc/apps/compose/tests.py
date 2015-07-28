@@ -517,7 +517,7 @@ class OverridesRPMAPITestCase(APITestCase):
 
     def setUp(self):
         self.release = release_models.Release.objects.get(release_id='release-1.0')
-        self.override_rpm = {'release': 'release-1.0', 'variant': 'Server', 'arch': 'x86_64',
+        self.override_rpm = {'id': 1, 'release': 'release-1.0', 'variant': 'Server', 'arch': 'x86_64',
                              'srpm_name': 'bash', 'rpm_name': 'bash-doc', 'rpm_arch': 'x86_64',
                              'include': False, 'comment': '', 'do_not_delete': False}
         self.do_not_delete_orpm = {'release': 'release-1.0', 'variant': 'Server', 'arch': 'x86_64',
@@ -603,9 +603,11 @@ class OverridesRPMAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_clear_force(self):
-        models.OverrideRPM.objects.create(release=self.release, variant="Server", arch="x86_64",
-                                          rpm_name="bash-doc", rpm_arch="src", include=True,
-                                          do_not_delete=True, srpm_name="bash")
+        override = models.OverrideRPM.objects.create(release=self.release, variant="Server",
+                                                     arch="x86_64", rpm_name="bash-doc",
+                                                     rpm_arch="src", include=True,
+                                                     do_not_delete=True, srpm_name="bash")
+        self.do_not_delete_orpm['id'] = override.pk
 
         response = self.client.delete(reverse('overridesrpm-list'), {'release': 'release-1.0', 'force': True})
         self.assertEqual(models.OverrideRPM.objects.count(), 0)

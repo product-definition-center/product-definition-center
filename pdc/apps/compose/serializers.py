@@ -88,5 +88,5 @@ class OverrideRPMSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = OverrideRPM
-        fields = ('release', 'variant', 'arch', 'srpm_name', 'rpm_name',
+        fields = ('id', 'release', 'variant', 'arch', 'srpm_name', 'rpm_name',
                   'rpm_arch', 'include', 'comment', 'do_not_delete')

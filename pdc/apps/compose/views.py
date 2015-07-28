@@ -871,7 +871,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
             }
 
         __Response__:
-        Same as input data, optional fields are always present.
+        Same as input data, optional fields are always present and `id` is added.
 
         __Example__:
 
@@ -880,15 +880,16 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
                              "rpm_name": "bash-doc", "rpm_arch": "src", "include": true, \\
                              "release": "release-1.0"}'
             {
-                 "release": "release-1.0",
-                 "variant": "Client",
-                 "arch": "x86_64",
-                 "srpm_name": "bash",
-                 "rpm_name": "bash-doc",
-                 "rpm_arch": "src",
-                 "include": true,
-                 "comment": "",
-                 "do_not_delete": false
+                "id": 1,
+                "release": "release-1.0",
+                "variant": "Client",
+                "arch": "x86_64",
+                "srpm_name": "bash",
+                "rpm_name": "bash-doc",
+                "rpm_arch": "src",
+                "include": true,
+                "comment": "",
+                "do_not_delete": false
             }
         """
         return super(ReleaseOverridesRPMViewSet, self).create(*args, **kwargs)
@@ -918,6 +919,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
                 "previous": url,
                 "results": [
                     {
+                        "id":               int,
                         "release":          string,
                         "variant":          string,
                         "arch":             string,
@@ -940,6 +942,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
                 "next": null,
                 "count": 1,
                 "results": [{
+                    "id": 1,
                     "do_not_delete": false,
                     "release": "release-1.0",
                     "variant": "Client",
