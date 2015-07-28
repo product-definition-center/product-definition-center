@@ -7,6 +7,7 @@ import json
 
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 from . import models
 from . import serializers
@@ -229,6 +230,9 @@ class RepoCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
         extra_keys = set(data.keys()) - set(allowed_keys)
         StrictSerializerMixin.maybe_raise_error(extra_keys)
 
+        get_object_or_404(Release, release_id=data['release_id_from'])
+        target_release = get_object_or_404(Release, release_id=data['release_id_to'])
+
         kwargs = {
             'variant_arch__variant__release__release_id': data['release_id_from']
         }
@@ -239,20 +243,15 @@ class RepoCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
                 kwargs[filter] = transform(arg_data, name=arg)
 
         repos = models.Repo.objects.filter(**kwargs)
-        if not repos:
-            return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data={'detail': 'No repos to clone (or source release does not exist).'})
-
-        try:
-            target_release = Release.objects.get(release_id=data['release_id_to'])
-        except Release.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND,
-                            data={'detail': 'Target release %s does not exist.' % data['release_id_to']})
 
         # Skip repos from nonexisting trees.
-        repos = [repo for repo in repos if repo.tree in target_release.trees]
+        repos_in_target_release = [repo for repo in repos if repo.tree in target_release.trees]
 
-        serializer = serializers.RepoSerializer(repos, many=True)
+        if not repos or not repos_in_target_release:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={'detail': 'No repos to clone.'})
+
+        serializer = serializers.RepoSerializer(repos_in_target_release, many=True)
         copy = serializer.data
         for repo in copy:
             repo['release_id'] = target_release.release_id
