@@ -71,7 +71,7 @@ def create_content_format(apps, schema_editor):
                    'name': 'comps'
                },
                {
-                   'description': 'Docker images',
+                   'description': 'Docker image content format',
                    'name': 'docker'
                }
            ])
