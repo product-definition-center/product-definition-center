@@ -541,14 +541,11 @@ class OverridesRPMAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(models.OverrideRPM.objects.count(), 0)
         self.assertNumChanges([1])
 
-    def test_delete_wrong_data(self):
-        response = self.client.delete(reverse('overridesrpm-list'),
-                                      {'release': 'release-1.0',
-                                       'variant': 'Server', 'arch': 'x86_64'})
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    def test_delete_non_existing(self):
+        response = self.client.delete(reverse('overridesrpm-list', args=[42]))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(models.OverrideRPM.objects.count(), 1)
-        self.assertIn('rpm_name', response.data[0])
-        self.assertIn('rpm_arch', response.data[0])
+        self.assertNumChanges([])
 
     def test_create_duplicit(self):
         response = self.client.post(reverse('overridesrpm-list'), self.override_rpm)
@@ -609,6 +606,18 @@ class OverridesRPMAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.delete(reverse('overridesrpm-list'), {'release': 'release-1.0', 'force': True})
         self.assertEqual(models.OverrideRPM.objects.count(), 0)
         self.assertItemsEqual(response.data, [self.override_rpm, self.do_not_delete_orpm])
+
+    def test_delete_two_by_id(self):
+        override = models.OverrideRPM.objects.create(release=self.release, variant="Server",
+                                                     arch="x86_64", rpm_name="bash-doc",
+                                                     rpm_arch="src", include=True,
+                                                     do_not_delete=True, srpm_name="bash")
+        response = self.client.delete(reverse('overridesrpm-list'),
+                                      [1, override.pk],
+                                      format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertNumChanges([2])
+        self.assertEqual(models.OverrideRPM.objects.count(), 0)
 
 
 class ComposeRPMViewAPITestCase(APITestCase):

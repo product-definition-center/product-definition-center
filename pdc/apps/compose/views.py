@@ -971,9 +971,9 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
 
     def bulk_destroy(self, *args, **kwargs):
         """
-        There are two ways to invoke this call. Both required request body. In
-        one case you can only delete one specific override, in the other you
-        clear all overrides on a given release.
+        There are two ways to invoke this call. Both require a request body. In
+        one case you can only delete a list of specific overrides, in the other
+        you clear all overrides on a given release.
 
         __Method__: DELETE
 
@@ -981,13 +981,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
 
         __Data__:
 
-            {
-                "release":      string,
-                "variant":      string,
-                "arch":         string,
-                "rpm_name":     string,
-                "rpm_arch":     string
-            }
+            [id]
 
         or
 
@@ -998,38 +992,14 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
 
         __Response__:
 
-        For deleting single object:
-
-            {
-                    "do_not_delete": false,
-                    "release": "release-1.0",
-                    "variant": "Client",
-                    "arch": "x86_64",
-                    "srpm_name": "bash",
-                    "rpm_name": "bash-doc",
-                    "rpm_arch": "src",
-                    "include": true,
-                    "comment": ""
-            }
+        For deleting a list of specific objects there is no output.
 
         When clearing all overrides, a list of deleted objects is returned.
 
         __Example__:
 
             $ curl -H 'Content-Type: application/json' "%(HOST_NAME)s/%(API_PATH)s/overrides/rpm/" \\
-                -X DELETE -d '{"release": "release-1.0", "variant": "Client", "arch": "x86_64", \\
-                               "rpm_name": "bash-doc", "rpm_arch": "src"}'
-            {
-                "do_not_delete": false,
-                "release": "release-1.0",
-                "variant": "Client",
-                "arch": "x86_64",
-                "srpm_name": "bash",
-                "rpm_name": "bash-magic",
-                "rpm_arch": "src",
-                "include": true,
-                "comment": ""
-            }
+                -X DELETE -d '[1, 15, 29]'
 
         Clearing all overrides.
 
@@ -1037,6 +1007,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
                 -X DELETE -d '{ "release": "release-1.0", "force": false }'
             [
                 {
+                    "id": 1,
                     "do_not_delete": false,
                     "release": "release-1.0",
                     "variant": "Client",
@@ -1051,20 +1022,19 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
 
         """
         data = self.request.data
-        keys = set(as_dict(data, 'input').keys())
-        keys_for_specific_override = set(['release', 'variant', 'arch', 'rpm_name', 'rpm_arch'])
-        keys_for_overrides_in_release = set(['release', 'force'])
-        if keys != keys_for_specific_override and keys - {'force'} != keys_for_overrides_in_release - {'force'}:
-            return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data=["Arguments should be: %s OR %s(optional, default false)" %
-                                  (", ".join(keys_for_specific_override),
-                                   ", ".join(keys_for_overrides_in_release))])
-
-        release_obj = get_object_or_404(Release, release_id=data["release"])
-        if keys == keys_for_specific_override:
-            return Response(status=status.HTTP_200_OK, data=self._delete(release_obj, data))
-        else:
+        if isinstance(data, dict):
+            keys = set(data.keys())
+            if keys - {'force'} != {'release'}:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data=["Allowed keys are release and force (optional, default false)."])
+            release_obj = get_object_or_404(Release, release_id=data["release"])
             return Response(status=status.HTTP_200_OK, data=self._clear(release_obj, data))
+
+        if isinstance(data, list):
+            return bulk_operations.bulk_destroy_impl(self, *args, **kwargs)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST,
+                        data=['Bulk delete expects either a list or object.'])
 
     def _clear(self, release_obj, args):
         query = Q(release=release_obj)
@@ -1080,17 +1050,6 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
             result.append(serializer.data)
         queryset.delete()
         return result
-
-    def _delete(self, release_obj, args):
-        override = OverrideRPM.objects.get(release=release_obj,
-                                           variant=args["variant"],
-                                           arch=args["arch"],
-                                           rpm_name=args["rpm_name"],
-                                           rpm_arch=args["rpm_arch"])
-        serializer = self.serializer_class(override)
-        self.request.changeset.add('OverrideRPM', override.pk, serializer.data, 'null')
-        override.delete()
-        return serializer.data
 
 
 class FilterBugzillaProductsAndComponents(StrictQueryParamMixin,
