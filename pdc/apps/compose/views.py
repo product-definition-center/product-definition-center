@@ -29,7 +29,8 @@ from pdc.apps.common.models import Arch
 from pdc.apps.common.hacks import bool_from_native, convert_str_to_bool, as_dict
 from pdc.apps.common.viewsets import (ChangeSetCreateModelMixin,
                                       StrictQueryParamMixin,
-                                      NoEmptyPatchMixin)
+                                      NoEmptyPatchMixin,
+                                      ChangeSetDestroyModelMixin)
 from pdc.apps.release.models import Release
 from .models import (Compose, VariantArch, Variant, ComposeRPM, OverrideRPM,
                      ComposeImage, ComposeRPMMapping, ComposeAcceptanceTestingState)
@@ -840,6 +841,7 @@ class ComposeImportImagesView(StrictQueryParamMixin, viewsets.GenericViewSet):
 class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
                                  mixins.ListModelMixin,
                                  ChangeSetCreateModelMixin,
+                                 ChangeSetDestroyModelMixin,
                                  viewsets.GenericViewSet):
     """
     Create, search or delete RPM overrides for specific release. The release is
@@ -956,6 +958,16 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
             }
         """
         return super(ReleaseOverridesRPMViewSet, self).list(*args, **kwargs)
+
+    def destroy(self, *args, **kwargs):
+        """
+        Delete a particular override.
+
+        __Method__: DELETE
+
+        __URL__: `/overrides/rpm/{id}/`
+        """
+        return super(ReleaseOverridesRPMViewSet, self).destroy(*args, **kwargs)
 
     def bulk_destroy(self, *args, **kwargs):
         """

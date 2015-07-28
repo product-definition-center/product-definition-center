@@ -509,7 +509,7 @@ class ComposeUpdateTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([])
 
 
-class OverridesRPMAPITestCase(APITestCase):
+class OverridesRPMAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
         'pdc/apps/release/fixtures/tests/release.json',
         'pdc/apps/compose/fixtures/tests/compose_overriderpm.json',
@@ -536,13 +536,10 @@ class OverridesRPMAPITestCase(APITestCase):
         self.assertEqual(response.data['count'], 0)
 
     def test_delete_existing(self):
-        response = self.client.delete(reverse('overridesrpm-list'),
-                                      {'release': 'release-1.0',
-                                       'variant': 'Server', 'arch': 'x86_64',
-                                       'rpm_name': 'bash-doc', 'rpm_arch': 'x86_64'})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, self.override_rpm)
+        response = self.client.delete(reverse('overridesrpm-detail', args=[1]))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(models.OverrideRPM.objects.count(), 0)
+        self.assertNumChanges([1])
 
     def test_delete_wrong_data(self):
         response = self.client.delete(reverse('overridesrpm-list'),
