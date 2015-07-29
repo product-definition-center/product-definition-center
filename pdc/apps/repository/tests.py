@@ -314,7 +314,7 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args = {'release_id_from': 'foo', 'release_id_to': 'release-1.1'}
         response = self.client.post(reverse('repoclone-list'), args, format='json')
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertIn('detail', response.data)
 
         args = {'release_id_from': 'release-1.0', 'release_id_to': 'foo'}
