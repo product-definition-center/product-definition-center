@@ -494,8 +494,10 @@ class RepoBulkTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(reverse('repo-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.maxDiff = None
+        self.assertRegexpMatches(response.data.get('detail', {}).pop('content_format')[0],
+                                 "'foo' is not allowed value. Use one of .*")
         self.assertEqual(response.data,
-                         {'detail': {'content_format': ["'foo' is not allowed value. Use one of 'rpm', 'iso', 'kickstart', 'comps'."]},
+                         {'detail': {},
                           'invalid_data': {'release_id': 'release-1.0',
                                            'variant_uid': 'Server',
                                            'arch': 'x86_64',
