@@ -30,12 +30,16 @@ class RPMSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 class ImageSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     image_format    = serializers.SlugRelatedField(slug_field='name', queryset=models.ImageFormat.objects.all())
     image_type      = serializers.SlugRelatedField(slug_field='name', queryset=models.ImageType.objects.all())
+    composes        = serializers.SlugRelatedField(read_only=True,
+                                                   slug_field='compose_id',
+                                                   many=True)
 
     class Meta:
         model = models.Image
         fields = ('file_name', 'image_format', 'image_type', 'disc_number',
                   'disc_count', 'arch', 'mtime', 'size', 'bootable',
-                  'implant_md5', 'volume_id', 'md5', 'sha1', 'sha256')
+                  'implant_md5', 'volume_id', 'md5', 'sha1', 'sha256',
+                  'composes')
 
 
 class RPMRelatedField(serializers.RelatedField):

@@ -154,6 +154,10 @@ class Image(models.Model):
     def __unicode__(self):
         return u"%s" % self.file_name
 
+    def composes(self):
+        """Return a set of all composes that this image belongs to."""
+        return set([ci.variant_arch.variant.compose for ci in self.composeimage_set.all()])
+
 
 class Archive(models.Model):
     build_nvr           = models.CharField(max_length=200, db_index=True)

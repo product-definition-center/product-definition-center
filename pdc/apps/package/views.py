@@ -122,7 +122,8 @@ class ImageViewSet(pdc_viewsets.StrictQueryParamMixin,
                   "sha1":           string,
                   "sha256":         string,
                   "size":           big int,
-                  "volume_id":      string
+                  "volume_id":      string,
+                  "composes":       [compose id]
                 },
                 ...
               ]
