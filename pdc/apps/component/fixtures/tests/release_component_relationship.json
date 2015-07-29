@@ -1,0 +1,20 @@
+[
+{
+   "pk": 1,
+   "model": "component.ReleaseComponentRelationship",
+   "fields": {
+      "from_component": 1,
+      "to_component": 2,
+      "relation_type": 1
+   }
+},
+{
+   "pk": 2,
+   "model": "component.ReleaseComponentRelationship",
+   "fields": {
+      "from_component": 2,
+      "to_component": 1,
+      "relation_type": 2
+   }
+}
+]

@@ -1,0 +1,29 @@
+[
+{
+   "pk": 1,
+   "model": "component.releasecomponent",
+   "fields": {
+      "release": 1,
+      "global_component": 1,
+      "name": "python27"
+   }
+},
+{
+   "pk": 2,
+   "model": "component.releasecomponent",
+   "fields": {
+      "release": 1,
+      "global_component": 2,
+      "name": "MySQL-python"
+   }
+},
+{
+   "pk": 3,
+   "model": "component.releasecomponent",
+   "fields": {
+      "release": 1,
+      "global_component": 3,
+      "name": "java"
+   }
+}
+]

@@ -12,7 +12,12 @@ from django.forms import SelectMultiple
 
 from django_filters import FilterSet, MethodFilter, CharFilter
 
-from .models import GlobalComponent, ReleaseComponent, BugzillaComponent, ReleaseComponentGroup, GroupType
+from .models import (GlobalComponent,
+                     ReleaseComponent,
+                     BugzillaComponent,
+                     ReleaseComponentGroup,
+                     GroupType,
+                     ReleaseComponentRelationship)
 from pdc.apps.contact.models import (Person,
                                      Maillist,
                                      ContactRole,
@@ -280,3 +285,16 @@ class GroupFilter(ComposeFilterSet):
     class Meta:
         model = ReleaseComponentGroup
         fields = ('group_type', 'release', 'release_component')
+
+
+class ReleaseComponentRelationshipFilter(ComposeFilterSet):
+    type = MultiValueFilter(name='relation_type__name')
+    from_component_release = MultiValueFilter(name='from_component__release__release_id')
+    from_component_name = MultiValueFilter(name='from_component__name')
+    to_component_release = MultiValueFilter(name='to_component__release__release_id')
+    to_component_name = MultiValueFilter(name='to_component__name')
+
+    class Meta:
+        model = ReleaseComponentRelationship
+        fields = ('type', 'from_component_release', 'from_component_name', 'to_component_release',
+                  'to_component_name')
