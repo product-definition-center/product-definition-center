@@ -19,10 +19,7 @@ class ContactRoleSerializer(StrictSerializerMixin,
 
     class Meta:
         model = ContactRole
-        fields = ('url', 'name')
-        extra_kwargs = {
-            'url': {'lookup_field': 'name'}
-        }
+        fields = ('name', )
 
 
 class PersonSerializer(DynamicFieldsSerializerMixin,
@@ -31,7 +28,7 @@ class PersonSerializer(DynamicFieldsSerializerMixin,
 
     class Meta:
         model = Person
-        fields = ('url', 'username', 'email')
+        fields = ('id', 'username', 'email')
 
 
 class MaillistSerializer(DynamicFieldsSerializerMixin,
@@ -40,7 +37,7 @@ class MaillistSerializer(DynamicFieldsSerializerMixin,
 
     class Meta:
         model = Maillist
-        fields = ('url', 'mail_name', 'email')
+        fields = ('id', 'mail_name', 'email')
 
 
 class ContactRoleField(serializers.CharField):
@@ -164,7 +161,7 @@ class RoleContactSerializer(DynamicFieldsSerializerMixin,
 
     class Meta:
         model = RoleContact
-        fields = ('url', 'contact_role', 'contact')
+        fields = ('id', 'contact_role', 'contact')
         validators = [
             UniqueRoleContactValidator()
         ]
