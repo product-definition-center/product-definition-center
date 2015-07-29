@@ -69,6 +69,10 @@ def create_content_format(apps, schema_editor):
                {
                    'description': 'Comps XML with package group definitions',
                    'name': 'comps'
+               },
+               {
+                   'description': 'Docker image content format',
+                   'name': 'docker'
                }
            ])
 
