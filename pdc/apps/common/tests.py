@@ -345,6 +345,14 @@ class SigKeyRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['name'], 'TEST')
 
+    def test_updating_key_id_fails(self):
+        response = self.client.patch(reverse('sigkey-detail', args=['1234adbf']),
+                                     {'key_id': 'cafebabe'},
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('key_id'), '1234adbf')
+        self.assertNumChanges([])
+
     def test_bulk_update_fails(self):
         response = self.client.put(reverse('sigkey-list'),
                                    {'1234adbf': {'name': 'A',
