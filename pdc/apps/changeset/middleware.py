@@ -9,6 +9,11 @@ import logging
 from django.db import transaction
 from . import models
 
+# trap wrong HTTP methods
+from django.http import HttpResponse
+from rest_framework import status
+import json
+
 logger = logging.getLogger(__name__)
 
 
@@ -29,6 +34,16 @@ class ChangesetMiddleware(object):
             # NOTE: We do not need create a changeset when we just SELECT somw records.
             response = view_func(request, *view_args, **view_kwargs)
         else:
+            # trap the request and give response when the method is not defined in HTTP/1.1
+            if request.method not in ["HEAD", "POST", "PUT", "DELETE", "TRACE", "CONNECT", "PATCH", "OPTIONS"]:
+                logger.error('Wrong method %s specified when calling %s', request.method.decode("utf-8"), request.path,
+                             exc_info=sys.exc_info())
+                response_data = json.dumps({"detail": 'Method "{method}" not allowed.'.format(method=request.method)},
+                                           ensure_ascii=False)
+                response = HttpResponse(response_data, content_type='application/json')
+                response.status_code = status.HTTP_405_METHOD_NOT_ALLOWED
+                return response
+
             logger.debug("Start write request on the view %s." % view_func.__name__)
             try:
                 with transaction.atomic():
