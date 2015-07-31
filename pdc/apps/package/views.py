@@ -95,6 +95,8 @@ class ImageViewSet(pdc_viewsets.StrictQueryParamMixin,
          * sha256
          * size
          * volume_id
+         * compose - only include images included in given release, value for
+           this filter should be compose ID
 
         If the same filter is specified multiple times, it will do a OR query.
 
@@ -120,7 +122,8 @@ class ImageViewSet(pdc_viewsets.StrictQueryParamMixin,
                   "sha1":           string,
                   "sha256":         string,
                   "size":           big int,
-                  "volume_id":      string
+                  "volume_id":      string,
+                  "composes":       [compose id]
                 },
                 ...
               ]
