@@ -7,6 +7,7 @@
 import mock
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
@@ -237,3 +238,45 @@ class GroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.delete(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+class CurrentUserTestCase(APITestCase):
+    fixtures = [
+        'pdc/apps/auth/fixtures/tests/groups.json',
+    ]
+
+    def setUp(self):
+        self.user = get_user_model().objects.create(username='alice',
+                                                    email='alice@example.com',
+                                                    first_name='Alice',
+                                                    last_name='von Test')
+        self.user.save()
+
+    def test_can_access_data_authorized(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(reverse('currentuser-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('username'), 'alice')
+        self.assertEqual(response.data.get('fullname'), 'Alice von Test')
+        self.assertEqual(response.data.get('groups'), [])
+        self.assertEqual(response.data.get('permissions'), [])
+
+    def test_can_not_access_without_authentication(self):
+        response = self.client.get(reverse('currentuser-list'))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_can_view_user_permissions(self):
+        p = Group.objects.get(pk=1).permissions.first()
+        self.user.user_permissions.add(p)
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(reverse('currentuser-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual(response.data['permissions'], ['auth.add_group'])
+
+    def test_can_view_groups(self):
+        Group.objects.get(pk=1).user_set.add(self.user)
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(reverse('currentuser-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual(response.data['groups'], ['group_add_group'])
+        self.assertItemsEqual(response.data['permissions'], ['auth.add_group'])

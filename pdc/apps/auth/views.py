@@ -525,3 +525,44 @@ class GroupViewSet(ChangeSetUpdateModelMixin,
     serializer_class = serializers.GroupSerializer
     filter_class = filters.GroupFilter
     Group.export = group_obj_export
+
+
+class CurrentUserViewSet(mixins.ListModelMixin,
+                         viewsets.GenericViewSet):
+    """
+    This end-point provides programmatic access to information about current
+    user.
+    """
+    def list(self, request):
+        """
+        Get information about current user.
+
+        __Method__: `GET`
+
+        __URL__: `/auth/current-user/`
+
+        __Response__:
+
+            {
+                "username": string,
+                "fullname": string,
+                "e-mail": string,
+                "is_superuser": bool,
+                "is_staff": bool,
+                "groups": [string],
+                "permissions": [string]
+            }
+        """
+        user = request.user
+        if not user.is_authenticated():
+            return Response(status=status.HTTP_401_UNAUTHORIZED,
+                            data={'detail': 'Access denied to unauthorized users.'})
+        return Response(data={
+            'username': user.username,
+            'fullname': user.get_full_name(),
+            'e-mail': user.email,
+            'is_superuser': user.is_superuser,
+            'is_staff': user.is_staff,
+            'groups': [g.name for g in user.groups.all()],
+            'permissions': list(user.get_all_permissions()),
+        })

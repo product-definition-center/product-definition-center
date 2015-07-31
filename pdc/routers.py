@@ -24,6 +24,9 @@ router = bulk_operations.BulkRouter()
 router.register(r'auth/token', pdc_auth_views.TokenViewSet, base_name='token')
 router.register(r'auth/groups', pdc_auth_views.GroupViewSet)
 router.register(r'auth/permissions', pdc_auth_views.PermissionViewSet)
+router.register(r'auth/current-user',
+                pdc_auth_views.CurrentUserViewSet,
+                base_name='currentuser')
 
 # register changeset view sets
 router.register(r'changesets', changeset_views.ChangesetViewSet)
