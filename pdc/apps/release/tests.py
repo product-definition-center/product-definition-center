@@ -1228,12 +1228,13 @@ class ReleaseComposeLinkingTestCase(APITestCase):
                                           'Client': {'x86_64': {'bash': ['x86_64']}}}})
 
 
-class ReleaseImportTestCase(APITestCase):
+class ReleaseImportTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def test_import_correct_data(self):
         with open('pdc/apps/release/fixtures/tests/composeinfo.json', 'r') as f:
             data = json.loads(f.read())
         response = self.client.post(reverse('releaseimportcomposeinfo-list'), data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNumChanges([11])
         self.assertEqual(models.Product.objects.count(), 2)
         self.assertEqual(models.ProductVersion.objects.count(), 2)
         self.assertEqual(models.Release.objects.count(), 2)
