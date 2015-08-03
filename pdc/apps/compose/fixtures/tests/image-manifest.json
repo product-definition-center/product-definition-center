@@ -1,0 +1,101 @@
+{
+    "header": {
+        "version": "1.0"
+    },
+    "payload": {
+        "compose": {
+            "date": "20150310",
+            "id": "TP-1.0-20150310.0",
+            "type": "production",
+            "respin": 0
+        },
+        "images": {
+            "Client": {
+                "x86_64": [
+                    {
+                        "arch": "src",
+                        "bootable": false,
+                        "checksums": {
+                            "md5": "44444444444444444444444444444444",
+                            "sha1": "1111111111111111111111111111111111111111",
+                            "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+                        },
+                        "disc_count": 2,
+                        "disc_number": 1,
+                        "format": "iso",
+                        "implant_md5": "dddddddddddddddddddddddddddddddd",
+                        "mtime": 1400527904,
+                        "path": "Client/source/iso/TP-1.0-20150310.0-Client-source-dvd1.iso",
+                        "size": 4696397824,
+                        "type": "dvd",
+                        "volume_id": "TP-1.0 Client.src"
+                    }
+                ]
+            },
+            "Server": {
+                "ppc64": [
+                    {
+                        "arch": "ppc64",
+                        "bootable": true,
+                        "checksums": {
+                            "md5": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                            "sha1": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                            "sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+                        },
+                        "disc_count": 1,
+                        "disc_number": 1,
+                        "format": "iso",
+                        "implant_md5": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                        "mtime": 1399448914,
+                        "path": "Server/ppc64/iso/TP-1.0-20150310.0-Server-ppc64-boot.iso",
+                        "size": 397934592,
+                        "type": "boot",
+                        "volume_id": "TP_1_0_ppc64"
+                    }
+                ],
+                "s390x": [
+                    {
+                        "arch": "s390x",
+                        "bootable": true,
+                        "checksums": {
+                            "md5": "ffffffffffffffffffffffffffffffff",
+                            "sha1": "cccccccccccccccccccccccccccccccccccccccc",
+                            "sha256": "9999999999999999999999999999999999999999999999999999999999999999"
+                        },
+                        "disc_count": 1,
+                        "disc_number": 1,
+                        "format": "iso",
+                        "implant_md5": "88888888888888888888888888888888",
+                        "mtime": 1399449462,
+                        "path": "Server/s390x/iso/TP-1.0-20150310.0-Server-s390x-dvd1.iso",
+                        "size": 2560704512,
+                        "type": "dvd",
+                        "volume_id": "TP-1.0 Server.s390x"
+                    }
+                ]
+            },
+            "Server-SAP": {
+                "x86_64": [
+                    {
+                        "arch": "src",
+                        "bootable": false,
+                        "checksums": {
+                            "md5": "00000000000000000000000000000000",
+                            "sha1": "5555555555555555555555555555555555555555",
+                            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                        },
+                        "disc_count": 1,
+                        "disc_number": 1,
+                        "format": "iso",
+                        "implant_md5": "44444444444444444444444444444444",
+                        "mtime": 1399449643,
+                        "path": "Server-SAP/source/iso/SAP-1.0-TP-1-20150310.0-Server-source-dvd1.iso",
+                        "size": 2156544,
+                        "type": "dvd",
+                        "volume_id": "SAP-1.0 TP-1 Server.src"
+                    }
+                ]
+            }
+        }
+    }
+}
