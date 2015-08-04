@@ -47,7 +47,7 @@ def insert_compose_rpms_if_nonexist(compose_rpms_in_db, cursor,
         compose_rpms_in_db.add(key)
 
 
-def _link_compose_to_integrated_product(compose, variant):
+def _link_compose_to_integrated_product(request, compose, variant):
     """
     If the variant belongs to an integrated layered product, update the compose
     so that it is linked to the release for that product. Note that the variant
@@ -56,6 +56,7 @@ def _link_compose_to_integrated_product(compose, variant):
     release = variant.release
     if release.name:
         integrated_from_release = lib.get_or_create_integrated_release(
+            request,
             compose.release,
             release
         )
@@ -84,7 +85,8 @@ def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
     compose_date = "%s-%s-%s" % (ci.compose.date[:4], ci.compose.date[4:6], ci.compose.date[6:])
     compose_type = models.ComposeType.objects.get(name=ci.compose.type)
     acceptance_status = models.ComposeAcceptanceTestingState.objects.get(name='untested')
-    compose_obj, created = models.Compose.objects.get_or_create(
+    compose_obj, created = lib._logged_get_or_create(
+        request, models.Compose,
         release=release_obj,
         compose_id=ci.compose.id,
         compose_date=compose_date,
@@ -105,14 +107,21 @@ def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
         rpms_in_db[key] = rpm.id
 
     cursor = connection.cursor()
+    add_to_changelog = []
+    imported_rpms = 0
+
     for variant in ci.get_variants(recursive=True):
-        _link_compose_to_integrated_product(compose_obj, variant)
+        _link_compose_to_integrated_product(request, compose_obj, variant)
         variant_type = release_models.VariantType.objects.get(name=variant.type)
-        variant_obj, _ = models.Variant.objects.get_or_create(compose=compose_obj,
-                                                              variant_id=variant.id,
-                                                              variant_uid=variant.uid,
-                                                              variant_name=variant.name,
-                                                              variant_type=variant_type)
+        variant_obj, created = models.Variant.objects.get_or_create(
+            compose=compose_obj,
+            variant_id=variant.id,
+            variant_uid=variant.uid,
+            variant_name=variant.name,
+            variant_type=variant_type
+        )
+        if created:
+            add_to_changelog.append(variant_obj)
         for arch in variant.arches:
             arch_obj = common_models.Arch.objects.get(name=arch)
             var_arch_obj, _ = models.VariantArch.objects.get_or_create(arch=arch_obj,
@@ -129,6 +138,7 @@ def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
             for srpm_nevra, rpms in rm.rpms.get(variant.uid, {}).get(arch, {}).iteritems():
                 sources.add(srpm_nevra)
                 for rpm_nevra, rpm_data in rpms.iteritems():
+                    imported_rpms += 1
                     path, filename = os.path.split(rpm_data['path'])
                     rpm_id = get_or_insert_rpm(rpms_in_db, cursor, rpm_nevra, srpm_nevra, filename)
                     sigkey_id = common_models.SigKey.get_cached_id(rpm_data["sigkey"], create=True)
@@ -138,6 +148,15 @@ def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
                     insert_compose_rpms_if_nonexist(compose_rpms_in_db, cursor,
                                                     var_arch_obj.id, rpm_id,
                                                     content_category_id, sigkey_id, path_id)
+
+    for obj in add_to_changelog:
+        lib._maybe_log(request, True, obj)
+
+    request.changeset.add('notice', 0, 'null',
+                          json.dumps({
+                              'compose': compose_obj.compose_id,
+                              'num_linked_rpms': imported_rpms,
+                          }))
 
 
 @transaction.atomic
@@ -149,7 +168,8 @@ def compose__import_images(request, release_id, composeinfo, image_manifest):
 
     compose_date = "%s-%s-%s" % (ci.compose.date[:4], ci.compose.date[4:6], ci.compose.date[6:])
     compose_type = models.ComposeType.objects.get(name=ci.compose.type)
-    compose_obj, created = models.Compose.objects.get_or_create(
+    compose_obj, created = lib._logged_get_or_create(
+        request, models.Compose,
         release=release_obj,
         compose_id=ci.compose.id,
         compose_date=compose_date,
@@ -162,16 +182,21 @@ def compose__import_images(request, release_id, composeinfo, image_manifest):
         # add message
         _add_compose_create_msg(request, compose_obj)
 
+    add_to_changelog = []
+    imported_images = 0
+
     for variant in ci.get_variants(recursive=True):
-        _link_compose_to_integrated_product(compose_obj, variant)
+        _link_compose_to_integrated_product(request, compose_obj, variant)
         variant_type = release_models.VariantType.objects.get(name=variant.type)
-        variant_obj, _ = models.Variant.objects.get_or_create(
+        variant_obj, created = models.Variant.objects.get_or_create(
             compose=compose_obj,
             variant_id=variant.id,
             variant_uid=variant.uid,
             variant_name=variant.name,
             variant_type=variant_type
         )
+        if created:
+            add_to_changelog.append(variant_obj)
         for arch in variant.arches:
             arch_obj = common_models.Arch.objects.get(name=arch)
             var_arch_obj, created = models.VariantArch.objects.get_or_create(arch=arch_obj, variant=variant_obj)
@@ -202,6 +227,16 @@ def compose__import_images(request, release_id, composeinfo, image_manifest):
                 mi, created = models.ComposeImage.objects.get_or_create(
                     variant_arch=var_arch_obj,
                     image=image)
+                imported_images += 1
+
+    for obj in add_to_changelog:
+        lib._maybe_log(request, True, obj)
+
+    request.changeset.add('notice', 0, 'null',
+                          json.dumps({
+                              'compose': compose_obj.compose_id,
+                              'num_linked_images': imported_images,
+                          }))
 
 
 def _find_composes_srpm_name_with_rpm_nvr(nvr):

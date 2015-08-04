@@ -185,6 +185,16 @@ class Variant(models.Model):
     def arches(self):
         return [i.arch for i in self.variantarch_set.all()]
 
+    def export(self):
+        return {
+            'compose': self.compose.compose_id,
+            'variant_id': self.variant_id,
+            'variant_uid': self.variant_uid,
+            'variant_name': self.variant_name,
+            'variant_type': self.variant_type.name,
+            'arches': [arch.name for arch in self.arches],
+        }
+
 
 class VariantArch(models.Model):
     variant             = models.ForeignKey(Variant)
