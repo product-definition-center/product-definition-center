@@ -471,7 +471,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
                 } OR null
             }
 
-        The list of composes is ordered by their date, respin and type (even
+        The list of composes is ordered by their date, type and respin (even
         though those fields are not directly visible here).
         """
         return super(ReleaseViewSet, self).retrieve(*args, **kwargs)
@@ -527,8 +527,8 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
                 ]
             }
 
-        The list of composes for each release is ordered by their date, respin
-        and type (even though those fields are not directly visible here).
+        The list of composes for each release is ordered by their date, type,
+        and respin (even though those fields are not directly visible here).
 
         The releases themselves are ordered by short and version.
         """

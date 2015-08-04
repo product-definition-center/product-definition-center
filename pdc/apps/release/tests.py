@@ -890,7 +890,9 @@ class ReleaseRPMMappingViewSetTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_get_for_more_compose(self):
-        # TODO this test will become invalid once proper compose ordering is implemented
+        # There is compose-1 with some rpms, and newer ComposeWithNoRPMs with
+        # no rpms. The view grabs the newest mapping, finds there is nothing to
+        # show as mapping and returns 404.
         release = models.Release.objects.get(release_id='release-1.0')
         compose_models.Compose.objects.create(
             release=release,

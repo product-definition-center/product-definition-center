@@ -431,10 +431,10 @@ class ComposeViewSet(StrictQueryParamMixin,
     def filter_queryset(self, qs):
         """
         If the viewset instance has attribute `order_queryset` set to True,
-        this method returns a list of composes ordered by version. Otherwise it
-        will return an unsorted queryset. (It is not possible to sort
-        unconditionally as get_object() will at some point call this method and
-        fail unless it receives a QuerySet instance.)
+        this method returns a list of composes ordered according to *productmd*
+        library. Otherwise it will return an unsorted queryset. (It is not
+        possible to sort unconditionally as get_object() will at some point
+        call this method and fail unless it receives a QuerySet instance.)
         """
         qs = super(ComposeViewSet, self).filter_queryset(qs)
         if getattr(self, 'order_queryset', False):
@@ -470,7 +470,7 @@ class ComposeViewSet(StrictQueryParamMixin,
         """
         Get a list of all composes. The composes are ordered first by the
         release for which they were build (by their short and version).
-        Composes in the same release are ordered by date, respin and type.
+        Composes in the same release are ordered by date, type and respin.
 
         __Method__: GET
 
@@ -1129,8 +1129,8 @@ class FindComposeWithOlderPackageViewSet(StrictQueryParamMixin,
         version of the package.
 
         The ordering of composes is performed by the *productmd* library. It
-        first compares compose date, then respin and lastly compose type
-        (`test` < `nightly` < `production`).
+        first compares compose date, then compose type (`test` < `nightly` <
+        `production`) and lastly respin.
 
         `to_dict` is optional parameter, accepted values (True, 'true', 't', 'True', '1'),
         or (False, 'false', 'f', 'False', '0'). If it is provided, and the value is True,
