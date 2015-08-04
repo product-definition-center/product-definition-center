@@ -12,12 +12,14 @@ addons:
 # any part of kobo that would actively use koji, se we just delete the
 # offending import.
 install:
-    - pip install -U pip wheel
+    - pip install -U pip wheel coveralls
     - pip install -r requirements/devel.txt
     - sed -i -E '/import (koji|rpm)/d' $(python -vc 'import kobo.rpmlib' 2>&1 | grep 'import kobo.rpmlib' | awk '{print$NF}' | sed 's/pyc$/py/')
 script:
-    - make test
+    - coverage run --source=contrib,pdc --omit='*tests.py,*/migrations/*,pdc/settings*' manage.py test --settings pdc.settings_test
     - make flake8
+after_success:
+    coveralls
 cache:
     directories:
         - $HOME/.cache/pip
