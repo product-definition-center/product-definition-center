@@ -1109,7 +1109,196 @@ class FilterBugzillaProductsAndComponents(StrictQueryParamMixin,
             return Response(status=status.HTTP_200_OK, data=result)
 
 
-class FindComposeWithOlderPackageViewSet(StrictQueryParamMixin,
+class FindComposeMixin(object):
+
+    def _filter_by_compose_type(self, qs):
+        if self.included_compose_type:
+            qs = qs.filter(compose_type__name=self.included_compose_type)
+        if self.excluded_compose_type:
+            qs = qs.exclude(compose_type__name=self.excluded_compose_type)
+        return qs
+
+    def _get_compose_for_release(self):
+        result = []
+        composes = Compose.objects.filter(release__release_id=self.release_id)
+        composes = self._filter_by_compose_type(composes)
+        result = self._get_result(composes, result)
+        return result
+
+    def _get_result(self, composes, result):
+        if self.latest:
+            compose = max(composes) if composes else None
+            if compose:
+                self._construct_result(compose, result)
+        else:
+            for compose in sorted(composes):
+                self._construct_result(compose, result)
+        return result
+
+    def _construct_result(self, compose, result):
+        rpms = compose.get_rpms(self.rpm_name)
+        result.append({'compose': compose.compose_id,
+                       'packages': self._packages_output(rpms)})
+        return result
+
+    def _packages_output(self, rpms):
+        """
+        Output packages with unicode or dict
+        """
+        packages = [unicode(rpm) for rpm in rpms]
+        return packages if not self.to_dict else [RPMSerializer(rpm).data for rpm in rpms]
+
+    def _get_query_param_or_false(self, request, query_str):
+        value = request.query_params.get(query_str)
+        if value:
+            value = convert_str_to_bool(value)
+        else:
+            value = False
+        setattr(self, query_str, value)
+
+    def _get_older_compose(self):
+        compose = get_object_or_404(Compose, compose_id=self.compose_id)
+        current_rpms = set(r.sort_key for r in compose.get_rpms(self.rpm_name))
+        # Find older composes for same release (not including this one)
+        composes = (Compose.objects
+                    .exclude(compose_date__gt=compose.compose_date)
+                    .filter(release=compose.release)
+                    .filter(variant__variantarch__composerpm__rpm__name=self.rpm_name)
+                    .exclude(id=compose.id)
+                    .distinct())
+        composes = self._filter_by_compose_type(composes)
+        latest = None
+        for compose in sorted(composes, reverse=True):
+            rpms = compose.get_rpms(self.rpm_name)
+            # Does compose have a version not in current compose?
+            if set(r.sort_key for r in rpms) - current_rpms:
+                latest = compose
+                break
+        if not latest:
+            raise Http404('No older compose with earlier version of RPM')
+        return {
+            'compose': latest.compose_id,
+            'packages': self._packages_output(rpms)
+        }
+
+
+class FindComposeByReleaseRPMViewSet(StrictQueryParamMixin, FindComposeMixin, viewsets.GenericViewSet):
+    """
+    This API endpoint allows finding all composes that contain the package
+    (and include its version) for a given release and srpm_name
+    """
+    queryset = ComposeRPM.objects.none()    # Required for permissions
+    extra_query_params = ('included_compose_type', 'excluded_compose_type', 'latest', 'to_dict')
+
+    def list(self, request, **kwargs):
+        """
+        This method allows listing all (compose, package) pairs for a given
+        release and RPM name.
+
+        The ordering of composes is performed by the *productmd* library. It
+        first compares compose date, then compose type
+        (`test` < `nightly` < `production`) and lastly respin.
+
+        `latest` is optional parameter. If it is provided, and the value is True, it will
+        return a single pair with the latest compose and its version of the packages.
+
+        `to_dict` is optional parameter, accepted values (True, 'true', 't', 'True', '1'),
+        or (False, 'false', 'f', 'False', '0'). If it is provided, and the value is True,
+        packages' format will be as a dict.
+
+
+        __Method__: GET
+
+        __URL__: `rpc/find_compose_by_release_rpm/{release_id}/{rpm_name}`
+
+        __Query params__:
+
+        The RPM name and release id are always required.
+
+         * `included_compose_type`: optional
+         * `excluded_compose_type`: optional
+         * `latest`: optional
+         * `to_dict`: optional
+
+
+        __Response__:
+
+            [
+                {
+                    "compose": string,
+                    "packages": [string]
+                },
+                ...
+            ]
+
+        The list is sorted by compose: oldest first.
+        """
+        self.included_compose_type = request.query_params.get('included_compose_type')
+        self.excluded_compose_type = request.query_params.get('excluded_compose_type')
+        self._get_query_param_or_false(request, 'latest')
+        self._get_query_param_or_false(request, 'to_dict')
+        self.release_id = kwargs.get('release_id')
+        self.rpm_name = kwargs.get('rpm_name')
+        return Response(self._get_compose_for_release())
+
+
+class FindLatestComposeByComposeRPMViewSet(StrictQueryParamMixin, FindComposeMixin, viewsets.GenericViewSet):
+    """
+    This API endpoint allows finding the latest compose older than specified compose
+    which contains a different version of the specified package.
+    """
+    queryset = ComposeRPM.objects.none()    # Required for permissions
+    extra_query_params = ('included_compose_type', 'excluded_compose_type', 'to_dict')
+
+    def list(self, request, **kwargs):
+        """
+        This method is to find the latest compose older than specified compose
+        which contains a different version of the specified package when given a
+        compose and a package.
+
+        The ordering of composes is performed by the *productmd* library. It
+        first compares compose date, then compose type
+        (`test` < `nightly` < `production`) and lastly respin.
+        This method will find the latest one according to above sequence.
+
+        `to_dict` is optional parameter, accepted values (True, 'true', 't', 'True', '1'),
+        or (False, 'false', 'f', 'False', '0'). If it is provided, and the value is True,
+        packages' format will be as a dict.
+
+
+        __Method__: GET
+
+        __URL__: `rpc/find_latest_compose_by_compose_rpm/{compose_id}/{rpm_name}`
+
+        __Query params__:
+
+        The RPM name and release id are always required.
+
+         * `included_compose_type`: optional
+         * `excluded_compose_type`: optional
+         * `to_dict`: optional
+
+        __Response__:
+
+            [
+                {
+                    "compose": string,
+                    "packages": [string]
+                },
+                ...
+            ]
+
+        The list is sorted by compose: oldest first.
+        """
+        self.included_compose_type = request.query_params.get('included_compose_type')
+        self.excluded_compose_type = request.query_params.get('excluded_compose_type')
+        self._get_query_param_or_false(request, 'to_dict')
+        self.compose_id = kwargs.get('compose_id')
+        self.rpm_name = kwargs.get('rpm_name')
+        return Response(self._get_older_compose())
+
+
+class FindComposeWithOlderPackageViewSet(StrictQueryParamMixin, FindComposeMixin,
                                          viewsets.ReadOnlyModelViewSet):
     """
     This API endpoint allows finding composes with different version of a
@@ -1129,9 +1318,15 @@ class FindComposeWithOlderPackageViewSet(StrictQueryParamMixin,
         with the newest compose older than the given one that has a different
         version of the package.
 
+        Above 2 functions in this endpoint are deprecated. Please use
+        [rpc/find-compose-by-release-rpm/{release_id}/{rpm_name}](/%(API_PATH)s/rpc/find-compose-by-release-rpm/{release_id}/{rpm_name}/)
+        and
+        [rpc/find-latest-compose-by-compose-rpm/{compose_id}/{rpm_name}](/%(API_PATH)s/rpc/find-latest-compose-by-compose-rpm/{compose_id}/{rpm_name})
+        instead.
+
         The ordering of composes is performed by the *productmd* library. It
-        first compares compose date, then compose type (`test` < `nightly` <
-        `production`) and lastly respin.
+        first compares compose date, then compose type
+        (`test` < `nightly` < `production`) and lastly respin.
 
         `to_dict` is optional parameter, accepted values (True, 'true', 't', 'True', '1'),
         or (False, 'false', 'f', 'False', '0'). If it is provided, and the value is True,
@@ -1177,21 +1372,15 @@ class FindComposeWithOlderPackageViewSet(StrictQueryParamMixin,
         self.rpm_name = request.query_params.get('rpm_name')
         self.release_id = request.query_params.get('release')
         self.compose_id = request.query_params.get('compose')
-        self.to_dict = False
         self.product_version = request.query_params.get('product_version')
         self.included_compose_type = request.query_params.get('included_compose_type')
         self.excluded_compose_type = request.query_params.get('excluded_compose_type')
-        self.latest = False
+        self._get_query_param_or_false(request, 'to_dict')
+        self._get_query_param_or_false(request, 'latest')
 
         if not self.rpm_name:
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data={'detail': 'The rpm_name is required.'})
-        to_dict_input = request.query_params.get('to_dict')
-        if to_dict_input:
-            self.to_dict = convert_str_to_bool(to_dict_input)
-        latest = request.query_params.get('latest')
-        if latest:
-            self.latest = convert_str_to_bool(latest)
         if self.release_id:
             return Response(self._get_compose_for_release())
         if self.compose_id:
@@ -1200,62 +1389,6 @@ class FindComposeWithOlderPackageViewSet(StrictQueryParamMixin,
             return Response(self._get_compose_for_product_version())
         return Response(status=status.HTTP_400_BAD_REQUEST,
                         data={'detail': 'One of product_version, release or compose argument is required.'})
-
-    def _packages_output(self, rpms):
-        """
-        Output packages with unicode or dict
-        """
-        packages = [unicode(rpm) for rpm in rpms]
-        return packages if not self.to_dict else [RPMSerializer(rpm).data for rpm in rpms]
-
-    def _filter_by_compose_type(self, qs):
-        if self.included_compose_type:
-            qs = qs.filter(compose_type__name=self.included_compose_type)
-        if self.excluded_compose_type:
-            qs = qs.exclude(compose_type__name=self.excluded_compose_type)
-        return qs
-
-    def _get_result(self, composes, result):
-        if self.latest:
-            compose = max(composes) if composes else None
-            if compose:
-                self._construct_result(compose, result)
-        else:
-            for compose in sorted(composes):
-                self._construct_result(compose, result)
-        return result
-
-    def _get_compose_for_release(self):
-        result = []
-        composes = Compose.objects.filter(release__release_id=self.release_id)
-        composes = self._filter_by_compose_type(composes)
-        result = self._get_result(composes, result)
-        return result
-
-    def _get_older_compose(self):
-        compose = get_object_or_404(Compose, compose_id=self.compose_id)
-        current_rpms = set(r.sort_key for r in compose.get_rpms(self.rpm_name))
-        # Find older composes for same release (not including this one)
-        composes = (Compose.objects
-                    .exclude(compose_date__gt=compose.compose_date)
-                    .filter(release=compose.release)
-                    .filter(variant__variantarch__composerpm__rpm__name=self.rpm_name)
-                    .exclude(id=compose.id)
-                    .distinct())
-        composes = self._filter_by_compose_type(composes)
-        latest = None
-        for compose in sorted(composes, reverse=True):
-            rpms = compose.get_rpms(self.rpm_name)
-            # Does compose have a version not in current compose?
-            if set(r.sort_key for r in rpms) - current_rpms:
-                latest = compose
-                break
-        if not latest:
-            raise Http404('No older compose with earlier version of RPM')
-        return {
-            'compose': latest.compose_id,
-            'packages': self._packages_output(rpms)
-        }
 
     def _get_compose_for_product_version(self):
         result = []
@@ -1266,10 +1399,4 @@ class FindComposeWithOlderPackageViewSet(StrictQueryParamMixin,
             composes = self._filter_by_compose_type(composes)
             all_composes.extend(composes)
         result = self._get_result(all_composes, result)
-        return result
-
-    def _construct_result(self, compose, result):
-        rpms = compose.get_rpms(self.rpm_name)
-        result.append({'compose': compose.compose_id,
-                       'packages': self._packages_output(rpms)})
         return result
