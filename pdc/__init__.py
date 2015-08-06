@@ -6,8 +6,10 @@
 import os
 import subprocess
 
-VERSION = "0.5.0-0.1.beta"
+VERSION = "v0.1.0-alpha.2"
 
+old_cwd = os.getcwd()
+os.chdir(os.path.dirname(os.path.dirname(__file__)))
 # NOTE(xchu): use `git describe` when under git repository.
 if os.system('git rev-parse 2> /dev/null > /dev/null') == 0:
     pipe = subprocess.Popen("git describe",
@@ -30,6 +32,8 @@ if os.system('git rev-parse 2> /dev/null > /dev/null') == 0:
         VERSION = version_list[0]
     else:
         VERSION = version_list[0] + '-' + version_list[1].replace('-', '.')
+
+os.chdir(old_cwd)
 
 
 def get_version():
