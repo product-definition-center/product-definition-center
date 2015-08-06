@@ -663,7 +663,10 @@ class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
         if label not in gc.labels.all():
             gc.labels.add(label)
             request.changeset.add("globalcomponent", gc.pk, old_value, json.dumps(gc.export()))
-        return Response(status=status.HTTP_201_CREATED)
+        return Response(
+            status=status.HTTP_201_CREATED,
+            data=LabelSerializer(instance=label, context={'request': request}).data
+        )
 
 
 class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
