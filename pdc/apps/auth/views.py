@@ -7,7 +7,7 @@
 import json
 
 from django.shortcuts import render, redirect
-from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.contrib.auth import REDIRECT_FIELD_NAME, get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.http import HttpResponseRedirect, HttpResponse
 from django.conf import settings
@@ -533,6 +533,8 @@ class CurrentUserViewSet(mixins.ListModelMixin,
     This end-point provides programmatic access to information about current
     user.
     """
+    queryset = get_user_model().objects.none()
+
     def list(self, request):
         """
         Get information about current user.
