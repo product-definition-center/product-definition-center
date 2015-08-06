@@ -9,6 +9,8 @@ from django.core import exceptions
 from django.conf import settings
 from rest_framework import views, status
 from rest_framework.response import Response
+import sys
+import logging
 
 
 def exception_handler(exc, context):
@@ -54,6 +56,8 @@ def exception_handler(exc, context):
                                        'unable to complete your request.'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
+            logger = logging.getLogger(__name__)
+            logger.error('Unhandled exception', exc_info=sys.exc_info())
             return Response({'detail': 'The server encountered an internal '
                                        'error or misconfiguration and was '
                                        'unable to complete your request.'},

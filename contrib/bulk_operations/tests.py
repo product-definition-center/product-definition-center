@@ -3,6 +3,8 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+from types import MethodType
+
 import mock
 from rest_framework.response import Response
 from rest_framework import status
@@ -28,7 +30,7 @@ class BulkOperationTestCase(unittest.TestCase):
         self.assertEqual(result, 'Success')
 
     def test_create_wrapper_delegates_to_original(self):
-        def view(_viewset, request):
+        def view(_viewset, request, **kwargs):
             return Response(request._full_data.upper(), status=status.HTTP_201_CREATED)
         self.viewset.create = mock.Mock(side_effect=view)
         self.viewset.create.__name__ = 'create'
@@ -41,7 +43,7 @@ class BulkOperationTestCase(unittest.TestCase):
                                               mock.call(self.viewset, self.request)])
 
     def test_create_wrapper_catches_exceptions(self):
-        def view(viewset, _request):
+        def view(viewset, _request, **kwargs):
             if viewset.counter == 2:
                 raise Exception('BOOM')
             viewset.counter += 1
@@ -51,11 +53,13 @@ class BulkOperationTestCase(unittest.TestCase):
         self.viewset.create = view
         wrapped = bulk.bulk_create_wrapper(self.viewset.create)
         self.request.data = ['foo', 'bar', 'baz', 'quux']
-        response = wrapped(self.viewset, self.request)
+        with mock.patch('logging.getLogger') as getLogger:
+            response = wrapped(self.viewset, self.request)
+            getLogger.return_value.assert_called()
         self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
 
     def test_create_wrapper_aborts_on_bad_response(self):
-        def view(viewset, _request):
+        def view(viewset, _request, **kwargs):
             if viewset.counter == 2:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'detail': 'error'})
             viewset.counter += 1
@@ -85,16 +89,18 @@ class BulkOperationTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_bulk_destroy_catches_exception(self):
-        def view(viewset, _request):
+        def view(viewset, _request, **kwargs):
             if viewset.counter == 2:
                 raise Exception('BOOM')
             viewset.counter += 1
             return Response(status=status.HTTP_204_NO_CONTENT)
 
         self.viewset.counter = 0
-        self.viewset.destroy = view
+        self.viewset.destroy = MethodType(view, self.viewset, mock.Mock)
         self.request.data = ['foo', 'bar', 'baz', 'quux']
-        response = bulk.bulk_destroy_impl(self.viewset, self.request)
+        with mock.patch('logging.getLogger') as getLogger:
+            response = bulk.bulk_destroy_impl(self.viewset, self.request)
+            getLogger.return_value.assert_called()
         self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
 
     def test_bulk_destroy_aborts_on_bad_response(self):
@@ -138,16 +144,18 @@ class BulkOperationTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_bulk_update_catches_exception(self):
-        def view(viewset, _request):
+        def view(viewset, _request, **kwargs):
             if viewset.counter == 2:
                 raise Exception('BOOM')
             viewset.counter += 1
             return Response(status=status.HTTP_200_OK)
 
         self.viewset.counter = 0
-        self.viewset.update = view
+        self.viewset.update = MethodType(view, self.viewset, mock.Mock)
         self.request.data = {'foo': {'key': 'val1'}, 'bar': {'key': 'val2'}, 'baz': {'key': 'val3'}}
-        response = bulk.bulk_update_impl(self.viewset, self.request)
+        with mock.patch('logging.getLogger') as getLogger:
+            response = bulk.bulk_update_impl(self.viewset, self.request)
+            getLogger.return_value.assert_called()
         self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
 
     def test_bulk_update_aborts_on_bad_response(self):
