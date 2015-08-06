@@ -946,7 +946,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_update_release_component(self):
         url = reverse('releasecomponent-detail', kwargs={'pk': 1})
-        data = {'release': {'release_id': 'release-1.0', "active": True}, 'global_component': 'python', 'name': 'python26'}
+        data = {'name': 'python26'}
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         del response.data['dist_git_web_url']
@@ -957,14 +957,15 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         del response.data['bugzilla_component']
         del response.data['brew_package']
         del response.data['type']
+        del response.data['release']
+        del response.data['global_component']
         data.update({'active': True})
         self.assertEqual(response.data, data)
         self.assertNumChanges([1])
 
     def test_update_release_component_extra_fields(self):
         url = reverse('releasecomponent-detail', kwargs={'pk': 1})
-        data = {'release': {'release_id': 'release-1.0', "active": True},
-                'global_component': 'python', 'name': 'python26', 'foo': 'bar'}
+        data = {'name': 'python26', 'foo': 'bar'}
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data.get('detail'), 'Unknown fields: "foo".')
