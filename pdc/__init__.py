@@ -9,7 +9,7 @@ import subprocess
 VERSION = "v0.1.0-alpha.2"
 
 old_cwd = os.getcwd()
-os.chdir(os.path.dirname(os.path.dirname(__file__)))
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # NOTE(xchu): use `git describe` when under git repository.
 if os.system('git rev-parse 2> /dev/null > /dev/null') == 0:
     pipe = subprocess.Popen("git describe",
