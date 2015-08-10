@@ -76,6 +76,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissions'
     ],
 
+    'DEFAULT_METADATA_CLASS': 'contrib.bulk_operations.metadata.SimpleMetadata',
+
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
 
     'DEFAULT_RENDERER_CLASSES': (

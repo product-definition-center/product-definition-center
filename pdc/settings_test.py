@@ -35,6 +35,8 @@ REST_FRAMEWORK = {
 
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
 
+    'DEFAULT_METADATA_CLASS': 'contrib.bulk_operations.metadata.BulkMetadata',
+
     'PAGINATE_BY': 20,
 
     'DEFAULT_RENDERER_CLASSES': (

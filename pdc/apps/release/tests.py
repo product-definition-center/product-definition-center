@@ -906,6 +906,10 @@ class ReleaseRPMMappingViewSetTestCase(APITestCase):
                                    args=['release-1.0', 'ponies']))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_options_on_list_url(self):
+        response = self.client.options(reverse('release-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 class ReleaseUpdateRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
