@@ -19,7 +19,6 @@ from pdc.apps.contact.serializers import RoleContactSerializer
 from pdc.apps.common.serializers import DynamicFieldsSerializerMixin, LabelSerializer, StrictSerializerMixin
 from pdc.apps.common.fields import ChoiceSlugField
 from pdc.apps.release.models import Release
-from pdc.apps.release.serializers import ReleaseSerializer
 from .models import (GlobalComponent,
                      RoleContact,
                      ReleaseComponent,
@@ -300,20 +299,17 @@ class BugzillaComponentSerializer(DynamicFieldsSerializerMixin,
         fields = ('id', 'name', 'parent_component', 'subcomponents')
 
 
-class ReleaseField(serializers.Field):
-    def to_representation(self, value):
-        ret = {}
-        serializer = ReleaseSerializer(value)
-        ret.setdefault('release_id', serializer.data['release_id'])
-        ret.setdefault('active', serializer.data['active'])
-        return ret
+class ReleaseField(serializers.SlugRelatedField):
+    def __init__(self, **kwargs):
+        super(ReleaseField, self).__init__(slug_field='release_id',
+                                           queryset=Release.objects.all(),
+                                           **kwargs)
 
-    def to_internal_value(self, data):
-        try:
-            rel = Release.objects.get(release_id=data)
-        except Release.DoesNotExist:
-            raise Exception("Release with ID %s doesn't exist" % data)
-        return rel
+    def to_representation(self, value):
+        return {
+            'release_id': value.release_id,
+            'active': value.active
+        }
 
 
 class ReleaseComponentSerializer(DynamicFieldsSerializerMixin,

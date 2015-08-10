@@ -841,6 +841,17 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1])
 
+    def test_create_release_component_for_non_existing_release(self):
+        url = reverse('releasecomponent-list')
+        data = {'release': 'hello-1.0',
+                'global_component': 'python',
+                'name': 'python26',
+                'brew_package': 'python-pdc'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {'release': ['Object with release_id=hello-1.0 does not exist.']})
+        self.assertNumChanges([])
+
     def test_create_release_component_with_type(self):
         url = reverse('releasecomponent-list')
         data = {'release': 'release-1.0', 'global_component': 'python', 'name': 'python26',
