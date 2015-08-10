@@ -263,7 +263,8 @@ class GroupType(models.Model):
 
 
 class ReleaseComponentGroup(models.Model):
-    group_type = models.ForeignKey(GroupType, related_name='release_component_groups')
+    group_type = models.ForeignKey(GroupType, related_name='release_component_groups',
+                                   on_delete=models.PROTECT)
     release = models.ForeignKey(Release, related_name='release_component_groups')
     description = models.CharField(max_length=200)
     components = models.ManyToManyField(ReleaseComponent, related_name='release_component_groups', blank=True)
