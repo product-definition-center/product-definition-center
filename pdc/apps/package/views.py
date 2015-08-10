@@ -151,10 +151,10 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
         __Data__:
 
             {
-                'image_id':           string,           # required
-                'image_format':       string,           # required
-                'md5':                string,           # required
-                'rpms': [
+                "image_id":           string,           # required
+                "image_format":       string,           # required
+                "md5":                string,           # required
+                "rpms": [
                     {
                         "name":          string,         # required
                         "epoch":         int,            # required
@@ -167,7 +167,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                     }
                     ...
                 ],                                       # optional
-                'archives': [
+                "archives": [
                     {
                         "build_nvr":     string,         # required
                         "name":          string,         # required
@@ -176,7 +176,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                     }
                     ...
                 ],                                       # optional
-                'releases': [
+                "releases": [
                         release_id,      string          # optional
                         ......
                 ]                                        # optional
@@ -189,14 +189,14 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
 
             {
                 "url": url,
-                'image_id':           string,
-                'image_format':       string,
-                'md5':                string,
-                'rpms': [
+                "image_id":           string,
+                "image_format":       string,
+                "md5":                string,
+                "rpms": [
                     "rpm_nevra",      string,
                     ...
                 ],
-                'archives': [
+                "archives": [
                     {
                         "build_nvr":     string,
                         "name":          string,
@@ -205,7 +205,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                     }
                     ...
                 ],
-                'releases': [
+                "releases": [
                         "release_id",   string
                         ......
                 ]
@@ -243,14 +243,14 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
               "results": [
                 {
                     "url": url,
-                    'image_id':           string,
-                    'image_format':       string,
-                    'md5':                string,
-                    'rpms': [
+                    "image_id":           string,
+                    "image_format":       string,
+                    "md5":                string,
+                    "rpms": [
                         "rpm_nevra",      string,
                         ...
                     ],
-                    'archives': [
+                    "archives": [
                         {
                             "build_nvr":     string,
                             "name":          string,
@@ -259,7 +259,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                         }
                         ...
                     ],
-                    'releases': [
+                    "releases": [
                         "release_id",   string
                         ......
                     ]
@@ -282,14 +282,14 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
 
             {
                 "url": url,
-                'image_id':           string,
-                'image_format':       string,
-                'md5':                string,
-                'rpms': [
+                "image_id":           string,
+                "image_format":       string,
+                "md5":                string,
+                "rpms": [
                     "rpm_nevra",      string,
                     ...
                 ],
-                'archives': [
+                "archives": [
                     {
                         "build_nvr":     string,
                         "name":          string,
@@ -298,7 +298,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                     }
                     ...
                 ],
-                'releases': [
+                "releases": [
                         "release_id",   string
                         ......
                 ]
@@ -313,10 +313,10 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
         PUT: for full fields update
 
             {
-                'image_id':           string,
-                'image_format':       string,
-                'md5':                string,
-                'rpms': [
+                "image_id":           string,
+                "image_format":       string,
+                "md5":                string,
+                "rpms": [
                     {
                         "name":          string,
                         "epoch":         int,
@@ -328,7 +328,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                     }
                     ...
                 ],
-                'archives': [
+                "archives": [
                     {
                         "build_nvr":     string,
                         "name":          string,
@@ -337,7 +337,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                     }
                     ...
                 ],
-                'releases': [
+                "releases": [
                         "release_id",   string
                         ......
                 ]
@@ -345,11 +345,11 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
 
         PATCH: for partial update
 
-            # so you can give one or more fields in ['image_id', 'image_format',
-            #                                        'md5', 'rpms', 'archives']
+            # so you can give one or more fields in ["image_id", "image_format",
+            #                                        "md5", "rpms", "archives"]
             # to do the update
 
-        __NOTE:__ when updating 'image_format', its value must be an existed one, otherwise it will
+        __NOTE:__ when updating `image_format`, its value must be an existed one, otherwise it will
         cause HTTP 400 BAD REQUEST error.
 
         __URL__:
@@ -359,14 +359,14 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
 
             {
                 "url": url,
-                'image_id':           string,
-                'image_format':       string,
-                'md5':                string,
-                'rpms': [
+                "image_id":           string,
+                "image_format":       string,
+                "md5":                string,
+                "rpms": [
                     "rpm_nevra",      string,
                     ...
                 ],
-                'archives': [
+                "archives": [
                     {
                         "build_nvr":     string,
                         "name":          string,
@@ -375,7 +375,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                     }
                     ...
                 ],
-                'releases': [
+                "releases": [
                         "release_id",   string
                         ......
                 ]
