@@ -55,7 +55,7 @@ class BulkOperationTestCase(unittest.TestCase):
         self.request.data = ['foo', 'bar', 'baz', 'quux']
         with mock.patch('logging.getLogger') as getLogger:
             response = wrapped(self.viewset, self.request)
-            getLogger.return_value.assert_called()
+            self.assertTrue(getLogger.return_value.error.called)
         self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
 
     def test_create_wrapper_aborts_on_bad_response(self):
@@ -100,7 +100,7 @@ class BulkOperationTestCase(unittest.TestCase):
         self.request.data = ['foo', 'bar', 'baz', 'quux']
         with mock.patch('logging.getLogger') as getLogger:
             response = bulk.bulk_destroy_impl(self.viewset, self.request)
-            getLogger.return_value.assert_called()
+            self.assertTrue(getLogger.return_value.error.called)
         self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
 
     def test_bulk_destroy_aborts_on_bad_response(self):
@@ -155,7 +155,7 @@ class BulkOperationTestCase(unittest.TestCase):
         self.request.data = {'foo': {'key': 'val1'}, 'bar': {'key': 'val2'}, 'baz': {'key': 'val3'}}
         with mock.patch('logging.getLogger') as getLogger:
             response = bulk.bulk_update_impl(self.viewset, self.request)
-            getLogger.return_value.assert_called()
+            self.assertTrue(getLogger.return_value.error.called)
         self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
 
     def test_bulk_update_aborts_on_bad_response(self):
