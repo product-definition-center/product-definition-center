@@ -618,6 +618,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
                 "id": int,
                 "contact_role": "qe_group",
                 "contact": {
+                    "id": int,                  # id of person or maillist
                     "mail_name": string,
                     "email": "email@example.com"
                 }
@@ -666,6 +667,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
                         "id": int,
                         "contact_role": "qe_group",
                         "contact": {
+                            "id": int,                  # id of person or maillist
                             "mail_name": string,
                             "email": "email@example.com"
                         }
@@ -686,6 +688,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
                         "id": int,
                         "contact_role": "qe_group",
                         "contact": {
+                            "id": int,                  # id of person or maillist
                             "mail_name": string,
                             "email": "string@example.com"
                         }
@@ -707,6 +710,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
                         "id": int,
                         "contact_role": "qe_group",
                         "contact": {
+                            "id": int,                  # id of person or maillist
                             "username": "test",
                             "email": "test@example.com"
                         }
@@ -732,6 +736,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
                 "id": int,
                 "contact_role": "qe_group",
                 "contact": {
+                    "id": int,                  # id of person or maillist
                     "mail_name": string,
                     "email": "string@example.com"
                 }
@@ -741,7 +746,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
 
             curl -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/role-contacts/1/
             # output
-            {"id": 1, "contact_role": "qe_group", "contact": {"username": "test", "email": "test@example.com"}}
+            {"id": 1, "contact_role": "qe_group", "contact": {"id": 1, "username": "test", "email": "test@example.com"}}
         """
         return super(RoleContactViewSet, self).retrieve(request, *args, **kwargs)
 
@@ -781,6 +786,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
                 "id": 1,
                 "contact_role": "new_role",
                 "contact": {
+                    "id": int,                  # id of person or maillist
                     "username": "new_name",
                     "email": "new_email"
                 }
@@ -792,13 +798,13 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
 
             curl -X PUT -d '{"contact_role": "new_role", "contact": {"username": "new_name", "email": "new_email"}}' -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/role-contacts/1/
             # output
-            {"id": 1, "contact_role": "new_role", "contact": {"username": "new_name", "email": "new_email"}}
+            {"id": 1, "contact_role": "new_role", "contact": {"id": 1, "username": "new_name", "email": "new_email"}}
 
         PATCH:
 
             curl -X PATCH -d '{"contact_role": "new_role"}' -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/role-contacts/1/
             # output
-            {"id": 1, "contact_role": "new_role", "contact": {"username": "new_name", "email": "new_email"}}
+            {"id": 1, "contact_role": "new_role", "contact": {"id": 1, "username": "new_name", "email": "new_email"}}
         """
         return super(RoleContactViewSet, self).update(request, *args, **kwargs)
 
