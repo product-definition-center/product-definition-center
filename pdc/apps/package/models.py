@@ -28,6 +28,7 @@ class RPM(models.Model):
     srpm_nevra          = models.CharField(max_length=200, null=True, blank=True, db_index=True)
     # Well behaved filenames are unique, but that is enforced by having unique NVRA.
     filename            = models.CharField(max_length=4096)
+    linked_releases     = models.ManyToManyField('release.Release', related_name='linked_rpms')
 
     class Meta:
         unique_together = (
@@ -36,6 +37,11 @@ class RPM(models.Model):
 
     def __unicode__(self):
         return u"%s.rpm" % self.nevra
+
+    def linked_composes(self):
+        from pdc.apps.compose.models import Compose
+        """Return a set of all composes that this RPM is linked"""
+        return Compose.objects.filter(variant__variantarch__composerpm__rpm=self)
 
     @property
     def nevra(self):
@@ -48,9 +54,14 @@ class RPM(models.Model):
             raise ValidationError("RPM's srpm_nevra should be empty if and only if arch is src")
 
     def export(self, fields=None):
-        _fields = ['name', 'epoch', 'version', 'release', 'arch',
-                   'srpm_name', 'srpm_nevra'] if fields is None else fields
-        return model_to_dict(self, fields=_fields)
+        _fields = set(['name', 'epoch', 'version', 'release', 'arch',
+                       'srpm_name', 'srpm_nevra', 'linked_releases']) if fields is None else set(fields)
+        result = model_to_dict(self, fields=_fields - {'linked_releases'})
+        if 'linked_releases' in _fields:
+            result['linked_releases'] = []
+            for linked_release in self.linked_releases.all():
+                result['linked_releases'].append(linked_release.release_id)
+        return result
 
     @staticmethod
     def default_filename(data):

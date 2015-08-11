@@ -121,15 +121,18 @@ class VersionFinderTestCase(APITestCase):
             {'compose': u'compose-1', 'packages': [
                 {'name': u'bash', 'version': u'1.2.3', 'epoch': 0, 'release': u'4.b1',
                  'arch': u'x86_64', 'srpm_name': u'bash', 'srpm_nevra': u'bash-0:1.2.3-4.b1.src',
-                 'filename': 'bash-1.2.3-4.b1.x86_64.rpm'}]},
+                 'filename': 'bash-1.2.3-4.b1.x86_64.rpm', 'id': 1,
+                 'linked_composes': [u'compose-1', u'compose-2'], 'linked_releases': []}]},
             {'compose': u'compose-2', 'packages': [
                 {'name': u'bash', 'version': u'1.2.3', 'epoch': 0, 'release': u'4.b1',
                  'arch': u'x86_64', 'srpm_name': u'bash', 'srpm_nevra': u'bash-0:1.2.3-4.b1.src',
-                 'filename': 'bash-1.2.3-4.b1.x86_64.rpm'}]},
+                 'filename': 'bash-1.2.3-4.b1.x86_64.rpm', 'id': 1,
+                 'linked_composes': [u'compose-1', u'compose-2'], 'linked_releases': []}]},
             {'compose': u'compose-3', 'packages': [
                 {'name': u'bash', 'version': u'5.6.7', 'epoch': 0, 'release': u'8',
                  'arch': u'x86_64', 'srpm_name': u'bash', 'srpm_nevra': None,
-                 'filename': 'bash-5.6.7-8.x86_64.rpm'}]}
+                 'filename': 'bash-5.6.7-8.x86_64.rpm', 'id': 2,
+                 'linked_composes': [u'compose-3'], 'linked_releases': []}]}
         ]
         self.assertEqual(response.data, expected)
 

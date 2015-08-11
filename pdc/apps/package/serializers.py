@@ -13,12 +13,30 @@ from . import models
 from pdc.apps.common.serializers import StrictSerializerMixin
 
 
+class ReleaseRelatedField(serializers.RelatedField):
+    def to_representation(self, value):
+        return value.release_id
+
+    def to_internal_value(self, data):
+        try:
+            return self.queryset.get(release_id=data)
+        except ObjectDoesNotExist:
+            raise serializers.ValidationError("release with release_id %s doesn't exist." % data)
+        except Exception as err:
+            raise serializers.ValidationError("Can not find release with release_id (%s): %s." %
+                                              (data, err))
+
+
 class RPMSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     filename = serializers.CharField(required=False)
+    linked_releases = ReleaseRelatedField(many=True, read_only=False, queryset=models.Release.objects.all(),
+                                          required=False)
+    linked_composes = serializers.SlugRelatedField(read_only=True, slug_field='compose_id', many=True)
 
     class Meta:
         model = models.RPM
-        fields = ('name', 'version', 'epoch', 'release', 'arch', 'srpm_name', 'srpm_nevra', 'filename')
+        fields = ('id', 'name', 'version', 'epoch', 'release', 'arch', 'srpm_name', 'srpm_nevra', 'filename',
+                  'linked_releases', 'linked_composes')
 
     def to_internal_value(self, data):
         # If filename is not present, compute one.
@@ -135,20 +153,6 @@ class ArchiveRelatedField(serializers.RelatedField):
                 return archive
         else:
             raise serializers.ValidationError("Unsupported Archive input.")
-
-
-class ReleaseRelatedField(serializers.RelatedField):
-    def to_representation(self, value):
-        return value.release_id
-
-    def to_internal_value(self, data):
-        try:
-            return self.queryset.get(release_id=data)
-        except ObjectDoesNotExist:
-            raise serializers.ValidationError("release with release_id %s doesn't exist." % data)
-        except Exception as err:
-            raise serializers.ValidationError("Can not find release with release_id (%s): %s." %
-                                              (data, err))
 
 
 class BuildImageSerializer(StrictSerializerMixin, serializers.HyperlinkedModelSerializer):

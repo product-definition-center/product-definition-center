@@ -13,13 +13,13 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('release', '0002_auto_20150512_0719'),
-        ('package', '0002_auto_20150512_0714'),
+        ('package', '0003_buildimage_releases'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='buildimage',
-            name='releases',
-            field=models.ManyToManyField(to='release.Release'),
+            model_name='rpm',
+            name='linked_releases',
+            field=models.ManyToManyField(related_name='linked_rpms', to='release.Release'),
         ),
     ]

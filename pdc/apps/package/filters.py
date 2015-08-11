@@ -23,11 +23,12 @@ class RPMFilter(django_filters.FilterSet):
     filename    = MultiValueFilter()
     compose     = MultiValueFilter(name='composerpm__variant_arch__variant__compose__compose_id',
                                    distinct=True)
+    linked_release = MultiValueFilter(name='linked_releases__release_id', distinct=True)
 
     class Meta:
         model = models.RPM
         fields = ('name', 'version', 'epoch', 'release', 'arch', 'srpm_name',
-                  'srpm_nevra', 'compose', 'filename')
+                  'srpm_nevra', 'compose', 'filename', 'linked_release')
 
 
 class ImageFilter(django_filters.FilterSet):
