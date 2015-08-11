@@ -178,6 +178,12 @@ class BulkOperationTestCase(unittest.TestCase):
         response = bulk.bulk_update_impl(self.viewset, self.request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_bulk_delete_with_list_of_dicts(self):
+        self.request.data = [{"hello": "world"}]
+        response = bulk.bulk_destroy_impl(self.viewset, self.request)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('not a valid identifier', response.data.get('detail', ''))
+
 
 if __name__ == '__main__':
     unittest.main()

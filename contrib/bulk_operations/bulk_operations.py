@@ -87,6 +87,10 @@ def bulk_destroy_impl(self, request, **kwargs):
     if not isinstance(request.data, list):
         return Response(status=status.HTTP_400_BAD_REQUEST,
                         data={'detail': 'Bulk delete needs a list of identifiers.'})
+    for ident in request.data:
+        if not isinstance(ident, basestring) and not isinstance(ident, int):
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={'detail': '"%s" is not a valid identifier.' % ident})
     self.kwargs.update(kwargs)
     for ident in OrderedDict.fromkeys(request.data):
         self.kwargs[self.lookup_field] = unicode(ident)
