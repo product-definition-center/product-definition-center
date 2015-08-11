@@ -5,6 +5,10 @@
 #
 from django.conf import settings
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class DummyMessenger(object):
     def __init__(self):
@@ -49,3 +53,36 @@ class ProtonMessenger(object):
         self.message.body = msg
         self.messenger.put(self.message)
         self.messenger.send()
+
+
+class StompMessenger(object):
+    def __init__(self):
+        import stomp
+        self.connection = stomp.Connection(
+            host_and_ports=settings.MESSAGE_BUS['HOST_AND_PORTS'],
+            use_ssl=True,
+            ssl_key_file=settings.MESSAGE_BUS['KEY_FILE'],
+            ssl_cert_file=settings.MESSAGE_BUS['CERT_FILE'],
+        )
+        self.connected = self.do_connect()
+
+    def do_connect(self):
+        try:
+            self.connection.start()
+            self.connection.connect()
+        except Exception, e:
+            logger.warn("StompMessenger connection exception(%s): %s." % (type(e), e))
+            return False
+        return True
+
+    def send_message(self, topic, msg):
+        address = '/topic/' + settings.MESSAGE_BUS['TOPIC'] + str(topic)
+        if self.connected or self.do_connect():
+            try:
+                self.connection.send(body=msg, destination=address,
+                                     headers={'persistent': 'true'},
+                                     auto='true')
+            except Exception, e:
+                logger.warn("Send Message exception(%s): %s." % (type(e), e))
+        else:
+            logger.warn("Send Message exception: Failed to Connect to Messaging Server.")

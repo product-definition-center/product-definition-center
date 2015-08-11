@@ -223,6 +223,7 @@ EMPTY_PATCH_ERROR_RESPONSE = {
 MESSAGE_BUS = {
     # MLP: Messaging Library Package
     #      e.g. `fedmsg` for fedmsg or `kombu` for AMQP and other transports that `kombu` supports.
+    #           `stomp` for STOMP supports.
     'MLP': '',
 
     # # `fedmsg` config example:
@@ -248,6 +249,17 @@ MESSAGE_BUS = {
     #         'cert_reqs': ssl.CERT_REQUIRED,
     #     }
     # }
+    #
+    # # `stomp` config items:
+    # 'MLP': 'stomp',
+    # 'HOST_AND_PORTS': [
+    #     ('stomp.example1.com', 61613),
+    #     ('stomp.example2.com', 61613),
+    #     ('stomp.example3.com', 61613),
+    # ],
+    # 'TOPIC': 'pdc',
+    # 'CERT_FILE': '',
+    # 'KEY_FILE': '',
 }
 
 LOGGING = {

@@ -65,14 +65,14 @@ def _link_compose_to_integrated_product(request, compose, variant):
 
 def _add_compose_create_msg(request, compose_obj):
     """
-    Add compose create message to request.messagings.
+    Add compose create message to request._messagings.
     """
     msg = {'action': 'create',
            'compose_id': compose_obj.compose_id,
            'compose_date': compose_obj.compose_date.isoformat(),
            'compose_type': compose_obj.compose_type.name,
            'compose_respin': compose_obj.compose_respin}
-    request.messagings.append(('.compose', json.dumps(msg)))
+    request._request._messagings.append(('.compose', json.dumps(msg)))
 
 
 @transaction.atomic
@@ -95,8 +95,7 @@ def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
         compose_label=ci.compose.label or None,
         acceptance_testing=acceptance_status,
     )
-
-    if created and hasattr(request, 'messagings'):
+    if created and hasattr(request._request, '_messagings'):
         # add message
         _add_compose_create_msg(request, compose_obj)
 
@@ -177,8 +176,7 @@ def compose__import_images(request, release_id, composeinfo, image_manifest):
         compose_respin=ci.compose.respin,
         compose_label=ci.compose.label or None,
     )
-
-    if created and hasattr(request, 'messagings'):
+    if created and hasattr(request._request, '_messagings'):
         # add message
         _add_compose_create_msg(request, compose_obj)
 
