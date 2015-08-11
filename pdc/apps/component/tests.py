@@ -2173,6 +2173,13 @@ class GroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertNumChanges([1])
 
+    def test_create_group_without_component(self):
+        url = reverse('componentgroup-list')
+        data = {'group_type': 'type2', 'release': 'release-1.0', 'description': 'dd'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNumChanges([1])
+
     def test_create_group_with_non_existed_release_component(self):
         url = reverse('componentgroup-list')
         data = {'group_type': 'type2', 'release': 'release-1.0', 'description': 'dd', 'components': [9999]}

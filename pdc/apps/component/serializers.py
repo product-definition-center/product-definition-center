@@ -467,10 +467,10 @@ class GroupSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 
     def validate(self, value):
         if not self.instance or not self.partial:
-            components = value.get('components')
+            components = value.get('components', [])
             release = value.get('release')
         elif 'components' in value:
-            components = value.get('components')
+            components = value.get('components', [])
             release = self.instance.release
         else:
             components = self.instance.components.all()
