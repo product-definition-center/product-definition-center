@@ -91,6 +91,13 @@ router.register(r'rpc/repos/clone',
                 repo_views.RepoCloneViewSet,
                 base_name='repoclone')
 
+router.register(r'content-delivery-repos', repo_views.RepoViewSet)
+router.register(r'content-delivery-repo-families', repo_views.RepoFamilyViewSet,
+                base_name='contentdeliveryrepofamily')
+router.register(r'rpc/content-delivery-repos/clone',
+                repo_views.RepoCloneViewSet,
+                base_name='cdreposclone')
+
 router.register('overrides/rpm',
                 compose_views.ReleaseOverridesRPMViewSet,
                 base_name='overridesrpm')

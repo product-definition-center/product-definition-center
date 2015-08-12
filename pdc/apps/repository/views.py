@@ -27,7 +27,10 @@ class RepoViewSet(ChangeSetCreateModelMixin,
                   mixins.RetrieveModelMixin,
                   viewsets.GenericViewSet):
     """
-    An API endpoint providing access to repositories.
+    An API endpoint providing access to content delivery repositories.
+
+    Please access this endpoint by [%(HOST_NAME)s/%(API_PATH)s/content-delivery-repos/](/%(API_PATH)s/content-delivery-repos/).
+    Endpoint [%(HOST_NAME)s/%(API_PATH)s/repos/](/%(API_PATH)s/repos/) is deprecated.
     """
     queryset = models.Repo.objects.all().select_related()
     serializer_class = serializers.RepoSerializer
@@ -37,7 +40,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: `POST`
 
-        __URL__: `/repos/`
+        __URL__: `/content-delivery-repos/`
 
         __Data__:
 
@@ -54,7 +57,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
                 product_id:       int        (OPTIONAL)
             }
 
-        There are additional validations for the repository name for specific
+        There are additional validations for the content delivery repository name for specific
         content category. If and only if the content category is `debug`, the
         name must contain `debug` substring.
 
@@ -76,7 +79,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: `GET`
 
-        __URL__: `/repos/`
+        __URL__: `/content-delivery-repos/`
 
         __Query params__:
 
@@ -113,7 +116,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: `PUT`, `PATCH`
 
-        __URL__: `/repos/{id}`
+        __URL__: `/content-delivery-repos/{id}`
 
         __Data__:
 
@@ -152,29 +155,33 @@ class RepoViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: `DELETE`
 
-        __URL__: /repos/{id}
+        __URL__: /content-delivery-repos/{id}
         """
         return super(RepoViewSet, self).destroy(*args, **kwargs)
 
 
 class RepoCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
+    """
+    Please access this endpoint by [%(HOST_NAME)s/%(API_PATH)s/rpc/content-delivery-repos/clone/](/%(API_PATH)s/rpc/content-delivery-repos/clone/).
+    Endpoint [%(HOST_NAME)s/%(API_PATH)s/rpc/repos/clone/](/%(API_PATH)s/rpc/repos/clone/) is deprecated.
+    """
     queryset = models.Repo.objects.none()   # Required for permissions
 
     def create(self, request):
         """
-        Clone all repositories from one release under another release.
+        Clone all content delivery repositories from one release under another release.
 
-        The call is atomic, i.e. either all repositories are cloned or nothing
+        The call is atomic, i.e. either all content delivery repositories are cloned or nothing
         is done.
 
         If the source and target releases do not have the same variants, the
-        cloning will silently ignore repositories with Variant.Arch that is
+        cloning will silently ignore content delivery repositories with Variant.Arch that is
         present in source release but not in target release. It is not a
         problem if the target release has additional variants.
 
         __Method__: `POST`
 
-        __URL__: `/rpc/repos/clone/`
+        __URL__: `/rpc/content-delivery-repos/clone/`
 
 
         __Data__:
@@ -195,7 +202,7 @@ class RepoCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
         cloned.
 
         __Response__:
-        The call returns a list of repositories created under target release.
+        The call returns a list of content delivery repositories created under target release.
 
             [
               {
@@ -274,8 +281,12 @@ class RepoFamilyViewSet(StrictQueryParamMixin,
     """
     ##Overview##
 
-    This page shows the usage of the **RepoFamily API**, please see the
+    This page shows the usage of the **ContentDeliveryRepoFamily API**, please see the
     following for more details.
+
+
+    Please access this endpoint by [%(HOST_NAME)s/%(API_PATH)s/content-delivery-repo-families/](/%(API_PATH)s/content-delivery-repo-families/).
+    Endpoint [%(HOST_NAME)s/%(API_PATH)s/repo-families/](/%(API_PATH)s/repo-families/) is deprecated.
 
     ##Test tools##
 
@@ -291,7 +302,7 @@ class RepoFamilyViewSet(StrictQueryParamMixin,
         """
         __Method__: `GET`
 
-        __URL__: `/repo-families/`
+        __URL__: `/content-delivery-repo-families/`
 
         __Query params__:
 
@@ -314,7 +325,7 @@ class RepoFamilyViewSet(StrictQueryParamMixin,
 
         __Example__:
 
-            $ curl  "%(HOST_NAME)s/%(API_PATH)s/repo-families/
+            $ curl  "%(HOST_NAME)s/%(API_PATH)s/content-delivery-repo-families/
             {
                 "count": 3,
                 "next": null,
@@ -322,15 +333,15 @@ class RepoFamilyViewSet(StrictQueryParamMixin,
                 "results": [
                     {
                         "name": "dist",
-                        "description": "Production repositories"
+                        "description": "Production content delivery repositories"
                     },
                     {
                         "name": "beta",
-                        "description": "Beta (pre-production) repositories"
+                        "description": "Beta (pre-production) content delivery repositories"
                     },
                     {
                         "name": "htb",
-                        "description": "Repositories for High Touch Beta (HTB) customers"
+                        "description": "Content delivery repositories for High Touch Beta (HTB) customers"
                     }
                 ]
             }
