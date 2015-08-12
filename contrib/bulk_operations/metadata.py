@@ -53,7 +53,7 @@ class BulkMetadata(metadata.SimpleMetadata):
                 if method == 'PUT' and hasattr(view, 'get_object'):
                     try:
                         view.get_object()
-                    except AssertionError:
+                    except (AssertionError, KeyError):
                         pass
             except (exceptions.APIException, PermissionDenied, Http404):
                 pass
