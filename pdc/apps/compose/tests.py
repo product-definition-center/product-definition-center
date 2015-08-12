@@ -212,15 +212,18 @@ class FindComposeByReleaseRPMTestCase(APITestCase):
             {'compose': u'compose-1', 'packages': [
                 {'name': u'bash', 'version': u'1.2.3', 'epoch': 0, 'release': u'4.b1',
                  'arch': u'x86_64', 'srpm_name': u'bash', 'srpm_nevra': u'bash-0:1.2.3-4.b1.src',
-                 'filename': 'bash-1.2.3-4.b1.x86_64.rpm'}]},
+                 'filename': 'bash-1.2.3-4.b1.x86_64.rpm', 'id': 1,
+                 'linked_composes': ['compose-1', 'compose-2'], 'linked_releases': []}]},
             {'compose': u'compose-2', 'packages': [
                 {'name': u'bash', 'version': u'1.2.3', 'epoch': 0, 'release': u'4.b1',
                  'arch': u'x86_64', 'srpm_name': u'bash', 'srpm_nevra': u'bash-0:1.2.3-4.b1.src',
-                 'filename': 'bash-1.2.3-4.b1.x86_64.rpm'}]},
+                 'filename': 'bash-1.2.3-4.b1.x86_64.rpm', 'id': 1,
+                 'linked_composes': ['compose-1', 'compose-2'], 'linked_releases': []}]},
             {'compose': u'compose-3', 'packages': [
                 {'name': u'bash', 'version': u'5.6.7', 'epoch': 0, 'release': u'8',
                  'arch': u'x86_64', 'srpm_name': u'bash', 'srpm_nevra': None,
-                 'filename': 'bash-5.6.7-8.x86_64.rpm'}]}
+                 'filename': 'bash-5.6.7-8.x86_64.rpm', 'id': 2,
+                 'linked_composes': ['compose-3'], 'linked_releases': []}]}
         ]
         self.assertEqual(response.data, expected)
 
@@ -275,10 +278,16 @@ class FindLatestComposeByComposeRPMTestCase(APITestCase):
         response = self.client.get(url, {'to_dict': True})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('compose'), "compose-2")
-        self.assertEqual(response.data.get('packages'), [
-            {'name': u'bash', 'version': u'1.2.3', 'epoch': 0, 'release': u'4.b1',
-             'arch': u'x86_64', 'srpm_name': u'bash', 'srpm_nevra': u'bash-0:1.2.3-4.b1.src',
-             'filename': 'bash-1.2.3-4.b1.x86_64.rpm'}])
+        packages = response.data.get('packages')
+        self.assertEqual(len(packages), 1)
+        self.assertItemsEqual(packages[0].pop('linked_composes'), ['compose-1', 'compose-2'])
+        self.assertEqual(packages[0].pop('linked_releases'), [])
+        packages[0].pop('id')
+        self.assertDictEqual(
+            dict(packages[0]),
+            {'name': 'bash', 'version': '1.2.3', 'epoch': 0, 'release': '4.b1',
+             'arch': 'x86_64', 'srpm_name': 'bash', 'srpm_nevra': 'bash-0:1.2.3-4.b1.src',
+             'filename': 'bash-1.2.3-4.b1.x86_64.rpm'})
 
     def test_same_version_different_arch(self):
         """There is a previous compose with same version of package, but with different RPM.arch."""
