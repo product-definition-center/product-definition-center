@@ -603,8 +603,8 @@ class ComposeViewSet(StrictQueryParamMixin,
     def partial_update(self, request, *args, **kwargs):
         """
         The only two fields that can be modified by this call are
-        `acceptance_testing` and `linked_releases`. Trying to change anything
-        else will result in 400 BAD REQUEST response.
+        `acceptance_testing`, `linked_releases` and `rtt_tested_architectures`.
+        Trying to change anything else will result in 400 BAD REQUEST response.
 
         __Method__: PATCH
 
