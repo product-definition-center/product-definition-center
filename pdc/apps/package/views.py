@@ -11,9 +11,7 @@ from . import serializers
 from . import filters
 
 
-class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
-                 mixins.ListModelMixin,
-                 viewsets.GenericViewSet):
+class RPMViewSet(pdc_viewsets.PDCModelViewSet):
     """
     API endpoint that allows RPMs to be viewed.
     """
@@ -37,6 +35,7 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
           * `srpm_name`
           * `srpm_nevra`
           * `compose`
+          * `linked_release`
 
         __Response__:
 
@@ -47,6 +46,7 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
                 "previous": url,
                 "results": [
                     {
+                        "id": int,
                         "name": string,
                         "version": string,
                         "epoch": int,
@@ -54,13 +54,128 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
                         "arch": string,
                         "srpm_name": string,
                         "srpm_nevra": string,
-                        "filename": string
+                        "filename": string,
+                        "linked_releases": [string, ....],
+                        "linked_composes": [string, ....]
                     },
                     ...
                 ]
             }
         """
         return super(RPMViewSet, self).list(*args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        """
+        __Method__:
+        POST
+
+        __URL__:
+        `/rpms/`
+
+        __Data__:
+
+            {
+                "name": string,
+                "version": string,
+                "epoch": int,
+                "release": string,
+                "arch": string,
+                "srpm_name": string,
+                "srpm_nevra": string, srpm_nevra should be empty if and only if arch is src.
+                "filename": string, # optional
+                "linked_releases": [string, ....] # optional
+            }
+
+
+        __Response__:
+
+            {
+                "id": integer,
+                "name": string,
+                "version": string,
+                "epoch": int,
+                "release": string,
+                "arch": string,
+                "srpm_name": string,
+                "srpm_nevra": string,
+                "filename": string,
+                "linked_releases": [string, ....],
+                "linked_composes": []
+            }
+        """
+        return super(RPMViewSet, self).create(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        __Method__:
+        GET
+
+        __URL__:
+        `/rpms/{instance_pk}`
+
+        __Response__:
+
+            {
+                "id": integer,
+                "name": string,
+                "version": string,
+                "epoch": int,
+                "release": string,
+                "arch": string,
+                "srpm_name": string,
+                "srpm_nevra": string,
+                "filename": string,
+                "linked_releases": [string, ....],
+                "linked_composes": [string, ....]
+            }
+        """
+        return super(RPMViewSet, self).retrieve(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__:
+
+        PUT: for full fields update
+
+            {
+                "name": string,
+                "version": string,
+                "epoch": int,
+                "release": string,
+                "arch": string,
+                "srpm_name": string,
+                "srpm_nevra": string, srpm_nevra should be empty if and only if arch is src.
+                "filename": string,
+                "linked_releases": [string, ....] # optional
+            }
+
+        PATCH: for partial update
+
+            # so you can give one or more fields in ['name', 'version', 'epoch', 'release', 'arch',
+            #                                        'srpm_name', 'srpm_nevra', 'filename', 'linked_releases']
+            # to do the update
+
+
+        __URL__:
+        /rpms/{instance_pk}
+
+        __Response__:
+
+            {
+                "id": integer,
+                "name": string,
+                "version": string,
+                "epoch": int,
+                "release": string,
+                "arch": string,
+                "srpm_name": string,
+                "srpm_nevra": string,
+                "filename": string,
+                "linked_releases": [string, ....],
+                "linked_composes": [string, ....]
+            }
+        """
+        return super(RPMViewSet, self).update(request, *args, **kwargs)
 
 
 class ImageViewSet(pdc_viewsets.StrictQueryParamMixin,

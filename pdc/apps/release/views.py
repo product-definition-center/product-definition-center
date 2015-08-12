@@ -890,7 +890,7 @@ class ReleaseRPMMappingView(StrictQueryParamMixin, viewsets.GenericViewSet):
         only include variants and architectures listed for the release.
 
         The used overrides come from the release specified in the URL, not the
-        one for which the compose was orignally built for.
+        one for which the compose was originally built for.
 
         Following cases result in response of `404 NOT FOUND`:
 

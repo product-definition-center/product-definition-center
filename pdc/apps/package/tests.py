@@ -80,7 +80,7 @@ class RPMSaveValidationTestCase(TestCase):
         self.assertEqual(0, models.RPM.objects.count())
 
 
-class RPMsListRESTTestCase(APITestCase):
+class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
         'pdc/apps/common/fixtures/test/sigkey.json',
         'pdc/apps/release/fixtures/tests/release.json',
@@ -113,7 +113,7 @@ class RPMsListRESTTestCase(APITestCase):
         self.assertEqual(response.data.get('count'), 1)
         response = self.client.get(url + '?arch=x86_64', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get('count'), 3)
+        self.assertEqual(response.data.get('count'), 2)
         response = self.client.get(url + '?srpm_name=bash', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 3)
@@ -123,9 +123,15 @@ class RPMsListRESTTestCase(APITestCase):
         response = self.client.get(url + '?srpm_nevra=null', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 1)
+
         response = self.client.get(url + '?compose=compose-1', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 2)
+        results = response.data.get('results', [])
+        ids = []
+        for result in results:
+            ids.append(result['id'])
+        self.assertTrue(1 in ids)
 
     def test_query_with_multi_value_against_same_key(self):
         url = reverse('rpms-list')
@@ -145,7 +151,7 @@ class RPMsListRESTTestCase(APITestCase):
 
     def test_query_with_wrong_params(self):
         url = reverse('rpms-list')
-        response = self.client.get(url + 'wrong_param', format='json')
+        response = self.client.get(url + 'wrong_param/', format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_query_with_only_key(self):
@@ -162,6 +168,76 @@ class RPMsListRESTTestCase(APITestCase):
         response = self.client.get(url + '?epoch=', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 0)
+
+    def test_retrieve_rpm(self):
+        url = reverse('rpms-detail', args=[1])
+        response = self.client.get(url, format='json')
+        expect_data = {"id": 1, "name": "bash", "version": "1.2.3", "epoch": 0, "release": "4.b1", "arch": "x86_64",
+                       "srpm_name": "bash", "srpm_nevra": "bash-0:1.2.3-4.b1.src",
+                       "filename": "bash-1.2.3-4.b1.x86_64.rpm", "linked_releases": [],
+                       "linked_composes": ["compose-1"]}
+        self.assertEqual(response.data, expect_data)
+
+    def test_create_rpm(self):
+        url = reverse('rpms-list')
+        data = {"name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1", "arch": "x86_64",
+                "srpm_name": "bash", "filename": "bash-1.2.3-4.b1.x86_64.rpm", "linked_releases": ['release-1.0'],
+                "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src"}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        expected_response_data = {"id": 4, 'linked_composes': [],
+                                  "name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1",
+                                  "arch": "x86_64", "srpm_name": "bash", "filename": "bash-1.2.3-4.b1.x86_64.rpm",
+                                  "linked_releases": ['release-1.0'], "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src"}
+        self.assertEqual(response.data, expected_response_data)
+        self.assertNumChanges([1])
+
+    def test_create_rpm_with_wrong_release(self):
+        url = reverse('rpms-list')
+        data = {"name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1", "arch": "x86_64",
+                "srpm_name": "bash", "filename": "bash-1.2.3-4.b1.x86_64.rpm", "linked_releases": ['release-1.0-wrong'],
+                "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src"}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_partial_update_rpm_with_assign_release(self):
+        url = reverse('rpms-detail', args=[1])
+        data = {"linked_releases": ['release-1.0']}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('linked_releases'), ['release-1.0'])
+        self.assertNumChanges([1])
+
+    def test_partial_update_rpm_with_assign_wrong_release(self):
+        url = reverse('rpms-detail', args=[1])
+        data = {"linked_releases": ['release-1.0-fake']}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_rpm(self):
+        data = {"name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1", "arch": "x86_64",
+                "srpm_name": "bash", "filename": "bash-1.2.3-4.b1.x86_64.rpm", "linked_releases": ['release-1.0'],
+                "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src"}
+        url = reverse('rpms-detail', args=[1])
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data.update({'id': 1, 'linked_composes': [u'compose-1']})
+        self.assertEqual(response.data, data)
+        self.assertNumChanges([1])
+
+    def test_update_rpm_with_linked_compose_should_read_only(self):
+        url = reverse('rpms-detail', args=[3])
+        data = {'linked_composes': [u'compose-1']}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.data.get('linked_composes'), [])
+
+    def test_bulk_update_patch(self):
+        self.client.patch(reverse('rpms-list'),
+                          {1: {"linked_releases": ['release-1.0']}}, format='json')
+        url = reverse('rpms-detail', args=[1])
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data.get("linked_releases"), ['release-1.0'])
+        self.assertNumChanges([1])
 
 
 class ImageRESTTestCase(APITestCase):
