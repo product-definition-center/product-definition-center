@@ -499,7 +499,7 @@ class RCForRelationshipRelatedField(ReleaseComponentRelatedField):
 
 
 class ReleaseComponentRelationshipSerializer(StrictSerializerMixin, serializers.ModelSerializer):
-    type = serializers.SlugRelatedField(
+    type = ChoiceSlugField(
         queryset=ReleaseComponentRelationshipType.objects.all(),
         slug_field='name',
         required=True,
