@@ -101,6 +101,14 @@ router.register(r'rpc/release/clone',
 router.register(r'rpc/where-to-file-bugs', compose_views.FilterBugzillaProductsAndComponents,
                 base_name='bugzilla')
 
+router.register('rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)',
+                compose_views.FindComposeByReleaseRPMViewSet,
+                base_name='findcomposebyrr')
+
+router.register('rpc/find-latest-compose-by-compose-rpm/(?P<compose_id>[^/]+)/(?P<rpm_name>[^/]+)',
+                compose_views.FindLatestComposeByComposeRPMViewSet,
+                base_name='findlatestcomposebycr')
+
 # register common view sets
 router.register(r'arches', common_views.ArchViewSet)
 router.register(r'sigkeys', common_views.SigKeyViewSet)
