@@ -3,7 +3,6 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
-from contrib.bulk_operations import bulk_operations
 
 from pdc.apps.auth import views as pdc_auth_views
 from pdc.apps.changeset import views as changeset_views
@@ -14,11 +13,10 @@ from pdc.apps.compose import views as compose_views
 from pdc.apps.repository import views as repo_views
 from pdc.apps.common import views as common_views
 from pdc.apps.package import views as rpm_views
+from pdc.apps.utils import SortedRouter
 
 
-router = bulk_operations.BulkRouter()
-
-# register the appropriate view sets here
+router = SortedRouter.PDCrouter()
 
 # register api token auth view
 router.register(r'auth/token', pdc_auth_views.TokenViewSet, base_name='token')
