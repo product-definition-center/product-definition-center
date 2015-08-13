@@ -837,7 +837,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         del response.data['srpm']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         data.update({'contacts': [], 'dist_git_branch': "release_branch", 'id': 3,
-                     'bugzilla_component': None, 'active': True, 'type': None})
+                     'bugzilla_component': None, 'active': True, 'type': 'rpm'})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1])
 
@@ -913,6 +913,14 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response1 = self.client.post(url1, data1, format='json')
         self.assertEqual(response1.status_code, status.HTTP_201_CREATED)
         self.assertNumChanges([1, 1])
+
+    def test_create_release_component_without_type(self):
+        url = reverse('releasecomponent-list')
+        data = {'release': 'release-1.0', 'global_component': 'python', 'name': 'python26', 'brew_package': 'python-pdc'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.get('type'), 'rpm')
+        self.assertNumChanges([1])
 
     def test_create_release_component_with_wrong_bugzillacomponent(self):
         url = reverse('releasecomponent-list')
@@ -1044,7 +1052,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         del response.data['dist_git_web_url']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         data.update({'contacts': [], 'dist_git_branch': "release_branch", 'id': 3,
-                     'bugzilla_component': None, 'srpm': None, 'active': True, 'type': None})
+                     'bugzilla_component': None, 'srpm': None, 'active': True, 'type': 'rpm'})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1])
 
@@ -1054,7 +1062,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         del response.data['dist_git_web_url']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         data.update({'contacts': [], 'dist_git_branch': "release_branch", 'id': 3,
-                     'bugzilla_component': None, 'srpm': None, 'active': True, 'type': None})
+                     'bugzilla_component': None, 'srpm': None, 'active': True, 'type': 'rpm'})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1, 1])
 
@@ -1065,7 +1073,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         del response.data['dist_git_web_url']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         data.update({'contacts': [], 'dist_git_branch': "release_branch", 'id': 3,
-                     'bugzilla_component': None, 'srpm': None, 'active': False, 'type': None})
+                     'bugzilla_component': None, 'srpm': None, 'active': False, 'type': 'rpm'})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1])
 
@@ -1252,6 +1260,12 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data['srpm'], None)
         self.assertEqual(bingding_models.ReleaseComponentSRPMNameMapping.objects.count(), 0)
         self.assertNumChanges([1])
+
+    def test_update_release_component_type_to_null(self):
+        url = reverse('releasecomponent-detail', kwargs={'pk': 1})
+        data = {'type': None}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_with_patch_wrong_format_srpm(self):
         url = reverse('releasecomponent-detail', kwargs={'pk': 1})

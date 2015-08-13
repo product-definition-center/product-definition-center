@@ -158,8 +158,8 @@ class ReleaseComponent(models.Model):
     release                     = models.ForeignKey(Release)
     global_component            = models.ForeignKey(GlobalComponent)
     bugzilla_component          = models.ForeignKey(BugzillaComponent, blank=True, null=True, on_delete=models.SET_NULL)
-    type                        = models.ForeignKey(ReleaseComponentType, blank=True, null=True,
-                                                    on_delete=models.SET_NULL, related_name='release_components',)
+    type                        = models.ForeignKey(ReleaseComponentType, default=1, on_delete=models.SET_DEFAULT,
+                                                    related_name='release_components')
     name                        = models.CharField(max_length=100)
     dist_git_branch             = models.CharField(max_length=100, blank=True, null=True)
     contacts                    = models.ManyToManyField(RoleContact, blank=True)
