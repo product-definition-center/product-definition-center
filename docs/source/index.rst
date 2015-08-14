@@ -17,6 +17,7 @@ Contents:
    versioning
    deployment
    bulk_operations
+   messaging
 
 
 Indices and tables
