@@ -51,21 +51,19 @@ class ChangesetViewSet(StrictQueryParamMixin,
 
         __QUERY Params__:
 
-            author              # optional
-            resource            # optional
-            changed_since       # optional
-            changed_until       # optional
+        %(FILTERS)s
 
-            **NOTE:** `changed_since` and `changed_until` only accept input that
-                      in one of the format listed in `DATETIME_INPUT_FORMATS`:
-                      (
-                        '%%Y-%%m-%%d %%H:%%M:%%S',     # '2006-10-25 14:30:59'
-                        '%%Y-%%m-%%d %%H:%%M:%%S.%%f',  # '2006-10-25 14:30:59.000200'
-                        '%%Y-%%m-%%d %%H:%%M',        # '2006-10-25 14:30'
-                        '%%Y-%%m-%%d',              # '2006-10-25'
-                      )
+        The dates for `changed_since` and `changed_until` should have one these
+        formats:
 
-            `resource` should be specified in all lower case
+            Format               | Example
+            ---------------------+---------------------------
+            %%Y-%%m-%%d %%H:%%M:%%S    | 2006-10-25 14:30:59
+            %%Y-%%m-%%d %%H:%%M:%%S.%%f | 2006-10-25 14:30:59.000200
+            %%Y-%%m-%%d %%H:%%M       | 2006-10-25 14:30
+            %%Y-%%m-%%d             | 2006-10-25
+
+        Resource names for `resource` should be specified in all lower case.
 
         __Response__:
 

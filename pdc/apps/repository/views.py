@@ -83,16 +83,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
 
         __Query params__:
 
-          * `arch`
-          * `content_category`
-          * `content_format`
-          * `name`
-          * `release_id`
-          * `repo_family`
-          * `service`
-          * `shadow` (possible values are `True` and `False`)
-          * `variant_uid`
-          * `product_id`
+        %(FILTERS)s
 
         __Response__:
 
@@ -306,7 +297,7 @@ class RepoFamilyViewSet(StrictQueryParamMixin,
 
         __Query params__:
 
-          * `name` (support LIKE)
+        %(FILTERS)s
 
         __Response__:
 

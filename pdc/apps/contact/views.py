@@ -71,8 +71,7 @@ class PersonViewSet(viewsets.PDCModelViewSet):
 
         __QUERY Params__:
 
-            username     # optional
-            email        # optional
+        %(FILTERS)s
 
         __Response__:
 
@@ -244,8 +243,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
 
         __QUERY Params__:
 
-            mail_name    # optional
-            email        # optional
+        %(FILTERS)s
 
         __Response__:
 
@@ -432,7 +430,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
         __QUERY Params__:
 
-            name  # optional
+        %(FILTERS)s
 
         __Response__:
 
@@ -644,10 +642,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
 
         __QUERY Params__:
 
-            contact_role  # optional
-            username      # optional
-            mail_name     # optional
-            email         # optional
+        %(FILTERS)s
 
         **NOTE:** Support listed query params. The logic is:
 

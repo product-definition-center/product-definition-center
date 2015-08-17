@@ -104,14 +104,9 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
 
         __QUERY Params__:
 
-            name
-            dist_git_path
-            label
-            email
-            contact_role             # Need to be used together with email to do the filter
-            upstream_homepage
-            upstream_scm_type
-            upstream_scm_url
+        %(FILTERS)s
+
+        The `contact_role` filter must be used together with `email`.
 
         __Response__:
 
@@ -360,10 +355,9 @@ class GlobalComponentContactViewSet(HackedComponentContactMixin,
 
         __QUERY Params__:
 
-            username
-            mail_name
-            email
-            contact_role             # Need to be used together with email to do the filter
+        %(FILTERS)s
+
+        The `contact_role` filter must be used together with `email`.
 
         __Response__:
 
@@ -719,16 +713,12 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
 
         __QUERY Params__:
 
-            name
-            release
-            global_component
-            include_inactive_release       # Do not show inactive release component by default
-            email
-            contact_role                   # Need to be used together with email to do the filter
-            active
-            bugzilla_component
-            srpm_name
-            type                           # The release component type
+        %(FILTERS)s
+
+        Components for inactive releases are not shown by default. You can
+        change this with `include_inactive_release` set to any non-empty value.
+
+        The `contact_role` filter must be used together with `email`.
 
         __Response__:
 
@@ -1160,7 +1150,7 @@ class ReleaseComponentContactViewSet(HackedComponentContactMixin,
 
         __QUERY Params__:
 
-            contact_role
+        %(FILTERS)s
 
         __Response__:
 
@@ -1384,8 +1374,7 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
 
         __QUERY Params__:
 
-            name
-            parent_component
+        %(FILTERS)s
 
         __Response__:
 
@@ -1692,7 +1681,7 @@ class GroupTypeViewSet(viewsets.PDCModelViewSet):
 
         __Query params__:
 
-          * `name`
+        %(FILTERS)s
 
         __Response__:
 
@@ -1814,9 +1803,7 @@ class GroupViewSet(viewsets.PDCModelViewSet):
 
         __Query params__:
 
-          * `group_type`
-          * `release`
-          * `release_component`
+        %(FILTERS)s
 
         __Response__:
 
@@ -1958,11 +1945,7 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
 
         __Query params__:
 
-          * `type`                      relationship type
-          * `from_component_release`    release_id of 'from' release component's release
-          * `from_component_name`       name of 'from' release component's release
-          * `to_component_release`      release_id of 'to' release component's release
-          * `to_component_name`         name of 'to' release component's release
+        %(FILTERS)s
 
         __Response__:
 
