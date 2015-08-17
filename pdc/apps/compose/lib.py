@@ -200,31 +200,31 @@ def compose__import_images(request, release_id, composeinfo, image_manifest):
             var_arch_obj, created = models.VariantArch.objects.get_or_create(arch=arch_obj, variant=variant_obj)
 
             for i in im.images.get(variant.uid, {}).get(arch, []):
-                # TODO: handle properly
-                try:
-                    image = package_models.Image.objects.get(file_name=os.path.basename(i.path), sha256=i.checksums["sha256"])
-                except package_models.Image.DoesNotExist:
-                    image = package_models.Image()
-                image.file_name = os.path.basename(i.path)
-                image.image_format_id = package_models.ImageFormat.get_cached_id(i.format)
-                image.image_type_id = package_models.ImageType.get_cached_id(i.type)
-                image.disc_number = i.disc_number
-                image.disc_count = i.disc_count
-                image.arch = i.arch
-                image.mtime = i.mtime
-                image.size = i.size
-                image.bootable = i.bootable
-                image.implant_md5 = i.implant_md5
-                image.volume_id = i.volume_id
-                image.md5 = i.checksums.get("md5", None)
-                image.sha1 = i.checksums.get("sha1", None)
-                image.sha256 = i.checksums.get("sha256", None)
-                image.save()
+                path, file_name = os.path.split(i.path)
+                path_id = models.Path.get_cached_id(path, create=True)
 
-                # TODO: path to ComposeImage
+                image, _ = package_models.Image.objects.get_or_create(
+                    file_name=file_name, sha256=i.checksums["sha256"],
+                    defaults={
+                        'image_format_id': package_models.ImageFormat.get_cached_id(i.format),
+                        'image_type_id': package_models.ImageType.get_cached_id(i.type),
+                        'disc_number': i.disc_number,
+                        'disc_count': i.disc_count,
+                        'arch': i.arch,
+                        'mtime': i.mtime,
+                        'size': i.size,
+                        'bootable': i.bootable,
+                        'implant_md5': i.implant_md5,
+                        'volume_id': i.volume_id,
+                        'md5': i.checksums.get("md5", None),
+                        'sha1': i.checksums.get("sha1", None),
+                    }
+                )
+
                 mi, created = models.ComposeImage.objects.get_or_create(
                     variant_arch=var_arch_obj,
-                    image=image)
+                    image=image,
+                    path_id=path_id)
                 imported_images += 1
 
     for obj in add_to_changelog:

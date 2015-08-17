@@ -8,6 +8,7 @@ import json
 import os.path
 
 from productmd.rpms import Rpms
+from productmd.images import Images, Image
 
 from django.conf import settings
 from kobo.django.views.generic import DetailView, SearchView
@@ -785,8 +786,11 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
         return Response(changes)
 
 
-class ComposeImportImagesView(StrictQueryParamMixin, viewsets.GenericViewSet):
+class ComposeImageView(StrictQueryParamMixin,
+                       viewsets.GenericViewSet):
     queryset = ComposeImage.objects.none()  # Required for permissions
+    lookup_field = 'compose_id'
+    lookup_value_regex = '[^/]+'
 
     def create(self, request):
         """
@@ -794,7 +798,7 @@ class ComposeImportImagesView(StrictQueryParamMixin, viewsets.GenericViewSet):
 
         __Method__: POST
 
-        __URL__: $LINK:composeimportimages-list$
+        __URL__: $LINK:composeimage-list$
 
         __Data__:
 
@@ -815,6 +819,67 @@ class ComposeImportImagesView(StrictQueryParamMixin, viewsets.GenericViewSet):
                      \\"image_manifest\\": $(cat /path/to/image-manifest.json), \\
                      \\"release_id\\": \\"release-1.0\\" }" \\
                 $URL:composeimportimages-list$
+        """
+        data = request.data
+        errors = {}
+        for key in ('release_id', 'composeinfo', 'image_manifest'):
+            if key not in data:
+                errors[key] = ["This field is required"]
+        if errors:
+            return Response(status=400, data=errors)
+        lib.compose__import_images(request, data['release_id'], data['composeinfo'], data['image_manifest'])
+        return Response(status=201)
+
+    def retrieve(self, request, **kwargs):
+        """
+        __Method__: `GET`
+
+        __URL__: $LINK:composeimage-detail:compose_id$
+
+        This API end-point allows retrieving RPM manifest for a given compose.
+        It will return the exact same data as was imported.
+        """
+        compose = get_object_or_404(Compose, compose_id=kwargs['compose_id'])
+        cimages = ComposeImage.objects.filter(variant_arch__variant__compose=compose)
+
+        manifest = Images()
+        manifest.compose.date = compose.compose_date.strftime('%Y%m%d')
+        manifest.compose.id = compose.compose_id
+        manifest.compose.respin = compose.compose_respin
+        manifest.compose.type = compose.compose_type.name
+
+        for cimage in cimages:
+            im = Image(None)
+            im.path = os.path.join(cimage.path.path, cimage.image.file_name)
+            im.arch = cimage.image.arch
+            im.bootable = cimage.image.bootable
+            im.mtime = cimage.image.mtime
+            im.size = cimage.image.size
+            im.volume_id = cimage.image.volume_id
+            im.type = cimage.image.image_type.name
+            im.format = cimage.image.image_format.name
+            im.arch = cimage.image.arch
+            im.disc_number = cimage.image.disc_number
+            im.disc_count = cimage.image.disc_count
+            im.checksums = {'sha256': cimage.image.sha256}
+            if cimage.image.md5:
+                im.checksums['md5'] = cimage.image.md5
+            if cimage.image.sha1:
+                im.checksums['sha1'] = cimage.image.sha1
+            im.implant_md5 = cimage.image.implant_md5
+            manifest.add(cimage.variant_arch.variant.variant_uid, cimage.variant_arch.arch.name, im)
+
+        return Response(manifest.serialize({}))
+
+
+class ComposeImportImagesView(StrictQueryParamMixin, viewsets.GenericViewSet):
+    # TODO: remove this class after next release
+    queryset = ComposeImage.objects.none()  # Required for permissions
+
+    def create(self, request):
+        """
+        This end-point is deprecated. Use
+        [/compose-images/](/rest_api/v1/compose-images/) instead.
         """
         data = request.data
         errors = {}

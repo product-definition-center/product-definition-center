@@ -74,6 +74,7 @@ router.register(r'composes/(?P<compose_id>[^/]+)/rpm-mapping',
                 compose_views.ComposeRPMMappingView,
                 base_name='composerpmmapping')
 router.register(r'compose-rpms', compose_views.ComposeRPMView)
+router.register(r'compose-images', compose_views.ComposeImageView)
 
 router.register(r'rpc/release/import-from-composeinfo',
                 release_views.ReleaseImportView,

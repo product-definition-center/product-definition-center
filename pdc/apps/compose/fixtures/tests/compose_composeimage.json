@@ -1,10 +1,18 @@
 [
   {
+    "model": "compose.Path",
+    "pk": 1,
+    "fields": {
+        "path": "path/to/images"
+    }
+  },
+  {
     "model": "compose.ComposeImage",
     "pk": 1,
     "fields": {
         "variant_arch": 1,
-        "image": 1
+        "image": 1,
+        "path": 1
     }
   },
   {
@@ -12,7 +20,8 @@
     "pk": 2,
     "fields": {
         "variant_arch": 1,
-        "image": 2
+        "image": 2,
+        "path": 1
     }
   },
   {
@@ -20,7 +29,8 @@
     "pk": 3,
     "fields": {
         "variant_arch": 1,
-        "image": 3
+        "image": 3,
+        "path": 1
     }
   }
 ]

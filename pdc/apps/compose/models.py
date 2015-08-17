@@ -218,7 +218,7 @@ class Path(models.Model):
     Class representing a path in compose. The same path can be reused in
     multiple places (e.g. in more RPMs).
     """
-    path = models.CharField(max_length=4096, unique=True)
+    path = models.CharField(max_length=4096, unique=True, blank=True)
 
     def __unicode__(self):
         return unicode(self.path)
@@ -499,6 +499,7 @@ class OverrideRPM(models.Model):
 class ComposeImage(models.Model):
     variant_arch        = models.ForeignKey(VariantArch, db_index=True)
     image               = models.ForeignKey("package.Image", db_index=True)
+    path                = models.ForeignKey(Path)
 
     class Meta:
         unique_together = (
