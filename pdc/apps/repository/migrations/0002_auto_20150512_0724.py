@@ -73,6 +73,10 @@ def create_content_format(apps, schema_editor):
                {
                    'description': 'Docker image content format',
                    'name': 'docker'
+               },
+               {
+                   'description': 'Driver Update Disk',
+                   'name': 'dud'
                }
            ])
 
