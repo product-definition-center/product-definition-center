@@ -17,6 +17,7 @@ from .serializers import DynamicFieldsSerializerMixin
 from .models import Label, SigKey
 from pdc.apps.common import validators
 from .test_utils import TestCaseWithChangeSetMixin
+from . import renderers, views
 
 
 class ValidatorTestCase(TestCase):
@@ -388,3 +389,34 @@ class SigKeyRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('sigkey-detail', kwargs={'key_id': '1234adbf'})
         response = self.client.delete(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+class FilterDocumentingTestCase(TestCase):
+    def test_result_is_cached(self):
+        viewset = mock.Mock(spec=[])
+        with mock.patch('contrib.drf_introspection.get_allowed_query_params') as func:
+            res1 = renderers.get_filters(viewset)
+            res2 = renderers.get_filters(viewset)
+            self.assertEqual(res1, res2)
+            func.assert_called_once_with(viewset)
+
+    def test_filter_fields_have_no_type(self):
+        class TestViewset(object):
+            filter_fields = ('c', 'b', 'a')
+        res = renderers.get_filters(TestViewset())
+        self.assertEqual(res, ' * `a`\n * `b`\n * `c`')
+
+    def test_filter_extra_query_params_have_no_type(self):
+        class TestViewset(object):
+            extra_query_params = ('c', 'b', 'a')
+        res = renderers.get_filters(TestViewset())
+        self.assertEqual(res, ' * `a`\n * `b`\n * `c`')
+
+    def test_filter_set_has_details(self):
+        res = renderers.get_filters(views.SigKeyViewSet())
+        self.assertEqual(
+            res,
+            ' * `description` (string, case insensitive, substring match)\n'
+            ' * `key_id` (string)\n'
+            ' * `name` (string)'
+        )
