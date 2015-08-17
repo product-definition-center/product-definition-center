@@ -244,6 +244,16 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data.get("linked_releases"), ['release-1.0'])
         self.assertNumChanges([1])
 
+    def test_delete_rpm_should_not_be_allowed(self):
+        url = reverse('rpms-detail', args=[1])
+        response = self.client.delete(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_bulk_delete_rpms_should_not_be_allowed(self):
+        url = reverse('rpms-list')
+        response = self.client.delete(url, [1, 2], format='json')
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 class ImageRESTTestCase(APITestCase):
     fixtures = [

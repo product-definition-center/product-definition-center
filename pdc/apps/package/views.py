@@ -11,7 +11,12 @@ from . import serializers
 from . import filters
 
 
-class RPMViewSet(pdc_viewsets.PDCModelViewSet):
+class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
+                 pdc_viewsets.ChangeSetCreateModelMixin,
+                 pdc_viewsets.ChangeSetUpdateModelMixin,
+                 mixins.RetrieveModelMixin,
+                 mixins.ListModelMixin,
+                 viewsets.GenericViewSet):
     """
     API endpoint that allows RPMs to be viewed.
     """
