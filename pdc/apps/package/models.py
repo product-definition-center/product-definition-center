@@ -41,7 +41,7 @@ class RPM(models.Model):
     def linked_composes(self):
         from pdc.apps.compose.models import Compose
         """Return a set of all composes that this RPM is linked"""
-        return Compose.objects.filter(variant__variantarch__composerpm__rpm=self)
+        return Compose.objects.filter(variant__variantarch__composerpm__rpm=self).distinct()
 
     @property
     def nevra(self):

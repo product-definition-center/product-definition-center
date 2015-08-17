@@ -27,5 +27,16 @@
         "content_category": 1,
         "path": 1
     }
+  },
+  {
+    "model": "compose.ComposeRPM",
+    "pk": 3,
+    "fields": {
+        "variant_arch": 2,
+        "rpm": 2,
+        "sigkey": 1,
+        "content_category": 1,
+        "path": 1
+    }
   }
 ]

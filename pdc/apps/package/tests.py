@@ -178,6 +178,11 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                        "linked_composes": ["compose-1"]}
         self.assertEqual(response.data, expect_data)
 
+    def test_retrieve_rpm_should_not_have_duplicated_composes(self):
+        url = reverse('rpms-detail', args=[2])
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data.get("linked_composes"), ['compose-1'])
+
     def test_create_rpm(self):
         url = reverse('rpms-list')
         data = {"name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1", "arch": "x86_64",

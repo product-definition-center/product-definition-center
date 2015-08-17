@@ -48,7 +48,7 @@ class ComposeModelTestCase(TestCase):
 
     def test_get_arch_testing_status(self):
         self.assertDictEqual(self.compose.get_arch_testing_status(),
-                             {'Server': {'x86_64': 'untested'}})
+                             {'Server': {'x86_64': 'untested'}, 'Server2': {'x86_64': 'untested'}})
 
 
 class VersionFinderTestCase(APITestCase):
@@ -586,7 +586,7 @@ class ComposeUpdateTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_testing_status_on_arch(self):
-        data = {'Server': {'x86_64': 'passed'}}
+        data = {'Server': {'x86_64': 'passed'}, 'Server2': {'x86_64': 'untested'}}
         response = self.client.patch(reverse('compose-detail', args=['compose-1']),
                                      {'rtt_tested_architectures': data},
                                      format='json')
