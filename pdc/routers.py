@@ -89,6 +89,8 @@ router.register(r'rpc/repos/clone',
                 repo_views.RepoCloneViewSet,
                 base_name='repoclone')
 
+# This must be specified after deprecated repos so that automatic link
+# generation picks this version.
 router.register(r'content-delivery-repos', repo_views.RepoViewSet)
 router.register(r'content-delivery-repo-families', repo_views.RepoFamilyViewSet,
                 base_name='contentdeliveryrepofamily')

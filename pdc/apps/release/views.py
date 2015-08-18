@@ -106,7 +106,7 @@ class ProductViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: POST
 
-        __URL__: `/products/`
+        __URL__: $LINK:product-list$
 
         __Data__:
 
@@ -130,7 +130,7 @@ class ProductViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: GET
 
-        __URL__: `/products/{short}/`
+        __URL__: $LINK:product-detail:short$
 
         __Response__:
 
@@ -147,7 +147,7 @@ class ProductViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: GET
 
-        __URL__: `/products/`
+        __URL__: $LINK:product-list$
 
         __Query params__:
 
@@ -177,7 +177,7 @@ class ProductViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: PUT, PATCH
 
-        __URL__: `/products/{short}`
+        __URL__: $LINK:product-detail:short$
 
         __Data__:
 
@@ -225,7 +225,7 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: POST
 
-        __URL__: `/product-versions/`
+        __URL__: $LINK:productversion-list$
 
         __Data__:
 
@@ -257,7 +257,7 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: GET
 
-        __URL__: `/product-versions/{product_version_id}/`
+        __URL__: $LINK:productversion-detail:product_version_id$
 
         __Response__:
 
@@ -279,7 +279,7 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: GET
 
-        __URL__: `/product-versions/`
+        __URL__: $LINK:productversion-list$
 
         __Query params__:
 
@@ -315,7 +315,7 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: PUT, PATCH
 
-        __URL__: `/product-versions/{product_version_id}`
+        __URL__: $LINK:productversion-detail:product_version_id$
 
         __Data__:
 
@@ -389,7 +389,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: POST
 
-        __URL__: `/releases/`
+        __URL__: $LINK:release-list$
 
         __Data__:
 
@@ -442,7 +442,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: GET
 
-        __URL__: `/releases/{release_id}/`
+        __URL__: $LINK:release-detail:release_id$
 
         __Response__:
 
@@ -474,7 +474,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: GET
 
-        __URL__: `/releases/`
+        __URL__: $LINK:release-list$
 
         __Query params__:
 
@@ -530,7 +530,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
 
         __Method__: PUT, PATCH
 
-        __URL__: `/releases/{release_id}/`
+        __URL__: $LINK:release-detail:release_id$
 
         __Data__:
 
@@ -606,7 +606,7 @@ class ReleaseImportView(StrictQueryParamMixin, viewsets.GenericViewSet):
 
         __Method__: POST
 
-        __URL__: /rpc/release/import-from-composeinfo/
+        __URL__: $LINK:releaseimportcomposeinfo-list$
 
         __Data__: composeinfo data as saved in `composeinfo.json` file (the
         formatting of the file is not important for PDC, and it is possible to
@@ -615,7 +615,7 @@ class ReleaseImportView(StrictQueryParamMixin, viewsets.GenericViewSet):
         __Example__:
 
             $ curl -H 'Content-Type: application/json' -X POST -d @/path/to/composeinfo.json \\
-                "%(HOST_NAME)s/%(API_PATH)s/rpc/release/import-from-composeinfo/"
+                "$URL:releaseimportcomposeinfo-list$"
         """
         if not request.data:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'detail': 'Missing composeinfo'})
@@ -642,7 +642,7 @@ class BaseProductViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: POST
 
-        __URL__: `/base-products/`
+        __URL__: $LINK:baseproduct-list$
 
         __Data__:
 
@@ -667,7 +667,7 @@ class BaseProductViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: GET
 
-        __URL__: `/base-products/{base_product_id}/`
+        __URL__: $LINK:baseproduct-detail:base_product_id$
 
         __Response__:
 
@@ -684,7 +684,7 @@ class BaseProductViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: GET
 
-        __URL__: `/base-products/`
+        __URL__: $LINK:baseproduct-list$
 
         __Query params__:
 
@@ -714,7 +714,7 @@ class BaseProductViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: PUT, PATCH
 
-        __URL__: `/base-products/{base_product_id}`
+        __URL__: $LINK:baseproduct-detail:base_product_id$
 
         __Data__:
 
@@ -775,7 +775,7 @@ class ReleaseCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
 
         __Method__: POST
 
-        __URL__: `/rpc/release/clone/`
+        __URL__: $LINK:releaseclone-list$
 
         __Data__:
 
@@ -860,6 +860,8 @@ class ReleaseRPMMappingView(StrictQueryParamMixin, viewsets.GenericViewSet):
 
     def retrieve(self, request, **kwargs):
         """
+        __URL__: $LINK:releaserpmmapping-detail:release_id:package$
+
         Returns a JSON representing the RPM mapping of the latest compose for
         given release. There is an optional query parameter
         `?disable_overrides=1` which returns the raw mapping not affected by
@@ -927,7 +929,7 @@ class ReleaseTypeViewSet(StrictQueryParamMixin,
         """
         __Method__: `GET`
 
-        __URL__: `/release-types/`
+        __URL__: $LINK:releasetype-list$
 
         __Query params__:
 
@@ -951,7 +953,7 @@ class ReleaseTypeViewSet(StrictQueryParamMixin,
 
         __Example__:
 
-            $ curl  "%(HOST_NAME)s/%(API_PATH)s/release-types/"
+            $ curl "$URL:releasetype-list$"
             {
                 "previous": null,
                 "next": null,
@@ -988,7 +990,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
         """
         __Method__: `POST`
 
-        __URL__: `/release-variants/`
+        __URL__: $LINK:variant-list$
 
         __Data__:
 
@@ -1021,7 +1023,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
         """
         __Method__: `PUT`
 
-        __URL__: `/release-variants/{release_id}/{variant_uid}/`
+        __URL__: $LINK:variant-detail:release_id}/{variant_uid$
 
         __Data__:
 
@@ -1059,7 +1061,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
         """
         __Method__: `PATCH`
 
-        __URL__: `/release-variants/{release_id}/{variant_uid}/`
+        __URL__: $LINK:variant-detail:release_id}/{variant_uid$
 
         __Data__:
 
@@ -1102,7 +1104,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
         """
         __Method__: `GET`
 
-        __URL__: `/release-variants/`
+        __URL__: $LINK:variant-list$
 
         __Query params__:
 
@@ -1132,7 +1134,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
         """
         __Method__: `GET`
 
-        __URL__: `/release-variants/{release_id}/{variant_uid}/`
+        __URL__: $LINK:variant-detail:release_id/variant_uid$
 
         __Response__:
 
@@ -1155,6 +1157,6 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
 
         __Method__: `DELETE`
 
-        __URL__: `/release-variants/{release_id}/{variant_uid}/`
+        __URL__: $LINK:variant-detail:release_id/variant_uid$
         """
         return super(ReleaseVariantViewSet, self).destroy(*args, **kwargs)

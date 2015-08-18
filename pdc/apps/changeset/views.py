@@ -46,8 +46,7 @@ class ChangesetViewSet(StrictQueryParamMixin,
         __Method__:
         GET
 
-        __URL__:
-        /changesets/
+        __URL__: $LINK:changeset-list$
 
         __QUERY Params__:
 
@@ -70,7 +69,7 @@ class ChangesetViewSet(StrictQueryParamMixin,
             # paged lists
             {
                 "count": 84,
-                "next": "%(HOST_NAME)s/%(API_PATH)s/changesets/?page=2",
+                "next": "$URL:changeset-list$?page=2",
                 "previous": null,
                 "results": [
                     {
@@ -90,11 +89,11 @@ class ChangesetViewSet(StrictQueryParamMixin,
 
         __Example__:
 
-            curl -H "Content-Type: application/json"  -X GET %(HOST_NAME)s/%(API_PATH)s/changesets/
+            curl -H "Content-Type: application/json"  -X GET $URL:changeset-list$
             # output
             {
                 "count": 84,
-                "next": "%(HOST_NAME)s/%(API_PATH)s/changesets/?page=2",
+                "next": "$URL:changeset-list$?page=2",
                 "previous": null,
                 "results": [
                     {
@@ -118,7 +117,7 @@ class ChangesetViewSet(StrictQueryParamMixin,
 
         With query params:
 
-            curl -H "Content-Type: application/json"  -G %(HOST_NAME)s/%(API_PATH)s/changesets/ --data-urlencode "resource=test"
+            curl -H "Content-Type: application/json"  -G $URL:changeset-list$ --data-urlencode "resource=test"
             # output
             {
                 "count": 1,
@@ -154,8 +153,7 @@ class ChangesetViewSet(StrictQueryParamMixin,
         __Method__:
         GET
 
-        __URL__:
-        /changesets/{instance_pk}
+        __URL__: $LINK:changeset-detail:instance_pk$
 
         __Response__:
 
@@ -174,7 +172,7 @@ class ChangesetViewSet(StrictQueryParamMixin,
 
         __Example__:
 
-            curl -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/changesets/1/
+            curl -H "Content-Type: application/json" $URL:changeset-detail:1$
             # output
             {"author": "xxx", "committed_on": "2015-02-03T05:51:17.262Z", "changes": [{"resource": "person", "resource_id": 2, "old_value": "old", "new_value": "new"}]}
         """

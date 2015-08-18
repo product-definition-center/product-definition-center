@@ -40,7 +40,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: `POST`
 
-        __URL__: `/content-delivery-repos/`
+        __URL__: $LINK:repo-list$
 
         __Data__:
 
@@ -79,7 +79,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: `GET`
 
-        __URL__: `/content-delivery-repos/`
+        __URL__: $LINK:repo-list$
 
         __Query params__:
 
@@ -107,7 +107,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: `PUT`, `PATCH`
 
-        __URL__: `/content-delivery-repos/{id}`
+        __URL__: $LINK:repo-detail:id$
 
         __Data__:
 
@@ -146,7 +146,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: `DELETE`
 
-        __URL__: /content-delivery-repos/{id}
+        __URL__: $LINK:repo-detail:id$
         """
         return super(RepoViewSet, self).destroy(*args, **kwargs)
 
@@ -172,7 +172,7 @@ class RepoCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
 
         __Method__: `POST`
 
-        __URL__: `/rpc/content-delivery-repos/clone/`
+        __URL__: $LINK:repoclone-list$
 
 
         __Data__:
@@ -293,7 +293,7 @@ class RepoFamilyViewSet(StrictQueryParamMixin,
         """
         __Method__: `GET`
 
-        __URL__: `/content-delivery-repo-families/`
+        __URL__: $LINK:contentdeliveryrepofamily-list$
 
         __Query params__:
 
@@ -316,7 +316,7 @@ class RepoFamilyViewSet(StrictQueryParamMixin,
 
         __Example__:
 
-            $ curl  "%(HOST_NAME)s/%(API_PATH)s/content-delivery-repo-families/
+            $ curl  "$URL:contentdeliveryrepofamily-list$
             {
                 "count": 3,
                 "next": null,

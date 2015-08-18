@@ -445,7 +445,7 @@ class ComposeViewSet(StrictQueryParamMixin,
         """
         __Method__: GET
 
-        __URL__: `/composes/{compose_id}/`
+        __URL__: $LINK:compose-detail:compose_id$
 
         __Response__:
 
@@ -474,7 +474,7 @@ class ComposeViewSet(StrictQueryParamMixin,
 
         __Method__: GET
 
-        __URL__: `/composes/`
+        __URL__: $LINK:compose-list$
 
         __Query params__:
 
@@ -594,7 +594,7 @@ class ComposeViewSet(StrictQueryParamMixin,
 
         __Method__: PATCH
 
-        __URL__: `/composes/{compose_id}/`
+        __URL__: $LINK:compose-detail:compose_id$
 
         __Data__:
 
@@ -630,7 +630,7 @@ class ComposeRPMView(StrictQueryParamMixin, viewsets.GenericViewSet):
 
         __Method__: POST
 
-        __URL__: `/compose-rpms/`
+        __URL__: $LINK:composerpm-list$
 
         __Data__:
 
@@ -650,7 +650,7 @@ class ComposeRPMView(StrictQueryParamMixin, viewsets.GenericViewSet):
                 -d "{\\"composeinfo\\": $(cat /path/to/composeinfo.json), \\
                      \\"rpm_manifest\\": $(cat /path/to/rpm-manifest.json), \\
                      \\"release_id\\": \\"release-1.0\\" }" \\
-                "%(HOST_NAME)s/%(API_PATH)s/compose-rpms/"
+                $URL:composerpm-list$
 
         Note that RPM manifests tend to be too large to supply the data via
         command line argument and using a temporary file becomes necessary.
@@ -659,7 +659,7 @@ class ComposeRPMView(StrictQueryParamMixin, viewsets.GenericViewSet):
             > echo -n ', "rpm_manifest": '; cat /path/to/rpm-manifest.json
             > echo -n ', "release_id": "release-1.0" }' ; } >post_data.json
             $ curl -H 'Content-Type: application/json' -X POST -d @post_data.json \\
-                "%(HOST_NAME)s/%(API_PATH)s/compose-rpms/
+                $URL:composerpm-list$
 
         You could skip the file and send the data directly to `curl`. In such a
         case use `-d @-`.
@@ -678,7 +678,7 @@ class ComposeRPMView(StrictQueryParamMixin, viewsets.GenericViewSet):
         """
         **Method**: `GET`
 
-        **URL**: `/compose-rpms/{compose_id}/`
+        **URL**: $LINK:composerpm-detail:compose_id$
 
         This API end-point allows retrieving RPM manifest for a given compose.
         It will return the exact same data as was imported.
@@ -730,6 +730,8 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
 
     def retrieve(self, request, **kwargs):
         """
+        __URL__: $LINK:composerpmmapping-detail:compose_id:package$
+
         Returns a JSON representing the RPM mapping. There is an optional query
         parameter `?disable_overrides=1` which returns the raw mapping not
         affected by any overrides.
@@ -792,7 +794,7 @@ class ComposeImportImagesView(StrictQueryParamMixin, viewsets.GenericViewSet):
 
         __Method__: POST
 
-        __URL__: `/rpc/compose/import-images/`
+        __URL__: $LINK:composeimportimages-list$
 
         __Data__:
 
@@ -812,7 +814,7 @@ class ComposeImportImagesView(StrictQueryParamMixin, viewsets.GenericViewSet):
                 -d "{\\"composeinfo\\": $(cat /path/to/composeinfo.json), \\
                      \\"image_manifest\\": $(cat /path/to/image-manifest.json), \\
                      \\"release_id\\": \\"release-1.0\\" }" \\
-                "%(HOST_NAME)s/%(API_PATH)s/rpc/compose/import-images/"
+                $URL:composeimportimages-list$
         """
         data = request.data
         errors = {}
@@ -843,7 +845,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
         """
         __Method__: POST
 
-        __URL__: `/overrides/rpm/`
+        __URL__: $LINK:overridesrpm-list$
 
         __Data__:
 
@@ -864,7 +866,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
 
         __Example__:
 
-            $ curl -H 'Content-Type: application/json' "%(HOST_NAME)s/%(API_PATH)s/overrides/rpm/" \\
+            $ curl -H 'Content-Type: application/json' "$URL:overridesrpm-list$" \\
                 -X POST -d '{"variant": "Client", "arch": "x86_64", "srpm_name": "bash", \\
                              "rpm_name": "bash-doc", "rpm_arch": "src", "include": true, \\
                              "release": "release-1.0"}'
@@ -887,7 +889,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
         """
         __Method__: GET
 
-        __URL__: `/overrides/rpm/`
+        __URL__: $LINK:overridesrpm-list$
 
         __Query params__:
 
@@ -919,7 +921,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
 
         __Example__:
 
-            $ curl -H 'Content-Type: application/json' "%(HOST_NAME)s/%(API_PATH)s/overrides/rpm/"
+            $ curl -H 'Content-Type: application/json' "$URL:overridesrpm-list$"
             {
                 "previous": null,
                 "next": null,
@@ -946,7 +948,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
 
         __Method__: DELETE
 
-        __URL__: `/overrides/rpm/{id}/`
+        __URL__: $LINK:overridesrpm-detail:id$
         """
         return super(ReleaseOverridesRPMViewSet, self).destroy(*args, **kwargs)
 
@@ -958,7 +960,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
 
         __Method__: DELETE
 
-        __URL__: `/overrides/rpm/`
+        __URL__: $LINK:overridesrpm-list$
 
         __Data__:
 
@@ -979,12 +981,12 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
 
         __Example__:
 
-            $ curl -H 'Content-Type: application/json' "%(HOST_NAME)s/%(API_PATH)s/overrides/rpm/" \\
+            $ curl -H 'Content-Type: application/json' "$URL:overridesrpm-list$" \\
                 -X DELETE -d '[1, 15, 29]'
 
         Clearing all overrides.
 
-            $ curl -H 'Content-Type: application/json' "%(HOST_NAME)s/%(API_PATH)s/overrides/rpm/" \\
+            $ curl -H 'Content-Type: application/json' "$URL:overridesrpm-list$" \\
                 -X DELETE -d '{ "release": "release-1.0", "force": false }'
             [
                 {
@@ -1045,7 +1047,7 @@ class FilterBugzillaProductsAndComponents(StrictQueryParamMixin,
         """
         __Method__: GET
 
-        __URL__: `/rpc/where-to-file-bugs/`
+        __URL__: $LINK:bugzilla-list$
 
         __Query params__:
 
@@ -1067,7 +1069,7 @@ class FilterBugzillaProductsAndComponents(StrictQueryParamMixin,
 
         __Example__:
 
-            $ curl -H 'Content-Type: application/json' "%(HOST_NAME)s/%(API_PATH)s/rpc/where-to-file-bugs/?nvr=GConf2-3.2.6-8.el7"
+            $ curl -H 'Content-Type: application/json' "$URL:bugzilla-list$?nvr=GConf2-3.2.6-8.el7"
             [
                 {
                     "bugzilla_component": [
@@ -1189,7 +1191,7 @@ class FindComposeByReleaseRPMViewSet(StrictQueryParamMixin, FindComposeMixin, vi
 
         __Method__: GET
 
-        __URL__: `rpc/find_compose_by_release_rpm/{release_id}/{rpm_name}`
+        __URL__: $LINK:findcomposebyrr-list:release_id:rpm_name$
 
         __Query params__:
 
@@ -1243,7 +1245,7 @@ class FindLatestComposeByComposeRPMViewSet(StrictQueryParamMixin, FindComposeMix
 
         __Method__: GET
 
-        __URL__: `rpc/find_latest_compose_by_compose_rpm/{compose_id}/{rpm_name}`
+        __URL__: $LINK:findlatestcomposebycr-list:compose_id:rpm_name$
 
         __Query params__:
 
@@ -1290,10 +1292,8 @@ class FindComposeWithOlderPackageViewSet(StrictQueryParamMixin, FindComposeMixin
         version of the package.
 
         Above 2 functions in this endpoint are deprecated. Please use
-        [rpc/find-compose-by-release-rpm/{release_id}/{rpm_name}](/%(API_PATH)s/rpc/find-compose-by-release-rpm/{release_id}/{rpm_name}/)
-        and
-        [rpc/find-latest-compose-by-compose-rpm/{compose_id}/{rpm_name}](/%(API_PATH)s/rpc/find-latest-compose-by-compose-rpm/{compose_id}/{rpm_name})
-        instead.
+        $LINK:findcomposebyrr-list:release_id:rpm_name$ and
+        $LINK:findlatestcomposebycr-list:compose_id:rpm_name$ instead.
 
         The ordering of composes is performed by the *productmd* library. It
         first compares compose date, then compose type
@@ -1309,7 +1309,7 @@ class FindComposeWithOlderPackageViewSet(StrictQueryParamMixin, FindComposeMixin
 
         __Method__: GET
 
-        __URL__: `/compose/packages/`
+        __URL__: $LINK:findcomposewitholderpackage-list$
 
         __Query params__:
 

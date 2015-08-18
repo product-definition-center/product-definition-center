@@ -98,9 +98,7 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-
-            /global-components/
+        __URL__: $LINK:globalcomponent-list$
 
         __QUERY Params__:
 
@@ -151,9 +149,7 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-
-            /global-components/{instance_pk}/
+        __URL__: $LINK:globalcomponent-detail:instance_pk$
 
         __Response__:
 
@@ -190,9 +186,7 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
         __Method__:
         POST
 
-        __URL__:
-
-            /global-components/
+        __URL__: $LINK:globalcomponent-list$
 
         __Data__:
 
@@ -215,7 +209,8 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -X POST -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/global-components/ -d '{ "name": "Demo", "dist_git_path": "rpm/Demo"}'
+            curl -X POST -H "Content-Type: application/json" $URL:globalcomponent-list$ \\
+                    -d '{ "name": "Demo", "dist_git_path": "rpm/Demo"}'
             # output
             {
                 "id": 4181,
@@ -247,9 +242,7 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
             or
             {'name': 'new_name', 'dist_git_path': 'new_dist_git_path'}
 
-        __URL__:
-
-            /global-components/{instance_pk}/
+        __URL__: $LINK:globalcomponent-detail:instance_pk$
 
         __Response__:
 
@@ -271,7 +264,8 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
 
         PUT:
 
-            curl -X PUT -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/global-components/4181/ -d '{"name": "Demo1", "dist_git_path": "rpm/Demo1"}'
+            curl -X PUT -H "Content-Type: application/json" $URL:globalcomponent-detail:4181$ \\
+                    -d '{"name": "Demo1", "dist_git_path": "rpm/Demo1"}'
             # output
             {
                 "id": 4181,
@@ -285,7 +279,7 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
 
         PATCH:
 
-            curl -X PATCH -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/global-components/4181/ -d '{"dist_git_path": "rpm/Demo1"}'
+            curl -X PATCH -H "Content-Type: application/json" $URL:globalcomponent-detail:4181$ -d '{"dist_git_path": "rpm/Demo1"}'
             # output
             {
                 "id": 4181,
@@ -304,9 +298,7 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
         __Method__:
         DELETE
 
-        __URL__:
-
-            /global-components/{instance_pk}/
+        __URL__: $LINK:globalcomponent-detail:instance_pk$
 
         __Response__:
 
@@ -314,7 +306,7 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -X DELETE -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/global-components/4181/
+            curl -X DELETE -H "Content-Type: application/json" $URL:globalcomponent-detail:4181$
         """
         return super(GlobalComponentViewSet, self).destroy(request, *args, **kwargs)
 
@@ -349,9 +341,7 @@ class GlobalComponentContactViewSet(HackedComponentContactMixin,
         __Method__:
         GET
 
-        __URL__:
-
-            /global-components/{gc_instance_pk}/contacts/
+        __URL__: $LINK:globalcomponentcontact-list:gc_instance_pk$
 
         __QUERY Params__:
 
@@ -387,9 +377,7 @@ class GlobalComponentContactViewSet(HackedComponentContactMixin,
         __Method__:
         GET
 
-        __URL__:
-
-            /global-components/{gc_instance_pk}/contacts/{relation_pk}
+        __URL__: $LINK:globalcomponentcontact-detail:gc_instance_pk:relation_pk$
 
         __Response__:
 
@@ -415,9 +403,7 @@ class GlobalComponentContactViewSet(HackedComponentContactMixin,
         __Method__:
         DELETE
 
-        __URL__:
-
-            /global-components/{gc_instance_pk}/contacts/{relation_pk}
+        __URL__: $LINK:globalcomponentcontact-detail:gc_instance_pk:relation_pk$
 
         __Response__:
 
@@ -425,7 +411,7 @@ class GlobalComponentContactViewSet(HackedComponentContactMixin,
 
         __Example__:
 
-            curl -X DELETE -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/global-components/1/contacts/1/
+            curl -X DELETE -H "Content-Type: application/json" $URL:globalcomponentcontact-detail:1:1$
         """
         pk = self.kwargs.get('pk')
         contact = get_object_or_404(RoleContact, id=pk)
@@ -448,9 +434,7 @@ class GlobalComponentContactViewSet(HackedComponentContactMixin,
         __Method__:
         POST
 
-        __URL__:
-
-             /global-components/{gc_instance_pk}/contacts/
+        __URL__: $LINK:globalcomponentcontact-list:gc_instance_pk$
 
         __Data__:
 
@@ -514,11 +498,11 @@ class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
 
         ####__Request__####
 
-            curl -X GET -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/global-components/1/labels/
+            curl -X GET -H "Content-Type: application/json" $URL:globalcomponentlabel-list:1$
 
         Or search specified global component's label by label's name.
 
-            curl -G -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/global-components/1/labels/ -d name=label1
+            curl -G -H "Content-Type: application/json" $URL:globalcomponentlabel-list:1$ -d name=label1
 
         Now it supports ``name`` to filter the result.
 
@@ -543,12 +527,12 @@ class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
                 "previous": null,
                 "results": [
                     {
-                        "url": "%(HOST_NAME)s/%(API_PATH)s/rest_api/v1/labels/1/",
+                        "url": "$URL:label-detail:1$",
                         "name": "label1",
                         "description": "label1 description"
                     },
                     {
-                        "url": "%(HOST_NAME)s/%(API_PATH)s/rest_api/v1/labels/2/",
+                        "url": "$URL:label-detail:2$",
                         "name": "label1",
                         "description": "label1 description"
                     }
@@ -564,7 +548,7 @@ class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
 
         ####__Request__####
 
-            curl -X GET -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/global-components/1/labels/1/
+            curl -X GET -H "Content-Type: application/json" $URL:globalcomponentlabel-detail:1:1$
 
         ####__Response__####
 
@@ -574,7 +558,7 @@ class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
             Allow: GET, POST, HEAD, OPTIONS
 
             {
-                "url": "%(HOST_NAME)s/%(API_PATH)s/rest_api/v1/labels/1/",
+                "url": "$URL:label-detail:1$",
                 "name": "label1",
                 "description": "label1 description"
             }
@@ -593,7 +577,7 @@ class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
 
         ####__Request__####
 
-            curl -X DELETE -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/global-components/1/labels/1/
+            curl -X DELETE -H "Content-Type: application/json" $URL:globalcomponentlabel-detail:1:1$
 
         ####__Response__####
 
@@ -631,7 +615,7 @@ class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
 
         ``description``: label's description, **OPTIONAL**
 
-            curl -X POST -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/global-components/1/labels/ -d '{"name": "label1"}'
+            curl -X POST -H "Content-Type: application/json" $URL:globalcomponentlabel-list:1$ -d '{"name": "label1"}'
 
         ####__Response__####
 
@@ -707,9 +691,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-
-            /release-components/
+        __URL__: $LINK:releasecomponent-list$
 
         __QUERY Params__:
 
@@ -766,9 +748,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-
-            /release-components/{instance_pk}/
+        __URL__: $LINK:releasecomponent-detail:instance_pk$
 
         __Response__:
 
@@ -851,9 +831,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
 
         ``"type"``: release component type, **OPTIONAL**
 
-        __URL__:
-
-            /release-components/{instance_pk}/
+        __URL__: $LINK:releasecomponent-detail:instance_pk$
 
         __Response__:
 
@@ -904,9 +882,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
         __Method__:
         POST
 
-        __URL__:
-
-            /release-components/
+        __URL__: $LINK:releasecomponent-list$
 
         __Data__:
 
@@ -976,9 +952,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
         __Method__:
         DELETE
 
-        __URL__:
-
-            /release-components/{instance_pk}/
+        __URL__: $LINK:releasecomponent-detail:instance_pk$
 
         __Response__:
 
@@ -986,7 +960,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -X DELETE -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/release-components/1/
+            curl -X DELETE -H "Content-Type: application/json" $URL:releasecomponent-detail:1$
         """
         return super(ReleaseComponentViewSet, self).destroy(request, *args, **kwargs)
 
@@ -995,9 +969,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
         __Method__:
         PUT
 
-        __URL__:
-
-            /release-components/
+        __URL__: $LINK:releasecomponent-list$
 
         __Data__:
 
@@ -1144,9 +1116,7 @@ class ReleaseComponentContactViewSet(HackedComponentContactMixin,
         __Method__:
         GET
 
-        __URL__:
-
-            /release-components/{rc_instance_pk}/contacts/
+        __URL__: $LINK:releasecomponentcontact-list:rc_instance_pk$
 
         __QUERY Params__:
 
@@ -1241,9 +1211,7 @@ class ReleaseComponentContactViewSet(HackedComponentContactMixin,
         __Method__:
         GET
 
-        __URL__:
-
-            /release-components/{rc_instance_pk}/contacts/{relation_pk}
+        __URL__: $LINK:releasecomponentcontact-detail:rc_instance_pk:relation_pk$
 
         __Response__:
 
@@ -1263,9 +1231,7 @@ class ReleaseComponentContactViewSet(HackedComponentContactMixin,
         __Method__:
         POST
 
-        __URL__:
-
-             /release-components/{gc_instance_pk}/contacts/
+        __URL__: $LINK:releasecomponentcontact-list:rc_instance_pk$
 
         __Data__:
 
@@ -1294,9 +1260,7 @@ class ReleaseComponentContactViewSet(HackedComponentContactMixin,
         __Method__:
         DELETE
 
-        __URL__:
-
-            /release-components/{rc_instance_pk}/contacts/{relation_pk}
+        __URL__: $LINK:releasecomponentcontact-detail:rc_instance_pk:relation_pk$
 
         __Response__:
 
@@ -1304,7 +1268,7 @@ class ReleaseComponentContactViewSet(HackedComponentContactMixin,
 
         __Example__:
 
-            curl -X DELETE -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/release-components/2/contacts/3175/
+            curl -X DELETE -H "Content-Type: application/json" $URL:releasecomponentcontact-detail:2:3175$
         """
         pk = self.kwargs.get('pk')
         try:
@@ -1368,9 +1332,7 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-
-            /bugzilla-components/
+        __URL__: $LINK:bugzillacomponent-list$
 
         __QUERY Params__:
 
@@ -1402,9 +1364,7 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-
-            /bugzilla-components/{instance_pk}/
+        __URL__: $LINK:bugzillacomponent-detail:instance_pk$
 
         __Response__:
 
@@ -1434,9 +1394,7 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
             or
             {'name': 'new_name', 'parent_pk': new_parent_pk}
 
-        __URL__:
-
-            /bugzilla-components/{instance_pk}/
+        __URL__: $LINK:bugzillacomponent-detail:instance_pk$
 
         __Response__:
 
@@ -1520,9 +1478,7 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
         __Method__:
         POST
 
-        __URL__:
-
-            /bugzilla-components/
+        __URL__: $LINK:bugzillacomponent-list$
 
         __Data__:
 
@@ -1594,9 +1550,7 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
         __Method__:
         DELETE
 
-        __URL__:
-
-            /bugzilla-components/{instance_pk}/
+        __URL__: $LINK:bugzillacomponent-detail:instance_pk$
 
         __Response__:
 
@@ -1608,7 +1562,7 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -X DELETE -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/bugzilla-components/1/
+            curl -X DELETE -H "Content-Type: application/json" $URL:bugzillacomponent-detail:1$
         """
         return super(BugzillaComponentViewSet, self).destroy(request, *args, **kwargs)
 
@@ -1655,7 +1609,7 @@ class GroupTypeViewSet(viewsets.PDCModelViewSet):
         """
         __Method__: POST
 
-        __URL__: `/component-group-types/`
+        __URL__: $LINK:componentgrouptype-list$
 
         __Data__:
 
@@ -1677,7 +1631,7 @@ class GroupTypeViewSet(viewsets.PDCModelViewSet):
         """
         __Method__: GET
 
-        __URL__: `/component-group-types/`
+        __URL__: $LINK:componentgrouptype-list$
 
         __Query params__:
 
@@ -1705,7 +1659,7 @@ class GroupTypeViewSet(viewsets.PDCModelViewSet):
         """
         __Method__: GET
 
-        __URL__: `/component-group-types/{instance_pk}/`
+        __URL__: $LINK:componentgrouptype-detail:instance_pk$
 
         __Response__:
 
@@ -1720,7 +1674,7 @@ class GroupTypeViewSet(viewsets.PDCModelViewSet):
         """
         __Method__: PUT, PATCH
 
-        __URL__: `/component-group-types/{instance_pk}/`
+        __URL__: $LINK:componentgrouptype-detail:instance_pk$
 
         __Data__:
 
@@ -1742,7 +1696,7 @@ class GroupTypeViewSet(viewsets.PDCModelViewSet):
         """
         __Method__: DELETE
 
-        __URL__: `/component-group-types/{instance_pk}/`
+        __URL__: $LINK:componentgrouptype-detail:instance_pk$
 
         __Response__:
 
@@ -1765,7 +1719,7 @@ class GroupViewSet(viewsets.PDCModelViewSet):
         """
         __Method__: POST
 
-        __URL__: `/component-groups/`
+        __URL__: $LINK:componentgroup-list$
 
         __Data__:
 
@@ -1799,7 +1753,7 @@ class GroupViewSet(viewsets.PDCModelViewSet):
         """
         __Method__: GET
 
-        __URL__: `/component-groups/`
+        __URL__: $LINK:componentgroup-list$
 
         __Query params__:
 
@@ -1829,7 +1783,7 @@ class GroupViewSet(viewsets.PDCModelViewSet):
         """
         __Method__: GET
 
-        __URL__: `/component-groups/{instance_pk}/`
+        __URL__: $LINK:componentgroup-detail:instance_pk$
 
         __Response__:
 
@@ -1847,7 +1801,7 @@ class GroupViewSet(viewsets.PDCModelViewSet):
         """
         __Method__: PUT, PATCH
 
-        __URL__: `/component-groups/{instance_pk}/`
+        __URL__: $LINK:componentgroup-detail:instance_pk$
 
         __Data__:
 
@@ -1878,7 +1832,7 @@ class GroupViewSet(viewsets.PDCModelViewSet):
         """
         __Method__: DELETE
 
-        __URL__: `/component-groups/{instance_pk}/`
+        __URL__: $LINK:componentgroup-detail:instance_pk$
 
         __Response__:
 
@@ -1901,7 +1855,7 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
         """
         __Method__: POST
 
-        __URL__: `/release-component-relationships/`
+        __URL__: $LINK:rcrelationship-list$
 
         __Data__:
 
@@ -1941,7 +1895,7 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
         """
         __Method__: GET
 
-        __URL__: `/release-component-relationships/`
+        __URL__: $LINK:rcrelationship-list$
 
         __Query params__:
 
@@ -1979,7 +1933,7 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
         """
         __Method__: GET
 
-        __URL__: `/release-component-relationships/{instance_pk}/`
+        __URL__: $LINK:rcrelationship-detail:instance_pk$
 
         __Response__:
 
@@ -2005,7 +1959,7 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
         """
         __Method__: PUT, PATCH
 
-        __URL__: `/release-component-relationships/{instance_pk}/`
+        __URL__: $LINK:rcrelationship-detail:instance_pk$
 
         __Data__:
 
@@ -2043,7 +1997,7 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
         """
         __Method__: DELETE
 
-        __URL__: `/release-component-relationships/{instance_pk}/`
+        __URL__: $LINK:rcrelationship-detail:instance_pk$
 
         __Response__:
 
