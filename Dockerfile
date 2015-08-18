@@ -7,11 +7,11 @@
 # docker build -t <YOUR_NAME>/pdc <the directory your Dockerfile is located>
 # 
 # 2. Running the container
-# 	2.1 To operate on the container interactively (with a terminal)
-# 	docker run -it -p 10000:8000 <YOUR_NAME>/pdc
+# 	2.1 To display the log interactively (with a terminal)
+# 	docker run -it -P -v $PWD:$PWD <YOUR_NAME>/pdc python $PWD/manage.py runserver 0.0.0.0:8000
 # 
 # 	2.2 To run the container in daemon mode
-# 	docker run -d -p 10000:8000 <YOUR_NAME>/pdc
+# 	docker run -d -P -v $PWD:$PWD <YOUR_NAME>/pdc python $PWD/manage.py runserver 0.0.0.0:8000
 # 
 # 
 # 3. Check the addresses
@@ -26,9 +26,10 @@
 # 	docker ps -l --> PORTS
 # 
 # 4. Access it
-# Visit <DOCKER_HOST:PORTS> on your web browser
+# visit <DOCKER_HOST:PORTS> on your web browser
 # 
-# 
+# 5. Edit code and see changes
+# save after editing code in your $PWD directory and see changes will happen in the container (changes need more time to take effect than in local env)
 
 FROM fedora:21
 MAINTAINER Zhikun Lao <zlao@redhat.com>
@@ -39,6 +40,7 @@ LABEL Version = "0.5"
 
 # patternfly1
 RUN curl https://copr.fedoraproject.org/coprs/patternfly/patternfly1/repo/fedora-21/patternfly-patternfly1-fedora-21.repo > /etc/yum.repos.d/patternfly-patternfly1-fedora-21.repo
+RUN curl http://www.graphviz.org/graphviz-rhel.repo > /etc/yum.repos.d/graphviz-rhel.repo
 
 # solve dependencies
 RUN yum -y upgrade && yum install -y \
@@ -53,50 +55,31 @@ libuuid-devel \
 python-devel \
 python-setuptools \
 python-pip swig \
+openldap-devel \
 krb5-devel \
 koji \
-python-mock \
-python-ldap \
-python-requests \
 patternfly1 \
-vim-enhanced
+vim-enhanced \
+'graphviz*' \
+libxml2 \
+libxslt \
+libxml2-devel \
+libxslt-devel \
+# openssh-server \
+net-tools \
+; yum clean all
 
+RUN echo "123" | passwd root --stdin
 
-# add runtime user (username and password are both `dev`) and add to sudoer
-RUN useradd dev
-RUN echo "dev" | passwd dev --stdin
-RUN echo "dev    ALL=(ALL) ALL" >> /etc/sudoers
-ENV HOME /home/dev
+COPY requirements /tmp/requirements/
+RUN pip install -r /tmp/requirements/devel.txt
 
-USER dev
-RUN git clone https://github.com/release-engineering/product-definition-center ${HOME}/product-definition-center
+# RUN echo "Port 22" >> /etc/ssh/sshd_config
+# RUN echo "ListenAddress 0.0.0.0" >> /etc/ssh/sshd_config
+# RUN ssh-keygen -A
+# RUN systemctl enable sshd.service
 
-# install and test
-USER root
-WORKDIR ${HOME}/product-definition-center
-# specify version of djangorestframework specifically to avoid mistake...
-RUN pip install djangorestframework==3.1.3
-RUN make install
-RUN make test
-
-USER dev
-RUN python manage.py migrate
-
-# change setting
-USER dev
-WORKDIR ${HOME}/product-definition-center/pdc
-RUN cp settings_local.py.dist settings_local.py
-RUN echo "DEBUG = True" >> settings_local.py
-
-# set up `virtualenv + virtualenvwrapper`
-USER root
-RUN curl -sL https://raw.githubusercontent.com/brainsik/virtualenv-burrito/master/virtualenv-burrito.sh | $SHELL
-
-# container start as user `dev`
-USER dev
-WORKDIR ${HOME}
-
+# EXPOSE 8000 22
 EXPOSE 8000
 
-# CMD ["python", "product-definition-center/manage.py", "runserver", "0.0.0.0:8000"]
 CMD ["/bin/bash"]
