@@ -19,6 +19,7 @@ from pdc.apps.contact.serializers import RoleContactSerializer
 from pdc.apps.common.serializers import DynamicFieldsSerializerMixin, LabelSerializer, StrictSerializerMixin
 from pdc.apps.common.fields import ChoiceSlugField
 from pdc.apps.release.models import Release
+from pdc.apps.common.hacks import convert_str_to_int
 from .models import (GlobalComponent,
                      RoleContact,
                      ReleaseComponent,
@@ -449,7 +450,7 @@ class ReleaseComponentRelatedField(serializers.RelatedField):
 
         kwargs = dict()
         if 'id' in data:
-            kwargs['id'] = data.get('id')
+            kwargs['id'] = convert_str_to_int(data.get('id'))
         else:
             kwargs['release__release_id'] = data.get('release')
             kwargs['global_component__name'] = data.get('global_component')
@@ -458,8 +459,6 @@ class ReleaseComponentRelatedField(serializers.RelatedField):
             rc = ReleaseComponent.objects.get(**kwargs)
         except ReleaseComponent.DoesNotExist:
             raise serializers.ValidationError({'detail': "ReleaseComponent [%s] doesn't exist" % data})
-        except ValueError as ex:
-            raise serializers.ValidationError({'detail': "%s is incorrect, reason: %s" % (data, str(ex))})
         return rc
 
 
