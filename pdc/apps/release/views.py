@@ -151,9 +151,7 @@ class ProductViewSet(ChangeSetCreateModelMixin,
 
         __Query params__:
 
-          * `short`
-          * `name`
-          * `active` (possible values are `True` and `False`)
+        %(FILTERS)s
 
         __Response__:
 
@@ -285,11 +283,7 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
 
         __Query params__:
 
-          * `name`
-          * `product_version_id`
-          * `version`
-          * `short`
-          * `active` (possible values are `True` and `False`)
+        %(FILTERS)s
 
         __Response__:
 
@@ -484,18 +478,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
 
         __Query params__:
 
-          * `release_id`
-          * `name`
-          * `short`
-          * `version`
-          * `product_version`
-          * `release_type`
-          * `has_base_product` (possible values are `True` and `False`)
-          * `base_product`
-          * `dist_git_branch`
-          * `integrated_with`
-          * `active` (possible values are `True` and `False`)
-          * `bugzilla_product`
+        %(FILTERS)s
 
         __Response__:
 
@@ -705,10 +688,7 @@ class BaseProductViewSet(ChangeSetCreateModelMixin,
 
         __Query params__:
 
-          * base_product_id
-          * name
-          * short
-          * version
+        %(FILTERS)s
 
         __Response__:
 
@@ -951,8 +931,7 @@ class ReleaseTypeViewSet(StrictQueryParamMixin,
 
         __Query params__:
 
-          * `short`
-          * `name` (support LIKE)
+        %(FILTERS)s
 
         __Response__:
 
@@ -1127,11 +1106,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
 
         __Query params__:
 
-          * `release`
-          * `id`
-          * `uid`
-          * `name`
-          * `type`
+        %(FILTERS)s
 
         __Response__:
 

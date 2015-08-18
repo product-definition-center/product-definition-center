@@ -212,9 +212,7 @@ class PermissionViewSet(StrictQueryParamMixin,
 
         __QUERY Params__:
 
-            `codename`     # optional
-            `app_label`    # optional
-            `model`        # optional
+        %(FILTERS)s
 
         __URL__:
         `/auth/permissions/`
@@ -302,10 +300,7 @@ class GroupViewSet(ChangeSetUpdateModelMixin,
 
         __QUERY Params__:
 
-            `name`                    # optional
-            `permission_codename`     # optional
-            `permission_app_label`    # optional
-            `permission_model`        # optional
+        %(FILTERS)s
 
         __Response__:
 

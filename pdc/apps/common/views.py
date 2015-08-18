@@ -94,7 +94,7 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
 
         __QUERY Params__:
 
-            name    # optional
+        %(FILTERS)s
 
         __Response__:
 
@@ -373,9 +373,7 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         __QUERY Params__:
 
-            key_id
-            name
-            description(icontains match)
+        %(FILTERS)s
 
         __Response__:
 

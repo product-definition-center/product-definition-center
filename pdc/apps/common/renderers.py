@@ -8,6 +8,8 @@ from collections import OrderedDict
 from django.conf import settings
 from django.utils.encoding import smart_text
 
+from contrib import drf_introspection
+
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.utils import formatting
 
@@ -79,9 +81,9 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
 
     def get_overview(self, view):
         if view.__class__.__name__ == 'APIRoot':
-            return self.format_docstring(PDC_APIROOT_DOC)
+            return self.format_docstring(None, PDC_APIROOT_DOC)
         overview = view.__doc__ or ''
-        return self.format_docstring(overview)
+        return self.format_docstring(view, overview)
 
     def get_description(self, view):
         if view.__class__.__name__ == 'APIRoot':
@@ -92,11 +94,65 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
             func = getattr(view, method, None)
             docstring = func and func.__doc__ or ''
             if docstring:
-                description[method] = self.format_docstring(docstring)
+                description[method] = self.format_docstring(view, docstring)
 
         return description
 
-    def format_docstring(self, docstring):
-        formatted = docstring % settings.BROWSABLE_DOCUMENT_MACROS
-        string = formatting.dedent(smart_text(formatted))
+    def format_docstring(self, view, docstring):
+        macros = settings.BROWSABLE_DOCUMENT_MACROS
+        if view:
+            macros['FILTERS'] = get_filters(view)
+        string = formatting.dedent(docstring)
+        formatted = string % macros
+        string = smart_text(formatted)
         return formatting.markup_description(string)
+
+
+FILTERS_CACHE = {}
+FILTER_DEFS = {
+    'CharFilter': 'string',
+    'NullableCharFilter': 'string | null',
+    'BooleanFilter': 'bool',
+    'ActiveReleasesFilter': 'bool',
+}
+LOOKUP_TYPES = {
+    'icontains': 'case insensitive, substring match',
+    'contains': 'substring match',
+    'iexact': 'case insensitive',
+}
+
+
+def get_filters(view):
+    """
+    For a given view set returns which query filters are available for it a
+    Markdown formatted list. The list does not include query filters specified
+    on serializer or query arguments used for paging.
+    """
+    if view in FILTERS_CACHE:
+        return FILTERS_CACHE[view]
+
+    allowed_keys = drf_introspection.get_allowed_query_params(view)
+    filter_class = getattr(view, 'filter_class', None)
+    filterset = filter_class() if filter_class is not None else None
+    filterset_fields = filterset.filters if filterset is not None else []
+    filter_fields = set(getattr(view, 'filter_fields', []))
+    extra_query_params = set(getattr(view, 'extra_query_params', []))
+
+    filters = []
+    for key in sorted(allowed_keys):
+        if key in filterset_fields:
+            # filter defined in FilterSet
+            filter = filterset_fields.get(key)
+            filter_type = FILTER_DEFS.get(filter.__class__.__name__, 'string')
+            lookup_type = LOOKUP_TYPES.get(filter.lookup_type)
+            if lookup_type:
+                lookup_type = ', %s' % lookup_type
+            filters.append(' * `%s` (%s%s)' % (key, filter_type, lookup_type or ''))
+        elif key in filter_fields or key in extra_query_params:
+            # filter defined in viewset directly; type depends on model, not easily available
+            filters.append(' * `%s`' % key)
+        # else filter defined somewhere else and not relevant here (e.g.
+        # serializer or pagination settings).
+    filters = '\n'.join(filters)
+    FILTERS_CACHE[view] = filters
+    return filters

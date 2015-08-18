@@ -32,15 +32,7 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         __Query params__:
 
-          * `name`
-          * `version`
-          * `epoch`
-          * `release`
-          * `arch`
-          * `srpm_name`
-          * `srpm_nevra`
-          * `compose`
-          * `linked_release`
+        %(FILTERS)s
 
         __Response__:
 
@@ -201,22 +193,10 @@ class ImageViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         __Query params__:
 
-         * arch
-         * bootable (possible values `True` and `False`)
-         * disc_count
-         * disc_number
-         * file_name
-         * image_format
-         * image_type
-         * implant_md5
-         * md5
-         * mtime
-         * sha1
-         * sha256
-         * size
-         * volume_id
-         * compose - only include images included in given release, value for
-           this filter should be compose ID
+        %(FILTERS)s
+
+        The `compose` filter allows filtering images connected to a particular
+        compose. The value should be compose ID.
 
         If the same filter is specified multiple times, it will do a OR query.
 
@@ -341,17 +321,10 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
 
         __Query params__:
 
-         * component_name: srpm_name or release_component_name if release_component srpm mapping exists
-         * rpm_version       : rpm nvr's version
-         * rpm_release       : rpm nvr's release
-         * release_id        : product release id
-         * image_id
-         * image_format
-         * md5
-         * archive_build_nvr
-         * archive_name
-         * archive_size
-         * archive_md5
+        %(FILTERS)s
+
+        The value of `component_name` should be either SRPM name or release
+        component name if release component to srpm mapping exists.
 
         __Response__:
 

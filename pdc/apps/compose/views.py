@@ -478,21 +478,7 @@ class ComposeViewSet(StrictQueryParamMixin,
 
         __Query params__:
 
-          * `compose_date`
-          * `compose_id`
-          * `compose_label`
-          * `compose_respin`
-          * `compose_type`
-          * `deleted`
-          * `release`
-          * `rpm_arch`
-          * `rpm_name`
-          * `rpm_nvr`
-          * `rpm_nvra`
-          * `rpm_release`
-          * `rpm_version`
-          * `srpm_name`
-          * `acceptance_testing`
+        %(FILTERS)s
 
         __Response__:
 
@@ -905,13 +891,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
 
         __Query params__:
 
-         * release
-         * variant
-         * arch
-         * srpm_name
-         * rpm_name
-         * rpm_arch
-         * comment (substring match on this field)
+        %(FILTERS)s
 
         __Response__:
 
@@ -1069,9 +1049,9 @@ class FilterBugzillaProductsAndComponents(StrictQueryParamMixin,
 
         __Query params__:
 
-        The nvr is always required.
+        The `nvr` is always required.
 
-         * nvr
+        %(FILTERS)s
 
         __Response__:
 
@@ -1213,12 +1193,7 @@ class FindComposeByReleaseRPMViewSet(StrictQueryParamMixin, FindComposeMixin, vi
 
         __Query params__:
 
-        The RPM name and release id are always required.
-
-         * `included_compose_type`: optional
-         * `excluded_compose_type`: optional
-         * `latest`: optional
-         * `to_dict`: optional
+        %(FILTERS)s
 
 
         __Response__:
@@ -1272,11 +1247,7 @@ class FindLatestComposeByComposeRPMViewSet(StrictQueryParamMixin, FindComposeMix
 
         __Query params__:
 
-        The RPM name and release id are always required.
-
-         * `included_compose_type`: optional
-         * `excluded_compose_type`: optional
-         * `to_dict`: optional
+        %(FILTERS)s
 
         __Response__:
 
