@@ -2306,6 +2306,13 @@ class ReleaseComponentRelationshipRESTTestCase(TestCaseWithChangeSetMixin, APITe
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 3)
 
+    def test_create_relationship_with_non_integer_id(self):
+        url = reverse('rcrelationship-list')
+        data = {"from_component": {'id': 'ab'}, "to_component": {'id': 'abc'}, "type": "executes"}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNumChanges([])
+
     def test_create_relationship_with_non_existed_release_component(self):
         url = reverse('rcrelationship-list')
         data = {"from_component": {'id': 1}, "to_component": {'id': 20000}, "type": "executes"}

@@ -458,6 +458,8 @@ class ReleaseComponentRelatedField(serializers.RelatedField):
             rc = ReleaseComponent.objects.get(**kwargs)
         except ReleaseComponent.DoesNotExist:
             raise serializers.ValidationError({'detail': "ReleaseComponent [%s] doesn't exist" % data})
+        except ValueError as ex:
+            raise serializers.ValidationError({'detail': "%s is incorrect, reason: %s" % (data, str(ex))})
         return rc
 
 
