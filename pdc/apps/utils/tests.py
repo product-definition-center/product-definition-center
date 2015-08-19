@@ -7,6 +7,9 @@ from datetime import datetime
 import random
 
 from django.test import TestCase
+from django.core.urlresolvers import reverse
+from rest_framework.test import APITestCase
+from rest_framework import status
 
 from .templatetags.epochformat import epochformat
 
@@ -29,3 +32,10 @@ class EpochFormatTest(TestCase):
             # In Python 2.7 there is a method for this. Jenkins however uses Python 2.6.
             total_seconds = returned.seconds + returned.days * 24 * 3600
             self.assertEqual(ts, total_seconds)
+
+
+class SortedAPIRootTest(APITestCase):
+    def test_get_api_root(self):
+        rsp = self.client.get(reverse('api-root'))
+        self.assertEqual(rsp.status_code, status.HTTP_200_OK)
+        self.assertEqual(rsp.data.keys(), sorted(rsp.data.keys()))
