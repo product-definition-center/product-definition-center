@@ -34,30 +34,9 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         %(FILTERS)s
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged list
-            {
-                "count": int,
-                "next": url,
-                "previous": url,
-                "results": [
-                    {
-                        "id": int,
-                        "name": string,
-                        "version": string,
-                        "epoch": int,
-                        "release": string,
-                        "arch": string,
-                        "srpm_name": string,
-                        "srpm_nevra": string,
-                        "filename": string,
-                        "linked_releases": [string, ....],
-                        "linked_composes": [string, ....]
-                    },
-                    ...
-                ]
-            }
+        %(SERIALIZER)s
         """
         return super(RPMViewSet, self).list(*args, **kwargs)
 
@@ -70,34 +49,15 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         __Data__:
 
-            {
-                "name": string,
-                "version": string,
-                "epoch": int,
-                "release": string,
-                "arch": string,
-                "srpm_name": string,
-                "srpm_nevra": string, srpm_nevra should be empty if and only if arch is src.
-                "filename": string, # optional
-                "linked_releases": [string, ....] # optional
-            }
+        %(WRITABLE_SERIALIZER)s
 
+        The `srpm_nevra` field should be empty if and only if `arch` is `src`.
+        If `filename` is not specified, it will default to a name created from
+        *NEVRA*.
 
         __Response__:
 
-            {
-                "id": integer,
-                "name": string,
-                "version": string,
-                "epoch": int,
-                "release": string,
-                "arch": string,
-                "srpm_name": string,
-                "srpm_nevra": string,
-                "filename": string,
-                "linked_releases": [string, ....],
-                "linked_composes": []
-            }
+        %(SERIALIZER)s
         """
         return super(RPMViewSet, self).create(request, *args, **kwargs)
 
@@ -110,64 +70,23 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         __Response__:
 
-            {
-                "id": integer,
-                "name": string,
-                "version": string,
-                "epoch": int,
-                "release": string,
-                "arch": string,
-                "srpm_name": string,
-                "srpm_nevra": string,
-                "filename": string,
-                "linked_releases": [string, ....],
-                "linked_composes": [string, ....]
-            }
+        %(SERIALIZER)s
         """
         return super(RPMViewSet, self).retrieve(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         """
-        __Method__:
-
-        PUT: for full fields update
-
-            {
-                "name": string,
-                "version": string,
-                "epoch": int,
-                "release": string,
-                "arch": string,
-                "srpm_name": string,
-                "srpm_nevra": string, srpm_nevra should be empty if and only if arch is src.
-                "filename": string,
-                "linked_releases": [string, ....] # optional
-            }
-
-        PATCH: for partial update
-
-            # so you can give one or more fields in ['name', 'version', 'epoch', 'release', 'arch',
-            #                                        'srpm_name', 'srpm_nevra', 'filename', 'linked_releases']
-            # to do the update
-
+        __Method__: `PUT`, `PATCH`
 
         __URL__: $LINK:rpms-detail:instance_pk$
 
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
         __Response__:
 
-            {
-                "id": integer,
-                "name": string,
-                "version": string,
-                "epoch": int,
-                "release": string,
-                "arch": string,
-                "srpm_name": string,
-                "srpm_nevra": string,
-                "filename": string,
-                "linked_releases": [string, ....],
-                "linked_composes": [string, ....]
-            }
+        %(SERIALIZER)s
         """
         return super(RPMViewSet, self).update(request, *args, **kwargs)
 
@@ -197,34 +116,9 @@ class ImageViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         If the same filter is specified multiple times, it will do a OR query.
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged list
-            {
-              "count": int,
-              "next": url,
-              "previous": url,
-              "results": [
-                {
-                  "arch":           string,
-                  "bootable":       bool,
-                  "disc_count":     int,
-                  "disc_number":    int,
-                  "file_name":      string,
-                  "image_format":   string,
-                  "image_type":     string,
-                  "implant_md5":    string,
-                  "md5":            string,
-                  "mtime":          big int,
-                  "sha1":           string,
-                  "sha256":         string,
-                  "size":           big int,
-                  "volume_id":      string,
-                  "composes":       [compose id]
-                },
-                ...
-              ]
-            }
+        %(SERIALIZER)s
         """
         return super(ImageViewSet, self).list(request)
 

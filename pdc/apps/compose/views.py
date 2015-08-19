@@ -450,20 +450,7 @@ class ComposeViewSet(StrictQueryParamMixin,
 
         __Response__:
 
-            {
-                "compose_id": string,
-                "compose_date": string,
-                "compose_type": string,
-                "compose_respin": int,
-                "release": string,
-                "compose_label": string,
-                "deleted": bool,
-                "rpm_mapping_template": string,
-                "sigkeys": [string],
-                "acceptance_testing": string,
-                "linked_releases": [string],
-                "rtt_tested_architectures": object
-            }
+        %(SERIALIZER)s
         """
         return super(ComposeViewSet, self).retrieve(*args, **kwargs)
 
@@ -481,31 +468,9 @@ class ComposeViewSet(StrictQueryParamMixin,
 
         %(FILTERS)s
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged list
-            {
-                "count": int,
-                "next": url,
-                "previous": url,
-                "results": [
-                    {
-                        "compose_id": string,
-                        "compose_date": string,
-                        "compose_type": string,
-                        "compose_respin": int,
-                        "release": string,
-                        "compose_label": string,
-                        "deleted": bool,
-                        "rpm_mapping_template": string,
-                        "sigkeys": [string],
-                        "acceptance_testing": string,
-                        "linked_releases": [string],
-                        "rtt_tested_architectures": object
-                    },
-                    ...
-                ]
-            }
+        %(SERIALIZER)s
         """
         self.order_queryset = True
         return super(ComposeViewSet, self).list(*args, **kwargs)
@@ -914,20 +879,11 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
 
         __Data__:
 
-            {
-                "release":          string,
-                "variant":          string,
-                "arch":             string,
-                "srpm_name":        string,
-                "rpm_name":         string,
-                "rpm_arch":         string,
-                "include":          bool,
-                "comment":          string,     # optional, default empty
-                "do_not_delete":    bool        # optional, default False
-            }
+        %(WRITABLE_SERIALIZER)s
 
         __Response__:
-        Same as input data, optional fields are always present and `id` is added.
+
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -960,29 +916,9 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
 
         %(FILTERS)s
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged list
-            {
-                "count": int,
-                "next": url,
-                "previous": url,
-                "results": [
-                    {
-                        "id":               int,
-                        "release":          string,
-                        "variant":          string,
-                        "arch":             string,
-                        "srpm_name":        string,
-                        "rpm_name":         string,
-                        "rpm_arch":         string,
-                        "include":          bool,
-                        "comment":          string,
-                        "do_not_delete":    bool
-                    },
-                    ...
-                ]
-            }
+        %(SERIALIZER)s
 
         __Example__:
 

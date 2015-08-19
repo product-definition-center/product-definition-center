@@ -110,19 +110,11 @@ class ProductViewSet(ChangeSetCreateModelMixin,
 
         __Data__:
 
-            {
-                "short": string,
-                "name":  string
-            }
+        %(WRITABLE_SERIALIZER)s
 
         __Response__:
 
-            {
-                "name": string,
-                "short": string,
-                "active": bool,
-                "product_versions": [string]
-            }
+        %(SERIALIZER)s
         """
         return super(ProductViewSet, self).create(*args, **kwargs)
 
@@ -134,12 +126,7 @@ class ProductViewSet(ChangeSetCreateModelMixin,
 
         __Response__:
 
-            {
-                "name": string,
-                "short": string,
-                "active": bool,
-                "product_versions": [string]
-            }
+        %(SERIALIZER)s
         """
         return super(ProductViewSet, self).retrieve(*args, **kwargs)
 
@@ -153,23 +140,9 @@ class ProductViewSet(ChangeSetCreateModelMixin,
 
         %(FILTERS)s
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged list
-            {
-                "count": int,
-                "next": url,
-                "previous": url,
-                "results": [
-                    {
-                        "name": string,
-                        "short": string,
-                        "active": bool,
-                        "product_versions": [string]
-                    },
-                    ...
-                ]
-            }
+        %(SERIALIZER)s
         """
         return super(ProductViewSet, self).list(*args, **kwargs)
 
@@ -181,10 +154,7 @@ class ProductViewSet(ChangeSetCreateModelMixin,
 
         __Data__:
 
-            {
-                "name": string,
-                "short": string,
-            }
+        %(WRITABLE_SERIALIZER)s
 
         Please note that if you update the `short` field, the URL of this
         product will change. The change of short name is *not* propagated to
@@ -192,12 +162,7 @@ class ProductViewSet(ChangeSetCreateModelMixin,
 
         __Response__:
 
-            {
-                "name": string,
-                "short": string,
-                "active": bool,
-                "product_versions": [string]
-            }
+        %(SERIALIZER)s
         """
         return super(ProductViewSet, self).update(*args, **kwargs)
 
@@ -229,27 +194,14 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
 
         __Data__:
 
-            {
-                "short": string,    # optional
-                "name":  string,
-                "version": string,
-                "product": string
-            }
+        %(WRITABLE_SERIALIZER)s
 
         If `short` is not specified, the short name of associated product will
         be used.
 
         __Response__:
 
-            {
-                "name": string,
-                "short": string,
-                "version": string,
-                "active": bool,
-                "product_version_id": string,
-                "product": string,
-                "releases": [string]
-            }
+        %(SERIALIZER)s
         """
         return super(ProductVersionViewSet, self).create(*args, **kwargs)
 
@@ -261,15 +213,7 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
 
         __Response__:
 
-            {
-                "name": string,
-                "short": string,
-                "version": string,
-                "active": bool,
-                "product_version_id": string,
-                "product": string,
-                "releases": [string]
-            }
+        %(SERIALIZER)s
 
         The list of releases is ordered by short and version.
         """
@@ -285,26 +229,9 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
 
         %(FILTERS)s
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged list
-            {
-                "count": int,
-                "next": url,
-                "previous": url,
-                "results": [
-                    {
-                        "name": string,
-                        "short": string,
-                        "version": string,
-                        "active": bool,
-                        "product_version_id": string,
-                        "product": string,
-                        "releases": [string]
-                    },
-                    ...
-                ]
-            }
+        %(SERIALIZER)s
 
         The list of releases for each product version is ordered by short and
         version.
@@ -319,12 +246,7 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
 
         __Data__:
 
-            {
-                "short": string,
-                "name":  string,
-                "version": string,
-                "product": string
-            }
+        %(WRITABLE_SERIALIZER)s
 
         Please note that if you change the `short` or `version` field, the
         `product_version_id` will be modified accordingly, and the URL of the
@@ -333,15 +255,7 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
 
         __Response__:
 
-            {
-                "name": string,
-                "short": string,
-                "version": string,
-                "active": bool,
-                "product_version_id": string,
-                "product": string,
-                "releases": [string]
-            }
+        %(SERIALIZER)s
         """
         return super(ProductVersionViewSet, self).update(*args, **kwargs)
 
@@ -393,45 +307,13 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
 
         __Data__:
 
-            {
-                "short": string,
-                "version": string,
-                "release_type": string,
-                "name":  string,
-                "product_version": string,      # optional
-                "base_product": string,         # optional
-                "active": bool,                 # optional (default True)
-                "dist_git": {
-                    "branch": string            # optional
-                },
-                "integrated_with": string,      # optional
-                "bugzilla": {
-                    "product": string
-                }                               # optional
-            }
+        %(WRITABLE_SERIALIZER)s
 
         *release_type*: $LINK:releasetype-list$
 
         __Response__:
 
-            {
-                "release_id": string,
-                "short": string,
-                "version": string,
-                "name": string,
-                "base_product": <string|null>,
-                "active": bool,
-                "product_version": <string|null>,
-                "dist_git": {
-                    "branch": string
-                } OR null,
-                "release_type": string,
-                "compose_set": [string],
-                "integrated_with": string,
-                "bugzilla": {
-                    "product": null
-                }
-            }
+        %(SERIALIZER)s
         """
         response = super(ReleaseViewSet, self).create(request, *args, **kwargs)
         if response.status_code == status.HTTP_201_CREATED:
@@ -448,24 +330,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
 
         __Response__:
 
-            {
-                "release_id": string,
-                "short": string,
-                "version": string,
-                "name": string,
-                "base_product": <string|null>,
-                "active": bool,
-                "product_version": <string|null>,
-                "dist_git": {
-                    "branch": string
-                } OR null,
-                "release_type": string,
-                "compose_set": [string],
-                "integrated_with": string,
-                "bugzilla": {
-                    "product": string
-                } OR null
-            }
+        %(SERIALIZER)s
 
         The list of composes is ordered by their date, type and respin (even
         though those fields are not directly visible here).
@@ -482,35 +347,9 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
 
         %(FILTERS)s
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged list
-            {
-                "count": int,
-                "next": url,
-                "previous": url,
-                "results": [
-                    {
-                        "release_id": string,
-                        "short": string,
-                        "version": string,
-                        "name": string,
-                        "base_product": <string|null>,
-                        "active": bool,
-                        "product_version": <string|null>,
-                        "dist_git": {
-                            "branch": string
-                        }OR null,
-                        "release_type": string,
-                        "compose_set": [string],
-                        "integrated_with": string,
-                        "bugzilla": {
-                            "product": string
-                        } OR null
-                    },
-                    ...
-                ]
-            }
+        %(SERIALIZER)s
 
         The list of composes for each release is ordered by their date, type,
         and respin (even though those fields are not directly visible here).
@@ -536,22 +375,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
 
         __Data__:
 
-            {
-                "short": string,
-                "version": string,
-                "release_type": string,
-                "name":  string,
-                "product_version": string,              # optional
-                "base_product": string,                 # optional
-                "active": bool,                         # optional (default True)
-                "integrated_with": string,              # optional
-                "dist_git": {
-                    "branch": string                    # optional
-                },
-                "bugzilla": {
-                    "product": string
-                }                                       # optional
-            }
+        %(WRITABLE_SERIALIZER)s
 
         Please note that if you change the `short`, `version`, `release_type`
         or `base_product` fields, the `release_id` will be updated and the URL
@@ -559,22 +383,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
 
         __Response__:
 
-            {
-                "release_id": string,
-                "short": string,
-                "version": string,
-                "name": string,
-                "base_product": <string|null>,
-                "active": bool,
-                "product_version": <string|null>,
-                "dist_git": {
-                    "branch": string
-                } OR null,
-                "release_type": string,
-                "compose_set": [string],
-                "bugzilla": null,
-                "integrated_with": null
-            }
+        %(SERIALIZER)s
         """
         object = self.get_object()
         signals.release_pre_update.send(sender=object.__class__, release=object, request=request)
@@ -648,20 +457,11 @@ class BaseProductViewSet(ChangeSetCreateModelMixin,
 
         __Data__:
 
-            {
-                "short": string,
-                "version": string,
-                "name":  string
-            }
+        %(WRITABLE_SERIALIZER)s
 
         __Response__:
 
-            {
-                "name": string,
-                "short": string,
-                "version": string,
-                "base_product_id": string
-            }
+        %(SERIALIZER)s
         """
         return super(BaseProductViewSet, self).create(*args, **kwargs)
 
@@ -673,12 +473,7 @@ class BaseProductViewSet(ChangeSetCreateModelMixin,
 
         __Response__:
 
-            {
-                "name": string,
-                "short": string,
-                "version": string,
-                "base_product_id": string
-            }
+        %(SERIALIZER)s
         """
         return super(BaseProductViewSet, self).retrieve(*args, **kwargs)
 
@@ -692,23 +487,9 @@ class BaseProductViewSet(ChangeSetCreateModelMixin,
 
         %(FILTERS)s
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged list
-            {
-                "count": int,
-                "next": url,
-                "previous": url,
-                "results": [
-                    {
-                        "name": string,
-                        "short": string,
-                        "version": string,
-                        "base_product_id": string
-                    },
-                    ...
-                ]
-            }
+        %(SERIALIZER)s
         """
         return super(BaseProductViewSet, self).list(*args, **kwargs)
 
@@ -720,20 +501,11 @@ class BaseProductViewSet(ChangeSetCreateModelMixin,
 
         __Data__:
 
-            {
-                "short": string,
-                "version": string,
-                "name":  string
-            }
+        %(WRITABLE_SERIALIZER)s
 
         __Response__:
 
-            {
-                "name": string,
-                "short": string,
-                "version": string,
-                "base_product_id": string
-            }
+        %(SERIALIZER)s
         """
         return super(BaseProductViewSet, self).update(*args, **kwargs)
 
@@ -937,21 +709,9 @@ class ReleaseTypeViewSet(StrictQueryParamMixin,
 
         %(FILTERS)s
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            {
-                "count": int,
-                "next": url,
-                "previous": url,
-                "results": [
-                    {
-                        "short": string,
-                        "name": string,
-                        "suffix": string
-                    },
-                    ......
-                ]
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -996,28 +756,14 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
 
         __Data__:
 
-            {
-                "release": string,
-                "id": string,
-                "uid": string,
-                "name": string,
-                "type": string,
-                "arches": [string]
-            }
+        %(WRITABLE_SERIALIZER)s
 
         All fields are required. The required architectures must already be
         present in PDC.
 
         __Response__:
 
-            {
-                "release": string,
-                "id": string,
-                "uid": string,
-                "name": string,
-                "type": string,
-                "arches": [string]
-            }
+        %(SERIALIZER)s
         """
         return super(ReleaseVariantViewSet, self).create(*args, **kwargs)
 
@@ -1029,14 +775,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
 
         __Data__:
 
-            {
-                "release": string,
-                "id": string,
-                "uid": string,
-                "name": string,
-                "type": string,
-                "arches": [string]
-            }
+        %(WRITABLE_SERIALIZER)s
 
         All attributes are required. The specified architectures will be set
         for this release. Also note that if you change the `uid`, the url for
@@ -1048,14 +787,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
 
         __Response__:
 
-            {
-                "release": string,
-                "id": string,
-                "uid": string,
-                "name": string,
-                "type": string,
-                "arches": [string]
-            }
+        %(SERIALIZER)s
         """
         return super(ReleaseVariantViewSet, self).update(*args, **kwargs)
 
@@ -1091,14 +823,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
 
         __Response__:
 
-            {
-                "release": string,
-                "id": string,
-                "uid": string,
-                "name": string,
-                "type": string,
-                "arches": [string]
-            }
+        %(SERIALIZER)s
         """
         return super(ReleaseVariantViewSet, self).partial_update(*args, **kwargs)
 
@@ -1112,23 +837,9 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
 
         %(FILTERS)s
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            {
-                "count": int,
-                "next": <url|null>,
-                "previous": <url|null>,
-                "results": [
-                    {
-                        "release": string,
-                        "id": string,
-                        "uid": string,
-                        "name": string,
-                        "type": string,
-                        "arches": [string]
-                    }
-                ]
-            }
+        %(SERIALIZER)s
         """
         return super(ReleaseVariantViewSet, self).list(*args, **kwargs)
 
@@ -1140,14 +851,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
 
         __Response__:
 
-            {
-                "release": string,
-                "id": string,
-                "uid": string,
-                "name": string,
-                "type": string,
-                "arches": [string]
-            }
+        %(SERIALIZER)s
         """
         return super(ReleaseVariantViewSet, self).retrieve(*args, **kwargs)
 

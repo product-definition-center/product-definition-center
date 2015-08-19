@@ -20,6 +20,8 @@ class PermissionSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 
 
 class PermissionRelatedField(serializers.RelatedField):
+    doc_format = "permission"
+
     def to_representation(self, value):
         serializer = PermissionSerializer(value)
         return serializer.data
