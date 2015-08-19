@@ -2174,6 +2174,14 @@ class GroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertNumChanges([1])
 
+    def test_create_group_with_components_and_different_release(self):
+        url = reverse('componentgroup-list')
+        data = {'group_type': 'type2', 'release': 'release-2.0', 'description': 'dd',
+                'components': [{'id': 1}]}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNumChanges([])
+
     def test_create_group_with_components_unique_together_fields(self):
         url = reverse('componentgroup-list')
         data = {'group_type': 'type2', 'release': 'release-1.0', 'description': 'dd',
