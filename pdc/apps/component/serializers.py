@@ -481,15 +481,14 @@ class GroupSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     )
 
     def validate(self, value):
-        if not self.instance or not self.partial:
+        # # POST
+        if not self.instance:
             components = value.get('components', [])
             release = value.get('release')
-        elif 'components' in value:
-            components = value.get('components', [])
-            release = self.instance.release
+        # PUT or PATCH
         else:
-            components = self.instance.components.all()
-            release = value.get('release')
+            components = value.get('components', self.instance.components.all())
+            release = value.get('release', self.instance.release)
 
         for component in components:
                 if component.release != release:
