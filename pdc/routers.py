@@ -16,7 +16,7 @@ from pdc.apps.package import views as rpm_views
 from pdc.apps.utils import SortedRouter
 
 
-router = SortedRouter.PDCrouter()
+router = SortedRouter.PDCRouter()
 
 # register api token auth view
 router.register(r'auth/token', pdc_auth_views.TokenViewSet, base_name='token')

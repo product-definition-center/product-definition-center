@@ -6,8 +6,8 @@
 from datetime import datetime
 import random
 
-from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
 
@@ -34,8 +34,19 @@ class EpochFormatTest(TestCase):
             self.assertEqual(ts, total_seconds)
 
 
-class SortedAPIRootTest(APITestCase):
-    def test_get_api_root(self):
+class APIRootTestCase(APITestCase):
+    def test_api_root_is_sorted(self):
         rsp = self.client.get(reverse('api-root'))
         self.assertEqual(rsp.status_code, status.HTTP_200_OK)
         self.assertEqual(rsp.data.keys(), sorted(rsp.data.keys()))
+
+    def test_root_includes_release_component_contacts(self):
+        response = self.client.get(reverse('api-root'))
+        self.assertIn('release-components/{instance_pk}/contacts', response.data)
+
+    def test_root_includes_release_rpm_mapping(self):
+        response = self.client.get(reverse('api-root'))
+        key = 'releases/{release_id}/rpm-mapping'
+        self.assertIn(key, response.data)
+        self.assertEqual(response.data[key],
+                         'http://testserver/rest_api/v1/releases/%7Brelease_id%7D/rpm-mapping/%7Bpackage%7D/')
