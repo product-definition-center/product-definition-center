@@ -57,8 +57,7 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
         __Method__:
         POST
 
-        __URL__:
-        /labels/
+        __URL__: $LINK:label-list$
 
         __Data__:
 
@@ -76,9 +75,9 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -H "Content-Type: application/json"  -X POST -d '{"name": "label1", "description": "label1 description"}' %(HOST_NAME)s/%(API_PATH)s/labels/
+            curl -H "Content-Type: application/json"  -X POST -d '{"name": "label1", "description": "label1 description"}' $URL:label-list$
             # output
-            {"url": "%(HOST_NAME)s/%(API_PATH)s/labels/1/", "name": "label1", "description": "label1 description"}
+            {"url": "$URL:label-detail:1$", "name": "label1", "description": "label1 description"}
         """
         return super(LabelViewSet, self).create(request, *args, **kwargs)
 
@@ -89,8 +88,7 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-        /labels/
+        __URL__: $LINK:label-list$
 
         __QUERY Params__:
 
@@ -101,11 +99,11 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
             # paged lists
             {
                 "count": 284,
-                "next": "%(HOST_NAME)s/%(API_PATH)s/labels/?page=2",
+                "next": "$URL:label-list$?page=2",
                 "previous": null,
                 "results": [
                     {
-                        "url": "%(HOST_NAME)s/%(API_PATH)s/labels/1/",
+                        "url": "$URL:label-detail:1$",
                         "name": "label1",
                         "description": "label1 description"
                     },
@@ -114,20 +112,20 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -H "Content-Type: application/json"  -X GET %(HOST_NAME)s/%(API_PATH)s/labels/
+            curl -H "Content-Type: application/json"  -X GET $URL:label-list$
             # output
             {
                 "count": 284,
-                "next": "%(HOST_NAME)s/%(API_PATH)s/labels/?page=2",
+                "next": "$URL:label-list$?page=2",
                 "previous": null,
                 "results": [
                     {
-                        "url": "%(HOST_NAME)s/%(API_PATH)s/labels/1/",
+                        "url": "$URL:label-detail:1$",
                         "name": "label1",
                         "description": "label1 description"
                     },
                     {
-                        "url": "%(HOST_NAME)s/%(API_PATH)s/labels/2/",
+                        "url": "$URL:label-detail:2$",
                         "name": "label2",
                         "description": "label2 description"
                     },
@@ -137,14 +135,14 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
 
         With query params:
 
-            curl -H "Content-Type: application/json"  -G %(HOST_NAME)s/%(API_PATH)s/labels/ -d name=label1
+            curl -H "Content-Type: application/json"  -G $URL:label-list$ -d name=label1
             {
                 "count": 1,
                 "next": null,
                 "previous": null,
                 "results": [
                     {
-                       "url": "%(HOST_NAME)s/%(API_PATH)s/labels/1/",
+                        "url": "$URL:label-list:1$",
                         "name": "label1",
                         "description": "label1 description"
                     }
@@ -160,8 +158,7 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-        /labels/{instance_pk}
+        __URL__: $LINK:label-detail:instance_pk$
 
         __Response__:
 
@@ -173,9 +170,9 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/labels/1/
+            curl -H "Content-Type: application/json" $URL:label-detail:1$
             # output
-            {"url": "%(HOST_NAME)s/%(API_PATH)s/labels/1/", "name": "label1", "description": "label1 description"}
+            {"url": "$URL:label-detail:1$", "name": "label1", "description": "label1 description"}
         """
         return super(LabelViewSet, self).retrieve(request, *args, **kwargs)
 
@@ -195,8 +192,7 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
             or
             {'name': 'new_name', 'description': 'new_description'}
 
-        __URL__:
-        /labels/{instance_pk}
+        __URL__: $LINK:label-detail:instance_pk$
 
         __Response__:
 
@@ -210,15 +206,15 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
 
         PUT:
 
-            curl -X PUT -d '{"name": "new_name", "description": "new_description"}' -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/labels/1/
+            curl -X PUT -d '{"name": "new_name", "description": "new_description"}' -H "Content-Type: application/json" $URL:label-detail:1$
             # output
-            {"url": "%(HOST_NAME)s/%(API_PATH)s/labels/1/", "name": "new_name", "description": "new_description"}
+            {"url": "$URL:label-detail:1$", "name": "new_name", "description": "new_description"}
 
         PATCH:
 
-            curl -X PATCH -d '{"description": "new_description"}' -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/labels/1/
+            curl -X PATCH -d '{"description": "new_description"}' -H "Content-Type: application/json" $URL:label-detail:1$
             # output
-            {"url": "%(HOST_NAME)s/%(API_PATH)s/labels/1/", "name": "label1", "description": "new_description"}
+            {"url": "$URL:label-detail:1$", "name": "label1", "description": "new_description"}
         """
         return super(LabelViewSet, self).update(request, *args, **kwargs)
 
@@ -229,8 +225,7 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
         __Method__:
         DELETE
 
-        __URL__:
-        /labels/{instance_pk}
+        __URL__: $LINK:label-detail:instance_pk$
 
         __Response__:
 
@@ -238,7 +233,7 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -X DELETE -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/labels/1/
+            curl -X DELETE -H "Content-Type: application/json" $URL:label-detail:1$
         """
         return super(LabelViewSet, self).destroy(request, *args, **kwargs)
 
@@ -270,8 +265,7 @@ class ArchViewSet(pdc_viewsets.ChangeSetCreateModelMixin,
         __Method__:
         GET
 
-        __URL__:
-        /arches/
+        __URL__: $LINK:arch-list$
 
         __Response__:
 
@@ -289,11 +283,11 @@ class ArchViewSet(pdc_viewsets.ChangeSetCreateModelMixin,
 
         __Example__:
 
-            curl -H "Content-Type: application/json"  -X GET %(HOST_NAME)s/%(API_PATH)s/arches/
+            curl -H "Content-Type: application/json"  -X GET $URL:arch-list$
             # output
             {
                 "count": 47,
-                "next": "%(HOST_NAME)s/%(API_PATH)s/arches/?page=2",
+                "next": "$URL:arch-list$?page=2",
                 "previous": null,
                 "results": [
                     {
@@ -315,8 +309,7 @@ class ArchViewSet(pdc_viewsets.ChangeSetCreateModelMixin,
         __Method__:
         POST
 
-        __URL__:
-        /arches/
+        __URL__: $LINK:arch-list$
 
         __Data__:
 
@@ -331,7 +324,7 @@ class ArchViewSet(pdc_viewsets.ChangeSetCreateModelMixin,
 
         __Example__:
 
-            curl -H "Content-Type: application/json" -X POST -d '{"name": "arm"}' %(HOST_NAME)s/%(API_PATH)s/arches/
+            curl -H "Content-Type: application/json" -X POST -d '{"name": "arm"}' $URL:arch-list$
             # output
             {"name": "arm"}
         """
@@ -368,8 +361,7 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
         __Method__:
         GET
 
-        __URL__:
-        /sigkeys/
+        __URL__: $LINK:sigkey-list$
 
         __QUERY Params__:
 
@@ -401,8 +393,7 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
         __Method__:
         GET
 
-        __URL__:
-        /sigkeys/{key_id}/
+        __URL__: $LINK:sigkey-detail:key_id$
 
         __Response__:
 
@@ -428,8 +419,7 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
             or
             {'name': 'new_name', 'description': 'new_description'}
 
-        __URL__:
-        /sigkeys/{key_id}/
+        __URL__: $LINK:sigkey-detail:key_id$
 
         __Response__:
 
@@ -465,8 +455,7 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
             or
             {"name": "new_name", "description": "new_description"}
 
-        __URL__:
-        /sigkeys/
+        __URL__: $LINK:sigkey-list$
 
         __Response__:
 
@@ -488,8 +477,7 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
         __Method__:
         POST
 
-        __URL__:
-        /sigkeys/
+        __URL__: $LINK:sigkey-list$
 
         __Data__:
 

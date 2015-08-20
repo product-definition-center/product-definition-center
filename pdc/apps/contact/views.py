@@ -34,8 +34,7 @@ class PersonViewSet(viewsets.PDCModelViewSet):
         __Method__:
         POST
 
-        __URL__:
-        /persons/
+        __URL__: $LINK:person-list$
 
         __Data__:
 
@@ -53,7 +52,7 @@ class PersonViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -H "Content-Type: application/json"  -X POST -d '{"username": "test", "email": "test@example.com"}' %(HOST_NAME)s/%(API_PATH)s/persons/
+            curl -H "Content-Type: application/json"  -X POST -d '{"username": "test", "email": "test@example.com"}' $URL:person-list$
             # output
             {"id": 1, "username": "test", "email": "test@example.com"}
         """
@@ -66,8 +65,7 @@ class PersonViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-        /persons/
+        __URL__: $LINK:person-list$
 
         __QUERY Params__:
 
@@ -78,7 +76,7 @@ class PersonViewSet(viewsets.PDCModelViewSet):
             # paged lists
             {
                 "count": 284,
-                "next": "%(HOST_NAME)s/%(API_PATH)s/persons/?page=2",
+                "next": "$URL:person-list$?page=2",
                 "previous": null,
                 "results": [
                     {
@@ -98,8 +96,7 @@ class PersonViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-        /persons/{instance_pk}
+        __URL__: $LINK:person-detail:instance_pk$
 
         __Response__:
 
@@ -111,7 +108,7 @@ class PersonViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/persons/1/
+            curl -H "Content-Type: application/json" $URL:person-detail:1$
             # output
             {"id": 1, "username": "test", "email": "test@example.com"}
         """
@@ -133,8 +130,7 @@ class PersonViewSet(viewsets.PDCModelViewSet):
             or
             {'username': 'new_name', 'email': 'new_email'}
 
-        __URL__:
-        /persons/{instance_pk}
+        __URL__: $LINK:person-detail:instance_pk$
 
         __Response__:
 
@@ -148,13 +144,13 @@ class PersonViewSet(viewsets.PDCModelViewSet):
 
         PUT:
 
-            curl -X PUT -d '{"username": "new_name", "email": "new_email"}' -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/persons/1/
+            curl -X PUT -d '{"username": "new_name", "email": "new_email"}' -H "Content-Type: application/json" $URL:person-detail:1$
             # output
             {"id": 1, "username": "new_name", "email": "new_email"}
 
         PATCH:
 
-            curl -X PATCH -d '{"email": "new_email"}' -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/persons/1/
+            curl -X PATCH -d '{"email": "new_email"}' -H "Content-Type: application/json" $URL:person-detail:1$
             # output
             {"id": 1, "username": "name", "email": "new_email"}
         """
@@ -167,8 +163,7 @@ class PersonViewSet(viewsets.PDCModelViewSet):
         __Method__:
         DELETE
 
-        __URL__:
-        /persons/{instance_pk}
+        __URL__: $LINK:person-detail:instance_pk$
 
         __Response__:
 
@@ -176,7 +171,7 @@ class PersonViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -X DELETE -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/persons/1/
+            curl -X DELETE -H "Content-Type: application/json" $URL:person-detail:1$
         """
         return super(PersonViewSet, self).destroy(request, *args, **kwargs)
 
@@ -206,8 +201,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
         __Method__:
         POST
 
-        __URL__:
-        /maillists/
+        __URL__: $LINK:maillist-list$
 
         __Data__:
 
@@ -225,7 +219,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -H "Content-Type: application/json"  -X POST -d '{"mail_name": "test", "email": "test@example.com"}' %(HOST_NAME)s/%(API_PATH)s/maillists/
+            curl -H "Content-Type: application/json"  -X POST -d '{"mail_name": "test", "email": "test@example.com"}' $URL:maillist-list$
             # output
             {"id": 1, "mail_name": "test", "email": "test@example.com"}
         """
@@ -238,8 +232,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-        /maillists/
+        __URL__: $LINK:maillist-list$
 
         __QUERY Params__:
 
@@ -250,7 +243,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
             # paged lists
             {
                 "count": 28,
-                "next": "%(HOST_NAME)s/%(API_PATH)s/maillist/?page=2",
+                "next": "$URL:maillist-list$?page=2",
                 "previous": null,
                 "results": [
                     {
@@ -265,7 +258,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
 
         With query params:
 
-            curl -H "Content-Type: application/json"  -G %(HOST_NAME)s/%(API_PATH)s/maillists/ --data-urlencode "mail_name=test"
+            curl -H "Content-Type: application/json"  -G $URL:maillist-list$ --data-urlencode "mail_name=test"
             # output
             {
                 "count": 1,
@@ -289,8 +282,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-        /maillists/{instance_pk}
+        __URL__: $LINK:maillist-detail:instance_pk$
 
         __Response__:
 
@@ -302,7 +294,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/maillists/1/
+            curl -H "Content-Type: application/json" $URL:maillist-detail:1$
             # output
             {"id": 1, "mail_name": "test", "email": "test@example.com"}
         """
@@ -323,8 +315,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
             or
             {'mail_name': 'new_name', 'email': 'new_email'}
 
-        __URL__:
-        /maillists/{instance_pk}
+        __URL__: $LINK:maillist-detail:instance_pk$
 
         __Response__:
 
@@ -338,13 +329,13 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
 
         PUT:
 
-            curl -X PUT -d '{"mail_name": "new_name", "email": "new_email"}' -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/maillists/1/
+            curl -X PUT -d '{"mail_name": "new_name", "email": "new_email"}' -H "Content-Type: application/json" $URL:maillist-detail:1$
             # output
             {"id": 1, "mail_name": "new_name", "email": "new_email"}
 
         PATCH:
 
-            curl -X PATCH -d '{"email": "new_email"}' -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/maillists/1/
+            curl -X PATCH -d '{"email": "new_email"}' -H "Content-Type: application/json" $URL:maillist-detail:1$
             # output
             {"id": 1, "mail_name": "name", "email": "new_email"}
         """
@@ -357,8 +348,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
         __Method__:
         DELETE
 
-        __URL__:
-        /maillists/{instance_pk}
+        __URL__: $LINK:maillist-detail:instance_pk$
 
         __Response__:
 
@@ -366,7 +356,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -X DELETE -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/maillists/1/
+            curl -X DELETE -H "Content-Type: application/json" $URL:maillist-detail:1$
         """
         return super(MaillistViewSet, self).destroy(request, *args, **kwargs)
 
@@ -396,8 +386,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
         __Method__:
         POST
 
-        __URL__:
-        /contact-roles/
+        __URL__: $LINK:contactrole-list$
 
         __Data__:
 
@@ -412,7 +401,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -H "Content-Type: application/json"  -X POST -d '{"name": "test"}' %(HOST_NAME)s/%(API_PATH)s/contact-roles/
+            curl -H "Content-Type: application/json"  -X POST -d '{"name": "test"}' $URL:contactrole-list$
             # output
             {"name": "test"}
         """
@@ -425,8 +414,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-        /contact-roles/
+        __URL__: $LINK:contactrole-list$
 
         __QUERY Params__:
 
@@ -451,7 +439,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -H "Content-Type: application/json"  -X GET %(HOST_NAME)s/%(API_PATH)s/contact-roles/
+            curl -H "Content-Type: application/json"  -X GET $URL:contactrole-list$
             # output
             {
                 "count": 4,
@@ -470,7 +458,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
         With query params:
 
-            curl -H "Content-Type: application/json"  -G %(HOST_NAME)s/%(API_PATH)s/contact-roles/ --data-urlencode "name=test"
+            curl -H "Content-Type: application/json"  -G $URL:contactrole-list$ --data-urlencode "name=test"
             # output
             {
                 "count": 1,
@@ -492,8 +480,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-        /contact-roles/{role_name}
+        __URL__: $LINK:contactrole-detail:role_name$
 
         __Response__:
 
@@ -503,7 +490,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/contact-roles/QE_Leader/
+            curl -H "Content-Type: application/json" $URL:contactrole-detail:QE_Leader$
             # output
             {"name": "QE_Leader"}
         """
@@ -518,8 +505,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
             {'name': 'new_name'}
 
-        __URL__:
-        /contact-roles/{role_name}
+        __URL__: $LINK:contactrole-detail:role_name$
 
         __Response__:
 
@@ -531,13 +517,13 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
         PUT:
 
-            curl -X PUT -d '{"name": "new_name"}' -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/contact-roles/QE_ACK/
+            curl -X PUT -d '{"name": "new_name"}' -H "Content-Type: application/json" $URL:contactrole-detail:QE_Ack$
             # output
             {"name": "new_name"}
 
         PATCH:
 
-            curl -X PATCH -d '{"name": "new_name"}' -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/contact-roles/QE_ACK/
+            curl -X PATCH -d '{"name": "new_name"}' -H "Content-Type: application/json" $URL:contactrole-detail:QE_Ack$
             # output
             {"name": "new_name"}
         """
@@ -550,8 +536,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
         __Method__:
         DELETE
 
-        __URL__:
-        /contact-roles/{role_name}
+        __URL__: $LINK:contactrole-detail:role_name$
 
         __Response__:
 
@@ -559,7 +544,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -X DELETE -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/contact-roles/QE_Group/
+            curl -X DELETE -H "Content-Type: application/json" $URL:contactrole-detail:QE_Group$
         """
         return super(ContactRoleViewSet, self).destroy(request, *args, **kwargs)
 
@@ -591,8 +576,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
         __Method__:
         POST
 
-        __URL__:
-        /role-contacts/
+        __URL__: $LINK:rolecontact-list$
 
         __Data__:
 
@@ -624,7 +608,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -H "Content-Type: application/json"  -X POST -d '{"contact_role": "qe_group", "contact": {"username": "test", "email": "test@example.com"}}' %(HOST_NAME)s/%(API_PATH)s/role-contacts/
+            curl -H "Content-Type: application/json"  -X POST -d '{"contact_role": "qe_group", "contact": {"username": "test", "email": "test@example.com"}}' $URL:rolecontact-list$
             # output
             {"id": 1, "contact_role": "qe_group", "contact": {"username": "test", "email": "test@example.com"}}
         """
@@ -637,8 +621,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-        /role-contacts/
+        __URL__: $LINK:rolecontact-list$
 
         __QUERY Params__:
 
@@ -655,7 +638,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
             # paged lists
             {
                 "count": 284,
-                "next": "%(HOST_NAME)s/%(API_PATH)s/role-contacts/?page=2",
+                "next": "$URL:rolecontact-list$?page=2",
                 "previous": null,
                 "results": [
                     {
@@ -672,11 +655,11 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -H "Content-Type: application/json"  -X GET %(HOST_NAME)s/%(API_PATH)s/role-contacts/
+            curl -H "Content-Type: application/json"  -X GET $URL:rolecontact-list$
             # output
             {
                 "count": 284,
-                "next": "%(HOST_NAME)s/%(API_PATH)s/role-contacts/?page=2",
+                "next": "$URL:rolecontact-list$?page=2",
                 "previous": null,
                 "results": [
                     {
@@ -694,7 +677,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
 
         With query params:
 
-            curl -H "Content-Type: application/json"  -G %(HOST_NAME)s/%(API_PATH)s/role-contacts/ --data-urlencode "username=test"
+            curl -H "Content-Type: application/json"  -G $URL:rolecontact-list$ --data-urlencode "username=test"
             # output
             {
                 "count": 1,
@@ -722,8 +705,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-        /role-contacts/{instance_pk}
+        __URL__: $LINK:rolecontact-detail:instance_pk$
 
         __Response__:
 
@@ -739,7 +721,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/role-contacts/1/
+            curl -H "Content-Type: application/json" $URL:rolecontact-detail:1$
             # output
             {"id": 1, "contact_role": "qe_group", "contact": {"id": 1, "username": "test", "email": "test@example.com"}}
         """
@@ -772,8 +754,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
                 "contact": {'username': 'new_name', 'email': 'new_email'}
             }
 
-        __URL__:
-        /role-contacts/{instance_pk}
+        __URL__: $LINK:rolecontact-detail:instance_pk$
 
         __Response__:
 
@@ -791,13 +772,13 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
 
         PUT:
 
-            curl -X PUT -d '{"contact_role": "new_role", "contact": {"username": "new_name", "email": "new_email"}}' -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/role-contacts/1/
+            curl -X PUT -d '{"contact_role": "new_role", "contact": {"username": "new_name", "email": "new_email"}}' -H "Content-Type: application/json" $URL:rolecontact-detail:1$
             # output
             {"id": 1, "contact_role": "new_role", "contact": {"id": 1, "username": "new_name", "email": "new_email"}}
 
         PATCH:
 
-            curl -X PATCH -d '{"contact_role": "new_role"}' -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/role-contacts/1/
+            curl -X PATCH -d '{"contact_role": "new_role"}' -H "Content-Type: application/json" $URL:rolecontact-detail:1$
             # output
             {"id": 1, "contact_role": "new_role", "contact": {"id": 1, "username": "new_name", "email": "new_email"}}
         """
@@ -810,8 +791,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
         __Method__:
         DELETE
 
-        __URL__:
-        /role-contacts/{instance_pk}
+        __URL__: $LINK:rolecontact-detail:instance_pk$
 
         __Response__:
 
@@ -819,7 +799,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -X DELETE -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/role-contacts/1/
+            curl -X DELETE -H "Content-Type: application/json" $URL:rolecontact-detail:1$
         """
         return super(RoleContactViewSet, self).destroy(request, *args, **kwargs)
 

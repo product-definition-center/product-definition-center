@@ -420,3 +420,12 @@ class FilterDocumentingTestCase(TestCase):
             ' * `key_id` (string)\n'
             ' * `name` (string)'
         )
+
+
+class AutoUrlsTestCase(APITestCase):
+    def test_no_autolink_logs_error(self):
+        root = self.client.get(reverse('api-root'))
+        for _, url in root.data.iteritems():
+            with mock.patch('logging.getLogger') as getLogger:
+                self.client.get(url, HTTP_ACCEPT='text/html')
+                self.assertFalse(getLogger.return_value.error.called, "%s has bad link" % url)

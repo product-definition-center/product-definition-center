@@ -94,7 +94,7 @@ class TokenViewSet(StrictQueryParamMixin, viewsets.ViewSet):
 
     * obtain token
 
-            curl --negotiate -u : -H "Content-Type: application/json"  %(HOST_NAME)s/%(API_PATH)s/auth/token/obtain/
+            curl --negotiate -u : -H "Content-Type: application/json"  $URL:token-obtain$
 
         you will get a `Response` like:
 
@@ -110,7 +110,7 @@ class TokenViewSet(StrictQueryParamMixin, viewsets.ViewSet):
 
     * in case you want refresh your token, you can do it with:
 
-            curl --negotiate -u : -H "Content-Type: application/json"  %(HOST_NAME)s/%(API_PATH)s/auth/token/refresh/
+            curl --negotiate -u : -H "Content-Type: application/json"  $URL:token-refresh$
 
         you will get a `Response` with refreshed token:
 
@@ -129,14 +129,13 @@ class TokenViewSet(StrictQueryParamMixin, viewsets.ViewSet):
         """
         ### Obtain Token
 
-        __URL__:
-        /token/obtain/
+        __URL__: $LINK:token-obtain$
 
         __EXAMPLE__:
 
         Run:
 
-            curl --negotiate -u : -H "Content-Type: application/json"  %(HOST_NAME)s/%(API_PATH)s/auth/token/obtain/
+            curl --negotiate -u : -H "Content-Type: application/json"  $URL:token-obtain$
 
         you will get a `Response` like:
 
@@ -159,16 +158,15 @@ class TokenViewSet(StrictQueryParamMixin, viewsets.ViewSet):
         """
         ### Refresh Token
 
-        __URL__:
-        /token/refresh/
+        __URL__: $LINK:token-refresh$
 
         __EXAMPLE__:
 
         Run:
 
-            curl --negotiate -u : -H "Content-Type: application/json"  %(HOST_NAME)s/%(API_PATH)s/auth/token/refresh/
+            curl --negotiate -u : -H "Content-Type: application/json"  $URL:token-refresh$
             # or
-            curl --negotiate -u : -X PUT -H "Content-Type: application/json"  %(HOST_NAME)s/%(API_PATH)s/auth/token/refresh/
+            curl --negotiate -u : -X PUT -H "Content-Type: application/json"  $URL:token-refresh$
 
         you will get a `Response` with refreshed token:
 
@@ -214,8 +212,7 @@ class PermissionViewSet(StrictQueryParamMixin,
 
         %(FILTERS)s
 
-        __URL__:
-        `/auth/permissions/`
+        __URL__: $LINK:permission-list$
 
         __Response__:
 
@@ -236,11 +233,11 @@ class PermissionViewSet(StrictQueryParamMixin,
 
         __Example__:
 
-            curl -H "Content-Type: application/json"  -X GET %(HOST_NAME)s/%(API_PATH)s/auth/permissions/
+            curl -H "Content-Type: application/json"  -X GET $URL:permission-list$
             # output
             {
                 "count": 150,
-                "next": "%(HOST_NAME)s/%(API_PATH)s/auth/permissions/?page=2",
+                "next": "$URL:permission-list$?page=2",
                 "previous": null,
                 "results": [
                     {
@@ -254,7 +251,7 @@ class PermissionViewSet(StrictQueryParamMixin,
 
         With query params:
 
-            curl -H "Content-Type: application/json"  -G %(HOST_NAME)s/%(API_PATH)s/auth/permissions/ --data-urlencode "codename=add_logentry"
+            curl -H "Content-Type: application/json"  -G $URL:permission-list$ --data-urlencode "codename=add_logentry"
             # output
             {
                 "count": 1,
@@ -295,8 +292,7 @@ class GroupViewSet(ChangeSetUpdateModelMixin,
         __Method__:
         `GET`
 
-        __URL__:
-        `/auth/groups/`
+        __URL__: $LINK:group-list$
 
         __QUERY Params__:
 
@@ -333,7 +329,7 @@ class GroupViewSet(ChangeSetUpdateModelMixin,
                 "previous": null,
                 "results": [
                     {
-                        "url": "%(HOST_NAME)s/%(API_PATH)s/auth/groups/1/",
+                        "url": "$URL:group-detail:1$",
                         "name": "group_add_group",
                         "permissions": [
                             {
@@ -344,7 +340,7 @@ class GroupViewSet(ChangeSetUpdateModelMixin,
                         ]
                     },
                     {
-                        "url": "%(HOST_NAME)s/%(API_PATH)s/auth/groups/2/",
+                        "url": "$URL:group-detail:2$",
                         "name": "group_change_change",
                         "permissions": [
                             {
@@ -367,8 +363,7 @@ class GroupViewSet(ChangeSetUpdateModelMixin,
         __Method__:
         `GET`
 
-        __URL__:
-        `/auth/groups/{instance_pk}`
+        __URL__: $LINK:group-detail:instance_pk$
 
         __Response__:
 
@@ -387,10 +382,10 @@ class GroupViewSet(ChangeSetUpdateModelMixin,
         __Example__:
 
             # curl command
-            curl -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/auth/groups/1/
+            curl -H "Content-Type: application/json" $URL:group-detail:1$
             # output
             {
-              "url": "%(HOST_NAME)s/%(API_PATH)s/auth/groups/1/",
+              "url": "$URL:group-detail:1$,
               "name": "group_add_group",
               "permissions": [
                   {
@@ -413,8 +408,7 @@ class GroupViewSet(ChangeSetUpdateModelMixin,
 
         `PATCH`: to update name or permissions
 
-        __URL__:
-        `/auth/groups/{instance_pk}`
+        __URL__: $LINK:group-detail:instance_pk$
 
         __Response__:
 
@@ -454,10 +448,10 @@ class GroupViewSet(ChangeSetUpdateModelMixin,
             curl -H "Content-Type: application/json" \\
                  -X PUT \\
                  --data @put_data.json  \\
-            %(HOST_NAME)s/%(API_PATH)s/auth/groups/1/
+                $URL:group-detail:1$
             # output
             {
-              "url": "%(HOST_NAME)s/%(API_PATH)s/auth/groups/1/",
+              "url": "$URL:group-detail:1$",
               "name": "new_group",
               "permissions": [
                   {
@@ -494,10 +488,10 @@ class GroupViewSet(ChangeSetUpdateModelMixin,
             curl -H "Content-Type: application/json" \\
                  -X PATCH \\
                  --data @patch_data.json  \\
-            %(HOST_NAME)s/%(API_PATH)s/auth/groups/1/
+                $URL:group-detail:1$
             # output
             {
-              "url": "%(HOST_NAME)s/%(API_PATH)s/auth/groups/1/",
+              "url": "$URL:group-detail:1$",
               "name": "group_add_group",
               "permissions": [
                   {
@@ -536,7 +530,7 @@ class CurrentUserViewSet(mixins.ListModelMixin,
 
         __Method__: `GET`
 
-        __URL__: `/auth/current-user/`
+        __URL__: $LINK:currentuser-list$
 
         __Response__:
 

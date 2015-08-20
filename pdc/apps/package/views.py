@@ -28,7 +28,7 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
         """
         __Method__: GET
 
-        __URL__: `/rpms/`
+        __URL__: $LINK:rpms-list$
 
         __Query params__:
 
@@ -66,8 +66,7 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
         __Method__:
         POST
 
-        __URL__:
-        `/rpms/`
+        __URL__: $LINK:rpms-list$
 
         __Data__:
 
@@ -107,8 +106,7 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
         __Method__:
         GET
 
-        __URL__:
-        `/rpms/{instance_pk}`
+        __URL__: $LINK:rpms-detail:instance_pk$
 
         __Response__:
 
@@ -153,8 +151,7 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
             # to do the update
 
 
-        __URL__:
-        /rpms/{instance_pk}
+        __URL__: $LINK:rpms-detail:instance_pk$
 
         __Response__:
 
@@ -189,7 +186,7 @@ class ImageViewSet(pdc_viewsets.StrictQueryParamMixin,
         """
         __Method__: GET
 
-        __URL__: `/images/`
+        __URL__: $LINK:image-list$
 
         __Query params__:
 
@@ -245,8 +242,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
         __Method__:
         POST
 
-        __URL__:
-        `/build-images/`
+        __URL__: $LINK:buildimage-list$
 
         __Data__:
 
@@ -317,7 +313,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
         """
         __Method__: GET
 
-        __URL__: `/build-images/`
+        __URL__: $LINK:buildimage-list$
 
         __Query params__:
 
@@ -368,8 +364,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__:
-        `/build-images/{instance_pk}`
+        __URL__: $LINK:buildimage-detail:instance_pk$
 
         __Response__:
 
@@ -445,8 +440,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
         __NOTE:__ when updating `image_format`, its value must be an existed one, otherwise it will
         cause HTTP 400 BAD REQUEST error.
 
-        __URL__:
-        /build-images/{instance_pk}
+        __URL__: $LINK:buildimage-detail:instance_pk$
 
         __Response__:
 
@@ -481,8 +475,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
         __Method__:
         DELETE
 
-        __URL__:
-        `/build-images/{instance_pk}`
+        __URL__: $LINK:buildimage-detail:instance_pk$
 
         __Response__:
 
@@ -490,6 +483,6 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -X DELETE -H "Content-Type: application/json" %(HOST_NAME)s/%(API_PATH)s/build-images/1/
+            curl -X DELETE -H "Content-Type: application/json" $URL:buildimage-detail:1$
         """
         return super(BuildImageViewSet, self).destroy(request, *args, **kwargs)
