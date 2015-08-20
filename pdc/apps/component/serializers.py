@@ -313,6 +313,13 @@ class ReleaseField(serializers.SlugRelatedField):
         }
 
 
+class ReleaseComponentTypeSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+
+    class Meta:
+        model = ReleaseComponentType
+        fields = ('name',)
+
+
 class ReleaseComponentSerializer(DynamicFieldsSerializerMixin,
                                  StrictSerializerMixin,
                                  serializers.HyperlinkedModelSerializer):
@@ -503,6 +510,13 @@ class GroupSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = ReleaseComponentGroup
         fields = ('id', 'group_type', 'description', 'release', 'components')
+
+
+class RCRelationshipTypeSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+
+    class Meta:
+        model = ReleaseComponentRelationshipType
+        fields = ('name',)
 
 
 class RCForRelationshipRelatedField(ReleaseComponentRelatedField):

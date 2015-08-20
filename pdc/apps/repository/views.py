@@ -57,6 +57,8 @@ class RepoViewSet(ChangeSetCreateModelMixin,
                 product_id:       int        (OPTIONAL)
             }
 
+        *repo_family*: $LINK:contentdeliveryrepofamily-list$
+
         There are additional validations for the content delivery repository name for specific
         content category. If and only if the content category is `debug`, the
         name must contain `debug` substring.

@@ -594,6 +594,9 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
                                'email':     email_address
                            }
             }
+
+        *contact_role*: $LINK:contactrole-list$
+
         __Response__:
 
             {

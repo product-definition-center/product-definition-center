@@ -11,7 +11,8 @@ from django.shortcuts import get_object_or_404
 
 from mptt.exceptions import InvalidMove
 
-from rest_framework import status
+from rest_framework import status, mixins
+from rest_framework import viewsets as drf_viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
@@ -25,14 +26,18 @@ from .models import (GlobalComponent,
                      BugzillaComponent,
                      ReleaseComponentGroup,
                      GroupType,
-                     ReleaseComponentRelationship)
+                     ReleaseComponentRelationship,
+                     ReleaseComponentType,
+                     ReleaseComponentRelationshipType)
 from .serializers import (GlobalComponentSerializer,
                           ReleaseComponentSerializer,
                           HackedContactSerializer,
                           BugzillaComponentSerializer,
                           GroupSerializer,
                           GroupTypeSerializer,
-                          ReleaseComponentRelationshipSerializer)
+                          ReleaseComponentRelationshipSerializer,
+                          ReleaseComponentTypeSerializer,
+                          RCRelationshipTypeSerializer)
 from .filters import (ComponentFilter,
                       ReleaseComponentFilter,
                       RoleContactFilter,
@@ -647,6 +652,39 @@ class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
         )
 
 
+class ReleaseComponentTypeViewSet(viewsets.StrictQueryParamMixin,
+                                  mixins.ListModelMixin,
+                                  drf_viewsets.GenericViewSet):
+    """
+    API endpoint that allows release_component_types to be viewed.
+    """
+    serializer_class = ReleaseComponentTypeSerializer
+    queryset = ReleaseComponentType.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:releasecomponenttype-list$
+
+        __Response__:
+
+            # paged list
+            {
+                "count": int,
+                "next": url,
+                "previous": url,
+                "results": [
+                    {
+                        "name": string,
+                    },
+                    ...
+                ]
+            }
+        """
+        return super(ReleaseComponentTypeViewSet, self).list(request, *args, **kwargs)
+
+
 class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
     """
     ##Overview##
@@ -901,6 +939,8 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
                 'type':                          string,         # optional
             }
 
+        *type*: $LINK:releasecomponenttype-list$
+
         __Response__:
 
             {
@@ -937,7 +977,6 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
         bugzilla_component can be in format parent_component/bugzilla_component or bugzilla_component,
         for example, kernel/filesystem or kernel, single bugzilla_component means parent_component is null.
         """
-
         response = super(ReleaseComponentViewSet, self).create(request, *args, **kwargs)
 
         if response.status_code == status.HTTP_201_CREATED:
@@ -1730,6 +1769,8 @@ class GroupViewSet(viewsets.PDCModelViewSet):
                 "components":       list            # optional
             }
 
+        *group_type*: $LINK:componentgrouptype-list$
+
         __Note__:
 
           * components: list of release_components, eg: [{"id": 1}, {"id": 2}] or
@@ -1843,6 +1884,39 @@ class GroupViewSet(viewsets.PDCModelViewSet):
         return super(GroupViewSet, self).destroy(request, *args, **kwargs)
 
 
+class ReleaseComponentRelationshipTypeViewSet(viewsets.StrictQueryParamMixin,
+                                              mixins.ListModelMixin,
+                                              drf_viewsets.GenericViewSet):
+    """
+    API endpoint that allows release_component_relationship_types to be viewed.
+    """
+    serializer_class = RCRelationshipTypeSerializer
+    queryset = ReleaseComponentRelationshipType.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:componentrelationshiptype-list$
+
+        __Response__:
+
+            # paged list
+            {
+                "count": int,
+                "next": url,
+                "previous": url,
+                "results": [
+                    {
+                        "name": string,
+                    },
+                    ...
+                ]
+            }
+        """
+        return super(ReleaseComponentRelationshipTypeViewSet, self).list(request, *args, **kwargs)
+
+
 class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
     """
     API endpoint that allows release component relationship to be viewed or edited.
@@ -1864,6 +1938,8 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
                 "type":                 string,       # required
                 "to_component":         dict,         # required
             }
+
+        *type*: $LINK:componentrelationshiptype-list$
 
         __Note__:
 

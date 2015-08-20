@@ -65,8 +65,12 @@ router.register(r'bugzilla-components',
                 base_name='bugzillacomponent')
 router.register(r'component-groups', component_views.GroupViewSet, base_name='componentgroup')
 router.register(r'component-group-types', component_views.GroupTypeViewSet, base_name='componentgrouptype')
+router.register(r'component-relationship-types', component_views.ReleaseComponentRelationshipTypeViewSet,
+                base_name='componentrelationshiptype')
 router.register(r'release-component-relationships', component_views.ReleaseComponentRelationshipViewSet,
                 base_name='rcrelationship')
+router.register(r'release-component-types', component_views.ReleaseComponentTypeViewSet,
+                base_name='releasecomponenttype')
 
 # register compose view sets
 router.register(r'composes', compose_views.ComposeViewSet)

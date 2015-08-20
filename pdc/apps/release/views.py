@@ -410,6 +410,8 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
                 }                               # optional
             }
 
+        *release_type*: $LINK:releasetype-list$
+
         __Response__:
 
             {
