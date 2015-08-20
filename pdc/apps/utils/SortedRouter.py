@@ -69,9 +69,10 @@ class PDCRouter(bulk_operations.BulkRouter):
                     for getter in [self._get_list_url, self._get_nested_list_url, self._get_detail_url]:
                         try:
                             ret[name] = getter(url_name, viewsets[key])
+                            break
                         except NoReverseMatch:
                             # If no known method of generating url succeeded,
-                            # null will be include instead of url.
+                            # null will be included instead of url.
                             continue
 
                 return Response(ret)
