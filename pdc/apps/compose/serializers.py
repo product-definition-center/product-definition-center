@@ -10,6 +10,7 @@ from pdc.apps.common.serializers import StrictSerializerMixin, DynamicFieldsSeri
 from pdc.apps.common.fields import ChoiceSlugField
 from .models import Compose, OverrideRPM, ComposeAcceptanceTestingState
 from pdc.apps.release.models import Release
+from pdc.apps.utils.utils import urldecode
 
 
 class StrictManyRelatedField(serializers.ManyRelatedField):
@@ -63,11 +64,11 @@ class ComposeSerializer(StrictSerializerMixin,
         )
 
     def get_rpm_mapping_template(self, obj):
-        return reverse(
+        return urldecode(reverse(
             'composerpmmapping-detail',
             args=[obj.compose_id, '{{package}}'],
             request=self.context['request']
-        ).replace('%7B', '{').replace('%7D', '}')
+        ))
 
     def get_rtt_tested_architectures(self, obj):
         return obj.get_arch_testing_status()

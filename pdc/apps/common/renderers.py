@@ -18,6 +18,8 @@ from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.utils import formatting
 from rest_framework.reverse import reverse
 
+from pdc.apps.utils.utils import urldecode
+
 """
 ## Writing documentation in docstrings
 
@@ -146,7 +148,7 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
             try:
                 if type == 'LINK':
                     url = reverse(url_name, args=args)
-                    return '[`%s`](%s)' % (url.replace('%7B', '{').replace('%7D', '}'), url)
+                    return '[`%s`](%s)' % (urldecode(url), url)
                 return reverse(url_name, args=args, request=self.request)
             except NoReverseMatch:
                 logger = logging.getLogger(__name__)

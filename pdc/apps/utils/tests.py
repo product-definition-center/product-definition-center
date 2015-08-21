@@ -49,4 +49,4 @@ class APIRootTestCase(APITestCase):
         key = 'releases/{release_id}/rpm-mapping'
         self.assertIn(key, response.data)
         self.assertEqual(response.data[key],
-                         'http://testserver/rest_api/v1/releases/%7Brelease_id%7D/rpm-mapping/%7Bpackage%7D/')
+                         'http://testserver/rest_api/v1/releases/{release_id}/rpm-mapping/{package}/')

@@ -19,3 +19,8 @@ def group_obj_export(group_obj, fields=None):
     """
     _fields = ['name', 'permissions'] if fields is None else fields
     return model_to_dict(group_obj, fields=_fields)
+
+
+def urldecode(url):
+    """Decode %7B/%7D to {}."""
+    return url.replace('%7B', '{').replace('%7D', '}')

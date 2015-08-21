@@ -13,6 +13,8 @@ from rest_framework.reverse import reverse
 from rest_framework.response import Response
 from contrib.bulk_operations import bulk_operations
 
+from .utils import urldecode
+
 
 URL_ARG_RE = re.compile(r'\(\?P<([^>]+)>([^)]+)\)')
 
@@ -68,7 +70,7 @@ class PDCRouter(bulk_operations.BulkRouter):
                     self.urlargs = [_get_arg_value(arg[0]) for arg in URL_ARG_RE.findall(key)]
                     for getter in [self._get_list_url, self._get_nested_list_url, self._get_detail_url]:
                         try:
-                            ret[name] = getter(url_name, viewsets[key])
+                            ret[name] = urldecode(getter(url_name, viewsets[key]))
                             break
                         except NoReverseMatch:
                             # If no known method of generating url succeeded,
