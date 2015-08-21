@@ -24,9 +24,4 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(set_empty_path),
-        migrations.AlterField(
-            model_name='composeimage',
-            name='path',
-            field=models.ForeignKey(to='compose.Path'),
-        ),
     ]
