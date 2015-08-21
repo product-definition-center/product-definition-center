@@ -422,10 +422,11 @@ class FilterDocumentingTestCase(TestCase):
         )
 
 
-class AutoUrlsTestCase(APITestCase):
-    def test_no_autolink_logs_error(self):
+class AutoDocTestCase(APITestCase):
+    def test_no_page_logs_error(self):
         root = self.client.get(reverse('api-root'))
         for _, url in root.data.iteritems():
             with mock.patch('logging.getLogger') as getLogger:
                 self.client.get(url, HTTP_ACCEPT='text/html')
-                self.assertFalse(getLogger.return_value.error.called, "%s has bad link" % url)
+                self.assertFalse(getLogger.return_value.error.called,
+                                 "%s has bad documentation" % url)
