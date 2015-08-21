@@ -7,7 +7,12 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import django.db.models.deletion
+
+def set_default_type(apps, schema_editor):
+    type = apps.get_model('component', 'ReleaseComponentType').objects.get(name='rpm')
+    for component in apps.get_model('component', 'ReleaseComponent').objects.filter(type=None):
+        component.type = type
+        component.save()
 
 
 class Migration(migrations.Migration):
@@ -17,24 +22,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='releasecomponent',
-            name='type',
-            field=models.ForeignKey(related_name='release_components', on_delete=django.db.models.deletion.SET_DEFAULT, default=1, to='component.ReleaseComponentType'),
-        ),
-        migrations.AlterField(
-            model_name='releasecomponentgroup',
-            name='group_type',
-            field=models.ForeignKey(related_name='release_component_groups', on_delete=django.db.models.deletion.PROTECT, to='component.GroupType'),
-        ),
-        migrations.AlterField(
-            model_name='releasecomponentrelationship',
-            name='from_component',
-            field=models.ForeignKey(related_name='from_release_components', to='component.ReleaseComponent'),
-        ),
-        migrations.AlterField(
-            model_name='releasecomponentrelationship',
-            name='to_component',
-            field=models.ForeignKey(related_name='to_release_components', to='component.ReleaseComponent'),
-        ),
+        migrations.RunPython(set_default_type),
     ]
