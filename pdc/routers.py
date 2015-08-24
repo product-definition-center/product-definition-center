@@ -139,3 +139,5 @@ router.register(r'compose/package',
                 base_name='findcomposewitholderpackage')
 router.register(r'release-variants',
                 release_views.ReleaseVariantViewSet)
+router.register(r'variant-types', release_views.VariantTypeViewSet,
+                base_name='varianttype')

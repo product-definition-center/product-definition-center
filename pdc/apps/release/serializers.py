@@ -195,3 +195,10 @@ class ReleaseVariantSerializer(StrictSerializerMixin, serializers.ModelSerialize
             instance.variantarch_set.filter(arch__name=arch_name).delete()
 
         return instance
+
+
+class VariantTypeSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+
+    class Meta:
+        model = VariantType
+        fields = ('name',)
