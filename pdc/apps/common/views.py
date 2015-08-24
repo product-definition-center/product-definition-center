@@ -9,8 +9,6 @@ from kobo.django.views.generic import ListView
 
 from rest_framework import viewsets, mixins
 
-from contrib.bulk_operations import bulk_operations
-
 from .models import Arch, SigKey, Label
 from . import viewsets as pdc_viewsets
 from .serializers import LabelSerializer, ArchSerializer, SigKeySerializer
@@ -348,54 +346,18 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         __Method__: `PUT`, `PATCH`
 
-        PATCH: for partial update
+        %(WRITABLE_SERIALIZER)s
+
+        All keys are optional for `PATCH` request, but at least one must be
+        specified.
 
         __URL__: $LINK:sigkey-detail:key_id$
 
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
-
         __Response__:
 
         %(SERIALIZER)s
         """
-
-        # NOTE: key_id is a read only field and do not allow to update to
-        # another value, so PATCH is better to take this behavior as the same
-        # as the XMLRPC API.
-        if not kwargs.get('partial', False):
-            return self.http_method_not_allowed(request, *args, **kwargs)
-        else:
-            return super(SigKeyViewSet, self).update(request, *args, **kwargs)
-
-    def bulk_update(self, *args, **kwargs):
-        """
-        ### BULK UPDATE
-
-        Only partial updating is allowed.
-
-        __Method__: PATCH
-
-        The data should include a mapping from `key_id` to a change
-        description. Possible changes are below:
-
-            {"name": "new_name"}
-            or
-            {"description": "new_description"}
-            or
-            {"name": "new_name", "description": "new_description"}
-
-        __URL__: $LINK:sigkey-list$
-
-        __Response__:
-
-        The response will again include a mapping from `key_id` to objects
-        representing the keys. Each key will be shown as follows:
-
-        %(SERIALIZER)s
-        """
-        return bulk_operations.bulk_update_impl(self, *args, **kwargs)
+        return super(SigKeyViewSet, self).update(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         """
@@ -408,7 +370,7 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         __Data__:
 
-        %(SERIALIZER)s
+        %(WRITABLE_SERIALIZER)s
 
         __Response__:
 

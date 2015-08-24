@@ -75,11 +75,6 @@ class ArchSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 
 class SigKeySerializer(StrictSerializerMixin,
                        serializers.HyperlinkedModelSerializer):
-    key_id = serializers.CharField(read_only=True)
-
     class Meta:
         model = SigKey
-        fields = ('url', 'name', 'key_id', 'description')
-        extra_kwargs = {
-            'url': {'lookup_field': 'key_id'}
-        }
+        fields = ('name', 'key_id', 'description')

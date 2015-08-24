@@ -337,8 +337,11 @@ class SigKeyRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_update_sigkey(self):
         url = reverse('sigkey-detail', kwargs={'key_id': '1234adbf'})
-        response = self.client.put(url, format='json', data={'name': "TEST"})
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        response = self.client.put(url, format='json',
+                                   data={'key_id': '1234adbf', 'name': "TEST"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNumChanges([1])
+        self.assertEqual(response.data['name'], 'TEST')
 
     def test_partial_update_sigkey(self):
         url = reverse('sigkey-detail', kwargs={'key_id': '1234adbf'})
@@ -346,21 +349,26 @@ class SigKeyRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['name'], 'TEST')
 
-    def test_updating_key_id_fails(self):
+    def test_can_update_key_id(self):
         response = self.client.patch(reverse('sigkey-detail', args=['1234adbf']),
                                      {'key_id': 'cafebabe'},
                                      format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get('key_id'), '1234adbf')
-        self.assertNumChanges([])
+        self.assertEqual(response.data.get('key_id'), 'cafebabe')
+        self.assertNumChanges([1])
+        response = self.client.get(reverse('sigkey-detail', args=['1234adbf']))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        response = self.client.get(reverse('sigkey-detail', args=['cafebabe']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_bulk_update_fails(self):
-        response = self.client.put(reverse('sigkey-list'),
-                                   {'1234adbf': {'name': 'A',
-                                                 'description': 'icontains_a'}},
-                                   format='json')
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertNumChanges([])
+    def test_can_bulk_update(self):
+        data = {'1234adbf': {'name': 'A',
+                             'description': 'icontains_a',
+                             'key_id': '1234adbf'}}
+        response = self.client.put(reverse('sigkey-list'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNumChanges([1])
+        self.assertDictEqual(dict(response.data), data)
 
     def test_bulk_partial_update(self):
         response = self.client.patch(reverse('sigkey-list'),
@@ -369,16 +377,13 @@ class SigKeyRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                                      format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNumChanges([2])
-        base_url_fmt = 'http://testserver/rest_api/v1/sigkeys/%s/'
         self.assertDictEqual(dict(response.data),
                              {'1234adbf': {'key_id': '1234adbf',
                                            'name': 'Key A',
-                                           'description': 'icontains_A',
-                                           'url': base_url_fmt % '1234adbf'},
+                                           'description': 'icontains_A'},
                               'f2134bca': {'key_id': 'f2134bca',
                                            'name': 'B',
-                                           'description': 'icontains b',
-                                           'url': base_url_fmt % 'f2134bca'}})
+                                           'description': 'icontains b'}})
 
     def test_partial_update_empty(self):
         url = reverse('sigkey-detail', kwargs={'key_id': '1234adbf'})
@@ -389,6 +394,14 @@ class SigKeyRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('sigkey-detail', kwargs={'key_id': '1234adbf'})
         response = self.client.delete(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_create_sigkey(self):
+        url = reverse('sigkey-list')
+        data = {"key_id": "abcd1234", "name": "test", "description": "test"}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertDictEqual(dict(response.data), data)
+        self.assertNumChanges([1])
 
 
 class FilterDocumentingTestCase(TestCase):
