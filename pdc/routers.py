@@ -141,3 +141,9 @@ router.register(r'release-variants',
                 release_views.ReleaseVariantViewSet)
 router.register(r'variant-types', release_views.VariantTypeViewSet,
                 base_name='varianttype')
+router.register(r'content-delivery-content-category', repo_views.ContentCategoryViewSet,
+                base_name='contentdeliverycontentcategory')
+router.register(r'content-delivery-content-format', repo_views.ContentFormatViewSet,
+                base_name='contentdeliverycontentformat')
+router.register(r'content-delivery-service', repo_views.ServiceViewSet,
+                base_name='contentdeliveryservice')

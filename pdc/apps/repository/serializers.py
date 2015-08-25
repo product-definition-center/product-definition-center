@@ -76,3 +76,24 @@ class RepoFamilySerializer(StrictSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.RepoFamily
         fields = ("name", "description")
+
+
+class ContentCategorySerializer(StrictSerializerMixin, serializers.ModelSerializer):
+
+    class Meta:
+        model = models.ContentCategory
+        fields = ('name', 'description',)
+
+
+class ContentFormatSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+
+    class Meta:
+        model = models.ContentFormat
+        fields = ('name', 'description',)
+
+
+class ServiceSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Service
+        fields = ('name', 'description',)

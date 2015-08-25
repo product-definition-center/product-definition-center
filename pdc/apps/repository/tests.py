@@ -667,3 +667,24 @@ class VariantUpdateTestCase(APITestCase):
         self.assertDictEqual(dict(response.data),
                              {'release': 'release-1.0', 'name': 'Server name', 'type': 'variant',
                               'id': 'Server', 'uid': 'Server-UID', 'arches': ['x86_64']})
+
+
+class ContentCategoryTestCase(APITestCase):
+    def test_list_all(self):
+        response = self.client.get(reverse('contentdeliverycontentcategory-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+
+
+class ContentFormatTestCase(APITestCase):
+    def test_list_all(self):
+        response = self.client.get(reverse('contentdeliverycontentformat-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 6)
+
+
+class ServiceTestCase(APITestCase):
+    def test_list_all(self):
+        response = self.client.get(reverse('contentdeliveryservice-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)

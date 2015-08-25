@@ -46,6 +46,10 @@ class RepoViewSet(ChangeSetCreateModelMixin,
 
         %(WRITABLE_SERIALIZER)s
 
+        *content_category*: $LINK:contentdeliverycontentcategory-list$
+
+        *content_format*: $LINK:contentdeliverycontentformat-list$
+
         *repo_family*: $LINK:contentdeliveryrepofamily-list$
 
         There are additional validations for the content delivery repository name for specific
@@ -61,6 +65,8 @@ class RepoViewSet(ChangeSetCreateModelMixin,
             eus           | .z
             aus           | .aus or .ll
             els           | els
+
+        *service*: $LINK:contentdeliveryservice-list$
 
         __Response__: Same as input data.
         """
@@ -283,3 +289,69 @@ class RepoFamilyViewSet(StrictQueryParamMixin,
             }
         """
         return super(RepoFamilyViewSet, self).list(request, *args, **kwargs)
+
+
+class ContentCategoryViewSet(StrictQueryParamMixin,
+                             mixins.ListModelMixin,
+                             viewsets.GenericViewSet):
+    """
+    API endpoint that allows content_category to be viewed.
+    """
+    serializer_class = serializers.ContentCategorySerializer
+    queryset = models.ContentCategory.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:contentdeliverycontentcategory-list$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ContentCategoryViewSet, self).list(request, *args, **kwargs)
+
+
+class ContentFormatViewSet(StrictQueryParamMixin,
+                           mixins.ListModelMixin,
+                           viewsets.GenericViewSet):
+    """
+    API endpoint that allows content_format to be viewed.
+    """
+    serializer_class = serializers.ContentFormatSerializer
+    queryset = models.ContentFormat.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:contentdeliverycontentformat-list$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ContentFormatViewSet, self).list(request, *args, **kwargs)
+
+
+class ServiceViewSet(StrictQueryParamMixin,
+                     mixins.ListModelMixin,
+                     viewsets.GenericViewSet):
+    """
+    API endpoint that allows service to be viewed.
+    """
+    serializer_class = serializers.ServiceSerializer
+    queryset = models.Service.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:contentdeliveryservice-list$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ServiceViewSet, self).list(request, *args, **kwargs)
