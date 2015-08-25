@@ -47,6 +47,7 @@ class ProductVersionSerializer(StrictSerializerMixin, serializers.ModelSerialize
         return super(ProductVersionSerializer, self).to_internal_value(data)
 
     def get_releases(self, obj):
+        """[release_id]"""
         return [x.release_id for x in sorted(obj.release_set.all(), key=Release.version_sort_key)]
 
 
@@ -74,6 +75,7 @@ class ReleaseSerializer(StrictSerializerMixin, serializers.ModelSerializer):
                   'compose_set', 'integrated_with')
 
     def get_compose_set(self, obj):
+        """[Compose.compose_id]"""
         return [compose.compose_id for compose in sorted(obj.get_all_composes())]
 
     def create(self, validated_data):
@@ -122,7 +124,9 @@ class ReleaseTypeSerializer(StrictSerializerMixin, serializers.ModelSerializer):
         fields = ("short", "name", "suffix",)
 
 
-class VariantArchNestedSerializer(serializers.Serializer):
+class VariantArchNestedSerializer(serializers.BaseSerializer):
+    doc_format = "string"
+
     def to_representation(self, obj):
         return obj.arch.name
 

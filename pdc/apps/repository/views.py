@@ -44,18 +44,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
 
         __Data__:
 
-            {
-                release_id:       string,
-                variant_uid:      string,
-                arch:             string,
-                service:          string,
-                repo_family:      string,
-                content_format:   string,
-                content_category: string,
-                name:             string,
-                shadow:           bool,      (OPTIONAL, default False)
-                product_id:       int        (OPTIONAL)
-            }
+        %(WRITABLE_SERIALIZER)s
 
         *repo_family*: $LINK:contentdeliveryrepofamily-list$
 
@@ -89,19 +78,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
 
         __Response__:
 
-            {
-                id:               int,
-                release_id:       string,
-                variant_uid:      string,
-                arch:             string,
-                service:          string,
-                repo_family:      string,
-                content_format:   string,
-                content_category: string,
-                name:             string,
-                shadow:           bool,
-                product_id:       int
-            }
+        %(SERIALIZER)s
         """
         return super(RepoViewSet, self).list(*args, **kwargs)
 
@@ -113,34 +90,11 @@ class RepoViewSet(ChangeSetCreateModelMixin,
 
         __Data__:
 
-            {
-                release_id:       string,
-                variant_uid:      string,
-                arch:             string,
-                service:          string,
-                repo_family:      string,
-                content_format:   string,
-                content_category: string,
-                name:             string,
-                shadow:           bool,     # optional, default False
-                product_id:       int       # optional
-            }
+        %(WRITABLE_SERIALIZER)s
 
         __Response__:
 
-            {
-                id:               int,
-                release_id:       string,
-                variant_uid:      string,
-                arch:             string,
-                service:          string,
-                repo_family:      string,
-                content_format:   string,
-                content_category: string,
-                name:             string,
-                shadow:           bool,
-                product_id:       int
-            }
+        %(SERIALIZER)s
         """
         return super(RepoViewSet, self).update(*args, **kwargs)
 
@@ -301,20 +255,9 @@ class RepoFamilyViewSet(StrictQueryParamMixin,
 
         %(FILTERS)s
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            {
-                "count": int,
-                "next": url,
-                "previous": url,
-                "results": [
-                    {
-                        "name": string,
-                        "description": string
-                    },
-                    ...
-                ]
-            }
+        %(SERIALIZER)s
 
         __Example__:
 

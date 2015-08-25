@@ -7,16 +7,20 @@ from collections import OrderedDict
 import logging
 import re
 import sys
+import json
 
 from django.conf import settings
 from django.utils.encoding import smart_text
 
 from contrib import drf_introspection
 
+from django.db.models.fields import NOT_PROVIDED
 from django.core.urlresolvers import NoReverseMatch
+from django.core.exceptions import FieldDoesNotExist
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.utils import formatting
 from rest_framework.reverse import reverse
+from rest_framework import serializers, relations, fields
 
 from pdc.apps.utils.utils import urldecode
 
@@ -30,6 +34,9 @@ These features are available to simplify writing the comments:
  * %(HOST_NAME)s and %(API_ROOT)s macros will be replaced by host name and URL
    fragment for API, respectively
  * %(FILTERS)s will be replaced a by a list of available query string filters
+ * %(SERIALIZER)s will be replaced by a code block with details about
+   serializer
+ * %(WRITABLE_SERIALIZER)s will do the same, but without read-only fields
  * $URL:route-name:arg1:arg2...$ will be replaced by absolute URL
  * $LINK:route-name:arg1:...$ will be replaced by a clickable link with
    relative URL pointing to the specified place; arguments for LINK will be
@@ -131,6 +138,10 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
         macros = settings.BROWSABLE_DOCUMENT_MACROS
         if view:
             macros['FILTERS'] = get_filters(view)
+            if '%(SERIALIZER)s' in docstring:
+                macros['SERIALIZER'] = get_serializer(view, include_read_only=True)
+            if '%(WRITABLE_SERIALIZER)s' in docstring:
+                macros['WRITABLE_SERIALIZER'] = get_serializer(view, include_read_only=False)
         string = formatting.dedent(docstring)
         formatted = string % macros
         formatted = self.substitute_urls(view, method, formatted)
@@ -207,3 +218,150 @@ def get_filters(view):
     filters = '\n'.join(filters)
     FILTERS_CACHE[view] = filters
     return filters
+
+SERIALIZERS_CACHE = {}
+SERIALIZER_DEFS = {
+    'BooleanField': 'boolean',
+    'CharField': 'string',
+    'IntegerField': 'int',
+    'HyperlinkedIdentityField': 'url',
+    'DateTimeField': 'datetime',
+    'DateField': 'date',
+    'StringRelatedField': 'string',
+    'ReadOnlyField': 'data',
+    'EmailField': 'email address',
+    'SlugField': 'string',
+    'URLField': 'url',
+}
+
+
+def _get_type_from_str(str, default=None):
+    """
+    Convert docstring into object suitable for inclusion as documentation. It
+    tries to parse the docstring as JSON, falling back on provided default
+    value.
+    """
+    if str:
+        try:
+            return json.loads(str)
+        except ValueError:
+            pass
+    return default if default is not None else str
+
+
+def _get_details_for_slug(serializer, field_name, field):
+    """
+    For slug field, we ideally want to get Model.field format. However, in some
+    cases getting the model name is not possible, and only field name is
+    displayed.
+    """
+    model = ''
+    if hasattr(field, 'queryset') and field.queryset:
+        model = field.queryset.model.__name__ + '.'
+    return '%s%s' % (model, field.slug_field)
+
+
+def get_field_type(serializer, field_name, field, include_read_only):
+    """
+    Try to describe a field type.
+    """
+    if isinstance(field, (relations.ManyRelatedField, serializers.ListSerializer)):
+        # Many field, recurse on child and make it a list
+        if isinstance(field, relations.ManyRelatedField):
+            field = field.child_relation
+        else:
+            field = field.child
+        return [get_field_type(serializer, field_name, field, include_read_only)]
+    if field.__class__.__name__ in SERIALIZER_DEFS:
+        return SERIALIZER_DEFS[field.__class__.__name__]
+    elif isinstance(field, serializers.SlugRelatedField):
+        return _get_details_for_slug(serializer, field_name, field)
+    elif isinstance(field, serializers.SerializerMethodField):
+        # For method fields try to use docstring of the method.
+        method_name = field.method_name or 'get_{field_name}'.format(field_name=field_name)
+        method = getattr(serializer, method_name, None)
+        if method:
+            docstring = getattr(method, '__doc__')
+            return _get_type_from_str(docstring, docstring or 'method')
+    elif hasattr(field, 'doc_format'):
+        return _get_type_from_str(field.doc_format)
+    elif isinstance(field, serializers.BaseSerializer):
+        return describe_serializer(field, include_read_only)
+    logger = logging.getLogger(__name__)
+    logger.error('Undocumented field %s' % field)
+    return 'UNKNOWN'
+
+
+def get_default_value(serializer, field_name, field):
+    """
+    Try to get default value for a field and format it nicely.
+    """
+    value = field.default
+    if value == fields.empty:
+        # Try to get default from model field.
+        try:
+            default = serializer.Meta.model._meta.get_field(field_name).default
+            return default if default != NOT_PROVIDED else None
+        except (FieldDoesNotExist, AttributeError):
+            return None
+    if isinstance(value, basestring):
+        # It's a string, wrap it with quotes.
+        return "'%s'" % value
+    if value is None:
+        return "null"
+    return value
+
+
+def describe_serializer(serializer, include_read_only):
+    """
+    Try to get description of a serializer. It tries to inspect all fields
+    separately, if the serializer does not have fields, it falls back to
+    `doc_format` class attribute (if present). If all fails, an error is
+    logged.
+    """
+    data = {}
+    if hasattr(serializer, 'get_fields'):
+        for field_name, field in serializer.get_fields().iteritems():
+            notes = []
+            if field.read_only:
+                notes.append('read-only')
+                if not include_read_only:
+                    continue
+            elif not field.required:
+                notes.append('optional')
+                default = get_default_value(serializer, field_name, field)
+                if not (default is None and field.allow_null):
+                    notes.append('default=%s' % default)
+            if field.allow_null:
+                notes.append('nullable')
+            notes = ' (%s)' % ', '.join(notes) if notes else ''
+            data[field_name + notes] = get_field_type(serializer, field_name, field, include_read_only)
+        return data
+    elif hasattr(serializer.__class__, 'doc_format'):
+        return serializer.doc_format
+    else:
+        logger = logging.getLogger(__name__)
+        logger.error('Failed to get details for serializer %s' % serializer)
+        return 'data'
+
+
+def get_serializer(view, include_read_only):
+    """
+    For given view, return a Markdown code block with JSON description of the
+    serializer. If `include_read_only` is `False`, only writable fields will be
+    included.
+    """
+    if (view, include_read_only) in SERIALIZERS_CACHE:
+        return SERIALIZERS_CACHE[(view, include_read_only)]
+    if not hasattr(view, 'get_serializer'):
+        return None
+    try:
+        serializer = view.get_serializer()
+        desc = json.dumps(describe_serializer(serializer, include_read_only),
+                          indent=4, sort_keys=True)
+        doc = '\n'.join('    %s' % line for line in desc.split('\n'))
+    except AssertionError:
+        # Even when `get_serializer` is present, it may raise exception.
+        doc = None
+    SERIALIZERS_CACHE[(view, include_read_only)] = doc
+    return doc

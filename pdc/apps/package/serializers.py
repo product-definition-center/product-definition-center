@@ -14,6 +14,8 @@ from pdc.apps.common.serializers import StrictSerializerMixin
 
 
 class ReleaseRelatedField(serializers.RelatedField):
+    doc_format = "Release.release_id"
+
     def to_representation(self, value):
         return value.release_id
 

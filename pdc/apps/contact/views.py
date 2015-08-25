@@ -38,17 +38,11 @@ class PersonViewSet(viewsets.PDCModelViewSet):
 
         __Data__:
 
-            {
-                'username':    string,         # required
-                'email':       email_address   # required
-            }
+        %(WRITABLE_SERIALIZER)s
+
         __Response__:
 
-            {
-                "id": int,
-                "username": string,
-                "email": email_address
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -71,21 +65,9 @@ class PersonViewSet(viewsets.PDCModelViewSet):
 
         %(FILTERS)s
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged lists
-            {
-                "count": 284,
-                "next": "$URL:person-list$?page=2",
-                "previous": null,
-                "results": [
-                    {
-                        "id": int,
-                        "username": string,
-                        "email": email_address
-                    },
-                    ...
-            }
+        %(SERIALIZER)s
         """
         return super(PersonViewSet, self).list(request, *args, **kwargs)
 
@@ -100,11 +82,7 @@ class PersonViewSet(viewsets.PDCModelViewSet):
 
         __Response__:
 
-            {
-                "id": int,
-                "username": string,
-                "email": email_address
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -118,27 +96,17 @@ class PersonViewSet(viewsets.PDCModelViewSet):
         """
         ### UPDATE
 
-        __Method__:
-
-        PUT: for full fields update
-            {'username': 'new_name', 'email': 'new_email'}
-
-        PATCH: for partial update
-            {'username': 'new_name'}
-            or
-            {'email': 'new_email'}
-            or
-            {'username': 'new_name', 'email': 'new_email'}
+        __Method__: `PUT`, `PATCH`
 
         __URL__: $LINK:person-detail:instance_pk$
 
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
         __Response__:
 
-            {
-                "id": int,
-                "username": string,
-                "email": email_address
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -205,17 +173,11 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
 
         __Data__:
 
-            {
-                'mail_name':   string,         # required
-                'email':       email_address   # required
-            }
+        %(WRITABLE_SERIALIZER)s
+
         __Response__:
 
-            {
-                "id": int,
-                "mail_name": string,
-                "email": email_address
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -238,21 +200,9 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
 
         %(FILTERS)s
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged lists
-            {
-                "count": 28,
-                "next": "$URL:maillist-list$?page=2",
-                "previous": null,
-                "results": [
-                    {
-                        "id": int,
-                        "mail_name": string,
-                        "email": string
-                    },
-                    ...
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -286,11 +236,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
 
         __Response__:
 
-            {
-                "id": int,
-                "mail_name": string,
-                "email": email_address
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -304,7 +250,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
         """
         ### UPDATE
 
-        __Method__:
+        __Method__: `PUT`, `PATCH`
         PUT: for full fields update
             {'mail_name': 'new_name', 'email': 'new_email'}
 
@@ -317,13 +263,13 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
 
         __URL__: $LINK:maillist-detail:instance_pk$
 
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
         __Response__:
 
-            {
-                "id": int,
-                "mail_name": string,
-                "email": email_address
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -390,14 +336,11 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
         __Data__:
 
-            {
-                'name': string,         # required
-            }
+        %(WRITABLE_SERIALIZER)s
+
         __Response__:
 
-            {
-                "name": string,
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -420,22 +363,9 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
         %(FILTERS)s
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged lists
-            {
-                "count": 4,
-                "next": null,
-                "previous": null,
-                "results": [
-                    {
-                        "name": "test_role",
-                    },
-                    {
-                        "name": string,
-                    },
-                    ...
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -484,9 +414,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
         __Response__:
 
-            {
-                "name": string,
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -500,18 +428,17 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
         """
         ### UPDATE
 
-        __Method__:
-        PUT/PATCH
-
-            {'name': 'new_name'}
+        __Method__: `PUT`, `PATCH`
 
         __URL__: $LINK:contactrole-detail:role_name$
 
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
         __Response__:
 
-            {
-                "name": string,
-            }
+        %(SERIALIZER)s
 
         __Example__:
 

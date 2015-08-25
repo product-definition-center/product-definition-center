@@ -64,28 +64,9 @@ class ChangesetViewSet(StrictQueryParamMixin,
 
         Resource names for `resource` should be specified in all lower case.
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged lists
-            {
-                "count": 84,
-                "next": "$URL:changeset-list$?page=2",
-                "previous": null,
-                "results": [
-                    {
-                        "author": "xxx",
-                        "committed_on": "2015-02-03T05:51:17.262Z",
-                        "changes": [
-                            {
-                                "resource": "person",
-                                "resource_id": 2,
-                                "old_value": "old",
-                                "new_value": "new"
-                            }
-                        ]
-                    },
-                    ...
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -157,18 +138,7 @@ class ChangesetViewSet(StrictQueryParamMixin,
 
         __Response__:
 
-            {
-                "author": "xxx",
-                "committed_on": "2015-02-03T05:51:17.262Z",
-                "changes": [
-                    {
-                        "resource": "person",
-                        "resource_id": 2,
-                        "old_value": "old",
-                        "new_value": "new"
-                    }
-                ]
-            }
+        %(SERIALIZER)s
 
         __Example__:
 

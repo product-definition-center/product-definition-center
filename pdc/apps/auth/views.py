@@ -214,22 +214,9 @@ class PermissionViewSet(StrictQueryParamMixin,
 
         __URL__: $LINK:permission-list$
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged lists
-            {
-                "count": int,
-                "next": url/null,
-                "previous": url/null,
-                "results": [
-                    {
-                        "codename": string,
-                        "app_label": string,
-                        "model": string
-                    },
-                    ...
-                ]
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -298,28 +285,9 @@ class GroupViewSet(ChangeSetUpdateModelMixin,
 
         %(FILTERS)s
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged list
-            {
-                "count": int,
-                "next": url/null,
-                "previous": url/null,
-                "results": [
-                    {
-                        "url": url,
-                        "name": string,
-                        "permissions": [
-                            {
-                                "codename": string,
-                                "app_label": string,
-                                "model": string
-                            }
-                        ]
-                    },
-                    ...
-                ]
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -367,17 +335,7 @@ class GroupViewSet(ChangeSetUpdateModelMixin,
 
         __Response__:
 
-            {
-                "url": url,
-                "name": string,
-                "permissions": [
-                    {
-                        "codename": string,
-                        "app_label": string,
-                        "model": string
-                    }
-                ]
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -412,17 +370,7 @@ class GroupViewSet(ChangeSetUpdateModelMixin,
 
         __Response__:
 
-            {
-                "url": url,
-                "name": string,
-                "permissions": [
-                    {
-                        "codename": string,
-                        "app_label": string,
-                        "model": string
-                    }
-                ]
-            }
+        %(SERIALIZER)s
 
         __Example__:
 

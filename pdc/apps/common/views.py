@@ -61,17 +61,11 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
 
         __Data__:
 
-            {
-                'name':             string,         # required
-                'description':      string,         # required
-            }
+        %(WRITABLE_SERIALIZER)s
+
         __Response__:
 
-            {
-                "url": url,
-                "name": string,
-                "description": string
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -94,21 +88,9 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
 
         %(FILTERS)s
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged lists
-            {
-                "count": 284,
-                "next": "$URL:label-list$?page=2",
-                "previous": null,
-                "results": [
-                    {
-                        "url": "$URL:label-detail:1$",
-                        "name": "label1",
-                        "description": "label1 description"
-                    },
-                    ...
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -162,11 +144,7 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
 
         __Response__:
 
-            {
-                "url": url,
-                "name": string,
-                "description": string
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -180,27 +158,17 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
         """
         ### UPDATE
 
-        __Method__:
-
-        PUT: for full fields update
-            {'name': 'new_name', 'description': 'new_description'}
-
-        PATCH: for partial update
-            {'name': 'new_name'}
-            or
-            {'description': 'new_description'}
-            or
-            {'name': 'new_name', 'description': 'new_description'}
+        __Method__: `PUT`, `PATCH`
 
         __URL__: $LINK:label-detail:instance_pk$
 
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
         __Response__:
 
-            {
-                "url": url,
-                "name": string,
-                "description": string
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -222,8 +190,7 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
         """
         ### DELETE
 
-        __Method__:
-        DELETE
+        __Method__: `DELETE`
 
         __URL__: $LINK:label-detail:instance_pk$
 
@@ -267,19 +234,9 @@ class ArchViewSet(pdc_viewsets.ChangeSetCreateModelMixin,
 
         __URL__: $LINK:arch-list$
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged lists
-            {
-                "count": int,
-                "next": url,
-                "previous": url,
-                "results": [
-                    {
-                        "name": string
-                    },
-                    ...
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -313,14 +270,11 @@ class ArchViewSet(pdc_viewsets.ChangeSetCreateModelMixin,
 
         __Data__:
 
-            {
-                'name':             string,         # required
-            }
+        %(WRITABLE_SERIALIZER)s
+
         __Response__:
 
-            {
-                "name": string
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
@@ -367,22 +321,9 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         %(FILTERS)s
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged lists
-            {
-                "count": int,
-                "next": url,
-                "previous": url,
-                "results": [
-                    {
-                        "url": url,
-                        "name": string,
-                        "key_id": string,
-                        "description": string
-                    },
-                    ...
-            }
+        %(SERIALIZER)s
         """
         return super(SigKeyViewSet, self).list(request, *args, **kwargs)
 
@@ -397,12 +338,7 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         __Response__:
 
-            {
-                "url": url,
-                "key_id": string,
-                "name": string,
-                "description": string
-            }
+        %(SERIALIZER)s
         """
         return super(SigKeyViewSet, self).retrieve(request, *args, **kwargs)
 
@@ -410,24 +346,19 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
         """
         ### UPDATE
 
-        __Method__:
+        __Method__: `PUT`, `PATCH`
 
         PATCH: for partial update
-            {'name': 'new_name'}
-            or
-            {'description': 'new_description'}
-            or
-            {'name': 'new_name', 'description': 'new_description'}
 
         __URL__: $LINK:sigkey-detail:key_id$
 
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
         __Response__:
 
-            {
-                "url": url,
-                "name": string,
-                "description": string
-            }
+        %(SERIALIZER)s
         """
 
         # NOTE: key_id is a read only field and do not allow to update to
@@ -462,11 +393,7 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
         The response will again include a mapping from `key_id` to objects
         representing the keys. Each key will be shown as follows:
 
-            {
-                "url": url,
-                "name": string,
-                "description": string
-            }
+        %(SERIALIZER)s
         """
         return bulk_operations.bulk_update_impl(self, *args, **kwargs)
 
@@ -481,19 +408,11 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         __Data__:
 
-            {
-                "key_id":           string(hexdigits,8),         # required
-                "name":             string,                      # optional
-                "description":      string,                      # optional
-            }
+        %(SERIALIZER)s
+
         __Response__:
 
-            {
-                "url": url,
-                "key_id": string,
-                "name": string,
-                "description": string
-            }
+        %(SERIALIZER)s
         """
         return super(SigKeyViewSet, self).create(request, *args, **kwargs)
 

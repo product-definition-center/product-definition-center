@@ -46,7 +46,7 @@ class ComposeSerializer(StrictSerializerMixin,
                         serializers.ModelSerializer):
     compose_type                = serializers.CharField()
     release                     = serializers.CharField()
-    sigkeys                     = serializers.ReadOnlyField()
+    sigkeys                     = serializers.SerializerMethodField()
     rpm_mapping_template        = serializers.SerializerMethodField()
     acceptance_testing          = ChoiceSlugField(slug_field='name',
                                                   queryset=ComposeAcceptanceTestingState.objects.all())
@@ -64,6 +64,7 @@ class ComposeSerializer(StrictSerializerMixin,
         )
 
     def get_rpm_mapping_template(self, obj):
+        """url"""
         return urldecode(reverse(
             'composerpmmapping-detail',
             args=[obj.compose_id, '{{package}}'],
@@ -71,7 +72,12 @@ class ComposeSerializer(StrictSerializerMixin,
         ))
 
     def get_rtt_tested_architectures(self, obj):
+        """{"variant": {"arch": "testing status"}}"""
         return obj.get_arch_testing_status()
+
+    def get_sigkeys(self, obj):
+        """["string"]"""
+        return obj.sigkeys
 
     def validate(self, attrs):
         release = attrs.get('release') or getattr(getattr(self, 'object', None), 'release')

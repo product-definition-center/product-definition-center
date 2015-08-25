@@ -293,6 +293,7 @@ class BugzillaComponentSerializer(DynamicFieldsSerializerMixin,
     extra_fields = ['parent_pk']
 
     def get_subcomponents(self, obj):
+        """[string]"""
         return obj.get_subcomponents()
 
     class Meta:
@@ -443,6 +444,8 @@ class GroupTypeSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 
 
 class ReleaseComponentRelatedField(serializers.RelatedField):
+    doc_format = '{"id": "int", "name": "string"}'
+
     def to_representation(self, value):
         result = dict()
         if value:
@@ -520,6 +523,8 @@ class RCRelationshipTypeSerializer(StrictSerializerMixin, serializers.ModelSeria
 
 
 class RCForRelationshipRelatedField(ReleaseComponentRelatedField):
+    doc_format = '{"id": "int", "name": "string", "release": "Release.release_id"}'
+
     def to_representation(self, value):
         result = dict()
         if value:
