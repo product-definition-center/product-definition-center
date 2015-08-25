@@ -84,7 +84,7 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
 
     ## Customize Output ##
 
-    There are two `QUERY_PARAMS` that you can use to customize your output.
+    There are two query params that you can use to customize your output.
 
     `fields`:          string, can be set multiple times, to demand what fields you want to include;
 
@@ -105,7 +105,7 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
 
         __URL__: $LINK:globalcomponent-list$
 
-        __QUERY Params__:
+        __Query Params__:
 
         %(FILTERS)s
 
@@ -348,7 +348,7 @@ class GlobalComponentContactViewSet(HackedComponentContactMixin,
 
         __URL__: $LINK:globalcomponentcontact-list:gc_instance_pk$
 
-        __QUERY Params__:
+        __Query Params__:
 
         %(FILTERS)s
 
@@ -663,7 +663,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
 
     ## Customize Output ##
 
-    There are two `QUERY_PARAMS` that you can use to customize your output.
+    There are two query params that you can use to customize your output.
 
     `fields`:          string, can be set multiple times, to demand what fields you want to include;
 
@@ -694,7 +694,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
 
         __URL__: $LINK:releasecomponent-list$
 
-        __QUERY Params__:
+        __Query Params__:
 
         %(FILTERS)s
 
@@ -1120,7 +1120,7 @@ class ReleaseComponentContactViewSet(HackedComponentContactMixin,
 
         __URL__: $LINK:releasecomponentcontact-list:rc_instance_pk$
 
-        __QUERY Params__:
+        __Query Params__:
 
         %(FILTERS)s
 
@@ -1336,7 +1336,7 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
 
         __URL__: $LINK:bugzillacomponent-list$
 
-        __QUERY Params__:
+        __Query Params__:
 
         %(FILTERS)s
 

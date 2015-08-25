@@ -84,7 +84,7 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
 
         __URL__: $LINK:label-list$
 
-        __QUERY Params__:
+        __Query Params__:
 
         %(FILTERS)s
 
@@ -317,7 +317,7 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         __URL__: $LINK:sigkey-list$
 
-        __QUERY Params__:
+        __Query Params__:
 
         %(FILTERS)s
 

@@ -61,7 +61,7 @@ class PersonViewSet(viewsets.PDCModelViewSet):
 
         __URL__: $LINK:person-list$
 
-        __QUERY Params__:
+        __Query Params__:
 
         %(FILTERS)s
 
@@ -196,7 +196,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
 
         __URL__: $LINK:maillist-list$
 
-        __QUERY Params__:
+        __Query Params__:
 
         %(FILTERS)s
 
@@ -359,7 +359,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
         __URL__: $LINK:contactrole-list$
 
-        __QUERY Params__:
+        __Query Params__:
 
         %(FILTERS)s
 
@@ -553,7 +553,7 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
 
         __URL__: $LINK:rolecontact-list$
 
-        __QUERY Params__:
+        __Query Params__:
 
         %(FILTERS)s
 

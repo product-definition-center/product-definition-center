@@ -48,7 +48,7 @@ class ChangesetViewSet(StrictQueryParamMixin,
 
         __URL__: $LINK:changeset-list$
 
-        __QUERY Params__:
+        __Query Params__:
 
         %(FILTERS)s
 

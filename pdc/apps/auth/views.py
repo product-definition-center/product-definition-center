@@ -208,7 +208,7 @@ class PermissionViewSet(StrictQueryParamMixin,
         __Method__:
         `GET`
 
-        __QUERY Params__:
+        __Query Params__:
 
         %(FILTERS)s
 
@@ -281,7 +281,7 @@ class GroupViewSet(ChangeSetUpdateModelMixin,
 
         __URL__: $LINK:group-list$
 
-        __QUERY Params__:
+        __Query Params__:
 
         %(FILTERS)s
 
