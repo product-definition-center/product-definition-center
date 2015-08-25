@@ -847,7 +847,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
         """
         __Method__: `GET`
 
-        __URL__: $LINK:variant-detail:release_id/variant_uid$
+        __URL__: $LINK:variant-detail:release_id}/{variant_uid$
 
         __Response__:
 
@@ -863,6 +863,6 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
 
         __Method__: `DELETE`
 
-        __URL__: $LINK:variant-detail:release_id/variant_uid$
+        __URL__: $LINK:variant-detail:release_id}/{variant_uid$
         """
         return super(ReleaseVariantViewSet, self).destroy(*args, **kwargs)
