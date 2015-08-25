@@ -498,34 +498,26 @@ class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
 
     def list(self, request, *args, **kwargs):
         """
-        Show the global component labels by pagination, 20 items per page by default, and you can pass some parameters
-        to filter the result.
+        __Method__: `GET`
 
-        __Request__
+        __URL__: $LINK:globalcomponentlabel-list:component_id$
 
-            curl -X GET -H "Content-Type: application/json" $URL:globalcomponentlabel-list:1$
+        __Query params__:
 
-        Or search specified global component's label by label's name.
-
-            curl -G -H "Content-Type: application/json" $URL:globalcomponentlabel-list:1$ -d name=label1
-
-        Now it supports ``name`` to filter the result.
-
-        ``name``: label's name
+        %(FILTERS)s
 
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
+
         """
         return super(GlobalComponentLabelViewSet, self).list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
         """
-        Show the specified global component label instance.
+        __Method__: `GET`
 
-        __Request__
-
-            curl -X GET -H "Content-Type: application/json" $URL:globalcomponentlabel-detail:1:1$
+        __URL__: $LINK:globalcomponentlabel-detail:component_id:label_id$
 
         __Response__:
 
@@ -541,19 +533,10 @@ class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         """
-        Delete a label from a specified global component, return an empty response if success.
+        Delete a label from a specified global component, return an empty
+        response if success.
 
-        ####__Request__####
-
-            curl -X DELETE -H "Content-Type: application/json" $URL:globalcomponentlabel-detail:1:1$
-
-        ####__Response__####
-
-            HTTP 204 NO CONTENT
-            Date: Mon, 20 Oct 2014 06:21:21 GMT
-            Content-Length: 0
-            Allow: GET, PUT, PATCH, DELETE, HEAD, OPTIONS
-
+        __URL__: $LINK:globalcomponentlabel-detail:component_id:label_id$
         """
         pk = self.kwargs.get('pk')
         label = get_object_or_404(Label, id=pk)
@@ -577,20 +560,19 @@ class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
 
         **Note**:  label must exist before being assigned to a global_component.
 
-        ####__Request__####
+        __Method__: `POST`
 
-        ``name``: label's name, **REQUIRED**
+        __URL__: $LINK:globalcomponentlabel-list:component_id$
 
-        ``description``: label's description, **OPTIONAL**
+        __Data__:
 
-            curl -X POST -H "Content-Type: application/json" $URL:globalcomponentlabel-list:1$ -d '{"name": "label1"}'
+            {
+                "name": "string"
+            }
 
-        ####__Response__####
+        __Response__:
 
-            HTTP 201 CREATED
-            Date: Mon, 20 Oct 2014 06:01:04 GMT
-            Content-Type: application/json
-            Allow: GET, POST, HEAD, OPTIONS
+        %(SERIALIZER)s
         """
         extra_keys = set(request.data.keys()) - self.serializer_class().get_allowed_keys()
         StrictSerializerMixin.maybe_raise_error(extra_keys)
