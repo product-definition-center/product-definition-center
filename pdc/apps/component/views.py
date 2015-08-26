@@ -8,6 +8,7 @@ import types
 
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
+from django.http import Http404
 
 from mptt.exceptions import InvalidMove
 
@@ -338,7 +339,11 @@ class GlobalComponentContactViewSet(HackedComponentContactMixin,
 
     def get_queryset(self):
         gc_id = self.kwargs.get('instance_pk')
-        gc = get_object_or_404(GlobalComponent, id=gc_id)
+        try:
+            gc = get_object_or_404(GlobalComponent, id=gc_id)
+        except ValueError:
+            # Raised when non-numeric instance_pk is given.
+            raise Http404('Global component with id=%s not found' % gc_id)
         return gc.contacts.all()
 
     def list(self, request, *args, **kwargs):
@@ -492,7 +497,11 @@ class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
 
     def get_queryset(self):
         gc_id = self.kwargs.get('instance_pk')
-        gc = get_object_or_404(GlobalComponent, id=gc_id)
+        try:
+            gc = get_object_or_404(GlobalComponent, id=gc_id)
+        except ValueError:
+            # Raised when non-numeric instance_pk is given.
+            raise Http404('Global component with id=%s not found' % gc_id)
         labels = gc.labels.all()
         return labels
 
@@ -1078,7 +1087,11 @@ class ReleaseComponentContactViewSet(HackedComponentContactMixin,
 
     def get_queryset(self):
         rc_id = self.kwargs.get("instance_pk", None)
-        release_component = get_object_or_404(ReleaseComponent, pk=rc_id)
+        try:
+            release_component = get_object_or_404(ReleaseComponent, pk=rc_id)
+        except ValueError:
+            # Raised when non-numeric instance_pk is given.
+            raise Http404('Release component with id=%s not found' % rc_id)
         return release_component.contacts.all()
 
     def get_serializer_context(self):
@@ -1128,7 +1141,11 @@ class ReleaseComponentContactViewSet(HackedComponentContactMixin,
         # cannot benefit from DRF built-in features such as pagination.
         rc_id = kwargs.get("instance_pk", None)
         # Release Component object
-        rc = get_object_or_404(ReleaseComponent, pk=rc_id)
+        try:
+            rc = get_object_or_404(ReleaseComponent, pk=rc_id)
+        except ValueError:
+            # Raised when non-numeric instance_pk is given.
+            raise Http404('Release component with id=%s not found' % rc_id)
         gcc_qs = GlobalComponent.objects.get(pk=rc.global_component_id).contacts.all()
         rcc_qs = rc.contacts.all()
         # Contact type based inheritance mechanisms(excerpted from JIRA PDC-184)

@@ -313,6 +313,11 @@ class GlobalComponentContactRESTTestCase(TestCaseWithChangeSetMixin, APITestCase
         self.assertEqual(response.data['contact']['email'],
                          'person1@test.com')
 
+    def test_list_for_non_int_component_id(self):
+        url = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 'hello'})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_update_global_component_contact(self):
         url = reverse('globalcomponentcontact-detail', kwargs={'instance_pk': 2,
                                                                'pk': 1})
@@ -487,6 +492,11 @@ class GlobalComponentLabelRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data.get('count'), 1)
         self.assertEqual(response.data.get('results')[0].get('name'), self.args_label1.get('name'))
         self.assertEqual(response.data.get('results')[0].get('description'), self.args_label1.get('description'))
+
+    def test_list_for_non_int_component_id(self):
+        url = reverse('globalcomponentlabel-list', kwargs={'instance_pk': 'hello'})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_retrieve_specified_global_component_label(self):
         url = reverse('globalcomponentlabel-detail', kwargs={'instance_pk': 1, 'pk': 1})
@@ -821,6 +831,11 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(len(response.data), 5)
         self.assertContains(response, 'release-components', 3)
         self.assertContains(response, 'global-components', 2)
+
+    def test_list_for_non_int_component_id(self):
+        url = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 'hello'})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_detail_release_component_not_exist(self):
         url = reverse('releasecomponent-detail', kwargs={'pk': 9999})
@@ -1301,6 +1316,11 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('releasecomponentcontact-detail', kwargs={'instance_pk': 1, 'pk': 5})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_single_release_component_contact_with_bad_component_id(self):
+        url = reverse('releasecomponentcontact-detail', kwargs={'instance_pk': 'hello', 'pk': 5})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_assign_label_to_global_component_without_name(self):
         url = reverse('globalcomponentlabel-list', kwargs={'instance_pk': 1})
