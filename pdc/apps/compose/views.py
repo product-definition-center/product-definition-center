@@ -847,8 +847,7 @@ class ComposeImportImagesView(StrictQueryParamMixin, viewsets.GenericViewSet):
 
     def create(self, request):
         """
-        This end-point is deprecated. Use
-        [/compose-images/](/rest_api/v1/compose-images/) instead.
+        This end-point is deprecated. Use $LINK:composeimage-list$ instead.
         """
         data = request.data
         errors = {}
