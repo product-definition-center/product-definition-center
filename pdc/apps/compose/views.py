@@ -709,6 +709,8 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
 
     def partial_update(self, request, **kwargs):
         """
+        __URL__: $LINK:composerpmmapping-detail:compose_id:package$
+
         Allows to create and destroy overrides. The request should send JSON data
         in following format:
 
@@ -733,6 +735,8 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
 
     def update(self, request, **kwargs):
         """
+        __URL__: $LINK:composerpmmapping-detail:compose_id:package$
+
         Allows updating the RPM mapping by using a `PUT` request with data
         containing new mapping. PDC will compute changes between current
         mapping and the requested one. The response contains a list of changes
