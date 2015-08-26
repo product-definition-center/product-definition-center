@@ -10,13 +10,13 @@ from . import models
 
 
 class RepoFilter(filters.FilterSet):
-    arch = filters.CharFilter(name='variant_arch__arch__name')
-    content_category = filters.CharFilter(name='content_category__name')
-    content_format = filters.CharFilter(name='content_format__name')
-    release_id = filters.CharFilter(name='variant_arch__variant__release__release_id')
-    variant_uid = filters.CharFilter(name='variant_arch__variant__variant_uid')
-    repo_family = filters.CharFilter(name='repo_family__name')
-    service = filters.CharFilter(name='service__name')
+    arch = MultiValueFilter(name='variant_arch__arch__name')
+    content_category = MultiValueFilter(name='content_category__name')
+    content_format = MultiValueFilter(name='content_format__name')
+    release_id = MultiValueFilter(name='variant_arch__variant__release__release_id')
+    variant_uid = MultiValueFilter(name='variant_arch__variant__variant_uid')
+    repo_family = MultiValueFilter(name='repo_family__name')
+    service = MultiValueFilter(name='service__name')
     shadow = filters.BooleanFilter()
     product_id = MultiValueFilter()
 

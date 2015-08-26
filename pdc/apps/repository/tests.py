@@ -261,6 +261,62 @@ class RepositoryRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([])
 
 
+class RepositoryMultipleFilterTestCase(APITestCase):
+    fixtures = [
+        "pdc/apps/release/fixtures/tests/release.json",
+        "pdc/apps/release/fixtures/tests/variant.json",
+        "pdc/apps/release/fixtures/tests/variant_arch.json",
+    ]
+
+    def setUp(self):
+        self.url = reverse('repo-list')
+        services = ['pulp', 'ftp', 'rhn']
+        families = ['beta', 'htb', 'dist']
+        formats = ['rpm', 'iso', 'kickstart']
+        categories = ['debug', 'binary', 'source']
+        for service in services:
+            for family in families:
+                for format in formats:
+                    for category in categories:
+                        name = 'repo-%s-%s-%s-%s' % (service, family, format, category)
+                        data = {
+                            'release_id': 'release-1.0', 'variant_uid': 'Server',
+                            'arch': 'x86_64', 'service': service, 'repo_family': family,
+                            'content_format': format, 'content_category': category,
+                            'name': name, 'shadow': False, 'product_id': 33
+                        }
+                        self.client.post(self.url, data, format='json')
+
+    def test_query_multiple_services(self):
+        response = self.client.get(reverse('repo-list') + '?service=pulp&service=ftp')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2 * 27)
+
+    def test_multiple_families(self):
+        response = self.client.get(reverse('repo-list') + '?repo_family=beta&repo_family=htb')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2 * 27)
+
+    def test_multiple_formats(self):
+        response = self.client.get(reverse('repo-list') + '?content_format=rpm&content_format=iso')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2 * 27)
+
+    def test_multiple_categories(self):
+        response = self.client.get(reverse('repo-list') + '?content_category=debug&content_category=binary')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2 * 27)
+
+    def test_multiple_combination(self):
+        query = ('?service=pulp&service=ftp'
+                 + '&repo_family=beta&repo_family=htb'
+                 + '&content_format=rpm&content_format=iso'
+                 + '&content_category=debug&content_category=binary')
+        response = self.client.get(reverse('repo-list') + query)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 16)
+
+
 class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
         "pdc/apps/release/fixtures/tests/release.json",
