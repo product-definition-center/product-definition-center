@@ -61,6 +61,9 @@ cover_test:
 	coverage combine
 	coverage html --rcfile=tox.ini
 
+extra_test:
+	python manage.py test --settings pdc.settings_test tests.check_api_doc
+
 models_svg: export DJANGO_SETTINGS_MODULE=pdc.settings_graph_models
 models_svg:
 	python manage.py graph_models -aE -o docs/source/models_svg/all.svg

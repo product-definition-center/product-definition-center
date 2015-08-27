@@ -18,6 +18,7 @@ install:
 script:
     - coverage run --source=contrib,pdc --omit='*tests.py,*/migrations/*,pdc/settings*' manage.py test --settings pdc.settings_test
     - make flake8
+    - make extra_test
 after_success:
     coveralls
 cache:
