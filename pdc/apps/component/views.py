@@ -621,20 +621,9 @@ class ReleaseComponentTypeViewSet(viewsets.StrictQueryParamMixin,
 
         __URL__: $LINK:releasecomponenttype-list$
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged list
-            {
-                "count": int,
-                "next": url,
-                "previous": url,
-                "results": [
-                    {
-                        "name": string,
-                    },
-                    ...
-                ]
-            }
+        %(SERIALIZER)s
         """
         return super(ReleaseComponentTypeViewSet, self).list(request, *args, **kwargs)
 
@@ -1759,20 +1748,9 @@ class ReleaseComponentRelationshipTypeViewSet(viewsets.StrictQueryParamMixin,
 
         __URL__: $LINK:componentrelationshiptype-list$
 
-        __Response__:
+        __Response__: a paged list of following objects
 
-            # paged list
-            {
-                "count": int,
-                "next": url,
-                "previous": url,
-                "results": [
-                    {
-                        "name": string,
-                    },
-                    ...
-                ]
-            }
+        %(SERIALIZER)s
         """
         return super(ReleaseComponentRelationshipTypeViewSet, self).list(request, *args, **kwargs)
 
