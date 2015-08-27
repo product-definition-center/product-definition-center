@@ -36,7 +36,7 @@ setup(
     url=PACKAGE_URL,
     author='PDC Devel Team',
     author_email='pdc-dev-list@redhat.com',
-    packages=find_packages(exclude=['gui_tests*']),
+    packages=find_packages(),
     include_package_data=True,
     install_requires=install_requires,
     dependency_links=dependency_links,
