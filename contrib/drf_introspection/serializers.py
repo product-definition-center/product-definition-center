@@ -11,6 +11,15 @@ from rest_framework import serializers
 from django.core.exceptions import FieldError
 
 
+def _error_with_fields(message, fields):
+    """
+    Helper function to create an error message with a list of quoted, comma
+    separated field names. The `message` argument should be a format string
+    with a single `%s` placeholder.
+    """
+    return message % ', '.join('"%s"' % f for f in fields)
+
+
 class IntrospectableSerializerMixin(object):
     """
     Basic mixin for a serializer that supports introspection.
@@ -49,13 +58,15 @@ class StrictSerializerMixin(IntrospectableSerializerMixin):
     fields are allowed.
 
     Additionally, if the input to the serializer is not a dict, a
-    ``rest_framework.serializers.ValidationError`` will be raised.
+    ``rest_framework.serializers.ValidationError`` will be raised. Also, when a
+    read-only field is specified, a FieldError will be raised as well.
     """
     def to_internal_value(self, data):
         if not isinstance(data, dict):
             raise serializers.ValidationError('Invalid input: must be a dict.')
         extra_fields = set(data.keys()) - self.get_allowed_keys()
         self.maybe_raise_error(extra_fields)
+        self.check_read_only_fields(data.keys())
         return super(StrictSerializerMixin, self).to_internal_value(data)
 
     @staticmethod
@@ -70,4 +81,19 @@ class StrictSerializerMixin(IntrospectableSerializerMixin):
         serializer, but still wants to validate its input.
         """
         if extra_fields:
-            raise FieldError('Unknown fields: %s.' % ', '.join('"%s"' % f for f in extra_fields))
+            raise FieldError(_error_with_fields('Unknown fields: %s.', extra_fields))
+
+    def check_read_only_fields(self, keys):
+        """
+        Check that all fields are not read-only. If some are, a FieldError is
+        raised with an error message.
+        """
+        updated_read_only = [key for key in keys if self._is_read_only(key)]
+        if updated_read_only:
+            raise FieldError(_error_with_fields('Can not update read only fields: %s.',
+                                                updated_read_only))
+
+    def _is_read_only(self, field_name):
+        if field_name not in self.fields:
+            return False
+        return getattr(self.fields[field_name], 'read_only', False)

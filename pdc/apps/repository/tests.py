@@ -77,6 +77,7 @@ class RepositorySerializerTestCase(APITestCase):
             self.data[field] = old_val
 
     def test_deserialize_duplicit(self):
+        del self.fixture_data['id']
         serializer = serializers.RepoSerializer(data=self.fixture_data)
         self.assertFalse(serializer.is_valid())
         self.assertEqual(serializer.errors,
@@ -158,9 +159,11 @@ class RepositoryRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         """The repo has product_id, update tries to change name with product_id unspecified in request."""
         pid = self.existing.pop('product_id')
         self.existing['name'] = 'new_name'
+        id = self.existing.pop('id')
         response = self.client.put(reverse('repo-detail', args=[1]), self.existing, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.existing['product_id'] = pid
+        self.existing['id'] = id
         self.assertDictEqual(dict(response.data), self.existing)
         self.assertNumChanges([1])
 
@@ -326,8 +329,7 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
     ]
 
     def setUp(self):
-        self.repo1 = {"id": 1,
-                      "shadow": False,
+        self.repo1 = {"shadow": False,
                       "release_id": "release-1.1",
                       "variant_uid": "Server",
                       "arch": "x86_64",
@@ -337,8 +339,7 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
                       "content_category": "binary",
                       "name": "test_repo_1",
                       "product_id": 11}
-        self.repo2 = {"id": 2,
-                      "shadow": True,
+        self.repo2 = {"shadow": True,
                       "release_id": "release-1.1",
                       "variant_uid": "Client",
                       "arch": "x86_64",
@@ -382,6 +383,9 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args = {'release_id_from': 'release-1.0', 'release_id_to': 'release-1.1'}
         response = self.client.post(reverse('repoclone-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Drop ids, they are not easily predictable on PostgreSQL
+        for repo in response.data:
+            del repo['id']
         self.assertItemsEqual(response.data, [self.repo1, self.repo2])
         repos = models.Repo.objects.filter(variant_arch__variant__release__release_id='release-1.1')
         self.assertEqual(len(repos), 2)
@@ -394,6 +398,8 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
                 'include_content_format': ['iso', 'rpm'],
                 'include_content_category': ['debug', 'binary']}
         response = self.client.post(reverse('repoclone-list'), args, format='json')
+        for repo in response.data:
+            del repo['id']
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertItemsEqual(response.data, [self.repo1, self.repo2])
         repos = models.Repo.objects.filter(variant_arch__variant__release__release_id='release-1.1')
@@ -413,6 +419,8 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args = {'release_id_from': 'release-1.0', 'release_id_to': 'release-1.1',
                 'include_service': ['pulp']}
         response = self.client.post(reverse('repoclone-list'), args, format='json')
+        for repo in response.data:
+            del repo['id']
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertItemsEqual(response.data, [self.repo2])
         self.assertNumChanges([1])
@@ -421,6 +429,8 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args = {'release_id_from': 'release-1.0', 'release_id_to': 'release-1.1',
                 'include_repo_family': ['beta']}
         response = self.client.post(reverse('repoclone-list'), args, format='json')
+        for repo in response.data:
+            del repo['id']
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertItemsEqual(response.data, [self.repo2])
         self.assertNumChanges([1])
@@ -429,6 +439,8 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args = {'release_id_from': 'release-1.0', 'release_id_to': 'release-1.1',
                 'include_content_format': ['iso']}
         response = self.client.post(reverse('repoclone-list'), args, format='json')
+        for repo in response.data:
+            del repo['id']
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertItemsEqual(response.data, [self.repo2])
         self.assertNumChanges([1])
@@ -437,6 +449,8 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args = {'release_id_from': 'release-1.0', 'release_id_to': 'release-1.1',
                 'include_content_category': ['debug']}
         response = self.client.post(reverse('repoclone-list'), args, format='json')
+        for repo in response.data:
+            del repo['id']
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertItemsEqual(response.data, [self.repo2])
         self.assertNumChanges([1])
@@ -445,6 +459,8 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args = {'release_id_from': 'release-1.0', 'release_id_to': 'release-1.1',
                 'include_shadow': 'true'}
         response = self.client.post(reverse('repoclone-list'), args, format='json')
+        for repo in response.data:
+            del repo['id']
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertItemsEqual(response.data, [self.repo2])
         self.assertNumChanges([1])
@@ -453,6 +469,8 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args = {'release_id_from': 'release-1.0', 'release_id_to': 'release-1.1',
                 'include_product_id': 12}
         response = self.client.post(reverse('repoclone-list'), args, format='json')
+        for repo in response.data:
+            del repo['id']
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertItemsEqual(response.data, [self.repo2])
         self.assertNumChanges([1])

@@ -214,6 +214,8 @@ class RepoCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
         serializer = serializers.RepoSerializer(repos_in_target_release, many=True)
         copy = serializer.data
         for repo in copy:
+            # The serializer will reject read-only fields, so we need to drop the id.
+            del repo['id']
             repo['release_id'] = target_release.release_id
         new_repos = serializers.RepoSerializer(data=copy, many=True)
         if not new_repos.is_valid():
@@ -225,7 +227,7 @@ class RepoCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
             request.changeset.add('Repo', repo_obj.pk,
                                   'null', json.dumps(raw_repo))
 
-        return Response(status=status.HTTP_200_OK, data=copy)
+        return Response(status=status.HTTP_200_OK, data=new_repos.data)
 
 
 class RepoFamilyViewSet(StrictQueryParamMixin,

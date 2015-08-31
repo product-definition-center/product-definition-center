@@ -679,6 +679,7 @@ class OverridesRPMAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_create_correct(self):
         self.override_rpm["rpm_name"] = "bash-debuginfo"
+        del self.override_rpm["id"]
         response = self.client.post(reverse('overridesrpm-list'), self.override_rpm)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(models.OverrideRPM.objects.count(), 2)

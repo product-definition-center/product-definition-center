@@ -234,7 +234,8 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('rpms-detail', args=[3])
         data = {'linked_composes': [u'compose-1']}
         response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.data.get('linked_composes'), [])
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNumChanges([])
 
     def test_bulk_update_patch(self):
         self.client.patch(reverse('rpms-list'),

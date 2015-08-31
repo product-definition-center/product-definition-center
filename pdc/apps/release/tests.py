@@ -225,6 +225,12 @@ class ProductUpdateTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(reverse('product-detail', args=['tcudorp']))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_patch_read_only_field(self):
+        response = self.client.patch(reverse('product-detail', args=['product']),
+                                     {'active': True}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNumChanges([])
+
 
 class ProductVersionRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
@@ -317,6 +323,9 @@ class ProductVersionRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(reverse('productversion-detail', args=['product-1']))
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         response.data['version'] = 2
+        del response.data['product_version_id']
+        del response.data['releases']
+        del response.data['active']
         response = self.client.post(reverse('productversion-list'), response.data)
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         self.assertEqual(dict(response.data),

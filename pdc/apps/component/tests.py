@@ -75,13 +75,7 @@ class GlobalComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('globalcomponent-list')
         data = {'name': 'TestCaseComponent', 'dist_git_path': 'python', 'labels': [{'name': 'label1', 'description': 'abc'}]}
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        del response.data['id']
-        del response.data['dist_git_web_url']
-        data.update({'contacts': []})
-        data.update({'labels': []})
-        data.update({'upstream': None})
-        self.assertEqual(response.data, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_global_component_with_upstream(self):
         url = reverse('globalcomponent-list')
