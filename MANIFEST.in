@@ -10,5 +10,6 @@ recursive-include conf *
 recursive-include contrib *
 recursive-include docs *
 recursive-exclude docs/build *
+recursive-exclude tests *
 exclude pdc/settings_local.py
 global-exclude .pyc .pyo
