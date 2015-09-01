@@ -2,3 +2,4 @@
 *.sqlite3
 *.swp
 settings_local.py
+.tito/copr_user.conf
