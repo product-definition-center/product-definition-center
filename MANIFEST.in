@@ -9,6 +9,7 @@ recursive-include requirements *
 recursive-include conf *
 recursive-include contrib *
 recursive-include docs *
+recursive-include pdc_client *
 recursive-exclude docs/build *
 recursive-exclude tests *
 exclude pdc/settings_local.py

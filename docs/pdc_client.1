@@ -1,0 +1,49 @@
+.TH pdc_client 1
+.SH NAME
+pdc_client \- work with a PDC instance
+.SH SYNOPSIS
+.B pdc_client
+\fB\-s\fR \fISERVER\fR
+[\fIOPTIONS\fR...]
+.SH DESCRIPTION
+.B pdc_client
+provides access a given PDC instance for reading and writing data.
+If you have a Kerberos ticket, it will automatically obtain an access token.
+.SH OPTIONS
+.TP
+.BR \-s ", " \-\-server =\fISERVER\fR
+Set which URL to connect to.
+There are shortcuts available for RedHat hosted instances (\fIprod\fR, \fIstage\fR, \fIqa\fR, \fIdev\fR).
+The server URL needs to include path to the API root (usually \fI/rest_api/v1/\fR).
+This argument is always required.
+.TP
+.BR \-x ", " \-\-request =\fIMETHOD\fR
+Select which method to perform on the resource.
+This maps directly to HTTP methods, so \fBGET\fR, \fBPOST\fR, \fBPUT\fR, \fBPATCH\fR
+and \fBDELETE\fR are available.
+Default is \fBGET\fR.
+.TP
+.BR \-r ", " \-\-resource =\fIRESOURCE\fR
+Select which resource to manipulate.
+If omitted, a list of available resource is printed.
+For accessing a single instance of a resource, specify \fIRESOURCE_NAME/INSTANCE_ID\fR.
+The instance identifier depends on what resource you are operating on.
+.TP
+.BR \-d ", " \-\-data =\fIDATA\fR
+Specify data to be sent to the server.
+The data must be formatted as JSON.
+.TP
+.BR \-f ", " \-\-file =\fIFILE\fR
+Like \fB\-d\fR, but reads data from file instead of command line argument.
+If \fIFILE\fR is specified as \fB\-\fR, standard input will be read.
+Only one of \fB\-d\fR and \fB\-f\fR can be used simultaneously.
+.TP
+.BR \-t ", " \-\-traceback
+Print traceback information in case of an error.
+.TP
+.BR \-\-debug
+Show details about performed requests.
+.SH BUGS
+If you find a bug in the client, report at
+.br
+https://github.com/release-engineering/product-definition-center/issues/.
