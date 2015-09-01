@@ -34,6 +34,26 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         %(FILTERS)s
 
+        If the `has_no_deps` filter is used, the output will only contain RPMs
+        which have some or do not have any dependencies.
+
+        All the dependency filters use the same data format.
+
+        The simpler option is just name of the dependency. In that case it will
+        filter RPMs that depend on that given name.
+
+        The other option is an expression `NAME OP VERSION`. This will filter
+        all RPMs that have a dependency on `NAME` such that adding this
+        constraint will not make the package dependencies inconsistent.
+
+        For example filtering by `python=2.7.0` would include packages with
+        dependency on `python=2.7.0`, `python>=2.6.0`, `python<3.0.0`, but
+        exclude `python=2.6.0`. Filtering by `python<3.0.0` would include
+        packages with `python>2.7.0`, `python=2.6.0`, `python<3.3.0`, but
+        exclude `python>3.1.0` or `python>3.0.0 && python <3.3.0`.
+
+        Only single filter for each dependency type is allowed.
+
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
@@ -54,6 +74,12 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
         The `srpm_nevra` field should be empty if and only if `arch` is `src`.
         If `filename` is not specified, it will default to a name created from
         *NEVRA*.
+
+        The format of each dependency is either just name of the package that
+        the new RPM depends on, or it can have the format `NAME OP VERSION`,
+        where `OP` can be any comparison operator. Recognized dependency types
+        are *provides*, *requires*, *obsoletes*, *conflicts*, *suggests* and
+        *recommends*
 
         __Response__:
 
@@ -83,6 +109,12 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
         __Data__:
 
         %(WRITABLE_SERIALIZER)s
+
+        If the `dependencies` key is omitted on `PATCH` request, they will not
+        be changed. On `PUT` request, they will be completely removed. When a
+        value is specified, it completely replaces existing dependencies.
+
+        The format of the dependencies themselves is same as for create.
 
         __Response__:
 

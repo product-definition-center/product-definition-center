@@ -3,14 +3,57 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+from functools import partial
+
 from django.conf import settings
 from django.forms import SelectMultiple
+from django.core.exceptions import FieldError
 
 import django_filters
 
-from pdc.apps.common.filters import MultiValueFilter, MultiIntFilter, NullableCharFilter
-from pdc.apps.common.filters import CaseInsensitiveBooleanFilter
+from pdc.apps.common.filters import (MultiValueFilter, MultiIntFilter,
+                                     NullableCharFilter, CaseInsensitiveBooleanFilter)
 from . import models
+
+
+def dependency_filter(type, queryset, value):
+    m = models.Dependency.DEPENDENCY_PARSER.match(value)
+    if not m:
+        raise FieldError('Unrecognized value for filter for {}'.format(type))
+    groups = m.groupdict()
+    queryset = queryset.filter(dependency__name=groups['name'], dependency__type=type).distinct()
+    for dep in models.Dependency.objects.filter(type=type, name=groups['name']):
+
+        is_equal = dep.is_equal(groups['version']) if groups['version'] else False
+        is_lower = dep.is_lower(groups['version']) if groups['version'] else False
+        is_higher = dep.is_higher(groups['version']) if groups['version'] else False
+
+        if groups['op'] == '=' and not dep.is_satisfied_by(groups['version']):
+            queryset = queryset.exclude(pk=dep.rpm_id)
+
+        # User requests everything depending on higher than X
+        elif groups['op'] == '>' and dep.comparison in ('<', '<=', '=') and (is_lower or is_equal):
+            queryset = queryset.exclude(pk=dep.rpm_id)
+
+        # User requests everything depending on lesser than X
+        elif groups['op'] == '<' and dep.comparison in ('>', '>=', '=') and (is_higher or is_equal):
+            queryset = queryset.exclude(pk=dep.rpm_id)
+
+        # User requests everything depending on at least X
+        elif groups['op'] == '>=':
+            if dep.comparison == '<' and (is_lower or is_equal):
+                queryset = queryset.exclude(pk=dep.rpm_id)
+            elif dep.comparison in ('<=', '=') and is_lower:
+                queryset = queryset.exclude(pk=dep.rpm_id)
+
+        # User requests everything depending on at most X
+        elif groups['op'] == '<=':
+            if dep.comparison == '>' and (is_higher or is_equal):
+                queryset = queryset.exclude(pk=dep.rpm_id)
+            elif dep.comparison in ('>=', '=') and is_higher:
+                queryset = queryset.exclude(pk=dep.rpm_id)
+
+    return queryset
 
 
 class RPMFilter(django_filters.FilterSet):
@@ -25,11 +68,26 @@ class RPMFilter(django_filters.FilterSet):
     compose     = MultiValueFilter(name='composerpm__variant_arch__variant__compose__compose_id',
                                    distinct=True)
     linked_release = MultiValueFilter(name='linked_releases__release_id', distinct=True)
+    provides = django_filters.MethodFilter(action=partial(dependency_filter,
+                                                          models.Dependency.PROVIDES))
+    requires = django_filters.MethodFilter(action=partial(dependency_filter,
+                                                          models.Dependency.REQUIRES))
+    obsoletes = django_filters.MethodFilter(action=partial(dependency_filter,
+                                                           models.Dependency.OBSOLETES))
+    conflicts = django_filters.MethodFilter(action=partial(dependency_filter,
+                                                           models.Dependency.CONFLICTS))
+    recommends = django_filters.MethodFilter(action=partial(dependency_filter,
+                                                            models.Dependency.RECOMMENDS))
+    suggests = django_filters.MethodFilter(action=partial(dependency_filter,
+                                                          models.Dependency.SUGGESTS))
+    has_no_deps = CaseInsensitiveBooleanFilter(name='dependency__isnull', distinct=True)
 
     class Meta:
         model = models.RPM
         fields = ('name', 'version', 'epoch', 'release', 'arch', 'srpm_name',
-                  'srpm_nevra', 'compose', 'filename', 'linked_release')
+                  'srpm_nevra', 'compose', 'filename', 'linked_release',
+                  'provides', 'requires', 'obsoletes', 'conflicts', 'recommends', 'suggests',
+                  'has_no_deps')
 
 
 class ImageFilter(django_filters.FilterSet):

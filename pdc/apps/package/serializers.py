@@ -9,7 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
 from . import models
-from pdc.apps.common.serializers import StrictSerializerMixin
+from pdc.apps.common.serializers import StrictSerializerMixin, DynamicFieldsSerializerMixin
 
 
 class DefaultFilenameGenerator(object):
@@ -20,16 +20,67 @@ class DefaultFilenameGenerator(object):
         self.field = field
 
 
-class RPMSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+class DependencySerializer(serializers.BaseSerializer):
+    doc_format = '{"dependency type (string)": "string"}'
+
+    def to_representation(self, deps):
+        return deps
+
+    def to_internal_value(self, data):
+        choices = dict([(y, x) for (x, y) in models.Dependency.DEPENDENCY_TYPE_CHOICES])
+        result = []
+        for key in data:
+            if key not in choices:
+                raise serializers.ValidationError('<{}> is not a known dependency type.'.format(key))
+            type = choices[key]
+            if not isinstance(data[key], list):
+                raise serializers.ValidationError('Value for <{}> is not a list.'.format(key))
+            result.extend([self._dep_to_internal(type, key, dep) for dep in data[key]])
+        return result
+
+    def _dep_to_internal(self, type, human_type, data):
+        if not isinstance(data, basestring):
+            raise serializers.ValidationError('Dependency <{}> for <{}> is not a string.'.format(data, human_type))
+        m = models.Dependency.DEPENDENCY_PARSER.match(data)
+        if not m:
+            raise serializers.ValidationError('Dependency <{}> for <{}> has bad format.'.format(data, human_type))
+        groups = m.groupdict()
+        return models.Dependency(name=groups['name'], type=type,
+                                 comparison=groups.get('op'), version=groups.get('version'))
+
+
+class RPMSerializer(StrictSerializerMixin,
+                    DynamicFieldsSerializerMixin,
+                    serializers.ModelSerializer):
     filename = serializers.CharField(default=DefaultFilenameGenerator())
     linked_releases = serializers.SlugRelatedField(many=True, slug_field='release_id',
                                                    queryset=models.Release.objects.all(), required=False)
     linked_composes = serializers.SlugRelatedField(read_only=True, slug_field='compose_id', many=True)
+    dependencies = DependencySerializer(required=False, default={})
 
     class Meta:
         model = models.RPM
-        fields = ('id', 'name', 'version', 'epoch', 'release', 'arch', 'srpm_name', 'srpm_nevra', 'filename',
-                  'linked_releases', 'linked_composes')
+        fields = ('id', 'name', 'version', 'epoch', 'release', 'arch', 'srpm_name',
+                  'srpm_nevra', 'filename', 'linked_releases', 'linked_composes',
+                  'dependencies')
+
+    def create(self, validated_data):
+        dependencies = validated_data.pop('dependencies', [])
+        instance = super(RPMSerializer, self).create(validated_data)
+        for dep in dependencies:
+            dep.rpm = instance
+            dep.save()
+        return instance
+
+    def update(self, instance, validated_data):
+        dependencies = validated_data.pop('dependencies', None)
+        instance = super(RPMSerializer, self).update(instance, validated_data)
+        if dependencies is not None or not self.partial:
+            models.Dependency.objects.filter(rpm=instance).delete()
+            for dep in dependencies or []:
+                dep.rpm = instance
+                dep.save()
+        return instance
 
 
 class ImageSerializer(StrictSerializerMixin, serializers.ModelSerializer):

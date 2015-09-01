@@ -80,6 +80,660 @@ class RPMSaveValidationTestCase(TestCase):
         self.assertEqual(0, models.RPM.objects.count())
 
 
+class RPMDepsFilterAPITestCase(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        """
+        15 packages are created. They all have name test-X, where X is a
+        number. Each packages has a dependency of each type with the same
+        constraint. They are summarized in the table below.
+
+             0 (=1.0)    1 (<1.0)    2 (>1.0)    3 (<=1.0)   4 (>=1.0)
+             5 (=2.0)    6 (<2.0)    7 (>2.0)    8 (<=2.0)   9 (>=2.0)
+            10 (=3.0)   11 (<3.0)   12 (>3.0)   13 (<=3.0)  14 (>=3.0)
+        """
+        counter = 0
+        for version in ['1.0', '2.0', '3.0']:
+            for op in '= < > <= >='.split():
+                name = 'test-{counter}'.format(counter=counter)
+                counter += 1
+                rpm = models.RPM.objects.create(name=name, epoch=0, version='1.0',
+                                                release='1', arch='x86_64', srpm_name='test-pkg',
+                                                srpm_nevra='test-pkg-1.0.1.x86_64',
+                                                filename='dummy')
+                for type in [t[0] for t in models.Dependency.DEPENDENCY_TYPE_CHOICES]:
+                    rpm.dependency_set.create(name='pkg', version=version,
+                                              type=type, comparison=op)
+
+    #
+    # No contraint tests
+    #
+
+    def test_filter_without_version_requires(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 15)
+
+    def test_filter_without_version_suggests(self):
+        response = self.client.get(reverse('rpms-list'), {'suggests': 'pkg'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 15)
+
+    def test_filter_without_version_obsoletes(self):
+        response = self.client.get(reverse('rpms-list'), {'obsoletes': 'pkg'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 15)
+
+    def test_filter_without_version_recommends(self):
+        response = self.client.get(reverse('rpms-list'), {'recommends': 'pkg'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 15)
+
+    def test_filter_without_version_provides(self):
+        response = self.client.get(reverse('rpms-list'), {'provides': 'pkg'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 15)
+
+    def test_filter_without_version_conflicts(self):
+        response = self.client.get(reverse('rpms-list'), {'conflicts': 'pkg'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 15)
+
+    #
+    # Equality contraint tests
+    #
+
+    def test_filter_with_version_equality_requires(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 5, 8, 9, 11, 13]])
+
+    def test_filter_with_version_equality_suggests(self):
+        response = self.client.get(reverse('rpms-list'), {'suggests': 'pkg=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 5, 8, 9, 11, 13]])
+
+    def test_filter_with_version_equality_obsoletes(self):
+        response = self.client.get(reverse('rpms-list'), {'obsoletes': 'pkg=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 5, 8, 9, 11, 13]])
+
+    def test_filter_with_version_equality_recommends(self):
+        response = self.client.get(reverse('rpms-list'), {'recommends': 'pkg=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 5, 8, 9, 11, 13]])
+
+    def test_filter_with_version_equality_provides(self):
+        response = self.client.get(reverse('rpms-list'), {'provides': 'pkg=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 5, 8, 9, 11, 13]])
+
+    def test_filter_with_version_equality_conflicts(self):
+        response = self.client.get(reverse('rpms-list'), {'conflicts': 'pkg=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 5, 8, 9, 11, 13]])
+
+    #
+    # Greater than constraint tests
+    #
+
+    def test_filter_with_greater_version_requires(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg>2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 7, 9, 10, 11, 12, 13, 14]])
+
+    def test_filter_with_greater_version_suggests(self):
+        response = self.client.get(reverse('rpms-list'), {'suggests': 'pkg>2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 7, 9, 10, 11, 12, 13, 14]])
+
+    def test_filter_with_greater_version_obsoletes(self):
+        response = self.client.get(reverse('rpms-list'), {'obsoletes': 'pkg>2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 7, 9, 10, 11, 12, 13, 14]])
+
+    def test_filter_with_greater_version_recommends(self):
+        response = self.client.get(reverse('rpms-list'), {'recommends': 'pkg>2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 7, 9, 10, 11, 12, 13, 14]])
+
+    def test_filter_with_greater_version_provides(self):
+        response = self.client.get(reverse('rpms-list'), {'provides': 'pkg>2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 7, 9, 10, 11, 12, 13, 14]])
+
+    def test_filter_with_greater_version_conflicts(self):
+        response = self.client.get(reverse('rpms-list'), {'conflicts': 'pkg>2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 7, 9, 10, 11, 12, 13, 14]])
+
+    #
+    # Lesser than constraint tests
+    #
+
+    def test_filter_with_lesser_version_requires(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg<2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [0, 1, 2, 3, 4, 6, 8, 11, 13]])
+
+    def test_filter_with_lesser_version_suggests(self):
+        response = self.client.get(reverse('rpms-list'), {'suggests': 'pkg<2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [0, 1, 2, 3, 4, 6, 8, 11, 13]])
+
+    def test_filter_with_lesser_version_obsoletes(self):
+        response = self.client.get(reverse('rpms-list'), {'obsoletes': 'pkg<2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [0, 1, 2, 3, 4, 6, 8, 11, 13]])
+
+    def test_filter_with_lesser_version_recommends(self):
+        response = self.client.get(reverse('rpms-list'), {'recommends': 'pkg<2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [0, 1, 2, 3, 4, 6, 8, 11, 13]])
+
+    def test_filter_with_lesser_version_provides(self):
+        response = self.client.get(reverse('rpms-list'), {'provides': 'pkg<2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [0, 1, 2, 3, 4, 6, 8, 11, 13]])
+
+    def test_filter_with_lesser_version_conflicts(self):
+        response = self.client.get(reverse('rpms-list'), {'conflicts': 'pkg<2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [0, 1, 2, 3, 4, 6, 8, 11, 13]])
+
+    #
+    # Greater than or equal constraint tests
+    #
+
+    def test_filter_with_greater_or_equal_version_requires(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg>=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14]])
+
+    def test_filter_with_greater_or_equal_version_suggests(self):
+        response = self.client.get(reverse('rpms-list'), {'suggests': 'pkg>=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14]])
+
+    def test_filter_with_greater_or_equal_version_recommends(self):
+        response = self.client.get(reverse('rpms-list'), {'recommends': 'pkg>=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14]])
+
+    def test_filter_with_greater_or_equal_version_obsoletes(self):
+        response = self.client.get(reverse('rpms-list'), {'obsoletes': 'pkg>=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14]])
+
+    def test_filter_with_greater_or_equal_version_provides(self):
+        response = self.client.get(reverse('rpms-list'), {'provides': 'pkg>=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14]])
+
+    def test_filter_with_greater_or_equal_version_conflicts(self):
+        response = self.client.get(reverse('rpms-list'), {'conflicts': 'pkg>=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14]])
+
+    #
+    # Lesser than or equal constraint tests
+    #
+
+    def test_filter_with_lesser_or_equal_version_requires(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg<=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [0, 1, 2, 3, 4, 5, 6, 8, 9, 11, 13]])
+
+    def test_filter_with_lesser_or_equal_version_suggests(self):
+        response = self.client.get(reverse('rpms-list'), {'suggests': 'pkg<=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [0, 1, 2, 3, 4, 5, 6, 8, 9, 11, 13]])
+
+    def test_filter_with_lesser_or_equal_version_recommends(self):
+        response = self.client.get(reverse('rpms-list'), {'recommends': 'pkg<=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [0, 1, 2, 3, 4, 5, 6, 8, 9, 11, 13]])
+
+    def test_filter_with_lesser_or_equal_version_provides(self):
+        response = self.client.get(reverse('rpms-list'), {'provides': 'pkg<=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [0, 1, 2, 3, 4, 5, 6, 8, 9, 11, 13]])
+
+    def test_filter_with_lesser_or_equal_version_conflicts(self):
+        response = self.client.get(reverse('rpms-list'), {'conflicts': 'pkg<=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [0, 1, 2, 3, 4, 5, 6, 8, 9, 11, 13]])
+
+    def test_filter_with_lesser_or_equal_version_obsoletes(self):
+        response = self.client.get(reverse('rpms-list'), {'obsoletes': 'pkg<=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual([pkg['name'] for pkg in response.data['results']],
+                              ['test-{}'.format(i) for i in [0, 1, 2, 3, 4, 5, 6, 8, 9, 11, 13]])
+
+
+class RPMDepsFilterWithReleaseTestCase(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.rpm = models.RPM.objects.create(name='test-pkg', epoch=0, version='1.0',
+                                            release='1', arch='x86_64', srpm_name='test-pkg',
+                                            srpm_nevra='test-pkg-1.0.1.x86_64',
+                                            filename='dummy')
+        cls.rpm.dependency_set.create(name='pkg', version='3.0-1.fc22',
+                                      type=models.Dependency.REQUIRES, comparison='=')
+
+    def test_filter_with_same_release_equal(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg=3.0-1.fc22'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_filter_with_same_release_lesser(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg<3.0-1.fc22'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 0)
+
+    def test_filter_with_same_release_greater(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg>3.0-1.fc22'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 0)
+
+    def test_filter_with_same_release_lesser_equal(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg<=3.0-1.fc22'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_filter_with_same_release_greater_equal(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg>=3.0-1.fc22'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_filter_with_different_release_equal(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg=3.0-2.fc22'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 0)
+
+    def test_filter_with_different_release_lesser(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg<3.0-2.fc22'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_filter_with_different_release_greater(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg>3.0-2.fc22'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 0)
+
+    def test_filter_with_different_release_lesser_equal(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg<=3.0-2.fc22'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_filter_with_different_release_greater_equal(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg>=3.0-2.fc22'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 0)
+
+
+class RPMDepsFilterWithEpochTestCase(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.rpm = models.RPM.objects.create(name='test-pkg', epoch=0, version='1.0',
+                                            release='1', arch='x86_64', srpm_name='test-pkg',
+                                            srpm_nevra='test-pkg-1.0.1.x86_64',
+                                            filename='dummy')
+        cls.rpm.dependency_set.create(name='pkg', version='3.0',
+                                      type=models.Dependency.REQUIRES, comparison='=')
+
+    def test_filter_with_same_epoch_equal(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg=0:3.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_filter_with_same_epoch_lesser(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg<0:4.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_filter_with_same_epoch_greater(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg>0:2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_filter_with_same_epoch_lesser_equal(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg<=0:3.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_filter_with_same_epoch_greater_equal(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg>=0:3.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_filter_with_different_epoch_equal(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg=1:3.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 0)
+
+    def test_filter_with_different_epoch_lesser(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg<1:3.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_filter_with_different_epoch_greater(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg>1:2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 0)
+
+    def test_filter_with_different_epoch_lesser_equal(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg<=1:3.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_filter_with_different_epoch_greater_equal(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg>=1:3.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 0)
+
+
+class RPMDepsFilterRangeAPITestCase(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        rpm = models.RPM.objects.create(name='test-pkg', epoch=0, version='1.0',
+                                        release='1', arch='x86_64', srpm_name='test-pkg',
+                                        srpm_nevra='test-pkg-1.0.1.x86_64',
+                                        filename='dummy')
+        for type in [t[0] for t in models.Dependency.DEPENDENCY_TYPE_CHOICES]:
+            rpm.dependency_set.create(name='pkg', version='1.0',
+                                      type=type, comparison='>=')
+            rpm.dependency_set.create(name='pkg', version='3.0',
+                                      type=type, comparison='<')
+
+    def test_filter_with_range_match_requires(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+
+    def test_filter_with_range_no_match_requires(self):
+        response = self.client.get(reverse('rpms-list'), {'requires': 'pkg=4.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
+    def test_filter_with_range_match_obsoletes(self):
+        response = self.client.get(reverse('rpms-list'), {'obsoletes': 'pkg=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+
+    def test_filter_with_range_no_match_obsoletes(self):
+        response = self.client.get(reverse('rpms-list'), {'obsoletes': 'pkg=4.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
+    def test_filter_with_range_match_provides(self):
+        response = self.client.get(reverse('rpms-list'), {'provides': 'pkg=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+
+    def test_filter_with_range_no_match_provides(self):
+        response = self.client.get(reverse('rpms-list'), {'provides': 'pkg=4.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
+    def test_filter_with_range_match_suggests(self):
+        response = self.client.get(reverse('rpms-list'), {'suggests': 'pkg=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+
+    def test_filter_with_range_no_match_suggests(self):
+        response = self.client.get(reverse('rpms-list'), {'suggests': 'pkg=4.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
+    def test_filter_with_range_match_recommends(self):
+        response = self.client.get(reverse('rpms-list'), {'recommends': 'pkg=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+
+    def test_filter_with_range_no_match_recommends(self):
+        response = self.client.get(reverse('rpms-list'), {'recommends': 'pkg=4.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
+    def test_filter_with_range_match_conflicts(self):
+        response = self.client.get(reverse('rpms-list'), {'conflicts': 'pkg=2.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+
+    def test_filter_with_range_no_match_conflicts(self):
+        response = self.client.get(reverse('rpms-list'), {'conflicts': 'pkg=4.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
+
+class RPMDepsAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
+    fixtures = [
+        'pdc/apps/common/fixtures/test/sigkey.json',
+        'pdc/apps/release/fixtures/tests/release.json',
+        'pdc/apps/package/fixtures/test/rpm.json',
+        'pdc/apps/compose/fixtures/tests/compose.json',
+        'pdc/apps/compose/fixtures/tests/compose_composerpm.json',
+        'pdc/apps/compose/fixtures/tests/variant_arch.json',
+        'pdc/apps/compose/fixtures/tests/variant.json'
+    ]
+
+    def setUp(self):
+        self.maxDiff = None
+
+    def _create_deps(self):
+        models.Dependency.objects.create(type=models.Dependency.SUGGESTS,
+                                         name='suggested', rpm_id=1)
+        models.Dependency.objects.create(type=models.Dependency.CONFLICTS,
+                                         name='conflicting', rpm_id=1)
+
+    def test_create_rpm_with_deps(self):
+        data = {'name': 'fake_bash', 'version': '1.2.3', 'epoch': 0,
+                'release': '4.b1', 'arch': 'x86_64', 'srpm_name': 'bash',
+                'filename': 'bash-1.2.3-4.b1.x86_64.rpm',
+                'linked_releases': [], 'srpm_nevra': 'fake_bash-0:1.2.3-4.b1.src',
+                'dependencies': {'requires': ['required-package'],
+                                 'obsoletes': ['obsolete-package'],
+                                 'suggests': ['suggested-package >= 1.0.0'],
+                                 'recommends': ['recommended = 0.1.0'],
+                                 'provides': ['/bin/bash', '/usr/bin/whatever'],
+                                 'conflicts': ['nothing']}}
+        response = self.client.post(reverse('rpms-list'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response.data.pop('id')
+        data.update({'linked_composes': []})
+        self.assertDictEqual(dict(response.data), data)
+        self.assertEqual(7, models.Dependency.objects.count())
+        with_version = models.Dependency.objects.get(name='recommended')
+        self.assertEqual(with_version.comparison, '=')
+        self.assertEqual(with_version.version, '0.1.0')
+        self.assertNumChanges([1])
+
+    def test_put_to_rpm_with_none(self):
+        data = {
+            'name': 'bash',
+            'epoch': 0,
+            'version': '1.2.3',
+            'release': '4.b1',
+            'arch': 'x86_64',
+            'srpm_name': 'bash',
+            'srpm_nevra': 'bash-0:1.2.3-4.b1.src',
+            'filename': 'bash-1.2.3-4.b1.x86_64.rpm',
+            'dependencies': {
+                'requires': ['required-package']
+            }
+        }
+        response = self.client.put(reverse('rpms-detail', args=[1]), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(1, models.Dependency.objects.count())
+        dep = models.Dependency.objects.first()
+        self.assertIsNone(dep.comparison)
+        self.assertIsNone(dep.version)
+        self.assertEqual(dep.rpm.pk, 1)
+        self.assertNumChanges([1])
+
+    def test_put_to_overwrite_existing(self):
+        models.Dependency.objects.create(type=models.Dependency.SUGGESTS,
+                                         name='suggested', rpm_id=1)
+        models.Dependency.objects.create(type=models.Dependency.CONFLICTS,
+                                         name='conflicting', rpm_id=1)
+        data = {'name': 'bash',
+                'epoch': 0,
+                'version': '1.2.3',
+                'release': '4.b1',
+                'arch': 'x86_64',
+                'srpm_name': 'bash',
+                'srpm_nevra': 'bash-0:1.2.3-4.b1.src',
+                'filename': 'bash-1.2.3-4.b1.x86_64.rpm',
+                'dependencies': {'requires': ['required-package']}}
+        response = self.client.put(reverse('rpms-detail', args=[1]), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(1, models.Dependency.objects.count())
+        dep = models.Dependency.objects.first()
+        self.assertIsNone(dep.comparison)
+        self.assertIsNone(dep.version)
+        self.assertEqual(dep.rpm.pk, 1)
+        self.assertEqual(dep.name, 'required-package')
+        self.assertEqual(dep.type, models.Dependency.REQUIRES)
+        self.assertNumChanges([1])
+
+    def test_patch_to_rpm_with_none(self):
+        data = {'dependencies': {'requires': ['required-package']}}
+        response = self.client.patch(reverse('rpms-detail', args=[1]), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(1, models.Dependency.objects.count())
+        dep = models.Dependency.objects.first()
+        self.assertIsNone(dep.comparison)
+        self.assertIsNone(dep.version)
+        self.assertEqual(dep.rpm.pk, 1)
+        self.assertEqual(dep.name, 'required-package')
+        self.assertEqual(dep.type, models.Dependency.REQUIRES)
+        self.assertNumChanges([1])
+
+    def test_patch_to_overwrite_existing(self):
+        self._create_deps()
+        data = {'dependencies': {'requires': ['required-package']}}
+        response = self.client.patch(reverse('rpms-detail', args=[1]), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(1, models.Dependency.objects.count())
+        dep = models.Dependency.objects.first()
+        self.assertIsNone(dep.comparison)
+        self.assertIsNone(dep.version)
+        self.assertEqual(dep.rpm.pk, 1)
+        self.assertEqual(dep.name, 'required-package')
+        self.assertEqual(dep.type, models.Dependency.REQUIRES)
+        self.assertNumChanges([1])
+
+    def test_put_to_remove(self):
+        self._create_deps()
+        data = {'name': 'bash',
+                'epoch': 0,
+                'version': '1.2.3',
+                'release': '4.b1',
+                'arch': 'x86_64',
+                'srpm_name': 'bash',
+                'srpm_nevra': 'bash-0:1.2.3-4.b1.src',
+                'filename': 'bash-1.2.3-4.b1.x86_64.rpm',
+                'dependencies': {}}
+        response = self.client.patch(reverse('rpms-detail', args=[1]), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNumChanges([1])
+        self.assertEqual(0, models.Dependency.objects.count())
+
+    def test_patch_to_remove(self):
+        self._create_deps()
+        data = {'dependencies': {}}
+        response = self.client.patch(reverse('rpms-detail', args=[1]), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNumChanges([1])
+        self.assertEqual(0, models.Dependency.objects.count())
+
+    def test_bad_dependency_format(self):
+        data = {'dependencies': {'recommends': ['foo bar']}}
+        response = self.client.patch(reverse('rpms-detail', args=[1]), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNumChanges([])
+
+    def test_bad_dependency_type(self):
+        data = {'dependencies': {'wants': ['icecream']}}
+        response = self.client.patch(reverse('rpms-detail', args=[1]), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNumChanges([])
+
+    def test_deps_are_not_list(self):
+        data = {'dependencies': {'suggests': 'pony'}}
+        response = self.client.patch(reverse('rpms-detail', args=[1]), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNumChanges([])
+
+    def test_deps_with_too_many_lists(self):
+        data = {'dependencies': {'suggests': [['pony']]}}
+        response = self.client.patch(reverse('rpms-detail', args=[1]), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNumChanges([])
+
+    def test_patch_without_deps_does_not_delete_existing(self):
+        self._create_deps()
+        data = {'name': 'new_name'}
+        response = self.client.patch(reverse('rpms-detail', args=[1]), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNumChanges([1])
+        self.assertEqual(2, models.Dependency.objects.count())
+
+    def test_put_without_deps_deletes_existing(self):
+        self._create_deps()
+        data = {'name': 'new-name',
+                'epoch': 0,
+                'version': '1.2.3',
+                'release': '4.b1',
+                'arch': 'x86_64',
+                'srpm_name': 'bash',
+                'srpm_nevra': 'bash-0:1.2.3-4.b1.src',
+                'filename': 'bash-1.2.3-4.b1.x86_64.rpm'}
+        response = self.client.put(reverse('rpms-detail', args=[1]), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNumChanges([1])
+        self.assertEqual(0, models.Dependency.objects.count())
+
+    def test_has_no_deps_filter(self):
+        self._create_deps()
+        response = self.client.get(reverse('rpms-list'), {'has_no_deps': 'true'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+        response = self.client.get(reverse('rpms-list'), {'has_no_deps': 'false'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+
 class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
         'pdc/apps/common/fixtures/test/sigkey.json',
@@ -90,6 +744,10 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         'pdc/apps/compose/fixtures/tests/variant_arch.json',
         'pdc/apps/compose/fixtures/tests/variant.json'
     ]
+
+    def setUp(self):
+        self.empty_deps = {'conflicts': [], 'obsoletes': [], 'provides': [],
+                           'recommends': [], 'requires': [], 'suggests': []}
 
     def test_query_all_rpms(self):
         url = reverse('rpms-list')
@@ -177,10 +835,11 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def test_retrieve_rpm(self):
         url = reverse('rpms-detail', args=[1])
         response = self.client.get(url, format='json')
-        expect_data = {"id": 1, "name": "bash", "version": "1.2.3", "epoch": 0, "release": "4.b1", "arch": "x86_64",
+        expect_data = {"id": 1, "name": "bash", "version": "1.2.3", "epoch": 0, "release": "4.b1",
+                       "arch": "x86_64",
                        "srpm_name": "bash", "srpm_nevra": "bash-0:1.2.3-4.b1.src",
                        "filename": "bash-1.2.3-4.b1.x86_64.rpm", "linked_releases": [],
-                       "linked_composes": ["compose-1"]}
+                       "linked_composes": ["compose-1"], "dependencies": self.empty_deps}
         self.assertEqual(response.data, expect_data)
 
     def test_retrieve_rpm_should_not_have_duplicated_composes(self):
@@ -198,7 +857,8 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         expected_response_data = {"id": 4, 'linked_composes': [],
                                   "name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1",
                                   "arch": "x86_64", "srpm_name": "bash", "filename": "bash-1.2.3-4.b1.x86_64.rpm",
-                                  "linked_releases": ['release-1.0'], "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src"}
+                                  "linked_releases": ['release-1.0'], "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src",
+                                  "dependencies": self.empty_deps}
         self.assertEqual(response.data, expected_response_data)
         self.assertNumChanges([1])
 
@@ -256,8 +916,8 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('rpms-detail', args=[1])
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data.update({'id': 1, 'linked_composes': [u'compose-1']})
-        self.assertEqual(response.data, data)
+        data.update({'id': 1, 'linked_composes': [u'compose-1'], 'dependencies': self.empty_deps})
+        self.assertDictEqual(dict(response.data), data)
         self.assertNumChanges([1])
 
     def test_update_rpm_with_linked_compose_should_read_only(self):

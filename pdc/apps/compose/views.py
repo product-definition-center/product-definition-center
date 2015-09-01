@@ -1148,7 +1148,9 @@ class FindComposeMixin(object):
         Output packages with unicode or dict
         """
         packages = [unicode(rpm) for rpm in rpms]
-        return packages if not self.to_dict else [RPMSerializer(rpm).data for rpm in rpms]
+        return (packages
+                if not self.to_dict
+                else [RPMSerializer(rpm, exclude_fields=['dependencies']).data for rpm in rpms])
 
     def _get_query_param_or_false(self, request, query_str):
         value = request.query_params.get(query_str)

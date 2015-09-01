@@ -4,12 +4,15 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+import re
+
 from django.db import connection
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
 from productmd import composeinfo, images, rpms
+from pkg_resources import parse_version
 
 
 def composeinfo_from_str(data):
@@ -113,3 +116,13 @@ def srpm_name_to_component_names(srpm_name):
         return binding_models.ReleaseComponentSRPMNameMapping.get_component_names_by_srpm_name(srpm_name)
     else:
         return [srpm_name]
+
+
+def parse_epoch_version(version):
+    """
+    Wrapper around `pkg_resources.parse_version` that can handle epochs
+    delimited by colon as is customary for RPMs.
+    """
+    if re.match(r'^\d+:', version):
+        version = re.sub(r'^(\d+):', r'\1!', version)
+    return parse_version(version)

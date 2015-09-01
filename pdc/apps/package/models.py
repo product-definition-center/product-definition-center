@@ -3,17 +3,18 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+import re
+
 from django.db import models, connection, transaction
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 from django.forms.models import model_to_dict
 
-from pkg_resources import parse_version
 from kobo.rpmlib import parse_nvra
 
 from pdc.apps.common.models import get_cached_id
 from pdc.apps.common.validators import validate_md5, validate_sha1, validate_sha256
-from pdc.apps.common.hacks import add_returning
+from pdc.apps.common.hacks import add_returning, parse_epoch_version
 from pdc.apps.common.constants import ARCH_SRC
 from pdc.apps.release.models import Release
 
@@ -54,13 +55,16 @@ class RPM(models.Model):
             raise ValidationError("RPM's srpm_nevra should be empty if and only if arch is src")
 
     def export(self, fields=None):
-        _fields = set(['name', 'epoch', 'version', 'release', 'arch', 'filename',
-                       'srpm_name', 'srpm_nevra', 'linked_releases']) if fields is None else set(fields)
+        _fields = (set(['name', 'epoch', 'version', 'release', 'arch', 'filename',
+                        'srpm_name', 'srpm_nevra', 'linked_releases', 'dependencies'])
+                   if fields is None else set(fields))
         result = model_to_dict(self, fields=_fields - {'linked_releases'})
         if 'linked_releases' in _fields:
             result['linked_releases'] = []
             for linked_release in self.linked_releases.all():
                 result['linked_releases'].append(linked_release.release_id)
+        if 'dependencies' in _fields:
+            result['dependencies'] = self.dependencies
         return result
 
     @staticmethod
@@ -109,7 +113,113 @@ class RPM(models.Model):
 
     @property
     def sort_key(self):
-        return (self.epoch, parse_version(self.version), parse_version(self.release))
+        return (self.epoch, parse_epoch_version(self.version), parse_epoch_version(self.release))
+
+    @property
+    def dependencies(self):
+        """
+        Get a dict with all deps of the RPM. All types of dependencies are
+        included.
+        """
+        result = {}
+        choices = dict(Dependency.DEPENDENCY_TYPE_CHOICES)
+        for type in choices.values():
+            result[type] = []
+        for dep in Dependency.objects.filter(rpm=self):
+            result[choices[dep.type]].append(unicode(dep))
+        return result
+
+
+class Dependency(models.Model):
+    PROVIDES = 1
+    REQUIRES = 2
+    OBSOLETES = 3
+    CONFLICTS = 4
+    RECOMMENDS = 5
+    SUGGESTS = 6
+    DEPENDENCY_TYPE_CHOICES = (
+        (PROVIDES, 'provides'),
+        (REQUIRES, 'requires'),
+        (OBSOLETES, 'obsoletes'),
+        (CONFLICTS, 'conflicts'),
+        (RECOMMENDS, 'recommends'),
+        (SUGGESTS, 'suggests'),
+    )
+
+    DEPENDENCY_PARSER = re.compile(r'^(?P<name>[^ <>=]+)( *(?P<op>=|>=|<=|<|>) *(?P<version>[^ <>=]+))?$')
+
+    type = models.PositiveIntegerField(choices=DEPENDENCY_TYPE_CHOICES)
+    name = models.CharField(max_length=200)
+    version = models.CharField(max_length=200, blank=True, null=True)
+    comparison = models.CharField(max_length=50, blank=True, null=True)
+    rpm = models.ForeignKey(RPM)
+
+    class Meta:
+        unique_together = (
+            ('type', 'name', 'version', 'comparison', 'rpm')
+        )
+
+    def __unicode__(self):
+        base_str = self.name
+        if self.version:
+            base_str += ' {comparison} {version}'.format(comparison=self.comparison,
+                                                         version=self.version)
+        return base_str
+
+    def clean(self):
+        """
+        When version constraint is set, both a version and comparison type must
+        be specified.
+        """
+        if (self.version is None) != (self.comparison is None):
+            # This code should be unreachable based on user input, and only
+            # programmer error can cause this to fail.
+            raise ValidationError('Bad version constraint: both version and comparison must be specified.')
+
+    @property
+    def parsed_version(self):
+        if not hasattr(self, '_version'):
+            self._version = parse_epoch_version(self.version)
+        return self._version
+
+    def is_satisfied_by(self, other):
+        """
+        Check if other version satisfies this dependency.
+
+        :paramtype other: string
+        """
+        funcs = {
+            '=': lambda x: x == self.parsed_version,
+            '<': lambda x: x < self.parsed_version,
+            '<=': lambda x: x <= self.parsed_version,
+            '>': lambda x: x > self.parsed_version,
+            '>=': lambda x: x >= self.parsed_version,
+        }
+        return funcs[self.comparison](parse_epoch_version(other))
+
+    def is_equal(self, other):
+        """
+        Return true if the other version is equal to version in this dep.
+
+        :paramtype other: string
+        """
+        return self.parsed_version == parse_epoch_version(other)
+
+    def is_higher(self, other):
+        """
+        Return true if version in this dep is higher than the other version.
+
+        :paramtype other: string
+        """
+        return self.parsed_version > parse_epoch_version(other)
+
+    def is_lower(self, other):
+        """
+        Return true if version in this dep is lower than the other version.
+
+        :paramtype other: string
+        """
+        return self.parsed_version < parse_epoch_version(other)
 
 
 class ImageFormat(models.Model):

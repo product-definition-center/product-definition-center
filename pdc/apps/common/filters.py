@@ -228,8 +228,11 @@ class CaseInsensitiveBooleanFilter(django_filters.CharFilter):
         if not value:
             return qs
         if value.lower() in self.TRUE_STRINGS:
-            return qs.filter(**{self.name: True})
+            qs = qs.filter(**{self.name: True})
         elif value.lower() in self.FALSE_STRINGS:
-            return qs.filter(**{self.name: False})
+            qs = qs.filter(**{self.name: False})
         else:
-            return qs.none()
+            qs = qs.none()
+        if self.distinct:
+            qs = qs.distinct()
+        return qs
