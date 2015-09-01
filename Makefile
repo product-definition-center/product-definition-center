@@ -1,42 +1,4 @@
-RPMBUILD='./scripts/rpmbuild.sh'
-
-PWD=$(shell pwd)
-RPMBUILD_OPTIONS=--nodeps --define "_sourcedir $(PWD)/dist" --define "_srcrpmdir $(PWD)/dist" --define "_rpmdir $(PWD)/dist"
-
 default: help
-
-# Target: build a local RPM
-rpm: dist
-	@echo "Build rpm"
-	$(RPMBUILD) -bb $(RPMBUILD_OPTIONS) || exit 1
-	@echo "Build rpm - Done"
-
-# Target for constructing a source RPM:
-srpm: dist
-	@echo "Build source rpm"
-	$(RPMBUILD) -bs $(RPMBUILD_OPTIONS) || exit 1
-	@echo "Build source rpm - Done"
-
-# Various targets for debugging the creation of an RPM or SRPM:
-# Debug target: stop after the %prep stage
-debug-prep: dist
-	$(RPMBUILD) -bp $(RPMBUILD_OPTIONS) || exit 1
-
-# Debug target: stop after the %build stage
-debug-build: dist
-	$(RPMBUILD) -bc $(RPMBUILD_OPTIONS) || exit 1
-
-# Debug target: stop after the %install stage
-debug-install: dist
-	$(RPMBUILD) -bi $(RPMBUILD_OPTIONS) || exit 1
-
-# Target for constructing a source tarball
-# Based on current branch
-dist: clean
-	@echo "Build source tarball"
-	@rm -rf dist
-	@python setup.py sdist --formats=bztar
-	@echo "Build source tarball - Done"
 
 clean: FORCE
 	@find -name '*.py[co]' -delete
@@ -92,12 +54,6 @@ help:
 	@echo 'Available commands:'
 	@echo ''
 	@echo '  clean            - delete *.py[co] files'
-	@echo '  rpm              - Create binary RPM'
-	@echo '  srpm             - Create source RPM'
-	@echo '  dist             - Create source tarball'
-	@echo '  debug-prep       - Debug pdc.spec prep'
-	@echo '  debug-build      - Debug pdc.spec build'
-	@echo '  debug-install    - Debug pdc.spec install'
 	@echo '  flake8           - Check Python style based on flake8'
 	@echo '  test             - Run command: python manage.py test'
 	@echo '  cover_test       - Run test with coverage report'
