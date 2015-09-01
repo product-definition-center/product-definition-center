@@ -243,7 +243,7 @@ class FindComposeByReleaseRPMTestCase(APITestCase):
                           {'compose': 'compose-2', 'packages': ['bash-0:1.2.3-4.b1.x86_64.rpm']}])
 
 
-class FindLatestComposeByComposeRPMTestCase(APITestCase):
+class FindOlderComposeByComposeRPMTestCase(APITestCase):
     fixtures = [
         "pdc/apps/common/fixtures/test/sigkey.json",
         "pdc/apps/package/fixtures/test/rpm.json",
@@ -257,24 +257,24 @@ class FindLatestComposeByComposeRPMTestCase(APITestCase):
     ]
 
     def test_missing_previous_compose(self):
-        url = reverse('findlatestcomposebycr-list', kwargs={'compose_id': 'compose-1', 'rpm_name': 'bash'})
+        url = reverse('findoldercomposebycr-list', kwargs={'compose_id': 'compose-1', 'rpm_name': 'bash'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_previous_compose_has_same_version(self):
-        url = reverse('findlatestcomposebycr-list', kwargs={'compose_id': 'compose-2', 'rpm_name': 'bash'})
+        url = reverse('findoldercomposebycr-list', kwargs={'compose_id': 'compose-2', 'rpm_name': 'bash'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_previous_compose_has_older_rpm(self):
-        url = reverse('findlatestcomposebycr-list', kwargs={'compose_id': 'compose-3', 'rpm_name': 'bash'})
+        url = reverse('findoldercomposebycr-list', kwargs={'compose_id': 'compose-3', 'rpm_name': 'bash'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('compose'), "compose-2")
         self.assertEqual(response.data.get('packages'), ["bash-0:1.2.3-4.b1.x86_64.rpm"])
 
     def test_previous_compose_has_older_rpm_with_to_dict(self):
-        url = reverse('findlatestcomposebycr-list', kwargs={'compose_id': 'compose-3', 'rpm_name': 'bash'})
+        url = reverse('findoldercomposebycr-list', kwargs={'compose_id': 'compose-3', 'rpm_name': 'bash'})
         response = self.client.get(url, {'to_dict': True})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('compose'), "compose-2")
@@ -292,7 +292,7 @@ class FindLatestComposeByComposeRPMTestCase(APITestCase):
     def test_same_version_different_arch(self):
         """There is a previous compose with same version of package, but with different RPM.arch."""
         models.ComposeRPM.objects.filter(pk=1).update(rpm=3)
-        url = reverse('findlatestcomposebycr-list', kwargs={'compose_id': 'compose-2', 'rpm_name': 'bash'})
+        url = reverse('findoldercomposebycr-list', kwargs={'compose_id': 'compose-2', 'rpm_name': 'bash'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 

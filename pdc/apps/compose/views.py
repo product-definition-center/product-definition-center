@@ -1223,7 +1223,7 @@ class FindComposeByReleaseRPMViewSet(StrictQueryParamMixin, FindComposeMixin, vi
         return Response(self._get_compose_for_release())
 
 
-class FindLatestComposeByComposeRPMViewSet(StrictQueryParamMixin, FindComposeMixin, viewsets.GenericViewSet):
+class FindOlderComposeByComposeRPMViewSet(StrictQueryParamMixin, FindComposeMixin, viewsets.GenericViewSet):
     """
     This API endpoint allows finding the latest compose older than specified compose
     which contains a different version of the specified package.
@@ -1249,7 +1249,7 @@ class FindLatestComposeByComposeRPMViewSet(StrictQueryParamMixin, FindComposeMix
 
         __Method__: GET
 
-        __URL__: $LINK:findlatestcomposebycr-list:compose_id:rpm_name$
+        __URL__: $LINK:findoldercomposebycr-list:compose_id:rpm_name$
 
         __Query params__:
 
@@ -1297,7 +1297,7 @@ class FindComposeWithOlderPackageViewSet(StrictQueryParamMixin, FindComposeMixin
 
         Above 2 functions in this endpoint are deprecated. Please use
         $LINK:findcomposebyrr-list:release_id:rpm_name$ and
-        $LINK:findlatestcomposebycr-list:compose_id:rpm_name$ instead.
+        $LINK:findoldercomposebycr-list:compose_id:rpm_name$ instead.
 
         The ordering of composes is performed by the *productmd* library. It
         first compares compose date, then compose type

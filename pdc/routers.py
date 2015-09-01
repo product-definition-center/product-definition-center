@@ -117,9 +117,9 @@ router.register('rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_n
                 compose_views.FindComposeByReleaseRPMViewSet,
                 base_name='findcomposebyrr')
 
-router.register('rpc/find-latest-compose-by-compose-rpm/(?P<compose_id>[^/]+)/(?P<rpm_name>[^/]+)',
-                compose_views.FindLatestComposeByComposeRPMViewSet,
-                base_name='findlatestcomposebycr')
+router.register('rpc/find-older-compose-by-compose-rpm/(?P<compose_id>[^/]+)/(?P<rpm_name>[^/]+)',
+                compose_views.FindOlderComposeByComposeRPMViewSet,
+                base_name='findoldercomposebycr')
 
 # register common view sets
 router.register(r'arches', common_views.ArchViewSet)
