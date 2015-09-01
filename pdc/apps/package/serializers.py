@@ -5,7 +5,6 @@
 #
 import json
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
@@ -13,26 +12,10 @@ from . import models
 from pdc.apps.common.serializers import StrictSerializerMixin
 
 
-class ReleaseRelatedField(serializers.RelatedField):
-    doc_format = "Release.release_id"
-
-    def to_representation(self, value):
-        return value.release_id
-
-    def to_internal_value(self, data):
-        try:
-            return self.queryset.get(release_id=data)
-        except ObjectDoesNotExist:
-            raise serializers.ValidationError("release with release_id %s doesn't exist." % data)
-        except Exception as err:
-            raise serializers.ValidationError("Can not find release with release_id (%s): %s." %
-                                              (data, err))
-
-
 class RPMSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     filename = serializers.CharField(required=False)
-    linked_releases = ReleaseRelatedField(many=True, read_only=False, queryset=models.Release.objects.all(),
-                                          required=False)
+    linked_releases = serializers.SlugRelatedField(many=True, slug_field='release_id',
+                                                   queryset=models.Release.objects.all(), required=False)
     linked_composes = serializers.SlugRelatedField(read_only=True, slug_field='compose_id', many=True)
 
     class Meta:
@@ -161,7 +144,8 @@ class BuildImageSerializer(StrictSerializerMixin, serializers.HyperlinkedModelSe
     image_format = serializers.SlugRelatedField(slug_field='name', queryset=models.ImageFormat.objects.all())
     rpms = RPMRelatedField(many=True, read_only=False, queryset=models.RPM.objects.all(), required=False)
     archives = ArchiveRelatedField(many=True, read_only=False, queryset=models.Archive.objects.all(), required=False)
-    releases = ReleaseRelatedField(many=True, read_only=False, queryset=models.Release.objects.all(), required=False)
+    releases = serializers.SlugRelatedField(many=True, slug_field='release_id', queryset=models.Release.objects.all(),
+                                            required=False)
 
     class Meta:
         model = models.BuildImage
