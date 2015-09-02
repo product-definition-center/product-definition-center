@@ -1104,11 +1104,22 @@ class FindComposeMixin(object):
             qs = qs.exclude(compose_type__name=self.excluded_compose_type)
         return qs
 
-    def _get_compose_for_release(self):
+    def _get_composes_for_release(self):
         result = []
         composes = Compose.objects.filter(release__release_id=self.release_id)
         composes = self._filter_by_compose_type(composes)
         result = self._get_result(composes, result)
+        return result
+
+    def _get_composes_for_product_version(self):
+        result = []
+        all_composes = []
+        releases = Release.objects.filter(product_version__product_version_id=self.product_version)
+        for release in releases:
+            composes = Compose.objects.filter(release=release)
+            composes = self._filter_by_compose_type(composes)
+            all_composes.extend(composes)
+        result = self._get_result(all_composes, result)
         return result
 
     def _get_result(self, composes, result):
@@ -1220,7 +1231,7 @@ class FindComposeByReleaseRPMViewSet(StrictQueryParamMixin, FindComposeMixin, vi
         self._get_query_param_or_false(request, 'to_dict')
         self.release_id = kwargs.get('release_id')
         self.rpm_name = kwargs.get('rpm_name')
-        return Response(self._get_compose_for_release())
+        return Response(self._get_composes_for_release())
 
 
 class FindOlderComposeByComposeRPMViewSet(StrictQueryParamMixin, FindComposeMixin, viewsets.GenericViewSet):
@@ -1275,6 +1286,61 @@ class FindOlderComposeByComposeRPMViewSet(StrictQueryParamMixin, FindComposeMixi
         return Response(self._get_older_compose())
 
 
+class FindComposeByProductVersionRPMViewSet(StrictQueryParamMixin, FindComposeMixin, viewsets.GenericViewSet):
+    """
+    This API endpoint allows finding all composes that contain the package
+    (and include its version) for a given product_version and srpm_name
+    """
+    queryset = ComposeRPM.objects.none()    # Required for permissions
+    extra_query_params = ('included_compose_type', 'excluded_compose_type', 'latest', 'to_dict')
+
+    def list(self, request, **kwargs):
+        """
+        This method allows listing all (compose, package) pairs for a given
+        product_version and RPM name.
+
+        The ordering of composes is performed by the *productmd* library. It
+        first compares compose date, then compose type
+        (`test` < `nightly` < `production`) and lastly respin.
+
+        `latest` is optional parameter. If it is provided, and the value is True, it will
+        return a single pair with the latest compose and its version of the packages.
+
+        `to_dict` is optional parameter, accepted values (True, 'true', 't', 'True', '1'),
+        or (False, 'false', 'f', 'False', '0'). If it is provided, and the value is True,
+        packages' format will be as a dict.
+
+
+        __Method__: GET
+
+        __URL__: $LINK:findcomposesbypvr-list:product_version_id:rpm_name$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+
+        __Response__:
+
+            [
+                {
+                    "compose": string,
+                    "packages": [string]
+                },
+                ...
+            ]
+
+        The list is sorted by compose: oldest first.
+        """
+        self.included_compose_type = request.query_params.get('included_compose_type')
+        self.excluded_compose_type = request.query_params.get('excluded_compose_type')
+        self._get_query_param_or_false(request, 'latest')
+        self._get_query_param_or_false(request, 'to_dict')
+        self.product_version = kwargs.get('product_version')
+        self.rpm_name = kwargs.get('rpm_name')
+        return Response(self._get_composes_for_product_version())
+
+
 class FindComposeWithOlderPackageViewSet(StrictQueryParamMixin, FindComposeMixin,
                                          viewsets.ReadOnlyModelViewSet):
     """
@@ -1288,61 +1354,10 @@ class FindComposeWithOlderPackageViewSet(StrictQueryParamMixin, FindComposeMixin
 
     def list(self, request):
         """
-        This method allows listing all (compose, package) pairs for a given
-        release and RPM name.
-
-        If you give it compose instead of release, it will return a single pair
-        with the newest compose older than the given one that has a different
-        version of the package.
-
-        Above 2 functions in this endpoint are deprecated. Please use
-        $LINK:findcomposebyrr-list:release_id:rpm_name$ and
-        $LINK:findoldercomposebycr-list:compose_id:rpm_name$ instead.
-
-        The ordering of composes is performed by the *productmd* library. It
-        first compares compose date, then compose type
-        (`test` < `nightly` < `production`) and lastly respin.
-
-        `to_dict` is optional parameter, accepted values (True, 'true', 't', 'True', '1'),
-        or (False, 'false', 'f', 'False', '0'). If it is provided, and the value is True,
-        packages' format will be as a dict.
-
-        `latest` is optional parameter. If it is provided, and the value is True, it will
-        return a single pair with the latest compose and its version of the packages.
-
-
-        __Method__: GET
-
-        __URL__: $LINK:findcomposewitholderpackage-list$
-
-        __Query params__:
-
-        The RPM name is always required, as is either release or compose id or product_version.
-
-         * `rpm_name`
-         * `release` OR `compose` OR `product_version`
-         * `to_dict`: optional
-         * `included_compose_type`: optional
-         * `excluded_compose_type`: optional
-         * `latest`: optional
-
-        __Response__:
-
-        If input includes release id:
-
-            [
-                {
-                    "compose": string,
-                    "packages": [string]
-                },
-                ...
-            ]
-
-        The list is sorted by compose: oldest first.
-
-        If input contains only compose id, the result will be a single
-        object. If there is no compose with older version of the package, the
-        response will be empty.
+        This endpoint is deprecated. Please use instead:
+        $LINK:findcomposebyrr-list:release_id:rpm_name$,
+        $LINK:findoldercomposebycr-list:compose_id:rpm_name$,
+        $LINK:findcomposesbypvr-list:product_version:rpm_name$
         """
         self.rpm_name = request.query_params.get('rpm_name')
         self.release_id = request.query_params.get('release')
@@ -1357,21 +1372,10 @@ class FindComposeWithOlderPackageViewSet(StrictQueryParamMixin, FindComposeMixin
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data={'detail': 'The rpm_name is required.'})
         if self.release_id:
-            return Response(self._get_compose_for_release())
+            return Response(self._get_composes_for_release())
         if self.compose_id:
             return Response(self._get_older_compose())
         if self.product_version:
-            return Response(self._get_compose_for_product_version())
+            return Response(self._get_composes_for_product_version())
         return Response(status=status.HTTP_400_BAD_REQUEST,
                         data={'detail': 'One of product_version, release or compose argument is required.'})
-
-    def _get_compose_for_product_version(self):
-        result = []
-        all_composes = []
-        releases = Release.objects.filter(product_version__product_version_id=self.product_version)
-        for release in releases:
-            composes = Compose.objects.filter(release=release)
-            composes = self._filter_by_compose_type(composes)
-            all_composes.extend(composes)
-        result = self._get_result(all_composes, result)
-        return result

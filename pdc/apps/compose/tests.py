@@ -52,6 +52,7 @@ class ComposeModelTestCase(TestCase):
 
 
 class VersionFinderTestCase(APITestCase):
+    # TODO: This test case could be removed after removing endpoint 'compose/package'
     fixtures = [
         "pdc/apps/common/fixtures/test/sigkey.json",
         "pdc/apps/package/fixtures/test/rpm.json",
@@ -295,6 +296,59 @@ class FindOlderComposeByComposeRPMTestCase(APITestCase):
         url = reverse('findoldercomposebycr-list', kwargs={'compose_id': 'compose-2', 'rpm_name': 'bash'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class FindCompoeByProductVersionRPMTestCase(APITestCase):
+    fixtures = [
+        "pdc/apps/common/fixtures/test/sigkey.json",
+        "pdc/apps/package/fixtures/test/rpm.json",
+        "pdc/apps/release/fixtures/tests/product.json",
+        "pdc/apps/release/fixtures/tests/product_version.json",
+        "pdc/apps/release/fixtures/tests/release.json",
+        "pdc/apps/compose/fixtures/tests/variant.json",
+        "pdc/apps/compose/fixtures/tests/variant_arch.json",
+        "pdc/apps/compose/fixtures/tests/compose.json",
+        "pdc/apps/compose/fixtures/tests/compose_composerpm.json",
+        "pdc/apps/compose/fixtures/tests/more_composes.json",
+    ]
+
+    def setUp(self):
+        product_version = ProductVersion.objects.get(short='product', version='1')
+        release = Release.objects.get(release_id='release-1.0')
+        release.product_version = product_version
+        release.save()
+        self.url = reverse('findcomposesbypvr-list', kwargs={'rpm_name': 'bash', 'product_version': 'product-1'})
+
+    def test_get_for_product_version(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data,
+                         [{'compose': 'compose-1', 'packages': ['bash-0:1.2.3-4.b1.x86_64.rpm']},
+                          {'compose': 'compose-2', 'packages': ['bash-0:1.2.3-4.b1.x86_64.rpm']},
+                          {'compose': 'compose-3', 'packages': ['bash-0:5.6.7-8.x86_64.rpm']}])
+
+    def test_get_for_product_version_with_latest(self):
+        product_version = ProductVersion.objects.get(short='product', version='1')
+        release = Release.objects.get(release_id='release-1.0')
+        release.product_version = product_version
+        release.save()
+        response = self.client.get(self.url, {'latest': 'True'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data,
+                         [{'compose': 'compose-3', 'packages': ['bash-0:5.6.7-8.x86_64.rpm']}])
+
+    def test_get_for_included_compose_type(self):
+        response = self.client.get(self.url, {'included_compose_type': 'production'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data,
+                         [{'compose': 'compose-1', 'packages': ['bash-0:1.2.3-4.b1.x86_64.rpm']},
+                          {'compose': 'compose-2', 'packages': ['bash-0:1.2.3-4.b1.x86_64.rpm']}])
+
+    def test_get_for_excluded_compose_type(self):
+        response = self.client.get(self.url, {'excluded_compose_type': 'production'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data,
+                         [{'compose': 'compose-3', 'packages': ['bash-0:5.6.7-8.x86_64.rpm']}])
 
 
 class ComposeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
