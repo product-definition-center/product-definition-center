@@ -14,7 +14,7 @@ Contents:
 
    development
    model_graphs
-   versioning
+   release
    deployment
    bulk_operations
    messaging
