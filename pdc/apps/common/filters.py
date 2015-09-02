@@ -214,7 +214,7 @@ class NullableCharFilter(django_filters.CharFilter):
         return super(NullableCharFilter, self).filter(qs, value)
 
 
-class CustomizeBooleanFilter(django_filters.CharFilter):
+class CaseInsensitiveBooleanFilter(django_filters.CharFilter):
     """
     Customize boolean filter that allows filtering items with below values:
     True: ('true', 't', '1'), regardless of letter case sensitive

@@ -373,6 +373,16 @@ class ImageRESTTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 1)
 
+    def test_negative_bootable(self):
+        response = self.client.get(reverse('image-list'), {'bootable': 'false'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+
+    def test_active_bootable(self):
+        response = self.client.get(reverse('image-list'), {'bootable': 'true'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
     def test_query_implant_md5(self):
         response = self.client.get(reverse('image-list'), {'implant_md5': 'a' * 32})
         self.assertEqual(response.status_code, status.HTTP_200_OK)

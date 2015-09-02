@@ -25,7 +25,7 @@ from pdc.apps.contact.models import (Person,
 from pdc.apps.common.filters import (ComposeFilterSet,
                                      value_is_not_empty,
                                      MultiValueFilter,
-                                     CustomizeBooleanFilter)
+                                     CaseInsensitiveBooleanFilter)
 
 
 class RoleContactFilter(FilterSet):
@@ -147,7 +147,7 @@ class ReleaseComponentFilter(ComposeFilterSet):
                                         widget=SelectMultiple)
     bugzilla_component = MultiValueFilter(name='bugzilla_component__name')
     brew_package = MultiValueFilter()
-    active = CustomizeBooleanFilter()
+    active = CaseInsensitiveBooleanFilter()
     type = CharFilter(name='type__name')
 
     @value_is_not_empty

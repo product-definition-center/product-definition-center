@@ -9,6 +9,7 @@ from django.forms import SelectMultiple
 import django_filters
 
 from pdc.apps.common.filters import MultiValueFilter, MultiIntFilter, NullableCharFilter
+from pdc.apps.common.filters import CaseInsensitiveBooleanFilter
 from . import models
 
 
@@ -47,6 +48,7 @@ class ImageFilter(django_filters.FilterSet):
     sha256              = MultiValueFilter()
     compose             = MultiValueFilter(name='composeimage__variant_arch__variant__compose__compose_id',
                                            distinct=True)
+    bootable            = CaseInsensitiveBooleanFilter()
 
     class Meta:
         model = models.Image
