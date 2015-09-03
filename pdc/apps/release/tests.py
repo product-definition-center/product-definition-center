@@ -1623,7 +1623,7 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data,
                          {'detail': 'Not found.',
-                          'invalid_data_id': '/release-1.0/Client-UID'})
+                          'id_of_invalid_data': '/release-1.0/Client-UID'})
         self.assertEqual(models.Variant.objects.count(), 2)
         self.assertNumChanges([])
 
@@ -1634,5 +1634,5 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data,
                          {'detail': 'Partial update with no changes does not make much sense.',
-                          'invalid_data_id': 'release-1.0/Server-UID'})
+                          'id_of_invalid_data': 'release-1.0/Server-UID'})
         self.assertNumChanges([])

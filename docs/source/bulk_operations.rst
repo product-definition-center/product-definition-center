@@ -83,15 +83,15 @@ The structure of the response body should (in case of client errors) consist of
 a JSON object with the following structure.::
 
     {
-        "detail":           <string|object>,
-        "invalid_data_id":  <string|int>,
-        "invalid_data":     object
+        "detail":             <string|object>,
+        "id_of_invalid_data": <string|int>,
+        "invalid_data":       object
     }
 
 The ``detail`` key denotes a more precise description of the error. Its value
 is supplied by the single item manipulating function.
 
-The ``invalid_data_id`` describes which part of the request caused the error.
+The ``id_of_invalid_data`` describes which part of the request caused the error.
 For create, it is an integer index from the request array (starting from zero),
 for update or delete it is the identifier.
 

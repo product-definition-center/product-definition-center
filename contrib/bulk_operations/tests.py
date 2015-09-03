@@ -72,7 +72,7 @@ class BulkOperationTestCase(unittest.TestCase):
         response = wrapped(self.viewset, self.request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data,
-                         {'invalid_data': 'baz', 'invalid_data_id': 2, 'detail': 'error'})
+                         {'invalid_data': 'baz', 'id_of_invalid_data': 2, 'detail': 'error'})
 
     def test_bulk_destroy(self):
         self.request.data = ['foo', 'bar', 'baz']

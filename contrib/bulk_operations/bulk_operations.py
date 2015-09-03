@@ -31,7 +31,7 @@ def _failure_response(ident, response, data=None):
     Response object that describes the error.
     """
     result = {
-        'invalid_data_id': ident,
+        'id_of_invalid_data': ident,
         'detail': response.data.get('detail', response.data),
     }
     if data:

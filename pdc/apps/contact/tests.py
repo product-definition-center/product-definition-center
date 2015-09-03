@@ -745,7 +745,7 @@ class PersonBulkRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data,
                          {'detail': {'email': ['This field is required.']},
                           'invalid_data': {'username': 'Alice'},
-                          'invalid_data_id': 0})
+                          'id_of_invalid_data': 0})
         self.assertNumChanges([])
         self.assertEqual(Person.objects.all().count(), 2)
 
@@ -796,7 +796,7 @@ class PersonBulkRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data,
                          {'detail': {'email': ['This field is required.']},
                           'invalid_data': {'username': 'Bob'},
-                          'invalid_data_id': self.mal})
+                          'id_of_invalid_data': self.mal})
         self.assertNumChanges([])
         persons = Person.objects.all()
         self.assertItemsEqual(self.persons, [person.export() for person in persons])
@@ -814,7 +814,7 @@ class PersonBulkRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                          {'detail': 'Not found.',
                           'invalid_data': {'username': 'Jim',
                                            'email': 'jim@example.com'},
-                          'invalid_data_id': str(self.non_exist_1)})
+                          'id_of_invalid_data': str(self.non_exist_1)})
         self.assertNumChanges([])
         persons = Person.objects.all()
         self.assertItemsEqual(self.persons, [person.export() for person in persons])
@@ -847,7 +847,7 @@ class PersonBulkRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data,
                          {'detail': {'email': ['Enter a valid email address.']},
                           'invalid_data': {'email': 'not-an-email-address'},
-                          'invalid_data_id': self.mal})
+                          'id_of_invalid_data': self.mal})
         self.assertNumChanges([])
         persons = Person.objects.all()
         self.assertItemsEqual(self.persons, [person.export() for person in persons])
@@ -860,7 +860,7 @@ class PersonBulkRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data,
                          {'detail': 'Not found.',
                           'invalid_data': {'email': 'not-an-email-address'},
-                          'invalid_data_id': str(self.non_exist_1)})
+                          'id_of_invalid_data': str(self.non_exist_1)})
         self.assertNumChanges([])
         persons = Person.objects.all()
         self.assertItemsEqual(self.persons, [person.export() for person in persons])

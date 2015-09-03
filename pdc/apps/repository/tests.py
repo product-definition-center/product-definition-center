@@ -581,7 +581,7 @@ class RepoBulkTestCase(TestCaseWithChangeSetMixin, APITestCase):
                                            'content_category': 'binary',
                                            'name': 'repo-1.0-beta-rpms',
                                            'shadow': False},
-                          'invalid_data_id': 1})
+                          'id_of_invalid_data': 1})
         self.assertNumChanges([])
         self.assertEqual(models.Repo.objects.all().count(), 0)
 
