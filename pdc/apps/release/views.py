@@ -687,7 +687,7 @@ class ReleaseTypeViewSet(StrictQueryParamMixin,
     """
     ##Overview##
 
-    This page shows the usage of the **Releasy Types API**, please see the
+    This page shows the usage of the **Release Types API**, please see the
     following for more details.
 
     ##Test tools##
