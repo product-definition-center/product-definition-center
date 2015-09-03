@@ -12,6 +12,7 @@ import kobo
 
 from django.db import transaction, connection
 from django.db.models import Q
+from rest_framework import serializers
 
 from pdc.apps.package.models import RPM
 from pdc.apps.common import hacks as common_hacks
@@ -23,6 +24,15 @@ from pdc.apps.release import lib
 from pdc.apps.compose import models
 from pdc.apps.release.models import Release
 from pdc.apps.component.models import ReleaseComponent
+
+
+def _maybe_raise_inconsistency_error(composeinfo, manifest, name):
+    """Raise ValidationError if compose id is not the same in both files.
+    The name should describe the kind of manifest.
+    """
+    if composeinfo.compose.id != manifest.compose.id:
+        raise serializers.ValidationError(
+            {'detail': ['Inconsistent data: different compose id in composeinfo and {0} file.'.format(name)]})
 
 
 def get_or_insert_rpm(rpms_in_db, cursor, rpm_nevra, srpm_nevra, filename):
@@ -81,6 +91,8 @@ def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
 
     ci = common_hacks.composeinfo_from_str(composeinfo)
     rm = common_hacks.rpms_from_str(rpm_manifest)
+
+    _maybe_raise_inconsistency_error(ci, rm, 'rpms')
 
     compose_date = "%s-%s-%s" % (ci.compose.date[:4], ci.compose.date[4:6], ci.compose.date[6:])
     compose_type = models.ComposeType.objects.get(name=ci.compose.type)
@@ -164,6 +176,8 @@ def compose__import_images(request, release_id, composeinfo, image_manifest):
 
     ci = common_hacks.composeinfo_from_str(composeinfo)
     im = common_hacks.images_from_str(image_manifest)
+
+    _maybe_raise_inconsistency_error(ci, im, 'images')
 
     compose_date = "%s-%s-%s" % (ci.compose.date[:4], ci.compose.date[4:6], ci.compose.date[6:])
     compose_type = models.ComposeType.objects.get(name=ci.compose.type)

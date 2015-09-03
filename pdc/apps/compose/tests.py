@@ -810,14 +810,22 @@ class ComposeRPMViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             self.compose_info = json.loads(f.read())
         with open('pdc/apps/compose/fixtures/tests/rpm-manifest.json', 'r') as f:
             self.manifest = json.loads(f.read())
+        self.client.post(reverse('releaseimportcomposeinfo-list'),
+                         self.compose_info, format='json')
         # Caching ids makes it faster, but the cache needs to be cleared for each test.
         models.Path.CACHE = {}
         common_models.SigKey.CACHE = {}
 
+    def test_import_inconsistent_data(self):
+        self.manifest['payload']['compose']['id'] = 'TP-1.0-20150315.0'
+        response = self.client.post(reverse('composerpm-list'),
+                                    {'rpm_manifest': self.manifest,
+                                     'release_id': 'tp-1.0',
+                                     'composeinfo': self.compose_info},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_import_and_retrieve_manifest(self):
-        response = self.client.post(reverse('releaseimportcomposeinfo-list'),
-                                    self.compose_info, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         response = self.client.post(reverse('composerpm-list'),
                                     {'rpm_manifest': self.manifest,
                                      'release_id': 'tp-1.0',
@@ -869,6 +877,15 @@ class ComposeImageAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(reverse('image-list'), {'compose': 'TP-1.0-20150310.0'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 4)
+
+    def test_import_inconsistent_data(self):
+        self.manifest['payload']['compose']['id'] = 'TP-1.0-20150315.0'
+        response = self.client.post(reverse('composeimage-list'),
+                                    {'image_manifest': self.manifest,
+                                     'release_id': 'tp-1.0',
+                                     'composeinfo': self.compose_info},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_import_and_retrieve_images(self):
         response = self.client.post(reverse('composeimage-list'),
