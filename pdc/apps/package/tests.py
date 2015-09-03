@@ -218,6 +218,31 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data.get('linked_releases'), ['release-1.0'])
         self.assertNumChanges([1])
 
+    def test_partial_update_does_not_break_filename(self):
+        url = reverse('rpms-detail', args=[1])
+        data = {'linked_releases': ['release-1.0']}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.data.get('filename'), 'bash-1.2.3-4.b1.x86_64.rpm')
+
+    def test_full_update_uses_default_filename(self):
+        url = reverse('rpms-detail', args=[1])
+        data = {'name': 'fake_bash', 'version': '1.2.3', 'epoch': 0, 'release': '4.b1', 'arch': 'x86_64',
+                'srpm_name': 'bash', 'linked_releases': ['release-1.0'],
+                'srpm_nevra': 'fake_bash-0:1.2.3-4.b1.src'}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('filename'), 'fake_bash-1.2.3-4.b1.x86_64.rpm')
+        self.assertNumChanges([1])
+
+    def test_full_update_with_missing_fields_does_not_crash_on_default_filename(self):
+        url = reverse('rpms-detail', args=[1])
+        data = {'epoch': 0,
+                'srpm_name': 'bash', 'linked_releases': ['release-1.0'],
+                'srpm_nevra': 'fake_bash-0:1.2.3-4.b1.src'}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNumChanges([])
+
     def test_partial_update_rpm_with_assign_wrong_release(self):
         url = reverse('rpms-detail', args=[1])
         data = {"linked_releases": ['release-1.0-fake']}

@@ -12,8 +12,16 @@ from . import models
 from pdc.apps.common.serializers import StrictSerializerMixin
 
 
+class DefaultFilenameGenerator(object):
+    def __call__(self):
+        return models.RPM.default_filename(self.field.parent.initial_data)
+
+    def set_context(self, field):
+        self.field = field
+
+
 class RPMSerializer(StrictSerializerMixin, serializers.ModelSerializer):
-    filename = serializers.CharField(required=False)
+    filename = serializers.CharField(default=DefaultFilenameGenerator())
     linked_releases = serializers.SlugRelatedField(many=True, slug_field='release_id',
                                                    queryset=models.Release.objects.all(), required=False)
     linked_composes = serializers.SlugRelatedField(read_only=True, slug_field='compose_id', many=True)
@@ -22,12 +30,6 @@ class RPMSerializer(StrictSerializerMixin, serializers.ModelSerializer):
         model = models.RPM
         fields = ('id', 'name', 'version', 'epoch', 'release', 'arch', 'srpm_name', 'srpm_nevra', 'filename',
                   'linked_releases', 'linked_composes')
-
-    def to_internal_value(self, data):
-        # If filename is not present, compute one.
-        if 'filename' not in data:
-            data['filename'] = models.RPM.default_filename(data)
-        return super(RPMSerializer, self).to_internal_value(data)
 
 
 class ImageSerializer(StrictSerializerMixin, serializers.ModelSerializer):

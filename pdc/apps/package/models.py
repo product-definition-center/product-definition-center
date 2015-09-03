@@ -65,10 +65,14 @@ class RPM(models.Model):
 
     @staticmethod
     def default_filename(data):
-        return '%s-%s-%s.%s.rpm' % (data.get('name'),
-                                    data.get('version'),
-                                    data.get('release'),
-                                    data.get('arch'))
+        """
+        Create default file name based on name, version, release and arch. If
+        the data does not contain all these values, None is returned.
+        """
+        try:
+            return '{name}-{version}-{release}.{arch}.rpm'.format(**data)
+        except KeyError:
+            return None
 
     def save(self, *args, **kwargs):
         self.check_srpm_nevra(self.srpm_nevra, self.arch)
