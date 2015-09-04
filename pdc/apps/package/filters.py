@@ -8,14 +8,14 @@ from django.forms import SelectMultiple
 
 import django_filters
 
-from pdc.apps.common.filters import MultiValueFilter, NullableCharFilter
+from pdc.apps.common.filters import MultiValueFilter, MultiIntFilter, NullableCharFilter
 from . import models
 
 
 class RPMFilter(django_filters.FilterSet):
     name        = MultiValueFilter()
     version     = MultiValueFilter()
-    epoch       = MultiValueFilter()
+    epoch       = MultiIntFilter()
     release     = MultiValueFilter()
     arch        = MultiValueFilter()
     srpm_name   = MultiValueFilter()

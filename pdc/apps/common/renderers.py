@@ -176,6 +176,7 @@ FILTER_DEFS = {
     'NullableCharFilter': 'string | null',
     'BooleanFilter': 'bool',
     'ActiveReleasesFilter': 'bool',
+    'MultiIntFilter': 'int',
 }
 LOOKUP_TYPES = {
     'icontains': 'case insensitive, substring match',

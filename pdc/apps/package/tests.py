@@ -154,6 +154,11 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(url + 'wrong_param/', format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_query_with_bad_epoch(self):
+        url = reverse('rpms-list')
+        response = self.client.get(url, {'epoch': 'foo'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_query_with_only_key(self):
         url = reverse('rpms-list')
         response = self.client.get(url + '?name', format='json')
