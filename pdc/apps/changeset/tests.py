@@ -23,6 +23,7 @@ class ChangesetMiddlewareTestCase(TestCase):
 
     def test_passing_arguments(self):
         self.request.user.is_authenticated = lambda: False
+        self.request.META.get = lambda x, y: y
         func = Mock()
         func.__name__ = "Mock"
         func.return_value = 123
@@ -31,10 +32,11 @@ class ChangesetMiddlewareTestCase(TestCase):
             self.assertTrue(func.called)
             self.assertEqual(ret, 123)
             self.assertEqual(func.call_args, call(self.request, 1, 2, 3, arg='val'))
-            self.assertEqual(changeset.mock_calls, [call(author=None), call().commit()])
+            self.assertEqual(changeset.mock_calls, [call(author=None, comment=None), call().commit()])
 
     def test_no_commit_with_exception(self):
         self.request.user.is_authenticated = lambda: False
+        self.request.META.get = lambda x, y: y
         func = Mock()
         func.__name__ = "Mock"
         func.side_effect = Exception("Boom!")
@@ -42,12 +44,13 @@ class ChangesetMiddlewareTestCase(TestCase):
         with patch("pdc.apps.changeset.models.Changeset") as changeset:
             self.assertRaises(Exception, self.cm.process_view, self.request, func, [], {})
             self.assertTrue(func.called)
-            self.assertEqual(changeset.mock_calls, [call(author=None)])
+            self.assertEqual(changeset.mock_calls, [call(author=None, comment=None)])
             self.assertTrue(changeset_logger.error.called)
 
 
 class ChangesetRESTTestCase(APITestCase):
-    fixtures = ['pdc/apps/changeset/fixtures/tests/changeset.json', ]
+    fixtures = ['pdc/apps/changeset/fixtures/tests/changeset.json',
+                "pdc/apps/component/fixtures/tests/bugzilla_component.json"]
 
     def test_get(self):
         url = reverse('changeset-detail', args=[1])
@@ -98,3 +101,35 @@ class ChangesetRESTTestCase(APITestCase):
         response = self.client.get(url + '?changed_since=20150203T02:55:18', format='json')
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_query_with_pdc_change_comment(self):
+        url = reverse('changeset-list')
+        response = self.client.get(url + '?comment=change', format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+
+    def test_create_with_pdc_change_comment(self):
+        url = reverse('bugzillacomponent-list')
+        data = {'name': 'bin', 'parent_pk': 1}
+        extra = {'HTTP_PDC_CHANGE_COMMENT': 'New bugzilla component'}
+        response = self.client.post(url, data, format='json', **extra)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        url1 = reverse('changeset-list')
+        response1 = self.client.get(url1 + '?comment=new', format='json')
+        self.assertEqual(response1.status_code, status.HTTP_200_OK)
+        self.assertEqual(response1.data['count'], 1)
+
+    def test_bulk_create_with_pdc_change_comment(self):
+        url = reverse('bugzillacomponent-list')
+        data = [{'name': 'bin', 'parent_pk': 1}, {'name': 'bin1', 'parent_pk': 2}]
+        extra = {'HTTP_PDC_CHANGE_COMMENT': 'New bugzilla components'}
+        response = self.client.post(url, data, format='json', **extra)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        url1 = reverse('changeset-list')
+        response1 = self.client.get(url1 + '?comment=components', format='json')
+        self.assertEqual(response1.status_code, status.HTTP_200_OK)
+        self.assertEqual(response1.data['count'], 1)
+        self.assertEqual(len(response1.data.get('results')[0].get('changes')), 2)

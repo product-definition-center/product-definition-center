@@ -14,6 +14,14 @@
     }
 },
 {
+    "pk": 3,
+    "model": "changeset.changeset",
+    "fields": {
+        "committed_on": "2015-01-03T10:00:00.000Z",
+        "comment": "Test for pdc change comment"
+    }
+},
+{
     "pk": 1, 
     "model": "changeset.change", 
     "fields": {

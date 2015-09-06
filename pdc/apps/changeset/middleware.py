@@ -47,7 +47,8 @@ class ChangesetMiddleware(object):
             logger.debug("Start write request on the view %s." % view_func.__name__)
             try:
                 with transaction.atomic():
-                    request.changeset = models.Changeset(author=user)
+                    comment = request.META.get("HTTP_PDC_CHANGE_COMMENT", None)
+                    request.changeset = models.Changeset(author=user, comment=comment)
                     response = view_func(request, *view_args, **view_kwargs)
                     # response.exception=True means there is an error occurs.
                     if getattr(response, 'exception', 0) or (

@@ -138,6 +138,7 @@ if __name__ == "__main__":
     parser.add_option("--debug", help="Show request headers and path for "
                                       "debugging.",
                       action="store_true", default=False)
+    parser.add_option("-c", "--comment", help="Reasons for the PDC change.")
     options, args = parser.parse_args()
 
     if len(args):
@@ -166,6 +167,8 @@ if __name__ == "__main__":
     set_option("insecure", config.get(CONFIG_INSECURE_KEY_NAME))
     set_option("develop", config.get(CONFIG_DEVELOP_KEY_NAME))
     set_option("token", config.get(CONFIG_TOKEN_KEY_NAME))
+    if options.comment:
+        set_option("comment", options.comment)
 
     data = load_data(options)
 

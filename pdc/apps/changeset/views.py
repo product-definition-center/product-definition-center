@@ -83,14 +83,15 @@ class ChangesetViewSet(StrictQueryParamMixin,
                             "committed_on": "2015-02-03T05:51:17.262Z",
                             "changes": [
                                 {
+                                    "id": 1
                                     "resource": "person",
-                                    "resource_id": 2,
+                                    "resource_id": "2",
                                     "old_value": "old",
                                     "new_value": "new"
                                 }
-                            ]
+                            ],
+                            "comment": "xxx"
                         }
-
                     },
                     ...
                 ]
@@ -106,16 +107,18 @@ class ChangesetViewSet(StrictQueryParamMixin,
                 "previous": null,
                 "results": [
                         {
+                            "id": 1
                             "author": "xxx",
                             "committed_on": "2015-02-03T05:51:17.262Z",
                             "changes": [
                                 {
                                     "resource": "person",
-                                    "resource_id": 2,
+                                    "resource_id": "2",
                                     "old_value": "old",
                                     "new_value": "new"
                                 }
-                            ]
+                            ],
+                            "comment": "xxx"
                         }
                 ]
             }
@@ -144,7 +147,20 @@ class ChangesetViewSet(StrictQueryParamMixin,
 
             curl -H "Content-Type: application/json" $URL:changeset-detail:1$
             # output
-            {"author": "xxx", "committed_on": "2015-02-03T05:51:17.262Z", "changes": [{"resource": "person", "resource_id": 2, "old_value": "old", "new_value": "new"}]}
+            {
+                "id": 1,
+                "author": "xxx",
+                "committed_on": "2015-02-03T05:51:17.262Z",
+                "changes": [
+                   {
+                       "resource": "person",
+                       "resource_id": "2",
+                       "old_value": "old",
+                       "new_value": "new"
+                   }
+                ],
+                "comment": "xxx"
+            }
         """
         return super(ChangesetViewSet, self).retrieve(request, *args, **kwargs)
 

@@ -56,6 +56,8 @@ The REST API identifies users using Token which will be generated for all authen
 
 **Please remember to use your token as HTTP header for every requests that need authentication.**
 
+If you want to record the reason for change, you can add Header (-H "PDC-Change-Comment: reasonforchange") in request.
+
 Responses are available in JSON format.
 
 **NOTE:** in order to use secure HTTPS connections, you'd better to add server's certificate as trusted.

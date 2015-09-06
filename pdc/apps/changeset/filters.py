@@ -23,6 +23,7 @@ class ChangesetFilterSet(django_filters.FilterSet):
                                                 widget=widgets.DateTimeInput)
     changed_until = django_filters.MethodFilter(action='filter_committed_until',
                                                 widget=widgets.DateTimeInput)
+    comment = django_filters.CharFilter(name="comment", lookup_type="contains")
 
     @value_is_not_empty
     def filter_author(self, qs, value):
@@ -42,4 +43,4 @@ class ChangesetFilterSet(django_filters.FilterSet):
 
     class Meta:
         model = models.Changeset
-        fields = ('author', 'resource', 'changed_since', 'changed_until')
+        fields = ('author', 'resource', 'changed_since', 'changed_until', 'comment')

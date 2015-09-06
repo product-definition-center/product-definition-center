@@ -20,6 +20,7 @@ settings = {
     "token": None,
     "insecure": True,
     "develop": False,
+    "comment": None,
 }
 
 GLOBAL_CONFIG_FILE = '/etc/pdc/client_config.json'
@@ -76,7 +77,7 @@ def obtain_token(pdc):
     raise Exception('Could not obtain token from any known URL.')
 
 
-def pdc_client(url, token=None, insecure=False, develop=False, debug=False):
+def pdc_client(url, token=None, insecure=False, develop=False, debug=False, comment=None):
     session = requests.Session()
 
     if not develop:
@@ -105,5 +106,8 @@ def pdc_client(url, token=None, insecure=False, develop=False, debug=False):
         if not token:
             token = obtain_token(pdc)
         session.headers["Authorization"] = "Token %s" % token
+
+    if comment:
+        session.headers["PDC-Change-Comment"] = comment
 
     return pdc, session

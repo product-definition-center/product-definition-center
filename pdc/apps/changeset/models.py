@@ -16,6 +16,7 @@ class Changeset(models.Model):
     """
     author = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
     committed_on = models.DateTimeField(auto_now_add=True)
+    comment = models.TextField(null=True, blank=True)
 
     def __init__(self, *args, **kwargs):
         self.tmp_changes = []

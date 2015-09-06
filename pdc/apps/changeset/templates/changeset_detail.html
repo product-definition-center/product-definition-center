@@ -9,6 +9,9 @@
 <dd>{{ changeset.author }}</dd>
 <dt>{% trans "Date" %}</dt>
 <dd>{{ changeset.committed_on|date:"Y-m-d H:i:s" }}</dd>
+<dt>{% trans "Comment" %}</dt>
+<dd>{{ changeset.comment }}</dd>
+
 </dl>
 
 <h2 class="sub-header">{% trans "Changes" %}</h2>
