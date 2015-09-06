@@ -221,6 +221,10 @@ EMPTY_PATCH_ERROR_RESPONSE = {
                       'correct URL but not forward the request body.'])
 }
 
+INTERNAL_SERVER_ERROR_RESPONSE = {
+    'detail': 'The server encountered an internal error or misconfiguration and was unable to complete your request.'
+}
+
 # Messaging Bus Config
 MESSAGE_BUS = {
     # MLP: Messaging Library Package
@@ -264,6 +268,15 @@ MESSAGE_BUS = {
     # 'KEY_FILE': '',
 }
 
+# ======== Email configuration =========
+# Email addresses who would like to receive email
+ADMINS = (('PDC Dev', 'pdc@example.com'),)
+# Email SMTP HOST configuration
+EMAIL_HOST = 'smtp.example.com'
+# Email sender's address
+SERVER_EMAIL = 'noreply@example.com'
+EMAIL_SUBJECT_PREFIX = '[PDC]'
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -293,11 +306,11 @@ LOGGING = {
             'delay': True,
         },
         # Send a warning email if we want it.
-        # 'mail_admins': {
-        #     'level': 'ERROR',
-        #     'class': 'django.utils.log.AdminEmailHandler',
-        #     'include_html': True,
-        # }
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        }
     },
     'loggers': {
         'pdc': {

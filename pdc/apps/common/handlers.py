@@ -58,8 +58,6 @@ def exception_handler(exc, context):
         else:
             logger = logging.getLogger(__name__)
             logger.error('Unhandled exception', exc_info=sys.exc_info())
-            return Response({'detail': 'The server encountered an internal '
-                                       'error or misconfiguration and was '
-                                       'unable to complete your request.'},
+            return Response(data=settings.INTERNAL_SERVER_ERROR_RESPONSE,
                             status=status.HTTP_503_SERVICE_UNAVAILABLE)
     return response
