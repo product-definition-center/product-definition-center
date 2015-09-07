@@ -393,7 +393,7 @@ class GlobalComponentContactRESTTestCase(TestCaseWithChangeSetMixin, APITestCase
         # PDC-260
         url = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 2})
         data = {
-            "contact_role": "new_type",
+            "contact_role": "qe_ack",
             "contact": {
                 "username": "person3",
                 "email": "person3@test.com"
@@ -401,12 +401,24 @@ class GlobalComponentContactRESTTestCase(TestCaseWithChangeSetMixin, APITestCase
         }
         response = self.client.post(url, format='json', data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['contact_role'], 'new_type')
+        self.assertEqual(response.data['contact_role'], 'qe_ack')
         self.assertEqual(response.data['contact']['username'],
                          'person3')
         self.assertEqual(response.data['contact']['email'],
                          'person3@test.com')
-        self.assertNumChanges([4])
+        self.assertNumChanges([3])
+
+    def test_create_gc_contacts_with_inexistent_contact_role_should_fail(self):
+        url = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 2})
+        data = {
+            "contact_role": "new_type",
+            "contact": {
+                "username": "person3",
+                "email": "person3@test.com"
+            }
+        }
+        response = self.client.post(url, format='json', data=data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_multiple_global_component_contacts(self):
         url = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 2})
@@ -1373,7 +1385,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         # PDC-272
         url = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 2})
         data = {
-            "contact_role": "new_type",
+            "contact_role": "qe_ack",
             "contact": {
                 'username': 'foo1',
                 'email': 'foo1@example.com',
@@ -1385,7 +1397,19 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response_new.status_code, status.HTTP_200_OK)
         self.assertIn(response.data, response_new.data)
         # 3 = new_type + new_rolecontact + new_rc_contact
-        self.assertNumChanges([3])
+        self.assertNumChanges([2])
+
+    def test_add_rc_contact_with_inexistent_contact_role_should_fail(self):
+        url = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 2})
+        data = {
+            "contact_role": "new_type",
+            "contact": {
+                'username': 'foo1',
+                'email': 'foo1@example.com',
+            }
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_filter_release_component_contact(self):
         url = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 1})
@@ -1559,7 +1583,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
             "global_component": "MySQL-python",
             "releases": ["release-1.0"],
             "contacts": [{
-                "contact_role": "new_type",
+                "contact_role": "qe_ack",
                 "contact": {
                     "username": "person2",
                     "email": "person2@test.com"
@@ -1579,13 +1603,35 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(release_component['release']['release_id'], 'release-1.0')
         contacts = release_component['contacts']
 
-        self.assertEqual(contacts[1]['contact_role'], 'new_type')
+        self.assertEqual(contacts[1]['contact_role'], 'qe_ack')
         self.assertEqual(contacts[1]['contact']['username'],
                          'person2')
         self.assertEqual(contacts[1]['contact']['email'],
                          'person2@test.com')
         self.assertIsNone(contacts[1].get('inherited', None))
-        self.assertNumChanges([3])
+        self.assertNumChanges([1])
+
+    def test_update_multiple_rc_contacts_with_inexistent_contact_role_should_fail(self):
+        url = reverse('releasecomponent-list')
+        data = {
+            "global_component": "MySQL-python",
+            "releases": ["release-1.0"],
+            "contacts": [{
+                "contact_role": "new_type",
+                "contact": {
+                    "username": "person2",
+                    "email": "person2@test.com"
+                }
+            }, {
+                "contact_role": "pm",
+                "contact": {
+                    "username": "person2",
+                    "email": "person2@test.com"
+                }
+            }]
+        }
+        response = self.client.put(url, format='json', data=data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_duplicated_rc_contacts_with_inexistent_contact(self):
         # PDC-289

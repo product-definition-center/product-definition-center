@@ -374,15 +374,12 @@ class RoleContactRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         RoleContact.specific_objects.create(mail_name='maillist1', email='maillist1@test.com', contact_role='qe_team')
         RoleContact.specific_objects.create(mail_name='maillist2', email='maillist2@test.com', contact_role='devel_team')
 
-    def test_create_changeset_with_new_type(self):
+    def test_create_with_new_type_should_not_be_allowed(self):
         url = reverse('rolecontact-list')
         data = {'contact': {'username': 'person1', 'email': 'person1@test.com'},
                 'contact_role': 'new_type'}
         response = self.client.post(url, data, format='json')
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data.get('contact_role'), 'new_type')
-        self.assertNumChanges([2])
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_changeset_with_new_person(self):
         url = reverse('rolecontact-list')
@@ -399,26 +396,26 @@ class RoleContactRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def test_create_with_person(self):
         url = reverse('rolecontact-list')
         data = {'contact': {'username': 'test_person', 'email': 'test@test.com'},
-                'contact_role': 'test_type'}
+                'contact_role': 'qe_ack'}
         response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data.get('contact').get('username'), 'test_person')
         self.assertEqual(response.data.get('contact').get('email'), 'test@test.com')
-        self.assertEqual(response.data.get('contact_role'), 'test_type')
-        self.assertNumChanges([3])
+        self.assertEqual(response.data.get('contact_role'), 'qe_ack')
+        self.assertNumChanges([2])
 
     def test_create_with_maillist(self):
         url = reverse('rolecontact-list')
         data = {'contact': {'mail_name': 'test_mail', 'email': 'test@test.com'},
-                'contact_role': 'test_type'}
+                'contact_role': 'qe_ack'}
         response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data.get('contact').get('mail_name'), 'test_mail')
         self.assertEqual(response.data.get('contact').get('email'), 'test@test.com')
-        self.assertEqual(response.data.get('contact_role'), 'test_type')
-        self.assertNumChanges([3])
+        self.assertEqual(response.data.get('contact_role'), 'qe_ack')
+        self.assertNumChanges([2])
 
     def test_create_with_wrong_field(self):
         url = reverse('rolecontact-list')
