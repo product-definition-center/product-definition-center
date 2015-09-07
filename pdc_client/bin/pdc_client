@@ -172,6 +172,11 @@ if __name__ == "__main__":
 
     data = load_data(options)
 
+    for key, value in data.iteritems():
+        if options.request == 'GET' and not value:
+            # empty string won't be lost
+            data[key] = ''
+
     try:
         client, session = make_client()
     except BeanBagException as e:
