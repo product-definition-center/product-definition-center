@@ -131,7 +131,7 @@ class RepoCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
 
         __Method__: `POST`
 
-        __URL__: $LINK:repoclone-list$
+        __URL__: $LINK:cdreposclone-list$
 
 
         __Data__:
