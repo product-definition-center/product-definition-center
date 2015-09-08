@@ -74,7 +74,7 @@
 </table>
 
 <h3 class="sub-header">{% trans 'Repositories' %}</h3>
-<table class="datatable table table-striped table-bordered" data-paging="false">
+<table id="repos" class="table table-striped table-bordered">
  <thead>
   <tr>
     <th class="text-right">#</th>
@@ -108,5 +108,13 @@
 {% endfor %}
  </tbody>
 </table>
+
+<script type="text/javascript">
+$(document).ready(function () {
+    $("#repos").dataTable({
+        "paging": false
+    });
+});
+</script>
 
 {% endblock %}
