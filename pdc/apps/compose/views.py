@@ -787,7 +787,7 @@ class ComposeImageView(StrictQueryParamMixin,
                 -d "{\\"composeinfo\\": $(cat /path/to/composeinfo.json), \\
                      \\"image_manifest\\": $(cat /path/to/image-manifest.json), \\
                      \\"release_id\\": \\"release-1.0\\" }" \\
-                $URL:composeimportimages-list$
+                $URL:composeimage-list$
         """
         data = request.data
         errors = {}
