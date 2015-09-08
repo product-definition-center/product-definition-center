@@ -46,11 +46,10 @@ class RepoViewSet(ChangeSetCreateModelMixin,
 
         %(WRITABLE_SERIALIZER)s
 
-        *content_category*: $LINK:contentdeliverycontentcategory-list$
-
-        *content_format*: $LINK:contentdeliverycontentformat-list$
-
-        *repo_family*: $LINK:contentdeliveryrepofamily-list$
+         * *content_category*: $LINK:contentdeliverycontentcategory-list$
+         * *content_format*: $LINK:contentdeliverycontentformat-list$
+         * *repo_family*: $LINK:contentdeliveryrepofamily-list$
+         * *service*: $LINK:contentdeliveryservice-list$
 
         There are additional validations for the content delivery repository name for specific
         content category. If and only if the content category is `debug`, the
@@ -65,8 +64,6 @@ class RepoViewSet(ChangeSetCreateModelMixin,
             eus           | .z
             aus           | .aus or .ll
             els           | els
-
-        *service*: $LINK:contentdeliveryservice-list$
 
         __Response__: Same as input data.
         """
