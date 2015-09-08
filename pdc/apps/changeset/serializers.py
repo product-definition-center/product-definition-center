@@ -24,4 +24,4 @@ class ChangesetSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = Changeset
-        fields = ('id', 'author', 'committed_on', 'changes', 'comment')
+        fields = ('id', 'author', 'requested_on', 'committed_on', 'duration', 'changes', 'comment')

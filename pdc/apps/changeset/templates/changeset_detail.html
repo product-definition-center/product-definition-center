@@ -7,8 +7,12 @@
 <dl class="dl-horizontal">
 <dt>{% trans "Author" %}</dt>
 <dd>{{ changeset.author }}</dd>
-<dt>{% trans "Date" %}</dt>
+<dt>{% trans "Request Date" %}</dt>
+<dd>{{ changeset.requested_on|date:"Y-m-d H:i:s" }}</dd>
+<dt>{% trans "Commit Date" %}</dt>
 <dd>{{ changeset.committed_on|date:"Y-m-d H:i:s" }}</dd>
+<dt>{% trans "Duration" %}</dt>
+<dd>{{ changeset.duration }}</dd>
 <dt>{% trans "Comment" %}</dt>
 <dd>{{ changeset.comment }}</dd>
 

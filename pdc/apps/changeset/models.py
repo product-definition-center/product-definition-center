@@ -15,6 +15,7 @@ class Changeset(models.Model):
     need to actually commit from any other method.
     """
     author = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
+    requested_on = models.DateTimeField()
     committed_on = models.DateTimeField(auto_now_add=True)
     comment = models.TextField(null=True, blank=True)
 
@@ -55,6 +56,10 @@ class Changeset(models.Model):
             for change in self.tmp_changes:
                 change.changeset = self
                 change.save()
+
+    @property
+    def duration(self):
+        return self.committed_on - self.requested_on
 
 
 class Change(models.Model):

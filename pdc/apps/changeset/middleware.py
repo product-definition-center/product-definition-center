@@ -6,6 +6,7 @@
 import sys
 import logging
 
+from datetime import datetime
 from django.db import transaction
 from . import models
 
@@ -49,6 +50,7 @@ class ChangesetMiddleware(object):
                 with transaction.atomic():
                     comment = request.META.get("HTTP_PDC_CHANGE_COMMENT", None)
                     request.changeset = models.Changeset(author=user, comment=comment)
+                    request.changeset.requested_on = datetime.now()
                     response = view_func(request, *view_args, **view_kwargs)
                     # response.exception=True means there is an error occurs.
                     if getattr(response, 'exception', 0) or (
