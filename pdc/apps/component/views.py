@@ -1619,9 +1619,7 @@ class GroupTypeViewSet(viewsets.PDCModelViewSet):
 
         __Response__:
 
-            {
-                "Response": "No content"
-            }
+        On success, HTTP status code is 204 and the response has no content.
         """
         return super(GroupTypeViewSet, self).destroy(request, *args, **kwargs)
 
@@ -1726,9 +1724,7 @@ class GroupViewSet(viewsets.PDCModelViewSet):
 
         __Response__:
 
-            {
-                "Response": "No content"
-            }
+        On success, HTTP status code is 204 and the response has no content.
         """
         return super(GroupViewSet, self).destroy(request, *args, **kwargs)
 
@@ -1852,8 +1848,6 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
 
         __Response__:
 
-            {
-                "Response": "No content"
-            }
+        On success, HTTP status code is 204 and the response has no content.
         """
         return super(ReleaseComponentRelationshipViewSet, self).destroy(request, *args, **kwargs)
