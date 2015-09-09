@@ -749,6 +749,10 @@ class OverridesRPMAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(models.OverrideRPM.objects.count(), 0)
         self.assertItemsEqual(response.data, [self.override_rpm])
 
+    def test_clear_with_no_matched_record(self):
+        response = self.client.delete(reverse('overridesrpm-list'), {'release': 'no_such_release'})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_clear_preserve_do_not_delete(self):
         models.OverrideRPM.objects.create(release=self.release, variant="Server", arch="x86_64",
                                           rpm_name="bash-doc", rpm_arch="src", include=True,

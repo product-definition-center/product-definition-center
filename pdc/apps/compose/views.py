@@ -1015,7 +1015,11 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                 data=["Allowed keys are release and force (optional, default false)."])
             release_obj = get_object_or_404(Release, release_id=data["release"])
-            return Response(status=status.HTTP_200_OK, data=self._clear(release_obj, data))
+            data = self._clear(release_obj, data)
+            if data:
+                return Response(status=status.HTTP_200_OK, data=data)
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND, data={'detail': 'Not found.'})
 
         if isinstance(data, list):
             return bulk_operations.bulk_destroy_impl(self, *args, **kwargs)
