@@ -19,7 +19,7 @@ from rest_framework.response import Response
 
 from pdc.apps.common import viewsets
 from pdc.apps.common.models import Label
-from pdc.apps.contact.models import RoleContact, ContactRole
+from pdc.apps.contact.models import RoleContact, ContactRole, GlobalComponentRoleContact, ReleaseComponentRoleContact
 from pdc.apps.common.serializers import LabelSerializer, StrictSerializerMixin
 from pdc.apps.common.filters import LabelFilter
 from .models import (GlobalComponent,
@@ -38,14 +38,18 @@ from .serializers import (GlobalComponentSerializer,
                           GroupTypeSerializer,
                           ReleaseComponentRelationshipSerializer,
                           ReleaseComponentTypeSerializer,
-                          RCRelationshipTypeSerializer)
+                          RCRelationshipTypeSerializer,
+                          GlobalComponentRoleContactSerializer,
+                          ReleaseComponentRoleContactSerializer)
 from .filters import (ComponentFilter,
                       ReleaseComponentFilter,
                       RoleContactFilter,
                       BugzillaComponentFilter,
                       GroupFilter,
                       GroupTypeFilter,
-                      ReleaseComponentRelationshipFilter)
+                      ReleaseComponentRelationshipFilter,
+                      GlobalComponentRoleContactFilter,
+                      ReleaseComponentRoleContactFilter)
 from . import signals
 
 
@@ -1851,3 +1855,41 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
         On success, HTTP status code is 204 and the response has no content.
         """
         return super(ReleaseComponentRelationshipViewSet, self).destroy(request, *args, **kwargs)
+
+
+class GlobalComponentContactInfoViewSet(viewsets.PDCModelViewSet):
+
+    queryset = GlobalComponentRoleContact.objects.all()
+    serializer_class = GlobalComponentRoleContactSerializer
+    filter_class = GlobalComponentRoleContactFilter
+
+    def list(self, request, *args, **kwargs):
+        return super(GlobalComponentContactInfoViewSet, self).list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        return super(GlobalComponentContactInfoViewSet, self).retrieve(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        return super(GlobalComponentContactInfoViewSet, self).destroy(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        return super(GlobalComponentContactInfoViewSet, self).update(request, *args, **kwargs)
+
+
+class ReleaseComponentContactInfoViewSet(viewsets.PDCModelViewSet):
+
+    queryset = ReleaseComponentRoleContact.objects.all()
+    serializer_class = ReleaseComponentRoleContactSerializer
+    filter_class = ReleaseComponentRoleContactFilter
+
+    def list(self, request, *args, **kwargs):
+        return super(ReleaseComponentContactInfoViewSet, self).list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        return super(ReleaseComponentContactInfoViewSet, self).retrieve(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        return super(ReleaseComponentContactInfoViewSet, self).destroy(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        return super(ReleaseComponentContactInfoViewSet, self).update(request, *args, **kwargs)

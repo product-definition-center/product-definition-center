@@ -21,7 +21,9 @@ from .models import (GlobalComponent,
 from pdc.apps.contact.models import (Person,
                                      Maillist,
                                      ContactRole,
-                                     RoleContact)
+                                     RoleContact,
+                                     GlobalComponentRoleContact,
+                                     ReleaseComponentRoleContact)
 from pdc.apps.common.filters import (ComposeFilterSet,
                                      value_is_not_empty,
                                      MultiValueFilter,
@@ -298,3 +300,23 @@ class ReleaseComponentRelationshipFilter(ComposeFilterSet):
         model = ReleaseComponentRelationship
         fields = ('type', 'from_component_release', 'from_component_name', 'to_component_release',
                   'to_component_name')
+
+
+class GlobalComponentRoleContactFilter(RoleContactFilter):
+    component_name = MultiValueFilter(name='component__name')
+    role = MultiValueFilter(name='contact_role__name')
+    contact_id = MultiValueFilter(name='contact')
+
+    class Meta:
+        model = GlobalComponentRoleContact
+        fields = ('role', 'email', 'username', 'mail_name', 'component_name', 'contact_id')
+
+
+class ReleaseComponentRoleContactFilter(RoleContactFilter):
+    component_id = MultiValueFilter(name='component__id')
+    role = MultiValueFilter(name='contact_role__name')
+    contact_id = MultiValueFilter(name='contact')
+
+    class Meta:
+        model = ReleaseComponentRoleContact
+        fields = ('role', 'email', 'username', 'mail_name', 'component_id', 'contact_id')

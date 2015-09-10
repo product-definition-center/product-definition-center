@@ -13,8 +13,8 @@ from django.utils.text import capfirst
 
 from rest_framework import serializers
 
-from pdc.apps.contact.models import Contact, ContactRole
-from pdc.apps.contact.serializers import RoleContactSerializer
+from pdc.apps.contact.models import Contact, ContactRole, GlobalComponentRoleContact, ReleaseComponentRoleContact
+from pdc.apps.contact.serializers import RoleContactSerializer, ContactField
 from pdc.apps.common.serializers import DynamicFieldsSerializerMixin, LabelSerializer, StrictSerializerMixin
 from pdc.apps.common.fields import ChoiceSlugField
 from pdc.apps.release.models import Release
@@ -549,3 +549,27 @@ class ReleaseComponentRelationshipSerializer(StrictSerializerMixin, serializers.
     class Meta:
         model = ReleaseComponentRelationship
         fields = ('id', 'type', 'from_component', 'to_component')
+
+
+class GlobalComponentRoleContactSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+    component_name = serializers.SlugRelatedField(source='component', slug_field='name', read_only=False,
+                                                  queryset=GlobalComponent.objects.all())
+    role = serializers.SlugRelatedField(source='contact_role', slug_field='name',
+                                        read_only=False, queryset=ContactRole.objects.all())
+    contact = ContactField()
+
+    class Meta:
+        model = GlobalComponentRoleContact
+        fields = ('id', 'component_name', 'role', 'contact')
+
+
+class ReleaseComponentRoleContactSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+    component_id = serializers.SlugRelatedField(source='component', slug_field='id', read_only=False,
+                                                queryset=ReleaseComponent.objects.all())
+    role = serializers.SlugRelatedField(source='contact_role', slug_field='name',
+                                        read_only=False, queryset=ContactRole.objects.all())
+    contact = ContactField()
+
+    class Meta:
+        model = ReleaseComponentRoleContact
+        fields = ('id', 'component_id', 'role', 'contact')

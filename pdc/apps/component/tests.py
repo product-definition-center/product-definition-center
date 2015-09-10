@@ -11,7 +11,8 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from pdc.apps.common.test_utils import TestCaseWithChangeSetMixin
-from pdc.apps.contact.models import Person, Maillist, RoleContact, ContactRole
+from pdc.apps.contact.models import Person, Maillist, RoleContact, ContactRole, GlobalComponentRoleContact,\
+    ReleaseComponentRoleContact
 from pdc.apps.release.models import Release, ProductVersion
 from . import models
 
@@ -2515,3 +2516,215 @@ class ReleaseComponentRelationshipRESTTestCase(TestCaseWithChangeSetMixin, APITe
 
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class GlobalComponentContactInfoRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
+    fixtures = [
+        "pdc/apps/component/fixtures/tests/global_component.json",
+        "pdc/apps/contact/fixtures/tests/contact_role.json",
+        "pdc/apps/contact/fixtures/tests/maillist.json",
+        "pdc/apps/contact/fixtures/tests/person.json",
+        "pdc/apps/component/fixtures/tests/upstream.json"
+    ]
+
+    def setUp(self):
+        super(GlobalComponentContactInfoRESTTestCase, self).setUp()
+        person = Person.objects.get(username='person1')
+        maillist = Maillist.objects.get(mail_name="maillist2")
+        pm_type = ContactRole.objects.get(name='pm')
+        qe_type = ContactRole.objects.get(name='qe_ack')
+
+        python = models.GlobalComponent.objects.get(name='MySQL-python')
+        java = models.GlobalComponent.objects.get(name='java')
+
+        GlobalComponentRoleContact.objects.create(component=python, contact_role=pm_type, contact=person)
+        GlobalComponentRoleContact.objects.create(component=java, contact_role=qe_type, contact=maillist)
+
+    def test_list_global_component_contacts(self):
+        url = reverse('globalcomponentcontacts-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+        results = response.data.get('results')
+        self.assertEqual(results[0]['role'], 'pm')
+        self.assertEqual(results[0]['contact']['email'], 'person1@test.com')
+
+        self.assertEqual(results[1]['role'], 'qe_ack')
+        self.assertEqual(results[1]['contact']['mail_name'], 'maillist2')
+
+    def test_retrieve_global_component_contacts(self):
+        url = reverse('globalcomponentcontacts-detail', kwargs={'pk': 2})
+        response = self.client.get(url, format='json')
+        result = response.data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(result['role'], 'qe_ack')
+        self.assertEqual(result['contact']['mail_name'], 'maillist2')
+        self.assertEqual(result['contact']['email'], 'maillist2@test.com')
+
+    def test_destroy_global_component_contacts(self):
+        url = reverse('globalcomponentcontacts-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data.get('count'), 2)
+        url = reverse('globalcomponentcontacts-detail', kwargs={'pk': 2})
+        self.client.delete(url, format='json')
+        url = reverse('globalcomponentcontacts-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_filter_global_component_contacts(self):
+        url = reverse('globalcomponentcontacts-list')
+        data = {'contact_role': 'pm'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+
+        data = {'contact_role': 'no_such_role'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 0)
+
+        data = {'contact_role': 'qe_ack', 'mail_name': 'maillist2'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 1)
+
+        # should not get anything
+        data = {'contact_role': 'qe_ack', 'username': 'person1'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 0)
+
+        # should not get anything
+        data = {'contact_role': 'pm', 'mail_name': 'maillist2'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 0)
+
+        data = {'component_name': 'java'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 1)
+
+        data = {'component_name': 'no_component'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 0)
+
+    def test_create_global_component_contacts(self):
+        url = reverse('globalcomponentcontacts-list')
+        data = {'component_name': 'python', 'role': 'pm', 'contact': {'mail_name': 'maillist2'}}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        url = reverse('globalcomponentcontacts-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data.get('count'), 3)
+
+    def test_patch_global_component_contacts(self):
+        url = reverse('globalcomponentcontacts-detail', kwargs={'pk': 2})
+        data = {"contact": {"username": "person2", "email": "person2@test.com"}}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response.data['contact'].pop('id')
+        self.assertEqual(response.data['contact'], data['contact'])
+        self.assertNumChanges([1])
+
+
+class ReleaseComponentContactInfoRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
+    fixtures = [
+        "pdc/apps/component/fixtures/tests/global_component.json",
+        "pdc/apps/release/fixtures/tests/release.json",
+        "pdc/apps/component/fixtures/tests/release_component.json",
+        "pdc/apps/contact/fixtures/tests/contact_role.json",
+        "pdc/apps/contact/fixtures/tests/maillist.json",
+        "pdc/apps/contact/fixtures/tests/person.json",
+        "pdc/apps/component/fixtures/tests/upstream.json"
+    ]
+
+    def setUp(self):
+        super(ReleaseComponentContactInfoRESTTestCase, self).setUp()
+        person = Person.objects.get(username='person1')
+        maillist = Maillist.objects.get(mail_name="maillist2")
+        pm_type = ContactRole.objects.get(name='pm')
+        qe_type = ContactRole.objects.get(name='qe_ack')
+
+        python = models.ReleaseComponent.objects.get(name='MySQL-python')
+        python27 = models.ReleaseComponent.objects.get(name='python27')
+
+        ReleaseComponentRoleContact.objects.create(component=python, contact_role=pm_type, contact=person)
+        ReleaseComponentRoleContact.objects.create(component=python27, contact_role=qe_type, contact=maillist)
+
+    def test_list_release_component_contacts(self):
+        url = reverse('releasecomponentcontacts-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+        results = response.data.get('results')
+        self.assertEqual(results[0]['role'], 'pm')
+        self.assertEqual(results[0]['contact']['email'], 'person1@test.com')
+
+        self.assertEqual(results[1]['role'], 'qe_ack')
+        self.assertEqual(results[1]['contact']['mail_name'], 'maillist2')
+
+    def test_retrieve_release_component_contacts(self):
+        url = reverse('releasecomponentcontacts-detail', kwargs={'pk': 2})
+        response = self.client.get(url, format='json')
+        result = response.data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(result['role'], 'qe_ack')
+        self.assertEqual(result['contact']['mail_name'], 'maillist2')
+        self.assertEqual(result['contact']['email'], 'maillist2@test.com')
+
+    def test_destroy_release_component_contacts(self):
+        url = reverse('releasecomponentcontacts-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data.get('count'), 2)
+        url = reverse('releasecomponentcontacts-detail', kwargs={'pk': 2})
+        self.client.delete(url, format='json')
+        url = reverse('releasecomponentcontacts-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_filter_release_component_contacts(self):
+        url = reverse('releasecomponentcontacts-list')
+        data = {'contact_role': 'pm'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+
+        data = {'contact_role': 'no_such_role'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 0)
+
+        data = {'contact_role': 'qe_ack', 'mail_name': 'maillist2'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 1)
+
+        # should not get anything
+        data = {'contact_role': 'qe_ack', 'username': 'person1'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 0)
+
+        # should not get anything
+        data = {'contact_role': 'pm', 'mail_name': 'maillist2'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 0)
+
+        data = {'component_id': 1}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 1)
+
+        data = {'component_id': 200}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 0)
+
+    def test_create_release_component_contacts(self):
+        url = reverse('releasecomponentcontacts-list')
+        data = {'component_id': 2, 'role': 'pm', 'contact': {'mail_name': 'maillist2'}}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        url = reverse('releasecomponentcontacts-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data.get('count'), 3)
+
+    def test_patch_release_component_contacts(self):
+        url = reverse('releasecomponentcontacts-detail', kwargs={'pk': 2})
+        data = {"contact": {"username": "person2", "email": "person2@test.com"}}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response.data['contact'].pop('id')
+        self.assertEqual(response.data['contact'], data['contact'])
+        self.assertNumChanges([1])

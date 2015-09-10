@@ -155,3 +155,10 @@ router.register(r'content-delivery-service', repo_views.ServiceViewSet,
 
 router.register(r'osbs', osbs_views.OSBSViewSet,
                 base_name='osbs')
+
+router.register(r'global-component-contacts',
+                component_views.GlobalComponentContactInfoViewSet,
+                base_name='globalcomponentcontacts')
+router.register(r'release-component-contacts',
+                component_views.ReleaseComponentContactInfoViewSet,
+                base_name='releasecomponentcontacts')

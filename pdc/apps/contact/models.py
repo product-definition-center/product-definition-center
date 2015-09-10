@@ -150,6 +150,54 @@ class RoleContactSpecificManager(models.Manager):
         return self.get_queryset().create(**create_kwargs)
 
 
+class GlobalComponentRoleContact(models.Model):
+
+    contact_role = models.ForeignKey(ContactRole, related_name='global_component_role_contacts',
+                                     on_delete=models.PROTECT)
+    contact      = models.ForeignKey(Contact, related_name='global_component_role_contacts',
+                                     on_delete=models.PROTECT)
+    component = models.ForeignKey('component.GlobalComponent', related_name='global_component_role_contacts',
+                                  on_delete=models.PROTECT)
+
+    def __unicode__(self):
+        return u"%s: %s: %s" % (unicode(self.component), self.contact_role, unicode(self.contact))
+
+    class Meta:
+        unique_together = (
+            ("contact", "contact_role", "component"),
+        )
+
+    def export(self, fields=None):
+        result = {'contact': self.contact.export(fields=fields)}
+        result['contact_role'] = self.contact_role.name
+        result['component'] = self.component.name
+        return result
+
+
+class ReleaseComponentRoleContact(models.Model):
+
+    contact_role = models.ForeignKey(ContactRole, related_name='release_component_role_contacts',
+                                     on_delete=models.PROTECT)
+    contact      = models.ForeignKey(Contact, related_name='release_component_role_contacts',
+                                     on_delete=models.PROTECT)
+    component = models.ForeignKey('component.ReleaseComponent', related_name='release_component_role_contacts',
+                                  on_delete=models.PROTECT)
+
+    def __unicode__(self):
+        return u"%s: %s: %s" % (unicode(self.component), self.contact_role, unicode(self.contact))
+
+    class Meta:
+        unique_together = (
+            ("contact", "contact_role", "component"),
+        )
+
+    def export(self, fields=None):
+        result = {'contact': self.contact.export(fields=fields)}
+        result['contact_role'] = self.contact_role.name
+        result['component'] = self.component.name
+        return result
+
+
 class RoleContact(models.Model):
 
     contact_role = models.ForeignKey(ContactRole, related_name='role_contacts',
