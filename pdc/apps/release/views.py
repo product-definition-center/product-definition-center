@@ -302,6 +302,10 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
 
     def create(self, request, *args, **kwargs):
         """
+        Instead of creating a release through this method, please consider
+        using the $LINK:releaseclone-list$ API that will clone an existing
+        release with its variants and components.
+
         __Method__: POST
 
         __URL__: $LINK:release-list$
@@ -546,7 +550,8 @@ class ReleaseCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
     def create(self, request):
         """
         Clone an existing release identified by `old_release_id`. Currently the
-        release, its variants and arches will be cloned.
+        release, its variants and arches will be cloned. Also, all release
+        components associated with the release will be cloned.
 
         __Method__: POST
 
