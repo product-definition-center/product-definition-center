@@ -173,7 +173,7 @@ if __name__ == "__main__":
     data = load_data(options)
 
     for key, value in data.iteritems():
-        if options.request == 'GET' and not value:
+        if options.request == 'GET' and not value and value is not False:
             # empty string won't be lost
             data[key] = ''
 
