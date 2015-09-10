@@ -54,7 +54,7 @@ class RPM(models.Model):
             raise ValidationError("RPM's srpm_nevra should be empty if and only if arch is src")
 
     def export(self, fields=None):
-        _fields = set(['name', 'epoch', 'version', 'release', 'arch',
+        _fields = set(['name', 'epoch', 'version', 'release', 'arch', 'filename',
                        'srpm_name', 'srpm_nevra', 'linked_releases']) if fields is None else set(fields)
         result = model_to_dict(self, fields=_fields - {'linked_releases'})
         if 'linked_releases' in _fields:
