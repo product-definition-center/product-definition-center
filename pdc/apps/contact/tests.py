@@ -453,7 +453,7 @@ class RoleContactRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data, {"non_field_errors": ["The fields (\'contact\', \'contact_role\') must make a unique set."]})
+        self.assertEqual(response.data, {"detail": ["The fields (\'contact\', \'contact_role\') must make a unique set."]})
         self.assertNumChanges([])
 
     def test_create_with_bad_type(self):

@@ -58,7 +58,7 @@ class RepositorySerializerTestCase(APITestCase):
         serializer = serializers.RepoSerializer(data=self.data)
         self.assertFalse(serializer.is_valid())
         self.assertEqual(serializer.errors,
-                         {'non_field_errors': ["Missing 'debug' in repo name 'test_repo_2'"]})
+                         {'detail': ["Missing 'debug' in repo name 'test_repo_2'"]})
 
     def test_deserialize_invalid_shadow(self):
         self.data['shadow'] = 'very shadow'
@@ -81,7 +81,7 @@ class RepositorySerializerTestCase(APITestCase):
         serializer = serializers.RepoSerializer(data=self.fixture_data)
         self.assertFalse(serializer.is_valid())
         self.assertEqual(serializer.errors,
-                         {'non_field_errors': [
+                         {'detail': [
                              # Following is a single string
                              'Repo with this Variant arch, Service, Repo family, Content format, '
                              'Content category, Name and Shadow already exists.']})
@@ -104,9 +104,9 @@ class RepositorySerializerTestCase(APITestCase):
             self.data[key] = 'foo'
             serializer = serializers.RepoSerializer(data=self.data)
             self.assertFalse(serializer.is_valid())
-            self.assertIn('non_field_errors', serializer.errors)
-            self.assertEqual(len(serializer.errors['non_field_errors']), 1)
-            self.assertRegexpMatches(serializer.errors['non_field_errors'][0],
+            self.assertIn('detail', serializer.errors)
+            self.assertEqual(len(serializer.errors['detail']), 1)
+            self.assertRegexpMatches(serializer.errors['detail'][0],
                                      r'^No VariantArch .*')
             self.data[key] = old_val
 

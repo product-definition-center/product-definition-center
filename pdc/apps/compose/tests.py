@@ -578,7 +578,7 @@ class ComposeUpdateTestCase(TestCaseWithChangeSetMixin, APITestCase):
                                      {'linked_releases': ['release-1.0']},
                                      format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('non_field_errors', response.data)
+        self.assertIn('detail', response.data)
 
     def test_update_can_not_link_to_same_release_twice(self):
         response = self.client.patch(reverse('compose-detail', args=['compose-1']),

@@ -88,6 +88,8 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'pdc.apps.common.handlers.exception_handler',
 
     'DEFAULT_PAGINATION_CLASS': 'pdc.apps.common.pagination.AutoDetectedPageNumberPagination',
+
+    'NON_FIELD_ERRORS_KEY': 'detail',
 }
 
 MIDDLEWARE_CLASSES = (
@@ -309,6 +311,7 @@ LOGGING = {
         }
     }
 }
+
 
 # Attempts to import server specific settings.
 # Note that all server specific settings should go to 'settings_local.py'

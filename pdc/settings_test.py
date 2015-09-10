@@ -44,5 +44,7 @@ REST_FRAMEWORK = {
         'pdc.apps.common.renderers.ReadOnlyBrowsableAPIRenderer',
     ),
 
-    'EXCEPTION_HANDLER': 'pdc.apps.common.handlers.exception_handler'
+    'EXCEPTION_HANDLER': 'pdc.apps.common.handlers.exception_handler',
+
+    'NON_FIELD_ERRORS_KEY': 'detail',
 }
