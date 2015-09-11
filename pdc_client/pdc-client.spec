@@ -46,3 +46,6 @@ gzip %{buildroot}%{_mandir}/man1/pdc_client.1
 
 
 %changelog
+* Fri Sep 11 2015 Xiangyang Chu <xychu2008@gmail.com> 0.1.0-1
+- new package built with tito
+
