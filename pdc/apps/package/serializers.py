@@ -13,6 +13,8 @@ from pdc.apps.common.serializers import StrictSerializerMixin, DynamicFieldsSeri
 
 
 class DefaultFilenameGenerator(object):
+    doc_format = '{name}-{version}-{release}.{arch}.rpm'
+
     def __call__(self):
         return models.RPM.default_filename(self.field.parent.initial_data)
 

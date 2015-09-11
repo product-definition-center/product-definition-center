@@ -300,6 +300,8 @@ def get_default_value(serializer, field_name, field):
     Try to get default value for a field and format it nicely.
     """
     value = field.default
+    if hasattr(value, 'doc_format'):
+        return "'%s'" % value.doc_format
     if value == fields.empty:
         # Try to get default from model field.
         try:
