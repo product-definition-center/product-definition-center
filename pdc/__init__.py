@@ -12,7 +12,7 @@ old_cwd = os.getcwd()
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # NOTE(xchu): use `git describe` when under git repository.
 if os.system('git rev-parse 2> /dev/null > /dev/null') == 0:
-    pipe = subprocess.Popen("git describe",
+    pipe = subprocess.Popen("git describe --match='python-pdc*'",
                             shell=True,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT)
