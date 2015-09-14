@@ -2266,7 +2266,7 @@ class GroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def test_create_group_with_components_unique_together_fields(self):
         url = reverse('componentgroup-list')
         data = {'group_type': 'type2', 'release': 'release-1.0', 'description': 'dd',
-                'components': [{'release': 'release-1.0', 'global_component': 'python', 'name': 'python27'}]}
+                'components': [{'release': 'release-1.0', 'name': 'python27'}]}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertNumChanges([1])
@@ -2418,8 +2418,8 @@ class ReleaseComponentRelationshipRESTTestCase(TestCaseWithChangeSetMixin, APITe
 
     def test_create_relationship_with_unique_together_fields(self):
         url = reverse('rcrelationship-list')
-        data = {"from_component": {'release': 'release-1.0', 'global_component': 'python', 'name': 'python27'},
-                "to_component": {'release': 'release-1.0', 'global_component': 'MySQL-python', 'name': 'MySQL-python'},
+        data = {"from_component": {'release': 'release-1.0', 'name': 'python27'},
+                "to_component": {'release': 'release-1.0', 'name': 'MySQL-python'},
                 "type": "executes"}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

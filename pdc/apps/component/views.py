@@ -1652,7 +1652,7 @@ class GroupViewSet(viewsets.PDCModelViewSet):
         __Note__:
 
           * components: list of release_components, eg: [{"id": 1}, {"id": 2}] or
-          [{"release": "release-1.0", "global_component": "python", "name": "python27"}]
+          [{"release": "release-1.0", "name": "python27"}]
           * group_type, release and release_components have to be existed before creating Release Component Group
           * It's not allowed to group release_components from different releases
 
@@ -1708,7 +1708,7 @@ class GroupViewSet(viewsets.PDCModelViewSet):
         __Note__:
 
           * components: list of release_components, eg: [{"id": 1}, {"id": 2}] or
-          [{"release": "release-1.0", "global_component": "python", "name": "python27"}]
+          [{"release": "release-1.0", "name": "python27"}]
 
         __Response__:
 
@@ -1777,9 +1777,9 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
 
         __Note__:
 
-          * from_component: {"id": 1} or {"release": "release-1.0", "global_component": "python", "name": "python27"}
+          * from_component: {"id": 1} or {"release": "release-1.0", "name": "python27"}
           * type: relationship type
-          * to_component: {"id": 2} or {"release": "release-2.0", "global_component": "python", "name": "python27"}
+          * to_component: {"id": 2} or {"release": "release-2.0", "name": "python27"}
 
         __Response__:
 
@@ -1831,8 +1831,8 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
 
         __Note__:
 
-          * from_component: {"id": 1} or {"release": "release-1.0", "global_component": "python", "name": "python27"}
-          * to_component: {"id": 2} or {"release": "release-2.0", "global_component": "python", "name": "python27"}
+          * from_component: {"id": 1} or {"release": "release-1.0", "name": "python27"}
+          * to_component: {"id": 2} or {"release": "release-2.0", "name": "python27"}
 
         __Response__:
 

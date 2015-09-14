@@ -457,16 +457,15 @@ class ReleaseComponentRelatedField(serializers.RelatedField):
         if not isinstance(data, dict):
             raise serializers.ValidationError({'detail': "Input [%s] for ReleaseComponent must be a dict." % data})
 
-        if set(data.keys()) not in [set(['id']), set(['release', 'global_component', 'name'])]:
+        if set(data.keys()) not in [set(['id']), set(['release', 'name'])]:
             raise serializers.ValidationError(
-                {'detail': "Only accept ['id'] or ['release', 'global_component', 'name']"})
+                {'detail': "Only accept ['id'] or ['release', 'name']"})
 
         kwargs = dict()
         if 'id' in data:
             kwargs['id'] = convert_str_to_int(data.get('id'))
         else:
             kwargs['release__release_id'] = data.get('release')
-            kwargs['global_component__name'] = data.get('global_component')
             kwargs['name'] = data.get('name')
         try:
             rc = ReleaseComponent.objects.get(**kwargs)
