@@ -862,6 +862,13 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1])
 
+    def test_create_release_component_with_existed_unique_together_fields(self):
+        url = reverse('releasecomponent-list')
+        data = {'release': 'release-1.0', 'name': 'python27'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNumChanges([])
+
     def test_create_release_component_for_non_existing_release(self):
         url = reverse('releasecomponent-list')
         data = {'release': 'hello-1.0',
@@ -1042,7 +1049,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('releasecomponent-detail', kwargs={'pk': 1})
         data = {'name': 'MySQL-python'}
         response = self.client.put(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_release_component_only_with_name(self):
         url = reverse('releasecomponent-detail', kwargs={'pk': 1})

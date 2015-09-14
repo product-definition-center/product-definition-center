@@ -168,7 +168,7 @@ class ReleaseComponent(models.Model):
 
     class Meta:
         unique_together = [
-            ("release", "global_component", "name"),
+            ("release", "name"),
         ]
 
     def __unicode__(self):
