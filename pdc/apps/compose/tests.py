@@ -297,6 +297,29 @@ class FindOlderComposeByComposeRPMTestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_get_compose_from_previous_release(self):
+        r = release_models.Release.objects.create(release_type_id=1, short='release',
+                                                  name='Test Release', version='0.5')
+        for cid in ('compose-1', 'compose-2'):
+            c = models.Compose.objects.get(compose_id=cid)
+            c.release = r
+            c.save()
+        url = reverse('findoldercomposebycr-list', kwargs={'compose_id': 'compose-3', 'rpm_name': 'bash'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('compose'), 'compose-2')
+
+    def test_can_not_get_compose_from_previous_updates_release(self):
+        r = release_models.Release.objects.create(release_type_id=2, short='release',
+                                                  name='Test Release', version='0.5')
+        for cid in ('compose-1', 'compose-2'):
+            c = models.Compose.objects.get(compose_id=cid)
+            c.release = r
+            c.save()
+        url = reverse('findoldercomposebycr-list', kwargs={'compose_id': 'compose-3', 'rpm_name': 'bash'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
 
 class FindCompoeByProductVersionRPMTestCase(APITestCase):
     fixtures = [

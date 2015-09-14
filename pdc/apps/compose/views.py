@@ -1165,9 +1165,16 @@ class FindComposeMixin(object):
         current_rpms = set(r.sort_key for r in compose.get_rpms(self.rpm_name))
         # Find older composes for same release (not including this one)
         composes = (Compose.objects
+                    # Get only older composes
                     .exclude(compose_date__gt=compose.compose_date)
-                    .filter(release=compose.release)
+                    # Only composes in the same product
+                    .filter(release__short=compose.release.short)
+                    # Which have the requested rpm in some version
                     .filter(variant__variantarch__composerpm__rpm__name=self.rpm_name)
+                    # Keep only composes from the release that requested
+                    # compose belongs to, or GA releases. This way, after R-1.1
+                    # it goes to R-1.0, but not R-1.0-updates.
+                    .filter(Q(release__release_type__short='ga') | Q(release=compose.release))
                     .exclude(id=compose.id)
                     .distinct())
         composes = self._filter_by_compose_type(composes)
