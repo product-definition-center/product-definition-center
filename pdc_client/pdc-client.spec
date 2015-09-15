@@ -10,6 +10,7 @@ License:        MIT
 URL:            https://github.com/release-engineering/product-definition-center
 Source0:        %{name}-%{version}.tar.gz
 BuildArch:      noarch
+BuildRequires:  python
 Requires:       python-requests
 Requires:       python-requests-kerberos
 Requires:       beanbag
