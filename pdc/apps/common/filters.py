@@ -54,12 +54,23 @@ class MultiIntFilter(MultiValueFilter):
     """
     MultiValueFilter that reports error when input is not a number.
     """
+    @property
+    def display_name(self):
+        """
+        Get name of the filter used by the user.
+        """
+        for name, filter in self.parent.filters.iteritems():
+            if filter == self:
+                return name
+        # This should not happen, internal server error will be reported it if does.
+        raise ValueError('Filter not defined in parent')
+
     @value_is_not_empty
     def filter(self, qs, value):
         # This can't actually call to parent method, as double invocation of
         # @value_is_not_empty would cause the filter with empty value to be
         # ignored.
-        value = [convert_str_to_int(val, name=self.name) for val in value]
+        value = [convert_str_to_int(val, name=self.display_name) for val in value]
         qs = qs.filter(**{self.name + '__in': value})
         if self.distinct:
             qs = qs.distinct()

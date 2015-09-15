@@ -816,6 +816,7 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('rpms-list')
         response = self.client.get(url, {'epoch': 'foo'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('epoch', response.data['detail'][0])
 
     def test_query_with_only_key(self):
         url = reverse('rpms-list')
