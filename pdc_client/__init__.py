@@ -16,14 +16,6 @@ import monkey_patch
 
 monkey_patch.monkey_patch_kerberos()
 
-settings = {
-    "url": None,
-    "token": None,
-    "insecure": True,
-    "develop": False,
-    "comment": None,
-}
-
 GLOBAL_CONFIG_FILE = '/etc/pdc/client_config.json'
 USER_SPECIFIC_CONFIG_FILE = expanduser('~/.config/pdc/client_config.json')
 CONFIG_URL_KEY_NAME = 'host'
@@ -46,79 +38,11 @@ def read_config_file(server_alias):
     return result
 
 
-def set_option(name, value):
-    if name in settings:
-        if value is not None:
-            settings[name] = value
-    else:
-        raise KeyError("Invalid setting %s" % name)
-
-
-def make_client():
-    if not settings['url']:
-        raise ValueError("Invalid pdc instance url.")
-    return pdc_client(**settings)
-
-
-def obtain_token(pdc):
-    """
-    Try to obtain token from all end-points that were ever used to serve the
-    token. If the request returns 404 NOT FOUND, retry with older version of
-    the URL.
-    """
-    token_end_points = ('token/obtain',
-                        'obtain-token',
-                        'obtain_token')
-    for end_point in token_end_points:
-        try:
-            return pdc.auth[end_point]._()['token']
-        except beanbag.BeanBagException, e:
-            if e.response.status_code != 404:
-                raise
-    raise Exception('Could not obtain token from any known URL.')
-
-
-def pdc_client(url, token=None, insecure=False, develop=False, debug=False, comment=None):
-    session = requests.Session()
-
-    if not develop:
-        # For local environment, we don't need to require a token,
-        # just access API directly.
-        # REQUIRED, OPTIONAL, DISABLED
-        session.auth = requests_kerberos.HTTPKerberosAuth(
-            mutual_authentication=requests_kerberos.DISABLED)
-
-    if insecure:
-        # turn off for servers with insecure certificates
-        session.verify = False
-
-        # turn off warnings about making insecure calls
-        if requests.__version__ < '2.4.0':
-            print "Requests version is too old, please upgrade to 2.4.0 or latest."
-            # disable all warnings, it had better to upgrade requests.
-            warnings.filterwarnings("ignore")
-        else:
-            requests.packages.urllib3.disable_warnings()
-
-    pdc = beanbag.BeanBag(url, session=session)
-
-    if not develop:
-        # For develop environment, we don't need to require a token
-        if not token:
-            token = obtain_token(pdc)
-        session.headers["Authorization"] = "Token %s" % token
-
-    if comment:
-        session.headers["PDC-Change-Comment"] = comment
-
-    return pdc, session
-
-
 class PDCClient(object):
     def __init__(self, server):
         if not server:
             raise TypeError('Server must be specified')
-        session = requests.Session()
+        self.session = requests.Session()
         config = read_config_file(server)
         url = server
         develop = False
@@ -139,12 +63,12 @@ class PDCClient(object):
             # For local environment, we don't need to require a token,
             # just access API directly.
             # REQUIRED, OPTIONAL, DISABLED
-            session.auth = requests_kerberos.HTTPKerberosAuth(
+            self.session.auth = requests_kerberos.HTTPKerberosAuth(
                 mutual_authentication=requests_kerberos.DISABLED)
 
         if insecure:
             # turn off for servers with insecure certificates
-            session.verify = False
+            self.session.verify = False
             # turn off warnings about making insecure calls
             if requests.__version__ < '2.4.0':
                 print "Requests version is too old, please upgrade to 2.4.0 or latest."
@@ -153,13 +77,13 @@ class PDCClient(object):
             else:
                 requests.packages.urllib3.disable_warnings()
 
-        self.client = beanbag.BeanBag(url, session=session)
+        self.client = beanbag.BeanBag(url, session=self.session)
 
         if not develop:
             # For develop environment, we don't need to require a token
             if not token:
                 token = self.obtain_token()
-            session.headers["Authorization"] = "Token %s" % token
+            self.session.headers["Authorization"] = "Token %s" % token
 
     def obtain_token(self):
         """
@@ -181,8 +105,11 @@ class PDCClient(object):
     def __call__(self, *args, **kwargs):
         return self.client(*args, **kwargs)
 
-    def __getattr__(self, *args, **kwargs):
-        return self.client.__getattr__(*args, **kwargs)
+    def __getattr__(self, name):
+        return self.client.__getattr__(name)
 
     def __getitem__(self, *args, **kwargs):
         return self.client.__getitem__(*args, **kwargs)
+
+    def set_comment(self, comment):
+        self.session.headers["PDC-Change-Comment"] = comment

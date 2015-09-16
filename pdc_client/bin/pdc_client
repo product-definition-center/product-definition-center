@@ -15,8 +15,7 @@ import optparse
 import sys
 
 from beanbag import BeanBagException
-from pdc_client import make_client, set_option, read_config_file, CONFIG_URL_KEY_NAME,\
-    CONFIG_INSECURE_KEY_NAME, CONFIG_DEVELOP_KEY_NAME, CONFIG_TOKEN_KEY_NAME
+from pdc_client import PDCClient
 
 __version__ = '0.1'
 
@@ -34,9 +33,8 @@ def debug_request(func):
 
 
 class RequestMethod(object):
-    def __init__(self, client, session, resource, traceback=False, debug=False):
+    def __init__(self, client, resource, traceback=False, debug=False):
         self.client = client
-        self.session = session
         self.resource = resource
         self.traceback = traceback
         self.debug = debug
@@ -155,21 +153,6 @@ if __name__ == "__main__":
         print "Error: can not load data from file and command line at the same time."
         sys.exit(1)
 
-    config = read_config_file(options.server)
-    if config:
-        try:
-            set_option("url", config[CONFIG_URL_KEY_NAME])
-        except KeyError:
-            print "'%s' must be specified in configuration file." % CONFIG_URL_KEY_NAME
-            sys.exit(1)
-    else:
-        set_option("url", options.server)
-    set_option("insecure", config.get(CONFIG_INSECURE_KEY_NAME))
-    set_option("develop", config.get(CONFIG_DEVELOP_KEY_NAME))
-    set_option("token", config.get(CONFIG_TOKEN_KEY_NAME))
-    if options.comment:
-        set_option("comment", options.comment)
-
     data = load_data(options)
 
     if isinstance(data, dict):
@@ -179,13 +162,15 @@ if __name__ == "__main__":
                 data[key] = ''
 
     try:
-        client, session = make_client()
+        client = PDCClient(options.server)
+        if options.comment:
+            client.set_comment(options.comment)
     except BeanBagException as e:
         print "%d %s" % (e.response.status_code, e.response.content)
     except Exception as e:
         print str(e)
     else:
-        with RequestMethod(client, session, options.resource,
+        with RequestMethod(client, options.resource,
                            options.traceback, options.debug) as request:
             print json.dumps(request.dispatch(options.request, data),
                              indent=4, sort_keys=True)
