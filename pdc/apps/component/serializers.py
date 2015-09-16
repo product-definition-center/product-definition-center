@@ -12,7 +12,6 @@ from django.utils import six
 from django.utils.text import capfirst
 
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 
 from pdc.apps.contact.models import Contact, ContactRole
 from pdc.apps.contact.serializers import RoleContactSerializer
@@ -429,10 +428,6 @@ class ReleaseComponentSerializer(DynamicFieldsSerializerMixin,
         fields = ('id', 'release', 'bugzilla_component', 'brew_package', 'global_component',
                   'name', 'dist_git_branch', 'dist_git_web_url', 'active',
                   'contacts', 'type')
-        validators = [UniqueTogetherValidator(
-            queryset=ReleaseComponent.objects.all(),
-            fields=('name', 'release', 'global_component')
-        )]
 
 
 class GroupTypeSerializer(StrictSerializerMixin, serializers.ModelSerializer):
