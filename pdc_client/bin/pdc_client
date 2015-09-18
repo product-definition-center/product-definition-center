@@ -172,10 +172,11 @@ if __name__ == "__main__":
 
     data = load_data(options)
 
-    for key, value in data.iteritems():
-        if options.request.upper() == 'GET' and not value and value is not False:
-            # empty string won't be lost
-            data[key] = ''
+    if isinstance(data, dict):
+        for key, value in data.iteritems():
+            if options.request.upper() == 'GET' and not value and value is not False:
+                # empty string won't be lost
+                data[key] = ''
 
     try:
         client, session = make_client()
