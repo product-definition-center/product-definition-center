@@ -16,11 +16,12 @@ install:
     - pip install -r requirements/devel.txt
     - sed -i -E '/import (koji|rpm)/d' $(python -vc 'import kobo.rpmlib' 2>&1 | grep 'import kobo.rpmlib' | awk '{print$NF}' | sed 's/pyc$/py/')
 script:
-    - coverage run --source=contrib,pdc --omit='*tests.py,*/migrations/*,pdc/settings*' manage.py test --settings pdc.settings_test
+    - coverage run --parallel-mode --source=contrib,pdc --omit='*tests.py,*/migrations/*,pdc/settings*' manage.py test --settings pdc.settings_test contrib pdc
     - make flake8
-    - make extra_test
+    - coverage run --parallel-mode --source=pdc_client client_test_run.py
 after_success:
-    coveralls
+    - coverage combine
+    - coveralls
 cache:
     directories:
         - $HOME/.cache/pip

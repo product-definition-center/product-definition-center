@@ -6,7 +6,7 @@
 #
 import json
 
-from pdc_client.plugins import PDCClientPlugin
+from pdc_client.plugin_helpers import PDCClientPlugin
 
 
 class PermissionPlugin(PDCClientPlugin):

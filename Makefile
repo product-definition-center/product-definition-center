@@ -15,16 +15,22 @@ flake8:
 run:
 	python manage.py runserver 0.0.0.0:8000
 
+all_tests: test api_doc_test client_test
+
 test:
-	python manage.py test --settings pdc.settings_test
+	python manage.py test --settings pdc.settings_test pdc contrib
 
 cover_test:
-	coverage run --parallel-mode manage.py test --settings pdc.settings_test
+	coverage run --parallel-mode manage.py test --settings pdc.settings_test pdc contrib
+	coverage run --parallel-mode client_test_run.py
 	coverage combine
 	coverage html --rcfile=tox.ini
 
-extra_test:
+api_doc_test:
 	python manage.py test --settings pdc.settings_test tests.check_api_doc
+
+client_test:
+	python client_test_run.py
 
 models_svg: export DJANGO_SETTINGS_MODULE=pdc.settings_graph_models
 models_svg:
