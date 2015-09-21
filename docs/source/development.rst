@@ -79,6 +79,37 @@ Option 2: Start it on virtualenv
   to active *pdc* virtualenv and install all the deps.
 
 
+Option 3: Start it on Docker
+````````````````````````````````
+
+* Install Docker: the link: https://docs.docker.com/installation/ will share the steps.
+  If you can't install docker via the following command, please check the link in detail.
+  ::
+    $ sudo yum install docker-engine
+  Then start the Docker daemon.
+  ::
+    $ sudo service docker start
+
+* Use this to build a new image
+  ::
+    $ sudo docker build -t <YOUR_NAME>/pdc <the directory your Dockerfile is located>
+
+* Running the container
+  ::
+    $ docker run -it -P -v $PWD:$PWD <YOUR_NAME>/pdc python $PWD/manage.py runserver 0.0.0.0:8000
+
+* Check the addresses
+   step1. Check the address of the docker machine
+       127.0.0.1 --> DOCKER_HOST
+
+   step2. Check the mapped port of your running container
+   ::
+       $ sudo docker ps -l --> PORTS
+
+* Access it
+ visit <DOCKER_HOST:PORTS> on your web browser
+
+
 Customize settings
 ------------------
 
