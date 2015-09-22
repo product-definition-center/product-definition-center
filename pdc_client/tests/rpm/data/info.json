@@ -1,0 +1,21 @@
+{
+    "id": 1,
+        "name": "bash",
+        "epoch": 0,
+        "version": "4.3.42",
+        "release": 1,
+        "arch": "x86_64",
+        "srpm_name": "bash",
+        "srpm_nevra": "bash-4.3.42-1.src",
+        "filename": "bash-0:4.3.42-1.x86_64.rpm",
+        "linked_composes": ["compose-1"],
+        "linked_releases": ["release-1"],
+        "dependencies": {
+            "requires": ["glibc > 0"],
+            "obsoletes": [],
+            "recommends": [],
+            "suggests": [],
+            "conflicts": [],
+            "provides": []
+        }
+}

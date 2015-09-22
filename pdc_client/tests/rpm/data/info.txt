@@ -1,0 +1,18 @@
+ID                   1
+Name                 bash
+Epoch                0
+Version              4.3.42
+Release              1
+Arch                 x86_64
+SRPM Name            bash
+SRPM NEVRA           bash-4.3.42-1.src
+Filename             bash-0:4.3.42-1.x86_64.rpm
+
+Included in composes:
+compose-1
+
+Linked to releases:
+release-1
+
+Requires:
+glibc > 0

@@ -100,10 +100,7 @@ class RPMPlugin(PDCClientPlugin):
                     print dep
 
     def rpm_create(self, args):
-        data = {}
-        for key, value in args.__dict__.iteritems():
-            if key.startswith('data_') and value is not None:
-                data[key[5:]] = value if value != '' else None
+        data = extract_arguments(args)
         self.logger.debug('Creating rpm with data %r', data)
         response = self.client.rpms._(data)
         self.rpm_info(args, response['id'])
