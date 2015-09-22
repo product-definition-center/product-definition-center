@@ -1,0 +1,18 @@
+File Name       unique_image.iso
+Image Type      dvd
+Image Format    iso
+Arch            x86_64
+Disc            1 / 1
+Modified        1442923687 (2015-09-22 12:08:07)
+Size            123456789 (117.7 MiB)
+Bootable        yes
+Volume ID       VolumeID
+Implant MD5     00000000000000000000000000000000
+
+Checksums:
+ MD5     11111111111111111111111111111111
+ SHA1    2222222222222222222222222222222222222222
+ SHA256  3333333333333333333333333333333333333333333333333333333333333333
+
+Used in composes:
+ * compose-1

@@ -77,7 +77,7 @@ class ImagePlugin(PDCClientPlugin):
             print 'Not found'
             sys.exit(1)
         elif image['count'] > 1:
-            print 'More that one image with that name, use --sha256 to specify.'
+            print 'More than one image with that name, use --sha256 to specify.'
             self._print_image_list(image['results'], True)
             sys.exit(1)
         else:
@@ -86,18 +86,19 @@ class ImagePlugin(PDCClientPlugin):
                 print json.dumps(image)
                 return
 
-            mtime = datetime.fromtimestamp(image['mtime'])
+            mtime = datetime.utcfromtimestamp(image['mtime'])
 
             fmt = '{:15} {}'
             print fmt.format('File Name', image['file_name'])
             print fmt.format('Image Type', image['image_type'])
             print fmt.format('Image Format', image['image_format'])
             print fmt.format('Arch', image['arch'])
-            print fmt.format('Disk', '{} / {}'.format(image['disc_number'], image['disc_count']))
+            print fmt.format('Disc', '{} / {}'.format(image['disc_number'], image['disc_count']))
             print fmt.format('Modified', '{} ({})'.format(image['mtime'], mtime))
             print fmt.format('Size', '{} ({})'.format(image['size'], size_format(image['size'])))
             print fmt.format('Bootable', 'yes' if image['bootable'] else 'no')
             print fmt.format('Volume ID', image['volume_id'])
+            print fmt.format('Implant MD5', image['implant_md5'])
 
             print '\nChecksums:'
             print ' {:7} {}'.format('MD5', image['md5'])

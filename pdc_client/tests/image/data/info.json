@@ -1,0 +1,19 @@
+{
+  "composes": [
+    "compose-1"
+  ],
+  "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+  "sha1": "2222222222222222222222222222222222222222",
+  "md5": "11111111111111111111111111111111",
+  "implant_md5": "00000000000000000000000000000000",
+  "volume_id": "VolumeID",
+  "bootable": true,
+  "file_name": "unique_image.iso",
+  "image_type": "dvd",
+  "image_format": "iso",
+  "arch": "x86_64",
+  "disc_number": 1,
+  "disc_count": 1,
+  "mtime": 1442923687,
+  "size": 123456789
+}
