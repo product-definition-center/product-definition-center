@@ -1,0 +1,17 @@
+[
+    {
+
+        "release_id": "release-1.0",
+        "active": true,
+        "name": "Test Release",
+        "version": "1.0",
+        "short": "release",
+        "product_version": "release-1",
+        "base_product": null,
+        "release_type": "ga",
+        "integrated_with": null,
+        "bugzilla": {"product": "Test Release"},
+        "dist_git": {"branch": "release-1.0-candidate"},
+        "compose_set": []
+    }
+]

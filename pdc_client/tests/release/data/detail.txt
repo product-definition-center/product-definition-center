@@ -1,0 +1,19 @@
+Release ID           release-1.0
+Name                 Test Release
+Short Name           release
+Version              1.0
+Type                 ga
+Product Version      release-1
+Base Product         
+Activity             active
+Integrated With      
+
+Bugzilla
+Product              Test Release
+
+Dist Git
+Branch               release-1.0-candidate
+
+Variants
+UID                       ID                   Name                 Type            Arches
+Server                    Server               Server               variant         x86_64, s390x
