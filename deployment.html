@@ -1,0 +1,160 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>4. Deployment &mdash; PDC 0.1.0-1.21.gb3ffad2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0-1.21.gb3ffad2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PDC 0.1.0-1.21.gb3ffad2 documentation" href="index.html" />
+    <link rel="next" title="5. Bulk operations" href="bulk_operations.html" />
+    <link rel="prev" title="3. Release" href="release.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="bulk_operations.html" title="5. Bulk operations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="release.html" title="3. Release"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PDC 0.1.0-1.21.gb3ffad2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="deployment">
+<span id="id1"></span><h1>4. Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="install-via-yum">
+<h2>4.1. Install via yum<a class="headerlink" href="#install-via-yum" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><pre>$ yum install pdc-server</pre>
+</div>
+<p>The RPM includes a cron job to perform daily synchronization of users with
+LDAP. It is installed to <tt class="docutils literal"><span class="pre">/etc/cron.daily</span></tt> and does not need any
+configuration.</p>
+</div>
+<div class="section" id="configure-django-settings">
+<h2>4.2. Configure Django settings<a class="headerlink" href="#configure-django-settings" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># mv settings_local.py.dist to settings_local.py</span>
+<span class="c"># change database settings in /usr/lib/pythonX.Y/site-packages/pdc/settings_local.py</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="initialize-database">
+<h2>4.3. Initialize database<a class="headerlink" href="#initialize-database" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><pre># create database
+$ su - postgres
+$ psql
+postgres=# create database "db_name" owner "user_name";
+postgres=# \q
+
+# migrate database
+$ django-admin migrate --settings=pdc.settings --noinput</pre>
+</div>
+</div>
+<div class="section" id="collect-static">
+<h2>4.4. Collect static<a class="headerlink" href="#collect-static" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><pre>$ django-admin collectstatic --settings=pdc.settings</pre>
+</div>
+</div>
+<div class="section" id="config-apache">
+<h2>4.5. Config apache<a class="headerlink" href="#config-apache" title="Permalink to this headline">¶</a></h2>
+<p>replace <tt class="docutils literal"><span class="pre">PDC_HOSTNAME</span></tt> with server&#8217;s hostname in <tt class="docutils literal"><span class="pre">/etc/httpd/conf.d/pdc.conf</span></tt></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">4. Deployment</a><ul>
+<li><a class="reference internal" href="#install-via-yum">4.1. Install via yum</a></li>
+<li><a class="reference internal" href="#configure-django-settings">4.2. Configure Django settings</a></li>
+<li><a class="reference internal" href="#initialize-database">4.3. Initialize database</a></li>
+<li><a class="reference internal" href="#collect-static">4.4. Collect static</a></li>
+<li><a class="reference internal" href="#config-apache">4.5. Config apache</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="release.html"
+                        title="previous chapter">3. Release</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="bulk_operations.html"
+                        title="next chapter">5. Bulk operations</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/deployment.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="bulk_operations.html" title="5. Bulk operations"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="release.html" title="3. Release"
+             >previous</a> |</li>
+        <li><a href="index.html">PDC 0.1.0-1.21.gb3ffad2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014-2015, PDC Devel Team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
