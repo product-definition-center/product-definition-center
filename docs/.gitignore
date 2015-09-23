@@ -1,0 +1,3 @@
+# default ignored by sphinx-deployment
+_deploy
+build
