@@ -1,0 +1,19 @@
+Compose ID                awesome-product-20130203.7
+Compose Label             RC-3.0
+Compose Date              2013-02-03
+Compose Respin            0
+Compose Type              nightly
+Acceptance Testing        untested
+Deleted                   False
+Release                   aifv-5802
+Rpm Mapping Template      https://pdc.example.com/rest_api/v1/composes/awesome-product-20130203.7/rpm-mapping/{{package}}/
+
+Linked Releases
+Release                   sap-7.0-awesome-product
+
+Sigkeys
+Sigkey                    fd431d51
+
+Rtt Tested Architectures
+Variant                   Arches          Testing Status
+Workstation               x86_64          untested

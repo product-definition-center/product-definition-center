@@ -1,0 +1,22 @@
+{
+    "compose_id": "awesome-product-20130203.7",
+    "compose_date": "2013-02-03",
+    "compose_type": "nightly",
+    "compose_respin": 0,
+    "release": "aifv-5802",
+    "compose_label": "RC-3.0",
+    "deleted": false,
+    "rpm_mapping_template": "https://pdc.example.com/rest_api/v1/composes/awesome-product-20130203.7/rpm-mapping/{{package}}/",
+    "sigkeys": [
+        "fd431d51"
+    ],
+    "acceptance_testing": "untested",
+    "linked_releases": [
+        "sap-7.0-awesome-product"
+    ],
+    "rtt_tested_architectures": {
+        "Workstation": {
+            "x86_64": "untested"
+        }
+    }
+}
