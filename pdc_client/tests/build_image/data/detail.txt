@@ -1,0 +1,4 @@
+Image ID             test_image_1
+Image Format         docker
+URL                  http://127.0.0.1:8000/rest_api/v1/build-images/1/
+MD5                  11112222333344445555666677778899

@@ -1,0 +1,9 @@
+{
+    "archives": [],
+    "image_format": "docker",
+    "image_id": "test_image_1",
+    "md5": "11112222333344445555666677778899",
+    "releases": [],
+    "rpms": [],
+    "url": "http://127.0.0.1:8000/rest_api/v1/build-images/1/"
+}
