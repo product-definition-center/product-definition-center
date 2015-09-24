@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>6. Messaging &mdash; PDC 0.1.0-1.21.gb3ffad2 documentation</title>
+    <title>6. Messaging &mdash; PDC 0.1.0-1.24.g3da7039 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '0.1.0-1.21.gb3ffad2',
+        URL_ROOT:    './',
+        VERSION:     '0.1.0-1.24.g3da7039',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,11 +23,11 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.1.0-1.21.gb3ffad2 documentation" href="index.html" />
+    <link rel="top" title="PDC 0.1.0-1.24.g3da7039 documentation" href="index.html" />
     <link rel="prev" title="5. Bulk operations" href="bulk_operations.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -38,14 +36,14 @@
         <li class="right" >
           <a href="bulk_operations.html" title="5. Bulk operations"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PDC 0.1.0-1.21.gb3ffad2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.24.g3da7039 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="messaging">
 <span id="id1"></span><h1>6. Messaging<a class="headerlink" href="#messaging" title="Permalink to this headline">¶</a></h1>
@@ -59,7 +57,7 @@ and push generated messages into it while processing the request in the view,
 if no error occurs, before response get returned to user, we pop out all the messages
 and invoke <cite>Messenger</cite> to send them to the Message Bus.</p>
 <p>PDC Messaging Overview and Dataflow:</p>
-<div class="highlight-python"><pre>                 User Request           User Response
+<div class="highlight-python"><div class="highlight"><pre>                 User Request           User Response
                       +                      ^
 +-----+               |                      |
 | PDC |               |                      |
@@ -84,12 +82,13 @@ and invoke <cite>Messenger</cite> to send them to the Message Bus.</p>
 |   |                 v -----+--------------&gt;+      |                   |
 |   |                                               |                   |
 |   +-----------------------------------------------+                   |
-+-----------------------------------------------------------------------+</pre>
++-----------------------------------------------------------------------+
+</pre></div>
 </div>
 </div>
 <div class="section" id="supported-messengers">
 <h2>6.2. Supported Messengers<a class="headerlink" href="#supported-messengers" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><pre>                                     +----------------------------------+
+<div class="highlight-python"><div class="highlight"><pre>                                     +----------------------------------+
                                      |           PDC Messenger          |
                                      +----------------------------------+
                                      |  + __init__()                    |
@@ -102,7 +101,8 @@ and invoke <cite>Messenger</cite> to send them to the Message Bus.</p>
                |                   |                  |                   |                   |
 +--------------+-+ +---------------+----+ +-----------+--------+ +--------+--------------+ +--+--------------------+
 | DummyMessenger | |  FedmsgMessenger   | |  KombuMessenger    | |    ProtonMessenger    | |     StompMessenger    |
-+----------------+ +--------------------+ +--------------------+ +-----------------------+ +-----------------------+</pre>
++----------------+ +--------------------+ +--------------------+ +-----------------------+ +-----------------------+
+</pre></div>
 </div>
 <p>There are five messengers that PDC provided, you should choose which one to use according to your messaging
 infrastructure. Also you could write your own messenger based on your own requirements.</p>
@@ -226,7 +226,7 @@ acceptable for your application, we recommend you to use <cite>StompMessenger</c
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
@@ -241,12 +241,14 @@ acceptable for your application, we recommend you to use <cite>StompMessenger</c
   <h4>Previous topic</h4>
   <p class="topless"><a href="bulk_operations.html"
                         title="previous chapter">5. Bulk operations</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/messaging.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/messaging.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -263,7 +265,7 @@ acceptable for your application, we recommend you to use <cite>StompMessenger</c
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -272,12 +274,12 @@ acceptable for your application, we recommend you to use <cite>StompMessenger</c
         <li class="right" >
           <a href="bulk_operations.html" title="5. Bulk operations"
              >previous</a> |</li>
-        <li><a href="index.html">PDC 0.1.0-1.21.gb3ffad2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.24.g3da7039 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2014-2015, PDC Devel Team.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

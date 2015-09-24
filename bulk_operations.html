@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>5. Bulk operations &mdash; PDC 0.1.0-1.21.gb3ffad2 documentation</title>
+    <title>5. Bulk operations &mdash; PDC 0.1.0-1.24.g3da7039 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '0.1.0-1.21.gb3ffad2',
+        URL_ROOT:    './',
+        VERSION:     '0.1.0-1.24.g3da7039',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,12 +23,12 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.1.0-1.21.gb3ffad2 documentation" href="index.html" />
+    <link rel="top" title="PDC 0.1.0-1.24.g3da7039 documentation" href="index.html" />
     <link rel="next" title="6. Messaging" href="messaging.html" />
     <link rel="prev" title="4. Deployment" href="deployment.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -42,14 +40,14 @@
         <li class="right" >
           <a href="deployment.html" title="4. Deployment"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PDC 0.1.0-1.21.gb3ffad2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.24.g3da7039 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="bulk-operations">
 <h1>5. Bulk operations<a class="headerlink" href="#bulk-operations" title="Permalink to this headline">¶</a></h1>
@@ -68,25 +66,25 @@ items in the list are same as when creating a single item in the collection.</p>
 <p>The items will be created in the order in which they were specified in the
 request.</p>
 <p>The response from this call will include a list of whatever would be returned
-by creating the resources one by one. The status code on success is <tt class="docutils literal"><span class="pre">201</span>
-<span class="pre">CREATED</span></tt>.</p>
+by creating the resources one by one. The status code on success is <code class="docutils literal"><span class="pre">201</span>
+<span class="pre">CREATED</span></code>.</p>
 <p>Note that the only way in which the bulk create differs from regular create is
 the request data.</p>
 </div>
 <div class="section" id="delete">
 <h2>5.2. Delete<a class="headerlink" href="#delete" title="Permalink to this headline">¶</a></h2>
-<p>To delete multiple items in a collection, send a <tt class="docutils literal"><span class="pre">DELETE</span></tt> request to the list
+<p>To delete multiple items in a collection, send a <code class="docutils literal"><span class="pre">DELETE</span></code> request to the list
 URL. The request should include a body which should be a list of identifiers of
 items to be deleted.</p>
 <p>The items will be deleted in the order in which they were specified in the
 request.</p>
 <p>The exact format of the identifier is collection specific. Generally it should
 be the identifier you would append to the URL to get a detail view of the item.</p>
-<p>On success the response will be <tt class="docutils literal"><span class="pre">204</span> <span class="pre">NO</span> <span class="pre">CONTENT</span></tt>.</p>
+<p>On success the response will be <code class="docutils literal"><span class="pre">204</span> <span class="pre">NO</span> <span class="pre">CONTENT</span></code>.</p>
 </div>
 <div class="section" id="update">
 <h2>5.3. Update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h2>
-<p>Updating multiple items is possible via the <tt class="docutils literal"><span class="pre">PUT</span></tt> or <tt class="docutils literal"><span class="pre">PATCH</span></tt> method
+<p>Updating multiple items is possible via the <code class="docutils literal"><span class="pre">PUT</span></code> or <code class="docutils literal"><span class="pre">PATCH</span></code> method
 directed to the list URL of a collection. In both cases, the request body
 should be a JSON object, where keys are identifiers of objects (same as for
 bulk delete) and their values describe desired changes.</p>
@@ -95,7 +93,7 @@ the same structure as when updating a single item.</p>
 <p>Because JSON objects are not ordered, the order in which the items will be
 updated is not specified and can be different to what is specified in the
 request.</p>
-<p>On success the response will have the <tt class="docutils literal"><span class="pre">200</span> <span class="pre">OK</span></tt> status code. The response body
+<p>On success the response will have the <code class="docutils literal"><span class="pre">200</span> <span class="pre">OK</span></code> status code. The response body
 will include a JSON object with the same structure as in the original request,
 only change descriptions will be replaced with whatever gets returned by the
 update method for single item. Note that if the requested change results in a
@@ -109,18 +107,19 @@ request will be aborted and no change log will be recorded. The status code of
 an error response depends on what went wrong.</p>
 <p>The structure of the response body should (in case of client errors) consist of
 a JSON object with the following structure.:</p>
-<div class="highlight-python"><pre>{
-    "detail":             &lt;string|object&gt;,
-    "id_of_invalid_data": &lt;string|int&gt;,
-    "invalid_data":       object
-}</pre>
+<div class="highlight-python"><div class="highlight"><pre>{
+    &quot;detail&quot;:             &lt;string|object&gt;,
+    &quot;id_of_invalid_data&quot;: &lt;string|int&gt;,
+    &quot;invalid_data&quot;:       object
+}
+</pre></div>
 </div>
-<p>The <tt class="docutils literal"><span class="pre">detail</span></tt> key denotes a more precise description of the error. Its value
+<p>The <code class="docutils literal"><span class="pre">detail</span></code> key denotes a more precise description of the error. Its value
 is supplied by the single item manipulating function.</p>
-<p>The <tt class="docutils literal"><span class="pre">id_of_invalid_data</span></tt> describes which part of the request caused the error.
+<p>The <code class="docutils literal"><span class="pre">id_of_invalid_data</span></code> describes which part of the request caused the error.
 For create, it is an integer index from the request array (starting from zero),
 for update or delete it is the identifier.</p>
-<p>The <tt class="docutils literal"><span class="pre">invalid_data</span></tt> contains the actual part of request that was invalid. It
+<p>The <code class="docutils literal"><span class="pre">invalid_data</span></code> contains the actual part of request that was invalid. It
 is only present when creating or updating.</p>
 <p>Please note that the processing always stops when encountering the first error.
 It may be very well possible that even when the reported error is fixed, the
@@ -132,7 +131,7 @@ request will fail with another error.</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
@@ -151,12 +150,14 @@ request will fail with another error.</p>
   <h4>Next topic</h4>
   <p class="topless"><a href="messaging.html"
                         title="next chapter">6. Messaging</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/bulk_operations.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/bulk_operations.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -173,7 +174,7 @@ request will fail with another error.</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -185,12 +186,12 @@ request will fail with another error.</p>
         <li class="right" >
           <a href="deployment.html" title="4. Deployment"
              >previous</a> |</li>
-        <li><a href="index.html">PDC 0.1.0-1.21.gb3ffad2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.24.g3da7039 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2014-2015, PDC Devel Team.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

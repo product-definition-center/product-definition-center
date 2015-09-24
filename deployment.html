@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>4. Deployment &mdash; PDC 0.1.0-1.21.gb3ffad2 documentation</title>
+    <title>4. Deployment &mdash; PDC 0.1.0-1.24.g3da7039 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '0.1.0-1.21.gb3ffad2',
+        URL_ROOT:    './',
+        VERSION:     '0.1.0-1.24.g3da7039',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,12 +23,12 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.1.0-1.21.gb3ffad2 documentation" href="index.html" />
+    <link rel="top" title="PDC 0.1.0-1.24.g3da7039 documentation" href="index.html" />
     <link rel="next" title="5. Bulk operations" href="bulk_operations.html" />
     <link rel="prev" title="3. Release" href="release.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -42,23 +40,24 @@
         <li class="right" >
           <a href="release.html" title="3. Release"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PDC 0.1.0-1.21.gb3ffad2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.24.g3da7039 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="deployment">
 <span id="id1"></span><h1>4. Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="install-via-yum">
 <h2>4.1. Install via yum<a class="headerlink" href="#install-via-yum" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><pre>$ yum install pdc-server</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ yum install pdc-server
+</pre></div>
 </div>
 <p>The RPM includes a cron job to perform daily synchronization of users with
-LDAP. It is installed to <tt class="docutils literal"><span class="pre">/etc/cron.daily</span></tt> and does not need any
+LDAP. It is installed to <code class="docutils literal"><span class="pre">/etc/cron.daily</span></code> and does not need any
 configuration.</p>
 </div>
 <div class="section" id="configure-django-settings">
@@ -70,24 +69,26 @@ configuration.</p>
 </div>
 <div class="section" id="initialize-database">
 <h2>4.3. Initialize database<a class="headerlink" href="#initialize-database" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><pre># create database
+<div class="highlight-python"><div class="highlight"><pre># create database
 $ su - postgres
 $ psql
-postgres=# create database "db_name" owner "user_name";
+postgres=# create database &quot;db_name&quot; owner &quot;user_name&quot;;
 postgres=# \q
 
 # migrate database
-$ django-admin migrate --settings=pdc.settings --noinput</pre>
+$ django-admin migrate --settings=pdc.settings --noinput
+</pre></div>
 </div>
 </div>
 <div class="section" id="collect-static">
 <h2>4.4. Collect static<a class="headerlink" href="#collect-static" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><pre>$ django-admin collectstatic --settings=pdc.settings</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ django-admin collectstatic --settings=pdc.settings
+</pre></div>
 </div>
 </div>
 <div class="section" id="config-apache">
 <h2>4.5. Config apache<a class="headerlink" href="#config-apache" title="Permalink to this headline">¶</a></h2>
-<p>replace <tt class="docutils literal"><span class="pre">PDC_HOSTNAME</span></tt> with server&#8217;s hostname in <tt class="docutils literal"><span class="pre">/etc/httpd/conf.d/pdc.conf</span></tt></p>
+<p>replace <code class="docutils literal"><span class="pre">PDC_HOSTNAME</span></code> with server&#8217;s hostname in <code class="docutils literal"><span class="pre">/etc/httpd/conf.d/pdc.conf</span></code></p>
 </div>
 </div>
 
@@ -95,7 +96,7 @@ $ django-admin migrate --settings=pdc.settings --noinput</pre>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
@@ -115,12 +116,14 @@ $ django-admin migrate --settings=pdc.settings --noinput</pre>
   <h4>Next topic</h4>
   <p class="topless"><a href="bulk_operations.html"
                         title="next chapter">5. Bulk operations</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/deployment.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/deployment.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -137,7 +140,7 @@ $ django-admin migrate --settings=pdc.settings --noinput</pre>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -149,12 +152,12 @@ $ django-admin migrate --settings=pdc.settings --noinput</pre>
         <li class="right" >
           <a href="release.html" title="3. Release"
              >previous</a> |</li>
-        <li><a href="index.html">PDC 0.1.0-1.21.gb3ffad2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.24.g3da7039 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2014-2015, PDC Devel Team.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>1. Setup development environment &mdash; PDC 0.1.0-1.21.gb3ffad2 documentation</title>
+    <title>1. Setup development environment &mdash; PDC 0.1.0-1.24.g3da7039 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '0.1.0-1.21.gb3ffad2',
+        URL_ROOT:    './',
+        VERSION:     '0.1.0-1.24.g3da7039',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,12 +23,12 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.1.0-1.21.gb3ffad2 documentation" href="index.html" />
+    <link rel="top" title="PDC 0.1.0-1.24.g3da7039 documentation" href="index.html" />
     <link rel="next" title="2. PDC Model Graphs" href="model_graphs.html" />
     <link rel="prev" title="Welcome to PDC’s documentation!" href="index.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -42,20 +40,21 @@
         <li class="right" >
           <a href="index.html" title="Welcome to PDC’s documentation!"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PDC 0.1.0-1.21.gb3ffad2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.24.g3da7039 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="setup-development-environment">
 <span id="development"></span><h1>1. Setup development environment<a class="headerlink" href="#setup-development-environment" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="source-code">
 <h2>1.1. Source Code<a class="headerlink" href="#source-code" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><pre>$ git clone https://github.com/release-engineering/product-definition-center.git</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ git clone https://github.com/release-engineering/product-definition-center.git
+</pre></div>
 </div>
 </div>
 <div class="section" id="installation">
@@ -91,21 +90,25 @@ REPOs: <a class="reference external" href="https://copr.fedoraproject.org/coprs/
 <h3>1.2.2. Option 2: Start it on virtualenv<a class="headerlink" href="#option-2-start-it-on-virtualenv" title="Permalink to this headline">¶</a></h3>
 <ul>
 <li><p class="first">Koji is not available on PyPI. You must install the <cite>koji</cite> package to your system via</p>
-<div class="highlight-python"><pre>$ sudo yum install koji</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo yum install koji
+</pre></div>
 </div>
 <p>before creating a virtualenv.</p>
 </li>
 <li><p class="first">After that, run</p>
-<div class="highlight-python"><pre>$ pip install virtualenvwrapper</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ pip install virtualenvwrapper
+</pre></div>
 </div>
 <p>and setup according to &#8216;Setup&#8217; steps in /usr/bin/virtualenvwrapper.sh. Then do with</p>
-<div class="highlight-python"><pre>$ mkvirtualenv pdc --system-site-packages</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ mkvirtualenv pdc --system-site-packages
+</pre></div>
 </div>
 <p>to include <cite>koji</cite> into your <em>pdc</em> virtualenv.</p>
 </li>
 <li><p class="first">run the following</p>
-<div class="highlight-python"><pre>$ workon pdc
-$ pip install -r requirements/devel.txt</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ workon pdc
+$ pip install -r requirements/devel.txt
+</pre></div>
 </div>
 <p>to active <em>pdc</em> virtualenv and install all the deps.</p>
 </li>
@@ -116,18 +119,22 @@ $ pip install -r requirements/devel.txt</pre>
 <ul>
 <li><p class="first">Install Docker: the link: <a class="reference external" href="https://docs.docker.com/installation/">https://docs.docker.com/installation/</a> will share the steps.
 If you can&#8217;t install docker via the following command, please check the link in detail.</p>
-<div class="highlight-python"><pre>$ sudo yum install docker-engine</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo yum install docker-engine
+</pre></div>
 </div>
 <p>Then start the Docker daemon.</p>
-<div class="highlight-python"><pre>$ sudo service docker start</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo service docker start
+</pre></div>
 </div>
 </li>
 <li><p class="first">Use this to build a new image</p>
-<div class="highlight-python"><pre>$ sudo docker build -t &lt;YOUR_NAME&gt;/pdc &lt;the directory your Dockerfile is located&gt;</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo docker build -t &lt;YOUR_NAME&gt;/pdc &lt;the directory your Dockerfile is located&gt;
+</pre></div>
 </div>
 </li>
 <li><p class="first">Running the container</p>
-<div class="highlight-python"><pre>$ docker run -it -P -v $PWD:$PWD &lt;YOUR_NAME&gt;/pdc python $PWD/manage.py runserver 0.0.0.0:8000</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ docker run -it -P -v $PWD:$PWD &lt;YOUR_NAME&gt;/pdc python $PWD/manage.py runserver 0.0.0.0:8000
+</pre></div>
 </div>
 </li>
 <li><dl class="first docutils">
@@ -138,7 +145,8 @@ If you can&#8217;t install docker via the following command, please check the li
 </dd>
 </dl>
 <p>step2. Check the mapped port of your running container</p>
-<div class="last highlight-python"><pre>$ sudo docker ps -l --&gt; PORTS</pre>
+<div class="last highlight-python"><div class="highlight"><pre>$ sudo docker ps -l --&gt; PORTS
+</pre></div>
 </div>
 </dd>
 </dl>
@@ -153,7 +161,8 @@ If you can&#8217;t install docker via the following command, please check the li
 <div class="section" id="customize-settings">
 <h2>1.3. Customize settings<a class="headerlink" href="#customize-settings" title="Permalink to this headline">¶</a></h2>
 <p>You can use the dist settings template by copying it to <cite>settings_local.py</cite>:</p>
-<div class="highlight-python"><pre>$ cp settings_local.py.dist settings_local.py</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ cp settings_local.py.dist settings_local.py
+</pre></div>
 </div>
 <p>Feel free to customize your <cite>settings_local.py</cite>. Changes will be populated automatically. In local development environment,
 you may need to set &#8220;DEBUG = True&#8221; and comment out &#8221; ALLOWED_HOSTS&#8221; setting, meanwhile uncomment &#8216;REST_FRAMEWORK&#8217; section
@@ -162,13 +171,15 @@ but keep &#8216;DEFAULT_PERMISSION_CLASSES&#8217; item commented.</p>
 <div class="section" id="init-db">
 <h2>1.4. Init DB<a class="headerlink" href="#init-db" title="Permalink to this headline">¶</a></h2>
 <p>To initialize database, run:</p>
-<div class="highlight-python"><pre>$ python manage.py migrate --noinput</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ python manage.py migrate --noinput
+</pre></div>
 </div>
 </div>
 <div class="section" id="run-devel-server">
 <h2>1.5. Run devel server<a class="headerlink" href="#run-devel-server" title="Permalink to this headline">¶</a></h2>
 <p>To run development server, run:</p>
-<div class="highlight-python"><pre>$ make run</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ make run
+</pre></div>
 </div>
 <p>For development you may find it useful to enable Django Development Toolbar.</p>
 <p>Related settings is documented in <cite>devel settings</cite> section in <cite>settings_local.py.dist</cite>.</p>
@@ -179,7 +190,7 @@ but keep &#8216;DEFAULT_PERMISSION_CLASSES&#8217; item commented.</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
@@ -204,12 +215,14 @@ but keep &#8216;DEFAULT_PERMISSION_CLASSES&#8217; item commented.</p>
   <h4>Next topic</h4>
   <p class="topless"><a href="model_graphs.html"
                         title="next chapter">2. PDC Model Graphs</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/development.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/development.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -226,7 +239,7 @@ but keep &#8216;DEFAULT_PERMISSION_CLASSES&#8217; item commented.</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -238,12 +251,12 @@ but keep &#8216;DEFAULT_PERMISSION_CLASSES&#8217; item commented.</p>
         <li class="right" >
           <a href="index.html" title="Welcome to PDC’s documentation!"
              >previous</a> |</li>
-        <li><a href="index.html">PDC 0.1.0-1.21.gb3ffad2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.24.g3da7039 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2014-2015, PDC Devel Team.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

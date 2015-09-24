@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>3. Release &mdash; PDC 0.1.0-1.21.gb3ffad2 documentation</title>
+    <title>3. Release &mdash; PDC 0.1.0-1.24.g3da7039 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '0.1.0-1.21.gb3ffad2',
+        URL_ROOT:    './',
+        VERSION:     '0.1.0-1.24.g3da7039',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,12 +23,12 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.1.0-1.21.gb3ffad2 documentation" href="index.html" />
+    <link rel="top" title="PDC 0.1.0-1.24.g3da7039 documentation" href="index.html" />
     <link rel="next" title="4. Deployment" href="deployment.html" />
     <link rel="prev" title="2. PDC Model Graphs" href="model_graphs.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -42,14 +40,14 @@
         <li class="right" >
           <a href="model_graphs.html" title="2. PDC Model Graphs"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PDC 0.1.0-1.21.gb3ffad2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.24.g3da7039 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="release">
 <span id="id1"></span><h1>3. Release<a class="headerlink" href="#release" title="Permalink to this headline">¶</a></h1>
@@ -96,7 +94,8 @@ Examples: 1.0.0-12.g1234abc, 1.0.0-s5.4.g1234abc.</p>
 <div class="section" id="tag">
 <h3>3.2.1. Tag<a class="headerlink" href="#tag" title="Permalink to this headline">¶</a></h3>
 <p>Every time we are ready to have another release, we should add one git tag, with <cite>tito</cite>, we just need to:</p>
-<div class="highlight-python"><pre>$ tito tag</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ tito tag
+</pre></div>
 </div>
 <p>It will:</p>
 <ul class="simple">
@@ -110,28 +109,32 @@ Examples: 1.0.0-12.g1234abc, 1.0.0-s5.4.g1234abc.</p>
 <h3>3.2.2. Test Build<a class="headerlink" href="#test-build" title="Permalink to this headline">¶</a></h3>
 <p>After we have our release tag, we should do some build tests including source tarball checking, and rpm building testing.</p>
 <blockquote>
-<div><div class="highlight-python"><pre># generate source tarball
+<div><div class="highlight-python"><div class="highlight"><pre># generate source tarball
 $ tito build --tgz --offline
 
 # local rpm build
-$ tito build --rpm --offline</pre>
+$ tito build --rpm --offline
+</pre></div>
 </div>
 </div></blockquote>
 <p>If everything goes well, you could go to next step and push your commit and tag to remote, otherwise you need to untag:</p>
-<div class="highlight-python"><pre>$ tito tag -u</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ tito tag -u
+</pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>During developing, we could also generate test build at any time we want, it will based on current <cite>HEAD</cite> instead of latest tag.</p>
-<div class="last highlight-python"><pre># generate test builds
-$ tito build --test --tgz/srpm/rpm</pre>
+<div class="last highlight-python"><div class="highlight"><pre># generate test builds
+$ tito build --test --tgz/srpm/rpm
+</pre></div>
 </div>
 </div>
 </div>
 <div class="section" id="push">
 <h3>3.2.3. Push<a class="headerlink" href="#push" title="Permalink to this headline">¶</a></h3>
 <p>When you&#8217;re happen with your builds, it&#8217;s time to push commit and tag to remote.</p>
-<div class="highlight-python"><pre>$ git push origin &amp;&amp; git push origin &lt;your_tag&gt;</pre>
+<div class="highlight-python"><div class="highlight"><pre>$ git push origin &amp;&amp; git push origin &lt;your_tag&gt;
+</pre></div>
 </div>
 </div>
 <div class="section" id="id2">
@@ -150,9 +153,10 @@ srpms.</p>
 <p>Currently we have two projects in <cite>Copr</cite>, <cite>pdc</cite> for all tag based releases and <cite>pdc-test</cite> for test builds. We have two
 release targets in <cite>tito</cite>, <cite>copr-pdc</cite> is for <cite>pdc</cite> in <cite>Copr</cite> and <cite>copr-pdc-test</cite> is for <cite>pdc-test</cite>, respectively.</p>
 <p>After all setup, release with <cite>tito</cite>:</p>
-<div class="highlight-python"><pre>$ tito release copr-pdc
+<div class="highlight-python"><div class="highlight"><pre>$ tito release copr-pdc
 # or
-$ tito release copr-pdc-test</pre>
+$ tito release copr-pdc-test
+</pre></div>
 </div>
 <p>Go and grab a cup of tea or coffee, after a minute or two the release build result will come out then.</p>
 <table class="docutils footnote" frame="void" id="id7" rules="none">
@@ -187,7 +191,7 @@ $ tito release copr-pdc-test</pre>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
@@ -210,12 +214,14 @@ $ tito release copr-pdc-test</pre>
   <h4>Next topic</h4>
   <p class="topless"><a href="deployment.html"
                         title="next chapter">4. Deployment</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/release.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/release.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -232,7 +238,7 @@ $ tito release copr-pdc-test</pre>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -244,12 +250,12 @@ $ tito release copr-pdc-test</pre>
         <li class="right" >
           <a href="model_graphs.html" title="2. PDC Model Graphs"
              >previous</a> |</li>
-        <li><a href="index.html">PDC 0.1.0-1.21.gb3ffad2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.24.g3da7039 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2014-2015, PDC Devel Team.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>
