@@ -1,0 +1,18 @@
+ID                   1
+Name                 Test Release Component
+Release ID           test_release
+Global Component     test_global_component
+Bugzilla Component   
+Brew Package         
+Dist Git Branch      test_branch
+Dist Git URL         http://pkgs.example.com/test_release_component
+Activity             active
+Type                 rpm
+Srpm Name            null
+Contacts:
+	Role:	test_role_a
+		Name:	Test Maillist
+		Email:	test_mail@example.com
+	Role:	test_role_b
+		Name:	Test User
+		Email:	test_user@example.com
