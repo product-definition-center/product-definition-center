@@ -177,6 +177,7 @@ FILTER_DEFS = {
     'CharFilter': 'string',
     'NullableCharFilter': 'string | null',
     'BooleanFilter': 'bool',
+    'CaseInsensitiveBooleanFilter': 'bool',
     'ActiveReleasesFilter': 'bool',
     'MultiIntFilter': 'int',
 }
@@ -225,6 +226,7 @@ def get_filters(view):
 SERIALIZERS_CACHE = {}
 SERIALIZER_DEFS = {
     'BooleanField': 'boolean',
+    'NullBooleanField': 'boolean',
     'CharField': 'string',
     'IntegerField': 'int',
     'HyperlinkedIdentityField': 'url',

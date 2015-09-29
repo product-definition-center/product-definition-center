@@ -1,0 +1,48 @@
+[
+    {
+        "pk": 1,
+        "model": "component.releasecomponent",
+        "fields": {
+            "release": 1,
+            "global_component": 1,
+            "name": "python27",
+            "type": 2
+        }
+    },
+    {
+        "pk": 2,
+        "model": "component.releasecomponent",
+        "fields": {
+            "release": 1,
+            "global_component": 2,
+            "name": "MySQL-python",
+            "type": 2
+        }
+    },
+    {
+        "pk": 3,
+        "model": "component.releasecomponent",
+        "fields": {
+            "release": 1,
+            "global_component": 1,
+            "name": "python27-rpm",
+            "type": 1
+        }
+    },
+    {
+        "pk": 1,
+        "model": "osbs.osbsrecord",
+        "fields": {
+            "component": 1,
+            "autorebuild": true
+        }
+    },
+    {
+        "pk": 2,
+        "model": "osbs.osbsrecord",
+        "fields": {
+            "component": 2,
+            "autorebuild": false
+        }
+    }
+]

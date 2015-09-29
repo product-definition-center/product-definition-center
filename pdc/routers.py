@@ -14,6 +14,7 @@ from pdc.apps.repository import views as repo_views
 from pdc.apps.common import views as common_views
 from pdc.apps.package import views as rpm_views
 from pdc.apps.utils import SortedRouter
+from pdc.apps.osbs import views as osbs_views
 
 
 router = SortedRouter.PDCRouter()
@@ -151,3 +152,6 @@ router.register(r'content-delivery-content-format', repo_views.ContentFormatView
                 base_name='contentdeliverycontentformat')
 router.register(r'content-delivery-service', repo_views.ServiceViewSet,
                 base_name='contentdeliveryservice')
+
+router.register(r'osbs', osbs_views.OSBSViewSet,
+                base_name='osbs')

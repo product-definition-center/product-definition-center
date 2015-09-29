@@ -438,14 +438,16 @@ class GroupTypeSerializer(StrictSerializerMixin, serializers.ModelSerializer):
         fields = ('id', 'name', 'description')
 
 
-class ReleaseComponentRelatedField(serializers.RelatedField):
-    doc_format = '{"id": "int", "name": "string"}'
+class ReleaseComponentField(serializers.RelatedField):
+    """Serializer field for including release component details."""
+    doc_format = '{"id": "int", "name": "string", "release": "Release.release_id"}'
 
     def to_representation(self, value):
         result = dict()
         if value:
             result['id'] = value.id
             result['name'] = value.name
+            result['release'] = value.release.release_id
         return result
 
     def to_internal_value(self, data):
@@ -469,6 +471,18 @@ class ReleaseComponentRelatedField(serializers.RelatedField):
         return rc
 
 
+class ReleaseComponentWithoutReleaseField(ReleaseComponentField):
+    """Exactly the same as ReleaseComponentField, but does not include release."""
+    doc_format = '{"id": "int", "name": "string"}'
+
+    def to_representation(self, value):
+        result = dict()
+        if value:
+            result['id'] = value.id
+            result['name'] = value.name
+        return result
+
+
 class GroupSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     group_type = serializers.SlugRelatedField(
         queryset=GroupType.objects.all(),
@@ -481,7 +495,7 @@ class GroupSerializer(StrictSerializerMixin, serializers.ModelSerializer):
         required=True
     )
     description = serializers.CharField(required=True)
-    components = ReleaseComponentRelatedField(
+    components = ReleaseComponentWithoutReleaseField(
         required=False,
         many=True,
         queryset=ReleaseComponent.objects.all()
@@ -516,18 +530,6 @@ class RCRelationshipTypeSerializer(StrictSerializerMixin, serializers.ModelSeria
         fields = ('name',)
 
 
-class RCForRelationshipRelatedField(ReleaseComponentRelatedField):
-    doc_format = '{"id": "int", "name": "string", "release": "Release.release_id"}'
-
-    def to_representation(self, value):
-        result = dict()
-        if value:
-            result['id'] = value.id
-            result['name'] = value.name
-            result['release'] = value.release.release_id
-        return result
-
-
 class ReleaseComponentRelationshipSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     type = ChoiceSlugField(
         queryset=ReleaseComponentRelationshipType.objects.all(),
@@ -535,11 +537,11 @@ class ReleaseComponentRelationshipSerializer(StrictSerializerMixin, serializers.
         required=True,
         source='relation_type'
     )
-    from_component = RCForRelationshipRelatedField(
+    from_component = ReleaseComponentField(
         required=True,
         queryset=ReleaseComponent.objects.all()
     )
-    to_component = RCForRelationshipRelatedField(
+    to_component = ReleaseComponentField(
         required=True,
         queryset=ReleaseComponent.objects.all()
     )
