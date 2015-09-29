@@ -123,16 +123,25 @@ def add_parser_arguments(parser, args, group=None, prefix=DATA_PREFIX):
 
 
 def extract_arguments(args, prefix=DATA_PREFIX):
-    """
-    Return a dict of arguments created by `add_parser_arguments`.
+    """Return a dict of arguments created by `add_parser_arguments`.
+
+    If the key in `args` contains two underscores, a nested dictionary will be
+    created. Only keys starting with given prefix are examined. The prefix is
+    stripped away and does not appear in the result.
     """
     data = {}
     for key, value in args.__dict__.iteritems():
         if key.startswith(prefix) and value is not None:
             parts = key[len(prefix):].split('__')
+            # Think of `d` as a pointer into the resulting nested dictionary.
+            # The `for` loop iterates over all parts of the key except the last
+            # to find the proper dict into which the value should be inserted.
+            # If the subdicts do not exist, they are created.
             d = data
             for p in parts[:-1]:
-                d[p] = {}
-                d = d[p]
+                assert p not in d or isinstance(d[p], dict)
+                d = d.setdefault(p, {})
+            # At this point `d` points to the correct dict and value can be
+            # inserted.
             d[parts[-1]] = value if value != '' else None
     return data
