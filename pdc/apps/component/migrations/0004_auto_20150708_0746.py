@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import django.db.models.deletion
-from pdc.apps.component.models import ReleaseComponentType
 
 
 def create_release_component_types(apps, schema_editor):
@@ -14,6 +13,7 @@ def create_release_component_types(apps, schema_editor):
         'iso',
         'composite'
     ]
+    ReleaseComponentType = apps.get_model('component', 'ReleaseComponentType')
     for rc_type in types:
         ReleaseComponentType.objects.create(name=rc_type)
 

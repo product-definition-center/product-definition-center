@@ -317,7 +317,7 @@ class ReleaseComponentTypeSerializer(StrictSerializerMixin, serializers.ModelSer
 
     class Meta:
         model = ReleaseComponentType
-        fields = ('name',)
+        fields = ('name', 'has_osbs')
 
 
 class ReleaseComponentSerializer(DynamicFieldsSerializerMixin,

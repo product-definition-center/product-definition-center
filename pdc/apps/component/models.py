@@ -147,6 +147,7 @@ class GlobalComponent(models.Model):
 
 class ReleaseComponentType(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    has_osbs = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u"%s" % self.name
