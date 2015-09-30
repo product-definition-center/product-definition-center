@@ -7,7 +7,9 @@
 import json
 
 from django.shortcuts import render, redirect
-from django.contrib.auth import REDIRECT_FIELD_NAME, get_user_model
+from django.contrib.auth import (REDIRECT_FIELD_NAME, get_user_model,
+                                 load_backend)
+from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import Group, Permission
 from django.http import HttpResponseRedirect, HttpResponse
 from django.conf import settings
@@ -26,7 +28,7 @@ from pdc.apps.common.viewsets import StrictQueryParamMixin, ChangeSetUpdateModel
 from pdc.apps.utils.utils import group_obj_export
 
 
-def krb5login(request):
+def remoteuserlogin(request):
     # if REDIRECT_FIELD_NAME is present in request.GET and has blank
     # value, that can cause redirect loop while redirecting to it
     redirect_to = request.GET.get(REDIRECT_FIELD_NAME, '/').strip() or '/'
@@ -40,12 +42,33 @@ def krb5login(request):
         pass
 
     if request.user.is_anonymous():
-        reason = "Failed to authenticate with Kerberos. Make sure your browser is correctly configured."
+        reason = "Failed to authenticate. Make sure your browser is correctly configured."
     elif not request.user.is_active:
         reason = "Account is not active."
 
     context = {'reason': reason}
-    return render(request, 'no_krb5.html', context)
+    return render(request, 'auth_error.html', context)
+
+
+def logout(request):
+    # if REDIRECT_FIELD_NAME is present in request.GET and has blank
+    # value, that can cause redirect loop while redirecting to it
+    redirect_to = request.GET.get(REDIRECT_FIELD_NAME, '/').strip() or '/'
+
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(redirect_to)
+
+    backend = None
+    if 'auth_backend' in request.session:
+        backend = load_backend(request.session['auth_backend'])
+
+    auth_logout(request)
+
+    if backend:
+        if 'logout_url' in backend:
+            redirect_to = backend.logout_url + redirect_to
+
+    return HttpResponseRedirect(redirect_to)
 
 
 def user_profile(request):

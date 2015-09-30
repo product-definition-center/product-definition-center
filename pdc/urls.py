@@ -20,14 +20,14 @@ from pdc.apps.changeset.views import ChangesetListView, ChangesetDetailView
 from pdc.apps.common import views as common_views
 from pdc.apps.auth import views as auth_views
 from pdc.apps.release import views as release_views
-from django.contrib.auth.views import logout
 
 urlpatterns = [
     url(r'^$', common_views.home, name='home'),
 
     # see details about configuring kerberos authentication in utils/auth.py
-    url(r'^auth/krb5login$', auth_views.krb5login, name='auth/krb5login'),
-    url(r'^auth/logout$', logout, name='auth/logout'),
+    url(r'^auth/krb5login$', auth_views.remoteuserlogin, name='auth/krb5login'),
+    url(r'^auth/saml2login$', auth_views.remoteuserlogin, name='auth/saml2login'),
+    url(r'^auth/logout$', auth_views.logout, name='auth/logout'),
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^auth/profile/$', auth_views.user_profile, name='auth/profile'),

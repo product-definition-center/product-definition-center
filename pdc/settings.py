@@ -100,7 +100,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-    'pdc.apps.auth.middleware.KerberosUserMiddleware',
+    'pdc.apps.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -112,6 +112,7 @@ MIDDLEWARE_CLASSES = (
 
 AUTHENTICATION_BACKENDS = (
     'pdc.apps.auth.backends.KerberosUserBackend',
+    #'pdc.apps.auth.backends.AuthMellonUserBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 

@@ -8,11 +8,12 @@
 
 from django.contrib import auth
 from django.conf import settings
+from django.contrib.auth import load_backend
 from django.contrib.auth.middleware import RemoteUserMiddleware
 from django.core.exceptions import ImproperlyConfigured
 
 
-class KerberosUserMiddleware(RemoteUserMiddleware):
+class RemoteUserMiddleware(RemoteUserMiddleware):
     def process_request(self, request):
         # Overwrite process_request from auth.middleware because it force
         # user logout when REMOTE_USER header is not present which can
@@ -48,9 +49,12 @@ class KerberosUserMiddleware(RemoteUserMiddleware):
                 return
         # We are seeing this user for the first time in this session, attempt
         # to authenticate the user.
-        user = auth.authenticate(remote_user=username)
+        user = auth.authenticate(remote_user=username, request=request)
         if user:
             # User is valid.  Set request.user and persist user in the session
             # by logging the user in.
             request.user = user
-            auth.login(request, user)
+            request.session['auth_backend'] = user.backend
+            backend = load_backend(user.backend)
+            if getattr(backend, 'save_login', True):
+                auth.login(request, user)
