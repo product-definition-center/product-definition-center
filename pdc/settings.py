@@ -114,8 +114,8 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-# LOGIN_URL = '/auth/krb5login'
-# LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/auth/krb5login'
+LOGIN_REDIRECT_URL = '/'
 
 ROOT_URLCONF = 'pdc.urls'
 

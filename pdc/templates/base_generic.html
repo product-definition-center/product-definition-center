@@ -2,6 +2,7 @@
 
 {% load static %}
 {% load i18n %}
+{% load pdctags %}
 
 <html>
   <head>
@@ -74,7 +75,7 @@
                 {% endif %}
             {% else %}
                 <li>
-                    <a href='{% url 'auth/krb5login' %}?next={{ request.path }}'>{% trans 'Log-in' %}</a>
+                    <a href='{% login_url request.path %}'>{% trans 'Log-in' %}</a>
                 </li>
             {% endif %}
             </ul>
