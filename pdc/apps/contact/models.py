@@ -9,14 +9,6 @@ from django.db import models
 from django.db.models.query import QuerySet
 from django.forms.models import model_to_dict
 
-__all__ = [
-    'Person',
-    'Maillist',
-    'ContactRole',
-    'Contact',
-    'RoleContact',
-]
-
 
 class ContactRole(models.Model):
 

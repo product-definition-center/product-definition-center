@@ -21,16 +21,6 @@ from pdc.apps.release import signals
 from .signals import releasecomponent_clone
 
 
-__all__ = [
-    'Upstream',
-    'GlobalComponent',
-    'ReleaseComponent',
-    'BugzillaComponent',
-    'ReleaseComponentGroup',
-    'GroupType'
-]
-
-
 def validate_bc_name(name):
     if "/" in name:
         raise ValidationError("Symbol / is not acceptted as part of bugzilla component's name.")

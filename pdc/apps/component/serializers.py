@@ -32,17 +32,6 @@ from .models import (GlobalComponent,
 from . import signals
 
 
-__all__ = (
-    'GlobalComponentSerializer',
-    'ReleaseComponentSerializer',
-    'HackedContactSerializer',
-    'UpstreamSerializer',
-    'BugzillaComponentSerializer',
-    'GroupSerializer',
-    'GroupTypeSerializer'
-)
-
-
 def reverse_url(request, view_name, **kwargs):
     return request.build_absolute_uri(reverse(viewname=view_name,
                                               kwargs=kwargs))
