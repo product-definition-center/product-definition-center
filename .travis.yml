@@ -22,6 +22,7 @@ script:
     - coverage run --parallel-mode --source=contrib,pdc --omit='*tests.py,*/migrations/*,pdc/settings*' manage.py test --settings pdc.settings_test contrib pdc
     - make flake8
     - coverage run --parallel-mode --source=pdc_client client_test_run.py
+    - bash verify-migrations.sh
 after_success:
     - coverage combine
     - coveralls

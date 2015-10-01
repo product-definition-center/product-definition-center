@@ -15,7 +15,7 @@ flake8:
 run:
 	python manage.py runserver 0.0.0.0:8000
 
-all_tests: test api_doc_test client_test
+all_tests: test api_doc_test client_test verify_migrations
 
 test:
 	python manage.py test --settings pdc.settings_test pdc contrib
@@ -31,6 +31,9 @@ api_doc_test:
 
 client_test:
 	python client_test_run.py
+
+verify_migrations:
+	bash verify-migrations.sh
 
 models_svg: export DJANGO_SETTINGS_MODULE=pdc.settings_graph_models
 models_svg:
