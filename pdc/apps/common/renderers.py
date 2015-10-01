@@ -144,6 +144,8 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
                 macros['SERIALIZER'] = get_serializer(view, include_read_only=True)
             if '%(WRITABLE_SERIALIZER)s' in docstring:
                 macros['WRITABLE_SERIALIZER'] = get_serializer(view, include_read_only=False)
+            if hasattr(view, 'docstring_macros'):
+                macros.update(view.docstring_macros)
         string = formatting.dedent(docstring)
         formatted = string % macros
         formatted = self.substitute_urls(view, method, formatted)
@@ -288,6 +290,8 @@ def get_field_type(serializer, field_name, field, include_read_only):
         if method:
             docstring = getattr(method, '__doc__')
             return _get_type_from_str(docstring, docstring or 'method')
+    elif not include_read_only and hasattr(field, 'writable_doc_format'):
+        return _get_type_from_str(field.writable_doc_format)
     elif hasattr(field, 'doc_format'):
         return _get_type_from_str(field.doc_format)
     elif isinstance(field, serializers.BaseSerializer):

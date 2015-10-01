@@ -13,7 +13,7 @@ from django.utils.text import capfirst
 
 from rest_framework import serializers
 
-from pdc.apps.contact.models import Contact, ContactRole, GlobalComponentRoleContact, ReleaseComponentRoleContact
+from pdc.apps.contact.models import Contact, ContactRole, GlobalComponentContact, ReleaseComponentContact
 from pdc.apps.contact.serializers import RoleContactSerializer, ContactField
 from pdc.apps.common.serializers import DynamicFieldsSerializerMixin, LabelSerializer, StrictSerializerMixin
 from pdc.apps.common.fields import ChoiceSlugField
@@ -430,6 +430,7 @@ class GroupTypeSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 class ReleaseComponentField(serializers.RelatedField):
     """Serializer field for including release component details."""
     doc_format = '{"id": "int", "name": "string", "release": "Release.release_id"}'
+    writable_doc_format = '{"release": "Release.release_id", "name": "string"}'
 
     def to_representation(self, value):
         result = dict()
@@ -540,25 +541,25 @@ class ReleaseComponentRelationshipSerializer(StrictSerializerMixin, serializers.
         fields = ('id', 'type', 'from_component', 'to_component')
 
 
-class GlobalComponentRoleContactSerializer(StrictSerializerMixin, serializers.ModelSerializer):
-    component_name = serializers.SlugRelatedField(source='component', slug_field='name', read_only=False,
-                                                  queryset=GlobalComponent.objects.all())
-    role = serializers.SlugRelatedField(source='contact_role', slug_field='name',
-                                        read_only=False, queryset=ContactRole.objects.all())
+class GlobalComponentContactSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+    component = serializers.SlugRelatedField(slug_field='name', read_only=False,
+                                             queryset=GlobalComponent.objects.all())
+    role = serializers.SlugRelatedField(slug_field='name', read_only=False,
+                                        queryset=ContactRole.objects.all())
     contact = ContactField()
 
     class Meta:
-        model = GlobalComponentRoleContact
-        fields = ('id', 'component_name', 'role', 'contact')
+        model = GlobalComponentContact
+        fields = ('id', 'component', 'role', 'contact')
 
 
-class ReleaseComponentRoleContactSerializer(StrictSerializerMixin, serializers.ModelSerializer):
-    component_id = serializers.SlugRelatedField(source='component', slug_field='id', read_only=False,
-                                                queryset=ReleaseComponent.objects.all())
-    role = serializers.SlugRelatedField(source='contact_role', slug_field='name',
-                                        read_only=False, queryset=ContactRole.objects.all())
+class ReleaseComponentContactSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+    component = ReleaseComponentField(read_only=False,
+                                      queryset=ReleaseComponent.objects.all())
+    role = serializers.SlugRelatedField(slug_field='name', read_only=False,
+                                        queryset=ContactRole.objects.all())
     contact = ContactField()
 
     class Meta:
-        model = ReleaseComponentRoleContact
-        fields = ('id', 'component_id', 'role', 'contact')
+        model = ReleaseComponentContact
+        fields = ('id', 'component', 'role', 'contact')

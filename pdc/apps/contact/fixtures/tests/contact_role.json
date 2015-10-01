@@ -12,5 +12,12 @@
         "fields": {
             "name": "pm"
         }
+    },
+    {
+        "model": "contact.ContactRole",
+        "pk": 3,
+        "fields": {
+            "name": "cc"
+        }
     }
 ]

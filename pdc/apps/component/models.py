@@ -329,17 +329,15 @@ def clone_release_components_and_groups(sender, request, original_release, relea
 
     rc_map = dict()
     for rc in ReleaseComponent.objects.filter(release=original_release):
-        org_rc_pk = rc.pk
-        contacts = rc.contacts.all()
-        rc.pk = None
         if not include_inactive and not rc.active:
             continue
+        org_rc_pk = rc.pk
+        rc.pk = None
         rc.release = release
         if new_dist_git_branch:
             rc.dist_git_branch = new_dist_git_branch
         rc.save()
-        rc.contacts.add(*list(contacts))
-        request.changeset.add("ReleaseComponent", rc.pk, "null", json.dumps(rc.export()))
+        request.changeset.add('releasecomponent', rc.pk, 'null', json.dumps(rc.export()))
         rc_map[org_rc_pk] = rc
 
         releasecomponent_clone.send(sender=rc.__class__,

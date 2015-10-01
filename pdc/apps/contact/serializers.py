@@ -42,6 +42,9 @@ class MaillistSerializer(DynamicFieldsSerializerMixin,
 
 
 class ContactField(serializers.DictField):
+    doc_format = '{"id": "int", "email": "email address", "username|mail_name": "string"}'
+    writable_doc_format = '{"email": "email address", "username|mail_name": "string"}'
+
     child = serializers.CharField()
     field_to_class = {
         "username": Person,

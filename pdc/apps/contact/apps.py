@@ -12,3 +12,4 @@ class ContactConfig(AppConfig):
 
     def ready(self):
         connect_app_models_pre_save_signal(self)
+        from . import signals   # noqa

@@ -19,7 +19,10 @@ from rest_framework.response import Response
 
 from pdc.apps.common import viewsets
 from pdc.apps.common.models import Label
-from pdc.apps.contact.models import RoleContact, ContactRole, GlobalComponentRoleContact, ReleaseComponentRoleContact
+from pdc.apps.contact.models import (RoleContact,
+                                     ContactRole,
+                                     GlobalComponentContact,
+                                     ReleaseComponentContact)
 from pdc.apps.common.serializers import LabelSerializer, StrictSerializerMixin
 from pdc.apps.common.filters import LabelFilter
 from .models import (GlobalComponent,
@@ -39,8 +42,8 @@ from .serializers import (GlobalComponentSerializer,
                           ReleaseComponentRelationshipSerializer,
                           ReleaseComponentTypeSerializer,
                           RCRelationshipTypeSerializer,
-                          GlobalComponentRoleContactSerializer,
-                          ReleaseComponentRoleContactSerializer)
+                          GlobalComponentContactSerializer,
+                          ReleaseComponentContactSerializer)
 from .filters import (ComponentFilter,
                       ReleaseComponentFilter,
                       RoleContactFilter,
@@ -48,8 +51,8 @@ from .filters import (ComponentFilter,
                       GroupFilter,
                       GroupTypeFilter,
                       ReleaseComponentRelationshipFilter,
-                      GlobalComponentRoleContactFilter,
-                      ReleaseComponentRoleContactFilter)
+                      GlobalComponentContactFilter,
+                      ReleaseComponentContactFilter)
 from . import signals
 
 
@@ -103,8 +106,13 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
     serializer_class = GlobalComponentSerializer
     filter_class = ComponentFilter
 
+    # TODO remove deprecation notices from docstrings once 0.2.0 gets out
     def list(self, request, *args, **kwargs):
         """
+        **Deprecation notice**: the contact field and filters related to it are
+        deprecated and will be remove in next release. Please use [new global
+        component contacts API]($URL:globalcomponentcontacts-list$) instead.
+
         __Method__:
         GET
 
@@ -156,6 +164,10 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         """
+        **Deprecation notice**: the contact field and filters related to it are
+        deprecated and will be remove in next release. Please use [new global
+        component contacts API]($URL:globalcomponentcontacts-list$) instead.
+
         __Method__:
         GET
 
@@ -193,6 +205,10 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
 
     def create(self, request, *args, **kwargs):
         """
+        **Deprecation notice**: the contact field and filters related to it are
+        deprecated and will be remove in next release. Please use [new global
+        component contacts API]($URL:globalcomponentcontacts-list$) instead.
+
         __Method__:
         POST
 
@@ -240,6 +256,10 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
 
     def update(self, request, *args, **kwargs):
         """
+        **Deprecation notice**: the contact field and filters related to it are
+        deprecated and will be remove in next release. Please use [new global
+        component contacts API]($URL:globalcomponentcontacts-list$) instead.
+
         __Method__:
 
         PUT: for full fields update
@@ -321,19 +341,13 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
         return super(GlobalComponentViewSet, self).destroy(request, *args, **kwargs)
 
 
+# TODO Remove once 0.2.0 gets out
 class GlobalComponentContactViewSet(HackedComponentContactMixin,
                                     viewsets.PDCModelViewSet):
     """
-    ##Overview##
-
-    This page shows the usage of the **Global Component Contact API**, please
-    see the following for more details.
-
-    ##Test tools##
-
-    You can use ``curl`` in terminal, with -X _method_ (GET|POST|PUT|DELETE),
-    -d _data_ (a json string). or GUI plugins for
-    browsers, such as ``RESTClient``, ``RESTConsole``.
+    This API is deprecated and currently provided only for backwards
+    compatibility. Please use [new global component contacts
+    API]($URL:globalcomponentcontacts-list$).
     """
 
     model = GlobalComponent
@@ -671,8 +685,13 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
             qs = qs.filter(release__active=True)
         return qs
 
+    # TODO remove deprecation notices from docstrings once 0.2.0 gets out
     def list(self, request, *args, **kwargs):
         """
+        **Deprecation notice**: the contact field and filters related to it are
+        deprecated and will be remove in next release. Please use [new release
+        component contacts API]($URL:releasecomponentcontacts-list$) instead.
+
         __Method__:
         GET
 
@@ -730,6 +749,10 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         """
+        **Deprecation notice**: the contact field and filters related to it are
+        deprecated and will be remove in next release. Please use [new release
+        component contacts API]($URL:releasecomponentcontacts-list$) instead.
+
         __Method__:
         GET
 
@@ -776,6 +799,10 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
 
     def update(self, request, *args, **kwargs):
         """
+        **Deprecation notice**: the contact field and filters related to it are
+        deprecated and will be remove in next release. Please use [new release
+        component contacts API]($URL:releasecomponentcontacts-list$) instead.
+
         __Method__:
 
         PUT:
@@ -864,6 +891,10 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
 
     def create(self, request, *args, **kwargs):
         """
+        **Deprecation notice**: the contact field and filters related to it are
+        deprecated and will be remove in next release. Please use [new release
+        component contacts API]($URL:releasecomponentcontacts-list$) instead.
+
         __Method__:
         POST
 
@@ -950,8 +981,13 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
         """
         return super(ReleaseComponentViewSet, self).destroy(request, *args, **kwargs)
 
+    # TODO remove this method once 0.2.0 gets out, regular bulk update should be used
     def bulk_update(self, request, *args, **kwargs):
         """
+        **Deprecation notice**: this method is deprecated and will be removed
+        in next release. Please use [new release component contacts
+        API]($URL:releasecomponentcontacts-list$) instead.
+
         __Method__:
         PUT
 
@@ -1050,6 +1086,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
         serializer = ReleaseComponentSerializer(instance=qs, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    # TODO enable once 0.2.0 gets out
     def bulk_partial_update(self, request):
         # Without this definition, bulk_operations would pick up PATCH
         # requests, convert them to PUT with kwargs['partial'] = True and an
@@ -1058,19 +1095,13 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
         return self.http_method_not_allowed(request)
 
 
+# TODO Remove once 0.2.0 gets out
 class ReleaseComponentContactViewSet(HackedComponentContactMixin,
                                      viewsets.PDCModelViewSet):
     """
-    ##Overview##
-
-    This page shows the usage of the **Release Component Contact API**, please
-    see the following for more details.
-
-    ##Test tools##
-
-    You can use ``curl`` in terminal, with -X _method_ (GET|POST|PUT|DELETE),
-    -d _data_ (a json string). or GUI plugins for
-    browsers, such as ``RESTClient``, ``RESTConsole``.
+    This API is deprecated and currently provided only for backwards
+    compatibility. Please use [new release component contacts
+    API]($URL:releasecomponentcontacts-list$) instead.
     """
     model = ReleaseComponent
     queryset = ReleaseComponent.objects.all()
@@ -1857,39 +1888,125 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
         return super(ReleaseComponentRelationshipViewSet, self).destroy(request, *args, **kwargs)
 
 
-class GlobalComponentContactInfoViewSet(viewsets.PDCModelViewSet):
+class _BaseContactViewSet(viewsets.PDCModelViewSet):
+    def list(self, *args, **kwargs):
+        """
+        __Method__: `GET`
 
-    queryset = GlobalComponentRoleContact.objects.all()
-    serializer_class = GlobalComponentRoleContactSerializer
-    filter_class = GlobalComponentRoleContactFilter
+        __URL__: $LINK:%(BASENAME)s-list$
 
-    def list(self, request, *args, **kwargs):
-        return super(GlobalComponentContactInfoViewSet, self).list(request, *args, **kwargs)
+        __Query params__:
 
-    def retrieve(self, request, *args, **kwargs):
-        return super(GlobalComponentContactInfoViewSet, self).retrieve(request, *args, **kwargs)
+        %(FILTERS)s
 
-    def destroy(self, request, *args, **kwargs):
-        return super(GlobalComponentContactInfoViewSet, self).destroy(request, *args, **kwargs)
+        The value of `contact` filter should either be a username or mailling
+        list name.
 
-    def update(self, request, *args, **kwargs):
-        return super(GlobalComponentContactInfoViewSet, self).update(request, *args, **kwargs)
+        __Response__: a paged list of following objects
+
+        %(SERIALIZER)s
+        """
+        return super(_BaseContactViewSet, self).list(*args, **kwargs)
+
+    def retrieve(self, *args, **kwargs):
+        """
+        __Method__: `GET`
+
+        __URL__: $LINK:%(BASENAME)s-detail:pk$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(_BaseContactViewSet, self).retrieve(*args, **kwargs)
+
+    def destroy(self, *args, **kwargs):
+        """Remove association between component and contact.
+
+        __Method__: `GET`
+
+        __URL__: $LINK:%(BASENAME)s-detail:pk$
+
+        __Response__: Nothing on success.
+        """
+        return super(_BaseContactViewSet, self).destroy(*args, **kwargs)
+
+    def update(self, *args, **kwargs):
+        """Change details about a contact linked to component.
+
+        Please not that if you change the `contact` field here, only the single
+        updated relationship between contact and component will be updated.
+        Specifically, no other component will be affected.
+
+        If you update with new contact details and such contact does not exist
+        yet, it will be automatically created. The specific type will be chosen
+        based on whether `username` or `mail_name` was used.
+
+        __Method__: `PUT`, `PATCH`
+
+        __URL__: $LINK:%(BASENAME)s-detail:pk$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        %(WRITABLE_DATA_COMMENT)s
+
+        View [list of available contact roles]($URL:contactrole-list$).
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(_BaseContactViewSet, self).update(*args, **kwargs)
+
+    def create(self, *args, **kwargs):
+        """Connect contact details with a component.
+
+        If the contact does not exist, it will be created automatically.
+
+        __Method__: `POST`
+
+        __URL__: $LINK:%(BASENAME)s-list$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        %(WRITABLE_DATA_COMMENT)s
+
+        Depending on whether `username` or `mail_name` is used, a person or
+        mailling list will be linked to the component.
+
+        View [list of available contact roles]($URL:contactrole-list$).
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(_BaseContactViewSet, self).create(*args, **kwargs)
 
 
-class ReleaseComponentContactInfoViewSet(viewsets.PDCModelViewSet):
+# TODO Remove Info from name once 0.2.0 gets out
+class GlobalComponentContactInfoViewSet(_BaseContactViewSet):
 
-    queryset = ReleaseComponentRoleContact.objects.all()
-    serializer_class = ReleaseComponentRoleContactSerializer
-    filter_class = ReleaseComponentRoleContactFilter
+    queryset = GlobalComponentContact.objects.all().select_related()
+    serializer_class = GlobalComponentContactSerializer
+    filter_class = GlobalComponentContactFilter
+    docstring_macros = {
+        'BASENAME': 'globalcomponentcontacts',
+        'WRITABLE_DATA_COMMENT': '',
+    }
 
-    def list(self, request, *args, **kwargs):
-        return super(ReleaseComponentContactInfoViewSet, self).list(request, *args, **kwargs)
 
-    def retrieve(self, request, *args, **kwargs):
-        return super(ReleaseComponentContactInfoViewSet, self).retrieve(request, *args, **kwargs)
+# TODO Remove Info from name once 0.2.0 gets out
+class ReleaseComponentContactInfoViewSet(_BaseContactViewSet):
 
-    def destroy(self, request, *args, **kwargs):
-        return super(ReleaseComponentContactInfoViewSet, self).destroy(request, *args, **kwargs)
-
-    def update(self, request, *args, **kwargs):
-        return super(ReleaseComponentContactInfoViewSet, self).update(request, *args, **kwargs)
+    queryset = ReleaseComponentContact.objects.all().select_related()
+    serializer_class = ReleaseComponentContactSerializer
+    filter_class = ReleaseComponentContactFilter
+    docstring_macros = {
+        'BASENAME': 'releasecomponentcontacts',
+        'WRITABLE_DATA_COMMENT': 'The component can be alternatively specified ' +
+                                 'by its id as `{"id": "int"}`.',
+    }
