@@ -15,7 +15,7 @@ from productmd import composeinfo, images, rpms
 from pkg_resources import parse_version
 
 
-def composeinfo_from_str(data):
+def deserialize_composeinfo(data):
     ci = composeinfo.ComposeInfo()
     try:
         ci.deserialize(data)
@@ -32,13 +32,13 @@ def composeinfo_from_str(data):
     return ci
 
 
-def rpms_from_str(data):
+def deserialize_rpms(data):
     rm = rpms.Rpms()
     rm.deserialize(data)
     return rm
 
 
-def images_from_str(data):
+def deserialize_images(data):
     im = images.Images()
     im.deserialize(data)
     return im

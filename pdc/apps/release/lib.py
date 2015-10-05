@@ -73,7 +73,7 @@ def release__import_from_composeinfo(request, composeinfo_json):
     """
     Import release including variants and architectures from composeinfo json.
     """
-    ci = common_hacks.composeinfo_from_str(composeinfo_json)
+    ci = common_hacks.deserialize_composeinfo(composeinfo_json)
 
     if ci.release.is_layered:
         base_product_obj, _ = _logged_get_or_create(
