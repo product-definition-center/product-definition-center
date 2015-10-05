@@ -3,10 +3,13 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+import json
+
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 
 from . import models
+from pdc.apps.component import signals as component_signals
 from pdc.apps.component import models as component_models
 
 
@@ -34,3 +37,14 @@ def type_post_save_handler(sender, instance, **kwargs):
         )
     else:
         models.OSBSRecord.objects.filter(component__type=instance).delete()
+
+
+@receiver(component_signals.releasecomponent_clone)
+def clone_osbs_record(sender, request, orig_component_pk, component, **kwargs):
+    if not component.type.has_osbs:
+        return
+    old_record = models.OSBSRecord.objects.get(component_id=orig_component_pk)
+    component.osbs.autorebuild = old_record.autorebuild
+    component.osbs.save()
+    request.changeset.add('osbsrecord', component.osbs.pk,
+                          'null', json.dumps(component.osbs.export()))

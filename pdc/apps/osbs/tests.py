@@ -124,3 +124,13 @@ class OSBSRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([1])
         r = models.OSBSRecord.objects.get(component_id=1)
         self.assertIsNone(r.autorebuild)
+
+    def test_cloning_release_clones_osbs(self):
+        self.client.post(reverse('releaseclone-list'),
+                         {'old_release_id': 'release-1.0', 'version': '1.1'},
+                         format='json')
+        records = models.OSBSRecord.objects.filter(component__release__release_id='release-1.1')
+        self.assertEqual(2, len(records))
+        self.assertTrue(records.get(component__name='python27').autorebuild)
+        self.assertFalse(records.get(component__name='MySQL-python').autorebuild)
+        self.assertNumChanges([6])  # 1 release, 3 components, 2 osbs records

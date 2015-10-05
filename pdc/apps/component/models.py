@@ -18,6 +18,7 @@ from pdc.apps.contact.models import RoleContact
 from pdc.apps.common import hacks
 from pdc.apps.release.models import Release
 from pdc.apps.release import signals
+from .signals import releasecomponent_clone
 
 
 __all__ = [
@@ -350,6 +351,11 @@ def clone_release_components_and_groups(sender, request, original_release, relea
         rc.contacts.add(*list(contacts))
         request.changeset.add("ReleaseComponent", rc.pk, "null", json.dumps(rc.export()))
         rc_map[org_rc_pk] = rc
+
+        releasecomponent_clone.send(sender=rc.__class__,
+                                    request=request,
+                                    orig_component_pk=org_rc_pk,
+                                    component=rc)
 
     for group in ReleaseComponentGroup.objects.filter(release=original_release):
         group_type = group.group_type

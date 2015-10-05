@@ -26,3 +26,11 @@ releasecomponent_serializer_post_create = dispatch.Signal(providing_args=['relea
 
 # This signal is sent after an existing release_component is updated.
 releasecomponent_serializer_post_update = dispatch.Signal(providing_args=['release_component'])
+
+
+# This signal is sent after a release component is cloned. It is a reaction to
+# `pdc.apps.release.signals.release_clone` signal. The handler will get access
+# to request, primary key of the cloned component and the new instance.
+releasecomponent_clone = dispatch.Signal(providing_args=['request',
+                                                         'orig_component_pk',
+                                                         'new_component'])
