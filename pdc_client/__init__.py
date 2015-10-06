@@ -41,10 +41,19 @@ def read_config_file(server_alias):
 
 def get_paged(res, **kwargs):
     """
-    This call is equivalent to `res(**kwargs)`, only it retrieves all pages and
-    returns the results joined into a single iterable. The advantage over
+    This call is equivalent to ``res(**kwargs)``, only it retrieves all pages
+    and returns the results joined into a single iterable. The advantage over
     retrieving everything at once is that the result can be consumed
     immediately.
+
+    :param res:     what resource to connect to
+    :param kwargs:  filters to be used
+
+    ::
+
+        # Example: Iterate over all active releases
+        for release in get_paged(client['releases']._, active=True):
+            ...
     """
     def worker():
         kwargs['page'] = 1
@@ -59,7 +68,23 @@ def get_paged(res, **kwargs):
 
 
 class PDCClient(object):
+    """BeanBag wrapper specialized for PDC access.
+
+    This class wraps general BeanBag.v1 objects, but provides easy-to-use
+    interface that can use configuration files for specifying server
+    connections. The authentication token is automatically retrieved (if
+    needed).
+    """
     def __init__(self, server):
+        """Create new client instance.
+
+        Once the class is instantiated, use it as you would use a regular
+        BeanBag object. Please see its documentation to see how to use this
+        class to perform requests.
+
+        :param server:     server API url or server name from configuration
+        :paramtype server: string
+        """
         if not server:
             raise TypeError('Server must be specified')
         self.session = requests.Session()
@@ -132,4 +157,11 @@ class PDCClient(object):
         return self.client.__getitem__(*args, **kwargs)
 
     def set_comment(self, comment):
+        """Set PDC Change comment to be stored on the server.
+
+        Once you set the comment, it will be sent in all subsequent requests.
+
+        :param comment:     what comment to send to the server
+        :paramtype comment: string
+        """
         self.session.headers["PDC-Change-Comment"] = comment

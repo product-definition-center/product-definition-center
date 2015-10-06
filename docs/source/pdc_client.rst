@@ -86,6 +86,33 @@ This is much more user friendly user interface. A single invocation can perform
 multiple requests depending on what subcommand you used.
 
 
+Python API
+----------
+
+When writing a client code interfacing with PDC server, you might find
+``PDCClient`` handy. It provides access to the configuration defined above and
+automates obtaining authorization token.
+
+To use this module, you will need to install its dependencies. These include
+
+ * `requests <http://docs.python-requests.org/en/latest/>`_
+ * `requests-kerberos <https://github.com/requests/requests-kerberos/>`_
+ * `beanbag <http://beanbag.readthedocs.org/en/latest/>`_
+
+.. autoclass:: pdc_client.PDCClient
+
+   .. automethod:: pdc_client.PDCClient.__init__
+
+   .. automethod:: pdc_client.PDCClient.set_comment
+
+When working with paginated responses, there is a utility function to simplify
+that. From client code it is iterating single object. Behind the scenes it will
+download the first page, once all results from that page are exhausted, it will
+get another page until everything is processed.
+
+.. autofunction:: pdc_client.get_paged
+
+
 Known Issues
 ------------
 
@@ -136,5 +163,5 @@ General
 The PDC Client (package name: pdc_client) is mainly build up with Python
 `argparse` module and PDC's Python module `pdc_client`.
 
-It is powered by `Beanbag <https://github.com/dmach/beanbag>`_, a simple module
+It is powered by `BeanBag`_, a simple module
 that lets you access REST APIs in an easy way.
