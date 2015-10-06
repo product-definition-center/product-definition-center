@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>3. PDC Client &mdash; PDC 0.1.0-1.42.gcb174f3 documentation</title>
+    <title>3. PDC Client &mdash; PDC 0.1.0-1.44.g2fafc39 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.0-1.42.gcb174f3',
+        VERSION:     '0.1.0-1.44.g2fafc39',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.1.0-1.42.gcb174f3 documentation" href="index.html" />
+    <link rel="top" title="PDC 0.1.0-1.44.g2fafc39 documentation" href="index.html" />
     <link rel="next" title="4. Setup development environment" href="development.html" />
     <link rel="prev" title="2. Bulk operations" href="bulk_operations.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="bulk_operations.html" title="2. Bulk operations"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.42.gcb174f3 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.44.g2fafc39 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -118,10 +118,96 @@ requests manually.</p>
 multiple requests depending on what subcommand you used.</p>
 </div>
 </div>
+<div class="section" id="python-api">
+<h2>3.4. Python API<a class="headerlink" href="#python-api" title="Permalink to this headline">¶</a></h2>
+<p>When writing a client code interfacing with PDC server, you might find
+<code class="docutils literal"><span class="pre">PDCClient</span></code> handy. It provides access to the configuration defined above and
+automates obtaining authorization token.</p>
+<p>To use this module, you will need to install its dependencies. These include</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://docs.python-requests.org/en/latest/">requests</a></li>
+<li><a class="reference external" href="https://github.com/requests/requests-kerberos/">requests-kerberos</a></li>
+<li><a class="reference external" href="http://beanbag.readthedocs.org/en/latest/">beanbag</a></li>
+</ul>
+</div></blockquote>
+<dl class="class">
+<dt id="pdc_client.PDCClient">
+<em class="property">class </em><code class="descclassname">pdc_client.</code><code class="descname">PDCClient</code><span class="sig-paren">(</span><em>server</em><span class="sig-paren">)</span><a class="headerlink" href="#pdc_client.PDCClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>BeanBag wrapper specialized for PDC access.</p>
+<p>This class wraps general BeanBag.v1 objects, but provides easy-to-use
+interface that can use configuration files for specifying server
+connections. The authentication token is automatically retrieved (if
+needed).</p>
+<dl class="method">
+<dt id="pdc_client.PDCClient.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>server</em><span class="sig-paren">)</span><a class="headerlink" href="#pdc_client.PDCClient.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create new client instance.</p>
+<p>Once the class is instantiated, use it as you would use a regular
+BeanBag object. Please see its documentation to see how to use this
+class to perform requests.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>server</strong> (<em>string</em>) &#8211; server API url or server name from configuration</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pdc_client.PDCClient.set_comment">
+<code class="descname">set_comment</code><span class="sig-paren">(</span><em>comment</em><span class="sig-paren">)</span><a class="headerlink" href="#pdc_client.PDCClient.set_comment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set PDC Change comment to be stored on the server.</p>
+<p>Once you set the comment, it will be sent in all subsequent requests.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>comment</strong> (<em>string</em>) &#8211; what comment to send to the server</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<p>When working with paginated responses, there is a utility function to simplify
+that. From client code it is iterating single object. Behind the scenes it will
+download the first page, once all results from that page are exhausted, it will
+get another page until everything is processed.</p>
+<dl class="function">
+<dt id="pdc_client.get_paged">
+<code class="descclassname">pdc_client.</code><code class="descname">get_paged</code><span class="sig-paren">(</span><em>res</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pdc_client.get_paged" title="Permalink to this definition">¶</a></dt>
+<dd><p>This call is equivalent to <code class="docutils literal"><span class="pre">res(**kwargs)</span></code>, only it retrieves all pages
+and returns the results joined into a single iterable. The advantage over
+retrieving everything at once is that the result can be consumed
+immediately.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>res</strong> &#8211; what resource to connect to</li>
+<li><strong>kwargs</strong> &#8211; filters to be used</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Example: Iterate over all active releases</span>
+<span class="k">for</span> <span class="n">release</span> <span class="ow">in</span> <span class="n">get_paged</span><span class="p">(</span><span class="n">client</span><span class="p">[</span><span class="s">&#39;releases&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">_</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
 <div class="section" id="known-issues">
-<h2>3.4. Known Issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h2>
+<h2>3.5. Known Issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="kerberos">
-<h3>3.4.1. Kerberos<a class="headerlink" href="#kerberos" title="Permalink to this headline">¶</a></h3>
+<h3>3.5.1. Kerberos<a class="headerlink" href="#kerberos" title="Permalink to this headline">¶</a></h3>
 <p>Under enterprise network, <a class="reference external" href="http://web.mit.edu/Kerberos/www/krb5-latest/doc/admin/princ_dns.html#reverse-dns-mismatches">Reverse DNS mismatches</a>
 may cause problems authenticating with Kerberos.</p>
 <p>If you can successfully run <code class="docutils literal"><span class="pre">kinit</span></code> but not authenticate yourself to PDC
@@ -134,9 +220,9 @@ in <code class="docutils literal"><span class="pre">libdefaults</span></code> se
 </div>
 </div>
 <div class="section" id="for-developers">
-<h2>3.5. For Developers<a class="headerlink" href="#for-developers" title="Permalink to this headline">¶</a></h2>
+<h2>3.6. For Developers<a class="headerlink" href="#for-developers" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="instalation-details">
-<h3>3.5.1. Instalation details<a class="headerlink" href="#instalation-details" title="Permalink to this headline">¶</a></h3>
+<h3>3.6.1. Instalation details<a class="headerlink" href="#instalation-details" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic">
 <li><p class="first">yum repository</p>
 <p>If you have installed PDC Server by some yum repository, PDC Client is in
@@ -159,10 +245,10 @@ $ sudo yum install dist/noarch/python-pdc*.noarch.rpm dist/noarch/pdc-client*.no
 </ol>
 </div>
 <div class="section" id="general">
-<h3>3.5.2. General<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h3>
+<h3>3.6.2. General<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h3>
 <p>The PDC Client (package name: pdc_client) is mainly build up with Python
 <cite>argparse</cite> module and PDC&#8217;s Python module <cite>pdc_client</cite>.</p>
-<p>It is powered by <a class="reference external" href="https://github.com/dmach/beanbag">Beanbag</a>, a simple module
+<p>It is powered by <a class="reference external" href="http://beanbag.readthedocs.org/en/latest/">BeanBag</a>, a simple module
 that lets you access REST APIs in an easy way.</p>
 </div>
 </div>
@@ -187,13 +273,14 @@ that lets you access REST APIs in an easy way.</p>
 <li><a class="reference internal" href="#pdc">3.3.2. <code class="docutils literal"><span class="pre">pdc</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#known-issues">3.4. Known Issues</a><ul>
-<li><a class="reference internal" href="#kerberos">3.4.1. Kerberos</a></li>
+<li><a class="reference internal" href="#python-api">3.4. Python API</a></li>
+<li><a class="reference internal" href="#known-issues">3.5. Known Issues</a><ul>
+<li><a class="reference internal" href="#kerberos">3.5.1. Kerberos</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#for-developers">3.5. For Developers</a><ul>
-<li><a class="reference internal" href="#instalation-details">3.5.1. Instalation details</a></li>
-<li><a class="reference internal" href="#general">3.5.2. General</a></li>
+<li><a class="reference internal" href="#for-developers">3.6. For Developers</a><ul>
+<li><a class="reference internal" href="#instalation-details">3.6.1. Instalation details</a></li>
+<li><a class="reference internal" href="#general">3.6.2. General</a></li>
 </ul>
 </li>
 </ul>
@@ -242,7 +329,7 @@ that lets you access REST APIs in an easy way.</p>
         <li class="right" >
           <a href="bulk_operations.html" title="2. Bulk operations"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.42.gcb174f3 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.44.g2fafc39 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
