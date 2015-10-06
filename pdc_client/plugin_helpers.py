@@ -33,7 +33,6 @@
 #
 
 import logging
-import itertools
 import sys
 
 
@@ -79,25 +78,6 @@ class PDCClientPlugin(object):
         if not self.help_all:
             kwargs.pop('help', None)
         return self.parser.add_parser(*args, **kwargs)
-
-
-def get_paged(res, **kwargs):
-    """
-    This call is equivalent to `res(**kwargs)`, only it retrieves all pages and
-    returns the results joined into a single iterable. The advantage over
-    retrieving everything at once is that the result can be consumed
-    immediately.
-    """
-    def worker():
-        kwargs['page'] = 1
-        while True:
-            response = res(**kwargs)
-            yield response['results']
-            if response['next']:
-                kwargs['page'] += 1
-            else:
-                break
-    return itertools.chain.from_iterable(worker())
 
 
 def add_parser_arguments(parser, args, group=None, prefix=DATA_PREFIX):

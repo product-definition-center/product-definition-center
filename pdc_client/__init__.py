@@ -5,6 +5,7 @@
 # http://opensource.org/licenses/MIT
 #
 import beanbag
+import itertools
 import requests
 import requests_kerberos
 import warnings
@@ -36,6 +37,25 @@ def read_config_file(server_alias):
     result = _read_file(GLOBAL_CONFIG_FILE).get(server_alias, {})
     result.update(_read_file(USER_SPECIFIC_CONFIG_FILE).get(server_alias, {}))
     return result
+
+
+def get_paged(res, **kwargs):
+    """
+    This call is equivalent to `res(**kwargs)`, only it retrieves all pages and
+    returns the results joined into a single iterable. The advantage over
+    retrieving everything at once is that the result can be consumed
+    immediately.
+    """
+    def worker():
+        kwargs['page'] = 1
+        while True:
+            response = res(**kwargs)
+            yield response['results']
+            if response['next']:
+                kwargs['page'] += 1
+            else:
+                break
+    return itertools.chain.from_iterable(worker())
 
 
 class PDCClient(object):

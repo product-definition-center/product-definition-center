@@ -6,7 +6,8 @@
 #
 import json
 
-from pdc_client.plugin_helpers import PDCClientPlugin, get_paged, add_parser_arguments, extract_arguments
+from pdc_client import get_paged
+from pdc_client.plugin_helpers import PDCClientPlugin, add_parser_arguments, extract_arguments
 
 
 class ReleasePlugin(PDCClientPlugin):

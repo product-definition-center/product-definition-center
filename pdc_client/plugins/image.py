@@ -8,7 +8,8 @@ import json
 import sys
 from datetime import datetime
 
-from pdc_client.plugin_helpers import PDCClientPlugin, get_paged, add_parser_arguments, extract_arguments
+from pdc_client import get_paged
+from pdc_client.plugin_helpers import PDCClientPlugin, add_parser_arguments, extract_arguments
 
 
 info_desc = """Generally there may be duplicate file names. If the file name
