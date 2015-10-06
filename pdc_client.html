@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>PDC Client &mdash; PDC 0.1.0-1.39.gfc2ebe0 documentation</title>
+    <title>3. PDC Client &mdash; PDC 0.1.0-1.41.g39c784a documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.0-1.39.gfc2ebe0',
+        VERSION:     '0.1.0-1.41.g39c784a',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.1.0-1.39.gfc2ebe0 documentation" href="index.html" /> 
+    <link rel="top" title="PDC 0.1.0-1.41.g39c784a documentation" href="index.html" />
+    <link rel="next" title="4. Setup development environment" href="development.html" />
+    <link rel="prev" title="2. Bulk operations" href="bulk_operations.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -32,7 +34,13 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.39.gfc2ebe0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="development.html" title="4. Setup development environment"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="bulk_operations.html" title="2. Bulk operations"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.41.g39c784a documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -42,84 +50,121 @@
           <div class="body" role="main">
             
   <div class="section" id="pdc-client">
-<span id="id1"></span><h1>PDC Client<a class="headerlink" href="#pdc-client" title="Permalink to this headline">¶</a></h1>
-<p>PDC Client(package name: pdc-client) is a shell CLI that make it easier to
-manipulate data from PDC servers.</p>
-<p>It&#8217;s been shipped out with PDC Server(package name: pdc-server) since PDC v0.2.0-0.1.beta.</p>
+<span id="id1"></span><h1>3. PDC Client<a class="headerlink" href="#pdc-client" title="Permalink to this headline">¶</a></h1>
+<p>PDC Client is a shell CLI that make it easier to access data from PDC servers.</p>
 <div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<ol class="arabic simple">
-<li>yum repository</li>
-</ol>
-<p>If you have installed PDC Server by some yum repository, PDC Client is in the
-same repository that you used.</p>
-<p>So to install PDC Client, just need to:</p>
+<h2>3.1. Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>You can obtain the client from the same repository where PDC server is.</p>
+</div>
+<div class="section" id="configuration">
+<h2>3.2. Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>The client can read server connection details from a configuration file. The
+configuration file should be located in <code class="docutils literal"><span class="pre">/etc/pdc/client_config.json</span></code> or in
+<code class="docutils literal"><span class="pre">~/.config/pdc/client_config.json</span></code>. If both files are present, the system one
+is loaded first and the user configuration is applied on top of it (to add
+other options or overwrite existing ones).</p>
+<p>The configuration file should contain a JSON object, which maps server name to
+JSON object with details. The name is an arbitrary string used at client run
+time to identify which server you want to connect to.</p>
+<p>The details of a single server must contain at least one key: <code class="docutils literal"><span class="pre">host</span></code> which
+specifies the URL to the API root (e.g. <code class="docutils literal"><span class="pre">http:://localhost:8000/rest_api/v1/</span></code>
+for local instance).</p>
+<p>Other possible keys are:</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">token</span></code></dt>
+<dd>If specified, this token will be used for authentication. The client will
+not try to obtain any token from the server.</dd>
+<dt><code class="docutils literal"><span class="pre">insecure</span></code></dt>
+<dd>If set to <code class="docutils literal"><span class="pre">true</span></code>, server certificate will not be validated.</dd>
+<dt><code class="docutils literal"><span class="pre">develop</span></code></dt>
+<dd>When set to <code class="docutils literal"><span class="pre">true</span></code>, the client will not use any authentication at all,
+not requesting a token nor sending any token with the requests. This is
+only useful for working with servers which don&#8217;t require authentication.</dd>
+</dl>
+<div class="section" id="example-system-configuration">
+<h3>3.2.1. Example system configuration<a class="headerlink" href="#example-system-configuration" title="Permalink to this headline">¶</a></h3>
+<p>This config defines connection to development server running on localhost and a
+production server.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s">&quot;local&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;host&quot;</span><span class="p">:</span> <span class="s">&quot;http://localhost:8000/rest_api/v1/&quot;</span><span class="p">,</span>
+        <span class="s">&quot;develop&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+        <span class="s">&quot;insecure&quot;</span><span class="p">:</span> <span class="n">false</span>
+    <span class="p">},</span>
+    <span class="s">&quot;prod&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;host&quot;</span><span class="p">:</span> <span class="s">&quot;https://pdc.example.com/rest_api/v1/&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="usage">
+<h2>3.3. Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>The client package contains two separate clients. Both contain extensive
+built-in help. Just run the executable with <code class="docutils literal"><span class="pre">-h</span></code> or <code class="docutils literal"><span class="pre">--help</span></code> argument.</p>
+<div class="section" id="id2">
+<h3>3.3.1. <code class="docutils literal"><span class="pre">pdc_client</span></code><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>This is a very simple client. Essentially this is just a little more convenient
+than using <code class="docutils literal"><span class="pre">curl</span></code> manually. Each invocation of this client obtains a token
+and then performs a single request.</p>
+<p>This client is not meant for direct usage, but just as a helper for integrating
+with PDC from languages where it might be easier than performing the network
+requests manually.</p>
+</div>
+<div class="section" id="pdc">
+<h3>3.3.2. <code class="docutils literal"><span class="pre">pdc</span></code><a class="headerlink" href="#pdc" title="Permalink to this headline">¶</a></h3>
+<p>This is much more user friendly user interface. A single invocation can perform
+multiple requests depending on what subcommand you used.</p>
+</div>
+</div>
+<div class="section" id="known-issues">
+<h2>3.4. Known Issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="kerberos">
+<h3>3.4.1. Kerberos<a class="headerlink" href="#kerberos" title="Permalink to this headline">¶</a></h3>
+<p>Under enterprise network, <a class="reference external" href="http://web.mit.edu/Kerberos/www/krb5-latest/doc/admin/princ_dns.html#reverse-dns-mismatches">Reverse DNS mismatches</a>
+may cause problems authenticating with Kerberos.</p>
+<p>If you can successfully run <code class="docutils literal"><span class="pre">kinit</span></code> but not authenticate yourself to PDC
+servers, check <code class="docutils literal"><span class="pre">/etc/krb5.conf</span></code> and make sure that <code class="docutils literal"><span class="pre">rdns</span></code> is set to false
+in <code class="docutils literal"><span class="pre">libdefaults</span></code> section.</p>
+<div class="highlight-python"><div class="highlight"><pre>[libdefaults]
+    rdns = false
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="for-developers">
+<h2>3.5. For Developers<a class="headerlink" href="#for-developers" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="instalation-details">
+<h3>3.5.1. Instalation details<a class="headerlink" href="#instalation-details" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first">yum repository</p>
+<p>If you have installed PDC Server by some yum repository, PDC Client is in
+the same repository that you used.</p>
+<p>So to install PDC Client, just need to</p>
 <div class="highlight-python"><div class="highlight"><pre>$ sudo yum install pdc-client -y
 </pre></div>
 </div>
-<ol class="arabic simple">
-<li>build from source</li>
-</ol>
-<p>If you have got the code and setup your development environment(see <a class="reference internal" href="development.html#development"><span>Setup development environment</span></a>),
-then you could build from source and install the client and it&#8217;s dependency package python-pdc:</p>
+</li>
+<li><p class="first">build from source</p>
+<p>If you have got the code and setup your development environment (see
+<a class="reference internal" href="development.html#development"><span>Setup development environment</span></a>), then you could build from source and install the
+client and it&#8217;s dependency package python-pdc</p>
 <div class="highlight-python"><div class="highlight"><pre>$ git checkout `{release-tag}`
 $ make rpm
 $ sudo yum install dist/noarch/python-pdc*.noarch.rpm dist/noarch/pdc-client*.noarch.rpm
 </pre></div>
 </div>
-<ol class="arabic simple">
-<li>configure server settings</li>
+</li>
 </ol>
-<p>If you want to customize server configuration, please edit the file &#8216;/etc/pdc/client_config.json&#8217; for
-global configuration or create and edit &#8216;~/.config/pdc/client_config.json&#8217; for the current user specific
-configuration. E.g.</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>{</dt>
-<dd><dl class="first docutils">
-<dt>&#8220;local&#8221;: {</dt>
-<dd>&#8220;host&#8221;: &#8220;<a class="reference external" href="http://localhost:8000/rest_api/v1/">http://localhost:8000/rest_api/v1/</a>&#8221;,
-&#8220;develop&#8221;: true,
-&#8220;insecure&#8221;: false</dd>
-</dl>
-<p>},
-&#8220;prod&#8221;: {</p>
-<blockquote>
-<div>&#8220;host&#8221;: &#8220;<a class="reference external" href="https://pdc.example.com/rest_api/v1/">https://pdc.example.com/rest_api/v1/</a>&#8221;,
-&#8220;token&#8221;: xxxxxxxxxxxxx</div></blockquote>
-<p class="last">}</p>
-</dd>
-</dl>
-<p>}</p>
-</div></blockquote>
 </div>
-<div class="section" id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
-<p>The help message is available via:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ pdc_client -h
-$ # or
-$ pdc_client --help
-</pre></div>
+<div class="section" id="general">
+<h3>3.5.2. General<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h3>
+<p>The PDC Client (package name: pdc_client) is mainly build up with Python
+<cite>argparse</cite> module and PDC&#8217;s Python module <cite>pdc_client</cite>.</p>
+<p>It is powered by <a class="reference external" href="https://github.com/dmach/beanbag">Beanbag</a>, a simple module
+that lets you access REST APIs in an easy way.</p>
 </div>
-</div>
-<div class="section" id="known-issues">
-<h2>Known Issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h2>
-<p>Under enterprise intranet, <a class="reference external" href="http://web.mit.edu/Kerberos/www/krb5-latest/doc/admin/princ_dns.html#reverse-dns-mismatches">Reverse DNS mismatches</a>
-may cause problems when doing kerberos auth.</p>
-<p>Once you found out that you could <cite>kinit</cite> but still can not authenticate yourself to pdc servers,
-please check your krb5.conf and make sure that:</p>
-<div class="highlight-python"><div class="highlight"><pre>[libdefaults]
-    rdns = false
-</pre></div>
-</div>
-<p>is there, and normally this will resolve your problem.</p>
-</div>
-<div class="section" id="for-developers">
-<h2>For Developers<a class="headerlink" href="#for-developers" title="Permalink to this headline">¶</a></h2>
-<p>The PDC Client(package name: pdc_client) is mainly build up with Python <cite>optparser</cite> module and PDC&#8217;s
-Python module <cite>pdc_client</cite>.</p>
-<p>And the PDC Python module(package name: python-pdc) is powered by <a class="reference external" href="https://github.com/dmach/beanbag">Beanbag</a>,
-a simple module that lets you access REST APIs in an easy way.</p>
 </div>
 </div>
 
@@ -131,15 +176,36 @@ a simple module that lets you access REST APIs in an easy way.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">PDC Client</a><ul>
-<li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#usage">Usage</a></li>
-<li><a class="reference internal" href="#known-issues">Known Issues</a></li>
-<li><a class="reference internal" href="#for-developers">For Developers</a></li>
+<li><a class="reference internal" href="#">3. PDC Client</a><ul>
+<li><a class="reference internal" href="#installation">3.1. Installation</a></li>
+<li><a class="reference internal" href="#configuration">3.2. Configuration</a><ul>
+<li><a class="reference internal" href="#example-system-configuration">3.2.1. Example system configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage">3.3. Usage</a><ul>
+<li><a class="reference internal" href="#id2">3.3.1. <code class="docutils literal"><span class="pre">pdc_client</span></code></a></li>
+<li><a class="reference internal" href="#pdc">3.3.2. <code class="docutils literal"><span class="pre">pdc</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#known-issues">3.4. Known Issues</a><ul>
+<li><a class="reference internal" href="#kerberos">3.4.1. Kerberos</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#for-developers">3.5. For Developers</a><ul>
+<li><a class="reference internal" href="#instalation-details">3.5.1. Instalation details</a></li>
+<li><a class="reference internal" href="#general">3.5.2. General</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="bulk_operations.html"
+                        title="previous chapter">2. Bulk operations</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="development.html"
+                        title="next chapter">4. Setup development environment</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -170,7 +236,13 @@ a simple module that lets you access REST APIs in an easy way.</p>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.39.gfc2ebe0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="development.html" title="4. Setup development environment"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="bulk_operations.html" title="2. Bulk operations"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.41.g39c784a documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -12,11 +12,13 @@ Contents:
    :maxdepth: 3
    :numbered:
 
+   using_api
+   bulk_operations
+   pdc_client
    development
    model_graphs
    release
    deployment
-   bulk_operations
    messaging
 
 

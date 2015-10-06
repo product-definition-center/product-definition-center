@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to PDC’s documentation! &mdash; PDC 0.1.0-1.39.gfc2ebe0 documentation</title>
+    <title>Welcome to PDC’s documentation! &mdash; PDC 0.1.0-1.41.g39c784a documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.0-1.39.gfc2ebe0',
+        VERSION:     '0.1.0-1.41.g39c784a',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,8 +23,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.1.0-1.39.gfc2ebe0 documentation" href="#" />
-    <link rel="next" title="1. Setup development environment" href="development.html" /> 
+    <link rel="top" title="PDC 0.1.0-1.41.g39c784a documentation" href="#" />
+    <link rel="next" title="1. Using API" href="using_api.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -34,9 +34,9 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="development.html" title="1. Setup development environment"
+          <a href="using_api.html" title="1. Using API"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">PDC 0.1.0-1.39.gfc2ebe0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">PDC 0.1.0-1.41.g39c784a documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -50,62 +50,89 @@
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="development.html">1. Setup development environment</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="development.html#source-code">1.1. Source Code</a></li>
-<li class="toctree-l2"><a class="reference internal" href="development.html#installation">1.2. Installation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="development.html#option-1-start-it-on-rpm">1.2.1. Option 1: Start it on RPM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="development.html#option-2-start-it-on-virtualenv">1.2.2. Option 2: Start it on virtualenv</a></li>
-<li class="toctree-l3"><a class="reference internal" href="development.html#option-3-start-it-on-docker">1.2.3. Option 3: Start it on Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using_api.html">1. Using API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="using_api.html#authentication">1.1. Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="using_api.html#paging">1.2. Paging</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="development.html#customize-settings">1.3. Customize settings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="development.html#init-db">1.4. Init DB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="development.html#run-devel-server">1.5. Run devel server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bulk_operations.html">2. Bulk operations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bulk_operations.html#create">2.1. Create</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulk_operations.html#delete">2.2. Delete</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulk_operations.html#update">2.3. Update</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulk_operations.html#errors">2.4. Errors</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="model_graphs.html">2. PDC Model Graphs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#overview">2.1. overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#bindings">2.2. bindings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#changeset">2.3. changeset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#common">2.4. common</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#component">2.5. component</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#compose">2.6. compose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#contact">2.7. contact</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#package">2.8. package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#release">2.9. release</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#repository">2.10. repository</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pdc_client.html">3. PDC Client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pdc_client.html#installation">3.1. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pdc_client.html#configuration">3.2. Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pdc_client.html#example-system-configuration">3.2.1. Example system configuration</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="release.html">3. Release</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="release.html#versioning">3.1. Versioning</a></li>
-<li class="toctree-l2"><a class="reference internal" href="release.html#release-instruction">3.2. Release Instruction</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="release.html#tag">3.2.1. Tag</a></li>
-<li class="toctree-l3"><a class="reference internal" href="release.html#test-build">3.2.2. Test Build</a></li>
-<li class="toctree-l3"><a class="reference internal" href="release.html#push">3.2.3. Push</a></li>
-<li class="toctree-l3"><a class="reference internal" href="release.html#id2">3.2.4. Release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pdc_client.html#usage">3.3. Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pdc_client.html#id2">3.3.1. <code class="docutils literal"><span class="pre">pdc_client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pdc_client.html#pdc">3.3.2. <code class="docutils literal"><span class="pre">pdc</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pdc_client.html#known-issues">3.4. Known Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pdc_client.html#kerberos">3.4.1. Kerberos</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pdc_client.html#for-developers">3.5. For Developers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pdc_client.html#instalation-details">3.5.1. Instalation details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pdc_client.html#general">3.5.2. General</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="deployment.html">4. Deployment</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="deployment.html#install-via-yum">4.1. Install via yum</a></li>
-<li class="toctree-l2"><a class="reference internal" href="deployment.html#configure-django-settings">4.2. Configure Django settings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="deployment.html#initialize-database">4.3. Initialize database</a></li>
-<li class="toctree-l2"><a class="reference internal" href="deployment.html#collect-static">4.4. Collect static</a></li>
-<li class="toctree-l2"><a class="reference internal" href="deployment.html#config-apache">4.5. Config apache</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">4. Setup development environment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="development.html#source-code">4.1. Source Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#installation">4.2. Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="development.html#option-1-start-it-on-rpm">4.2.1. Option 1: Start it on RPM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="development.html#option-2-start-it-on-virtualenv">4.2.2. Option 2: Start it on virtualenv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="development.html#option-3-start-it-on-docker">4.2.3. Option 3: Start it on Docker</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="bulk_operations.html">5. Bulk operations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="bulk_operations.html#create">5.1. Create</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bulk_operations.html#delete">5.2. Delete</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bulk_operations.html#update">5.3. Update</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bulk_operations.html#errors">5.4. Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#customize-settings">4.3. Customize settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#init-database">4.4. Init database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#run-devel-server">4.5. Run devel server</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="messaging.html">6. Messaging</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="messaging.html#overview">6.1. Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="messaging.html#supported-messengers">6.2. Supported Messengers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="messaging.html#to-be-improved">6.3. To Be Improved</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_graphs.html">5. PDC Model Graphs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#overview">5.1. overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#bindings">5.2. bindings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#changeset">5.3. changeset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#common">5.4. common</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#component">5.5. component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#compose">5.6. compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#contact">5.7. contact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#package">5.8. package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#release">5.9. release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_graphs.html#repository">5.10. repository</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="release.html">6. Release</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="release.html#versioning">6.1. Versioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="release.html#release-instruction">6.2. Release Instruction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="release.html#tag">6.2.1. Tag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="release.html#test-build">6.2.2. Test Build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="release.html#push">6.2.3. Push</a></li>
+<li class="toctree-l3"><a class="reference internal" href="release.html#id2">6.2.4. Release</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">7. Deployment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deployment.html#install-via-yum">7.1. Install via yum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deployment.html#configure-django-settings">7.2. Configure Django settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deployment.html#initialize-database">7.3. Initialize database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deployment.html#collect-static">7.4. Collect static</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deployment.html#config-apache">7.5. Config apache</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="messaging.html">8. Messaging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="messaging.html#overview">8.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="messaging.html#supported-messengers">8.2. Supported Messengers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="messaging.html#to-be-improved">8.3. To Be Improved</a></li>
 </ul>
 </li>
 </ul>
@@ -132,8 +159,8 @@
 </ul>
 
   <h4>Next topic</h4>
-  <p class="topless"><a href="development.html"
-                        title="next chapter">1. Setup development environment</a></p>
+  <p class="topless"><a href="using_api.html"
+                        title="next chapter">1. Using API</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -165,9 +192,9 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="development.html" title="1. Setup development environment"
+          <a href="using_api.html" title="1. Using API"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">PDC 0.1.0-1.39.gfc2ebe0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">PDC 0.1.0-1.41.g39c784a documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

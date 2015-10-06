@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>1. Setup development environment &mdash; PDC 0.1.0-1.39.gfc2ebe0 documentation</title>
+    <title>4. Setup development environment &mdash; PDC 0.1.0-1.41.g39c784a documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.0-1.39.gfc2ebe0',
+        VERSION:     '0.1.0-1.41.g39c784a',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,9 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.1.0-1.39.gfc2ebe0 documentation" href="index.html" />
-    <link rel="next" title="2. PDC Model Graphs" href="model_graphs.html" />
-    <link rel="prev" title="Welcome to PDC’s documentation!" href="index.html" /> 
+    <link rel="top" title="PDC 0.1.0-1.41.g39c784a documentation" href="index.html" />
+    <link rel="next" title="5. PDC Model Graphs" href="model_graphs.html" />
+    <link rel="prev" title="3. PDC Client" href="pdc_client.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -35,12 +35,12 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="model_graphs.html" title="2. PDC Model Graphs"
+          <a href="model_graphs.html" title="5. PDC Model Graphs"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to PDC’s documentation!"
+          <a href="pdc_client.html" title="3. PDC Client"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.39.gfc2ebe0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.41.g39c784a documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -50,18 +50,18 @@
           <div class="body" role="main">
             
   <div class="section" id="setup-development-environment">
-<span id="development"></span><h1>1. Setup development environment<a class="headerlink" href="#setup-development-environment" title="Permalink to this headline">¶</a></h1>
+<span id="development"></span><h1>4. Setup development environment<a class="headerlink" href="#setup-development-environment" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="source-code">
-<h2>1.1. Source Code<a class="headerlink" href="#source-code" title="Permalink to this headline">¶</a></h2>
+<h2>4.1. Source Code<a class="headerlink" href="#source-code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre>$ git clone https://github.com/release-engineering/product-definition-center.git
 </pre></div>
 </div>
 </div>
 <div class="section" id="installation">
-<h2>1.2. Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<h2>4.2. Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="option-1-start-it-on-rpm">
-<h3>1.2.1. Option 1: Start it on RPM<a class="headerlink" href="#option-1-start-it-on-rpm" title="Permalink to this headline">¶</a></h3>
-<p>For development purposes, install following deps:</p>
+<h3>4.2.1. Option 1: Start it on RPM<a class="headerlink" href="#option-1-start-it-on-rpm" title="Permalink to this headline">¶</a></h3>
+<p>For development purposes, install following dependencies:</p>
 <ul class="simple">
 <li>python = 2.7</li>
 <li>python-django = 1.8.1</li>
@@ -87,102 +87,100 @@ REPOs: <a class="reference external" href="https://copr.fedoraproject.org/coprs/
 </ul>
 </div>
 <div class="section" id="option-2-start-it-on-virtualenv">
-<h3>1.2.2. Option 2: Start it on virtualenv<a class="headerlink" href="#option-2-start-it-on-virtualenv" title="Permalink to this headline">¶</a></h3>
+<h3>4.2.2. Option 2: Start it on virtualenv<a class="headerlink" href="#option-2-start-it-on-virtualenv" title="Permalink to this headline">¶</a></h3>
 <ul>
-<li><p class="first">Koji is not available on PyPI. You must install the <cite>koji</cite> package to your system via</p>
+<li><p class="first">Koji is not available on PyPI. You must install the <cite>koji</cite> package to your
+system via <code class="docutils literal"><span class="pre">yum</span></code> before creating a virtualenv.</p>
 <div class="highlight-python"><div class="highlight"><pre>$ sudo yum install koji
 </pre></div>
 </div>
-<p>before creating a virtualenv.</p>
 </li>
 <li><p class="first">After that, run</p>
 <div class="highlight-python"><div class="highlight"><pre>$ pip install virtualenvwrapper
 </pre></div>
 </div>
-<p>and setup according to &#8216;Setup&#8217; steps in /usr/bin/virtualenvwrapper.sh. Then do with</p>
+<p>and setup according to &#8216;Setup&#8217; steps in <code class="docutils literal"><span class="pre">/usr/bin/virtualenvwrapper.sh</span></code>.
+Then run</p>
 <div class="highlight-python"><div class="highlight"><pre>$ mkvirtualenv pdc --system-site-packages
 </pre></div>
 </div>
 <p>to include <cite>koji</cite> into your <em>pdc</em> virtualenv.</p>
 </li>
-<li><p class="first">run the following</p>
+<li><p class="first">Run the following</p>
 <div class="highlight-python"><div class="highlight"><pre>$ workon pdc
 $ pip install -r requirements/devel.txt
 </pre></div>
 </div>
-<p>to active <em>pdc</em> virtualenv and install all the deps.</p>
+<p>to activate <em>pdc</em> virtualenv and install all the dependencies.</p>
 </li>
 </ul>
 </div>
 <div class="section" id="option-3-start-it-on-docker">
-<h3>1.2.3. Option 3: Start it on Docker<a class="headerlink" href="#option-3-start-it-on-docker" title="Permalink to this headline">¶</a></h3>
+<h3>4.2.3. Option 3: Start it on Docker<a class="headerlink" href="#option-3-start-it-on-docker" title="Permalink to this headline">¶</a></h3>
 <ul>
-<li><p class="first">Install Docker: the link: <a class="reference external" href="https://docs.docker.com/installation/">https://docs.docker.com/installation/</a> will share the steps.
-If you can&#8217;t install docker via the following command, please check the link in detail.</p>
+<li><p class="first">Install Docker: see the <a class="reference external" href="https://docs.docker.com/installation/">official installation
+guide</a> for details. Generally, it
+might be enough to run install it with <code class="docutils literal"><span class="pre">yum</span></code> and the run it.</p>
 <div class="highlight-python"><div class="highlight"><pre>$ sudo yum install docker-engine
-</pre></div>
-</div>
-<p>Then start the Docker daemon.</p>
-<div class="highlight-python"><div class="highlight"><pre>$ sudo service docker start
+$ sudo service docker start
 </pre></div>
 </div>
 </li>
-<li><p class="first">Use this to build a new image</p>
+<li><p class="first">Use this command to build a new image</p>
 <div class="highlight-python"><div class="highlight"><pre>$ sudo docker build -t &lt;YOUR_NAME&gt;/pdc &lt;the directory your Dockerfile is located&gt;
 </pre></div>
 </div>
 </li>
-<li><p class="first">Running the container</p>
+<li><p class="first">Run the container</p>
 <div class="highlight-python"><div class="highlight"><pre>$ docker run -it -P -v $PWD:$PWD &lt;YOUR_NAME&gt;/pdc python $PWD/manage.py runserver 0.0.0.0:8000
 </pre></div>
 </div>
 </li>
-<li><dl class="first docutils">
-<dt>Check the addresses</dt>
-<dd><dl class="first docutils">
-<dt>step1. Check the address of the docker machine</dt>
-<dd><p class="first last">127.0.0.1 &#8211;&gt; DOCKER_HOST</p>
-</dd>
-</dl>
-<p>step2. Check the mapped port of your running container</p>
-<div class="last highlight-python"><div class="highlight"><pre>$ sudo docker ps -l --&gt; PORTS
+<li><p class="first">Check the address</p>
+<ol class="arabic">
+<li><p class="first">Find the address of the docker machine (127.0.0.1 &#8211;&gt; DOCKER_HOST).</p>
+</li>
+<li><p class="first">Find the mapped port of your running container</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo docker ps -l --&gt; PORT
 </pre></div>
 </div>
-</dd>
-</dl>
 </li>
-<li><p class="first">Access it</p>
+</ol>
+</li>
+<li><p class="first">Access it by visiting <code class="docutils literal"><span class="pre">DOCKER_HOST:PORT</span></code> in your web browser.</p>
 </li>
 </ul>
-<blockquote>
-<div>visit &lt;DOCKER_HOST:PORTS&gt; on your web browser</div></blockquote>
 </div>
 </div>
 <div class="section" id="customize-settings">
-<h2>1.3. Customize settings<a class="headerlink" href="#customize-settings" title="Permalink to this headline">¶</a></h2>
+<h2>4.3. Customize settings<a class="headerlink" href="#customize-settings" title="Permalink to this headline">¶</a></h2>
 <p>You can use the dist settings template by copying it to <cite>settings_local.py</cite>:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ cp settings_local.py.dist settings_local.py
 </pre></div>
 </div>
-<p>Feel free to customize your <cite>settings_local.py</cite>. Changes will be populated automatically. In local development environment,
-you may need to set &#8220;DEBUG = True&#8221; and comment out &#8221; ALLOWED_HOSTS&#8221; setting, meanwhile uncomment &#8216;REST_FRAMEWORK&#8217; section
-but keep &#8216;DEFAULT_PERMISSION_CLASSES&#8217; item commented.</p>
+<p>Feel free to customize your <cite>settings_local.py</cite>. Changes will be populated
+automatically. In local development environment, you may need to set <code class="docutils literal"><span class="pre">DEBUG</span> <span class="pre">=</span>
+<span class="pre">True</span></code> to get better error messages and comment out <code class="docutils literal"><span class="pre">ALLOWED_HOSTS</span></code> setting.</p>
+<p>For development you might also consider uncommenting <code class="docutils literal"><span class="pre">REST_FRAMEWORK</span></code> section
+but keeping nested <code class="docutils literal"><span class="pre">DEFAULT_PERMISSION_CLASSES</span></code> item commented. This will
+disable authentication.</p>
 </div>
-<div class="section" id="init-db">
-<h2>1.4. Init DB<a class="headerlink" href="#init-db" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="init-database">
+<h2>4.4. Init database<a class="headerlink" href="#init-database" title="Permalink to this headline">¶</a></h2>
 <p>To initialize database, run:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ python manage.py migrate --noinput
 </pre></div>
 </div>
 </div>
 <div class="section" id="run-devel-server">
-<h2>1.5. Run devel server<a class="headerlink" href="#run-devel-server" title="Permalink to this headline">¶</a></h2>
+<h2>4.5. Run devel server<a class="headerlink" href="#run-devel-server" title="Permalink to this headline">¶</a></h2>
 <p>To run development server, run:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ make run
 </pre></div>
 </div>
-<p>For development you may find it useful to enable Django Development Toolbar.</p>
-<p>Related settings is documented in <cite>devel settings</cite> section in <cite>settings_local.py.dist</cite>.</p>
+<p>For development you may find it useful to enable <a class="reference external" href="http://django-debug-toolbar.readthedocs.org/en/1.3.2/">Django Debug Toolbar</a>.</p>
+<p>Related settings is documented in comment at the to of
+<code class="docutils literal"><span class="pre">settings_local.py.dist</span></code>.</p>
 </div>
 </div>
 
@@ -194,27 +192,27 @@ but keep &#8216;DEFAULT_PERMISSION_CLASSES&#8217; item commented.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">1. Setup development environment</a><ul>
-<li><a class="reference internal" href="#source-code">1.1. Source Code</a></li>
-<li><a class="reference internal" href="#installation">1.2. Installation</a><ul>
-<li><a class="reference internal" href="#option-1-start-it-on-rpm">1.2.1. Option 1: Start it on RPM</a></li>
-<li><a class="reference internal" href="#option-2-start-it-on-virtualenv">1.2.2. Option 2: Start it on virtualenv</a></li>
-<li><a class="reference internal" href="#option-3-start-it-on-docker">1.2.3. Option 3: Start it on Docker</a></li>
+<li><a class="reference internal" href="#">4. Setup development environment</a><ul>
+<li><a class="reference internal" href="#source-code">4.1. Source Code</a></li>
+<li><a class="reference internal" href="#installation">4.2. Installation</a><ul>
+<li><a class="reference internal" href="#option-1-start-it-on-rpm">4.2.1. Option 1: Start it on RPM</a></li>
+<li><a class="reference internal" href="#option-2-start-it-on-virtualenv">4.2.2. Option 2: Start it on virtualenv</a></li>
+<li><a class="reference internal" href="#option-3-start-it-on-docker">4.2.3. Option 3: Start it on Docker</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#customize-settings">1.3. Customize settings</a></li>
-<li><a class="reference internal" href="#init-db">1.4. Init DB</a></li>
-<li><a class="reference internal" href="#run-devel-server">1.5. Run devel server</a></li>
+<li><a class="reference internal" href="#customize-settings">4.3. Customize settings</a></li>
+<li><a class="reference internal" href="#init-database">4.4. Init database</a></li>
+<li><a class="reference internal" href="#run-devel-server">4.5. Run devel server</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to PDC&#8217;s documentation!</a></p>
+  <p class="topless"><a href="pdc_client.html"
+                        title="previous chapter">3. PDC Client</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="model_graphs.html"
-                        title="next chapter">2. PDC Model Graphs</a></p>
+                        title="next chapter">5. PDC Model Graphs</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -246,12 +244,12 @@ but keep &#8216;DEFAULT_PERMISSION_CLASSES&#8217; item commented.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="model_graphs.html" title="2. PDC Model Graphs"
+          <a href="model_graphs.html" title="5. PDC Model Graphs"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to PDC’s documentation!"
+          <a href="pdc_client.html" title="3. PDC Client"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.39.gfc2ebe0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.41.g39c784a documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

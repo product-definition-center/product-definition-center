@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>5. Bulk operations &mdash; PDC 0.1.0-1.39.gfc2ebe0 documentation</title>
+    <title>2. Bulk operations &mdash; PDC 0.1.0-1.41.g39c784a documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.0-1.39.gfc2ebe0',
+        VERSION:     '0.1.0-1.41.g39c784a',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,9 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.1.0-1.39.gfc2ebe0 documentation" href="index.html" />
-    <link rel="next" title="6. Messaging" href="messaging.html" />
-    <link rel="prev" title="4. Deployment" href="deployment.html" /> 
+    <link rel="top" title="PDC 0.1.0-1.41.g39c784a documentation" href="index.html" />
+    <link rel="next" title="3. PDC Client" href="pdc_client.html" />
+    <link rel="prev" title="1. Using API" href="using_api.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -35,12 +35,12 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="messaging.html" title="6. Messaging"
+          <a href="pdc_client.html" title="3. PDC Client"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="deployment.html" title="4. Deployment"
+          <a href="using_api.html" title="1. Using API"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.39.gfc2ebe0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.41.g39c784a documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -50,7 +50,7 @@
           <div class="body" role="main">
             
   <div class="section" id="bulk-operations">
-<h1>5. Bulk operations<a class="headerlink" href="#bulk-operations" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>2. Bulk operations<a class="headerlink" href="#bulk-operations" title="Permalink to this headline">¶</a></h1>
 <p>The REST API provides a way to perform many operations in a single request.
 However, all these operations in a single request must work with the same
 collection (e.g. <em>release components</em> or <em>products</em>).</p>
@@ -60,7 +60,7 @@ operation is implemented in terms of the standard call operating on a single
 item.</p>
 <p>The bulk call is atomic – all operations will be performed or none will.</p>
 <div class="section" id="create">
-<h2>5.1. Create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
+<h2>2.1. Create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
 <p>The input to this call should be a list of JSON objects. The rules for the
 items in the list are same as when creating a single item in the collection.</p>
 <p>The items will be created in the order in which they were specified in the
@@ -72,7 +72,7 @@ by creating the resources one by one. The status code on success is <code class=
 the request data.</p>
 </div>
 <div class="section" id="delete">
-<h2>5.2. Delete<a class="headerlink" href="#delete" title="Permalink to this headline">¶</a></h2>
+<h2>2.2. Delete<a class="headerlink" href="#delete" title="Permalink to this headline">¶</a></h2>
 <p>To delete multiple items in a collection, send a <code class="docutils literal"><span class="pre">DELETE</span></code> request to the list
 URL. The request should include a body which should be a list of identifiers of
 items to be deleted.</p>
@@ -83,7 +83,7 @@ be the identifier you would append to the URL to get a detail view of the item.<
 <p>On success the response will be <code class="docutils literal"><span class="pre">204</span> <span class="pre">NO</span> <span class="pre">CONTENT</span></code>.</p>
 </div>
 <div class="section" id="update">
-<h2>5.3. Update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h2>
+<h2>2.3. Update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h2>
 <p>Updating multiple items is possible via the <code class="docutils literal"><span class="pre">PUT</span></code> or <code class="docutils literal"><span class="pre">PATCH</span></code> method
 directed to the list URL of a collection. In both cases, the request body
 should be a JSON object, where keys are identifiers of objects (same as for
@@ -101,7 +101,7 @@ change of the identifier, the response will still contain the old identifier
 with new value for the item.</p>
 </div>
 <div class="section" id="errors">
-<h2>5.4. Errors<a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h2>
+<h2>2.4. Errors<a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h2>
 <p>If an error occurs during processing a bulk operation, all changes from the
 request will be aborted and no change log will be recorded. The status code of
 an error response depends on what went wrong.</p>
@@ -135,21 +135,21 @@ request will fail with another error.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">5. Bulk operations</a><ul>
-<li><a class="reference internal" href="#create">5.1. Create</a></li>
-<li><a class="reference internal" href="#delete">5.2. Delete</a></li>
-<li><a class="reference internal" href="#update">5.3. Update</a></li>
-<li><a class="reference internal" href="#errors">5.4. Errors</a></li>
+<li><a class="reference internal" href="#">2. Bulk operations</a><ul>
+<li><a class="reference internal" href="#create">2.1. Create</a></li>
+<li><a class="reference internal" href="#delete">2.2. Delete</a></li>
+<li><a class="reference internal" href="#update">2.3. Update</a></li>
+<li><a class="reference internal" href="#errors">2.4. Errors</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="deployment.html"
-                        title="previous chapter">4. Deployment</a></p>
+  <p class="topless"><a href="using_api.html"
+                        title="previous chapter">1. Using API</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="messaging.html"
-                        title="next chapter">6. Messaging</a></p>
+  <p class="topless"><a href="pdc_client.html"
+                        title="next chapter">3. PDC Client</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -181,12 +181,12 @@ request will fail with another error.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="messaging.html" title="6. Messaging"
+          <a href="pdc_client.html" title="3. PDC Client"
              >next</a> |</li>
         <li class="right" >
-          <a href="deployment.html" title="4. Deployment"
+          <a href="using_api.html" title="1. Using API"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.39.gfc2ebe0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.41.g39c784a documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

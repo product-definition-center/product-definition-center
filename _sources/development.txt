@@ -12,14 +12,14 @@ Source Code
 
     $ git clone https://github.com/release-engineering/product-definition-center.git
 
+
 Installation
 ------------
-
 
 Option 1: Start it on RPM
 `````````````````````````
 
-For development purposes, install following deps:
+For development purposes, install following dependencies:
 
 * python = 2.7
 * python-django = 1.8.1
@@ -47,67 +47,57 @@ For development purposes, install following deps:
 Option 2: Start it on virtualenv
 ````````````````````````````````
 
-* Koji is not available on PyPI. You must install the `koji` package to your system via
-
-  ::
+* Koji is not available on PyPI. You must install the `koji` package to your
+  system via ``yum`` before creating a virtualenv. ::
 
     $ sudo yum install koji
 
-  before creating a virtualenv.
-
-* After that, run
-
-  ::
+* After that, run ::
 
     $ pip install virtualenvwrapper
 
-  and setup according to 'Setup' steps in /usr/bin/virtualenvwrapper.sh. Then do with
-
-  ::
+  and setup according to 'Setup' steps in ``/usr/bin/virtualenvwrapper.sh``.
+  Then run ::
 
     $ mkvirtualenv pdc --system-site-packages
 
   to include `koji` into your *pdc* virtualenv.
 
-* run the following
-
-  ::
+* Run the following ::
 
     $ workon pdc
     $ pip install -r requirements/devel.txt
 
-  to active *pdc* virtualenv and install all the deps.
+  to activate *pdc* virtualenv and install all the dependencies.
 
 
 Option 3: Start it on Docker
-````````````````````````````````
+````````````````````````````
 
-* Install Docker: the link: https://docs.docker.com/installation/ will share the steps.
-  If you can't install docker via the following command, please check the link in detail.
-  ::
+* Install Docker: see the `official installation
+  guide <https://docs.docker.com/installation/>`_ for details. Generally, it
+  might be enough to run install it with ``yum`` and the run it. ::
+
     $ sudo yum install docker-engine
-  Then start the Docker daemon.
-  ::
     $ sudo service docker start
 
-* Use this to build a new image
-  ::
+* Use this command to build a new image ::
+
     $ sudo docker build -t <YOUR_NAME>/pdc <the directory your Dockerfile is located>
 
-* Running the container
-  ::
+* Run the container ::
+
     $ docker run -it -P -v $PWD:$PWD <YOUR_NAME>/pdc python $PWD/manage.py runserver 0.0.0.0:8000
 
-* Check the addresses
-   step1. Check the address of the docker machine
-       127.0.0.1 --> DOCKER_HOST
+* Check the address
 
-   step2. Check the mapped port of your running container
-   ::
-       $ sudo docker ps -l --> PORTS
+  #. Find the address of the docker machine (127.0.0.1 --> DOCKER_HOST).
 
-* Access it
- visit <DOCKER_HOST:PORTS> on your web browser
+  #. Find the mapped port of your running container ::
+
+       $ sudo docker ps -l --> PORT
+
+* Access it by visiting ``DOCKER_HOST:PORT`` in your web browser.
 
 
 Customize settings
@@ -117,13 +107,17 @@ You can use the dist settings template by copying it to `settings_local.py`::
 
     $ cp settings_local.py.dist settings_local.py
 
-Feel free to customize your `settings_local.py`. Changes will be populated automatically. In local development environment,
-you may need to set "DEBUG = True" and comment out " ALLOWED_HOSTS" setting, meanwhile uncomment 'REST_FRAMEWORK' section
-but keep 'DEFAULT_PERMISSION_CLASSES' item commented.
+Feel free to customize your `settings_local.py`. Changes will be populated
+automatically. In local development environment, you may need to set ``DEBUG =
+True`` to get better error messages and comment out ``ALLOWED_HOSTS`` setting.
+
+For development you might also consider uncommenting ``REST_FRAMEWORK`` section
+but keeping nested ``DEFAULT_PERMISSION_CLASSES`` item commented. This will
+disable authentication.
 
 
-Init DB
--------
+Init database
+-------------
 
 To initialize database, run::
 
@@ -137,6 +131,8 @@ To run development server, run::
 
     $ make run
 
-For development you may find it useful to enable Django Development Toolbar.
+For development you may find it useful to enable `Django Debug Toolbar
+<http://django-debug-toolbar.readthedocs.org/en/1.3.2/>`_.
 
-Related settings is documented in `devel settings` section in `settings_local.py.dist`.
+Related settings is documented in comment at the to of
+``settings_local.py.dist``.

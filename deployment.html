@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>4. Deployment &mdash; PDC 0.1.0-1.39.gfc2ebe0 documentation</title>
+    <title>7. Deployment &mdash; PDC 0.1.0-1.41.g39c784a documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.0-1.39.gfc2ebe0',
+        VERSION:     '0.1.0-1.41.g39c784a',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,9 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.1.0-1.39.gfc2ebe0 documentation" href="index.html" />
-    <link rel="next" title="5. Bulk operations" href="bulk_operations.html" />
-    <link rel="prev" title="3. Release" href="release.html" /> 
+    <link rel="top" title="PDC 0.1.0-1.41.g39c784a documentation" href="index.html" />
+    <link rel="next" title="8. Messaging" href="messaging.html" />
+    <link rel="prev" title="6. Release" href="release.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -35,12 +35,12 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="bulk_operations.html" title="5. Bulk operations"
+          <a href="messaging.html" title="8. Messaging"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="release.html" title="3. Release"
+          <a href="release.html" title="6. Release"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.39.gfc2ebe0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.41.g39c784a documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -50,9 +50,9 @@
           <div class="body" role="main">
             
   <div class="section" id="deployment">
-<span id="id1"></span><h1>4. Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>7. Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="install-via-yum">
-<h2>4.1. Install via yum<a class="headerlink" href="#install-via-yum" title="Permalink to this headline">¶</a></h2>
+<h2>7.1. Install via yum<a class="headerlink" href="#install-via-yum" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre>$ yum install pdc-server
 </pre></div>
 </div>
@@ -61,14 +61,14 @@ LDAP. It is installed to <code class="docutils literal"><span class="pre">/etc/c
 configuration.</p>
 </div>
 <div class="section" id="configure-django-settings">
-<h2>4.2. Configure Django settings<a class="headerlink" href="#configure-django-settings" title="Permalink to this headline">¶</a></h2>
+<h2>7.2. Configure Django settings<a class="headerlink" href="#configure-django-settings" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># mv settings_local.py.dist to settings_local.py</span>
 <span class="c"># change database settings in /usr/lib/pythonX.Y/site-packages/pdc/settings_local.py</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="initialize-database">
-<h2>4.3. Initialize database<a class="headerlink" href="#initialize-database" title="Permalink to this headline">¶</a></h2>
+<h2>7.3. Initialize database<a class="headerlink" href="#initialize-database" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre># create database
 $ su - postgres
 $ psql
@@ -81,13 +81,13 @@ $ django-admin migrate --settings=pdc.settings --noinput
 </div>
 </div>
 <div class="section" id="collect-static">
-<h2>4.4. Collect static<a class="headerlink" href="#collect-static" title="Permalink to this headline">¶</a></h2>
+<h2>7.4. Collect static<a class="headerlink" href="#collect-static" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre>$ django-admin collectstatic --settings=pdc.settings
 </pre></div>
 </div>
 </div>
 <div class="section" id="config-apache">
-<h2>4.5. Config apache<a class="headerlink" href="#config-apache" title="Permalink to this headline">¶</a></h2>
+<h2>7.5. Config apache<a class="headerlink" href="#config-apache" title="Permalink to this headline">¶</a></h2>
 <p>replace <code class="docutils literal"><span class="pre">PDC_HOSTNAME</span></code> with server&#8217;s hostname in <code class="docutils literal"><span class="pre">/etc/httpd/conf.d/pdc.conf</span></code></p>
 </div>
 </div>
@@ -100,22 +100,22 @@ $ django-admin migrate --settings=pdc.settings --noinput
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">4. Deployment</a><ul>
-<li><a class="reference internal" href="#install-via-yum">4.1. Install via yum</a></li>
-<li><a class="reference internal" href="#configure-django-settings">4.2. Configure Django settings</a></li>
-<li><a class="reference internal" href="#initialize-database">4.3. Initialize database</a></li>
-<li><a class="reference internal" href="#collect-static">4.4. Collect static</a></li>
-<li><a class="reference internal" href="#config-apache">4.5. Config apache</a></li>
+<li><a class="reference internal" href="#">7. Deployment</a><ul>
+<li><a class="reference internal" href="#install-via-yum">7.1. Install via yum</a></li>
+<li><a class="reference internal" href="#configure-django-settings">7.2. Configure Django settings</a></li>
+<li><a class="reference internal" href="#initialize-database">7.3. Initialize database</a></li>
+<li><a class="reference internal" href="#collect-static">7.4. Collect static</a></li>
+<li><a class="reference internal" href="#config-apache">7.5. Config apache</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="release.html"
-                        title="previous chapter">3. Release</a></p>
+                        title="previous chapter">6. Release</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="bulk_operations.html"
-                        title="next chapter">5. Bulk operations</a></p>
+  <p class="topless"><a href="messaging.html"
+                        title="next chapter">8. Messaging</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -147,12 +147,12 @@ $ django-admin migrate --settings=pdc.settings --noinput
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="bulk_operations.html" title="5. Bulk operations"
+          <a href="messaging.html" title="8. Messaging"
              >next</a> |</li>
         <li class="right" >
-          <a href="release.html" title="3. Release"
+          <a href="release.html" title="6. Release"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.39.gfc2ebe0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.41.g39c784a documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

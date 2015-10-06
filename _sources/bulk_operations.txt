@@ -1,4 +1,4 @@
-.. _bulk_operations
+.. _bulk_operations:
 
 
 Bulk operations
