@@ -61,3 +61,17 @@ this case, the response is just the result array without any count or URLS.
 
 Please be careful when turning the pagination off. If your query could return
 hundreds or thousands of results, consider getting the page by page instead.
+
+
+Change monitoring
+-----------------
+
+Whenever a change is performed through the API, a log is create so that it is
+possible to find out what, when, why and by who was changed.
+
+The changes can be viewed from the API under the ``/rest_api/v1/changesets/``
+end-point. There is also a view on the web pages under ``/changes/``. Currently
+there is no link to it.
+
+To store the reason for the change, add HTTP header ``PDC-Change-Comment``,
+whose value is an arbitrary string that will be stored with the change.
