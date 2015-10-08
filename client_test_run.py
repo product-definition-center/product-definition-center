@@ -7,6 +7,7 @@
 #
 import unittest
 import argparse
+import sys
 
 """
 Use this script either without arguments to run all tests:
@@ -24,4 +25,6 @@ if __name__ == '__main__':
         suite = loader.loadTestsFromNames(options.tests)
     else:
         suite = loader.discover('pdc_client/tests', top_level_dir='.')
-    unittest.TextTestRunner().run(suite)
+    result = unittest.TextTestRunner().run(suite)
+    if not result.wasSuccessful():
+        sys.exit(1)
