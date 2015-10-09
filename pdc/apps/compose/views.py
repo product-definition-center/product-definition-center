@@ -603,7 +603,7 @@ class ComposeRPMView(StrictQueryParamMixin, viewsets.GenericViewSet):
             {
                 "release_id": string,
                 "composeinfo": composeinfo,
-                "rpm_manifest": image_manifest
+                "rpm_manifest": rpm_manifest
             }
 
         The `composeinfo` and `rpm_manifest` values should be actual JSON
