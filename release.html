@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>6. Release &mdash; PDC 0.1.0-1.49.gb7bb9d4 documentation</title>
+    <title>6. Release &mdash; PDC fatal: No names found, cannot describe anything. documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.0-1.49.gb7bb9d4',
+        VERSION:     'fatal: No names found, cannot describe anything.',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.1.0-1.49.gb7bb9d4 documentation" href="index.html" />
+    <link rel="top" title="PDC fatal: No names found, cannot describe anything. documentation" href="index.html" />
     <link rel="next" title="7. Deployment" href="deployment.html" />
     <link rel="prev" title="5. PDC Model Graphs" href="model_graphs.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="model_graphs.html" title="5. PDC Model Graphs"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.49.gb7bb9d4 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC fatal: No names found, cannot describe anything. documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -54,17 +54,17 @@
 <div class="section" id="versioning">
 <h2>6.1. Versioning<a class="headerlink" href="#versioning" title="Permalink to this headline">¶</a></h2>
 <p>PDC versioning is based on <a class="reference external" href="http://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
-<p>And it&#8217;s also RPM compatible.</p>
+<p>And it&#8217;s RPM compatible.</p>
 <p>Given a version number MAJOR.MINOR.PATCH, increment the:</p>
 <ol class="arabic simple">
 <li>MAJOR version when you make incompatible API changes,</li>
-<li>MINOR version when you add functionality in a backwards-compatible manner, and</li>
-<li>PATCH version when you make backwards-compatible bug fixes.</li>
+<li>MINOR version when you add functionality in a backwards-compatible manner,</li>
+<li>PATCH version when you make backwards-compatible bug fixing.</li>
 </ol>
 <p>Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.</p>
 <ol class="arabic">
 <li><p class="first">A pre-release version MAY be denoted by appending a hyphen and an identifier immediately following the patch version.</p>
-<p>Identifier MUST comprise only ASCII alphanumerics [0-9A-Za-z].
+<p>Identifier MUST be comprised and only with ASCII alphanumerics [0-9A-Za-z].
 Identifier MUST NOT be empty.
 Numeric identifier MUST NOT include leading zeroes.
 Pre-release versions have a lower precedence than the associated normal version.
@@ -72,7 +72,7 @@ A pre-release version indicates that the version is unstable and might not satis
 Examples: 1.0.0-alpha, 1.0.0-sprint5, 1.0.0-rc4.</p>
 </li>
 <li><p class="first">Build metadata MAY be denoted by appending a hyphen and a series of dot separated identifiers immediately following the patch or a dot and a series of dot separated identifiers immediately following the pre-release version.</p>
-<p>Identifiers MUST comprise only ASCII alphanumerics [0-9A-Za-z].
+<p>Identifiers MUST be comprise and only with ASCII alphanumerics [0-9A-Za-z].
 Identifiers MUST NOT be empty.
 Build metadata SHOULD be ignored when determining version precedence.
 Thus two versions that differ only in the build metadata, have the same precedence.
@@ -82,48 +82,52 @@ Examples: 1.0.0-12.g1234abc, 1.0.0-s5.4.g1234abc.</p>
 </div>
 <div class="section" id="release-instruction">
 <h2>6.2. Release Instruction<a class="headerlink" href="#release-instruction" title="Permalink to this headline">¶</a></h2>
-<p>In practice, we use <cite>tito</cite> to add git tag and do release including tag based releases and current HEAD based test releases.</p>
-<p>A short instructions will be as simple as:</p>
+<p>In practice, we use <cite>tito</cite> to add git tag and do release including tag based on releases and current HEAD based on test releases.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><cite>tito</cite> version &gt;= 0.6.2, install guide refer to: <cite>https://github.com/dgoodwin/tito</cite></p>
+</div>
+<p>A short instructions as:</p>
 <ol class="arabic simple">
 <li>Tag: tito tag</li>
 <li>Test Build: tito build &#8211;rpm &#8211;offline</li>
 <li>Push: git push origin &amp;&amp; git push origin $TAG</li>
 <li>Release: tito release copr-pdc/copr-pdc-test</li>
 </ol>
-<p>For each step, a more detailed version will be:</p>
+<p>For each step, more detail are:</p>
 <div class="section" id="tag">
 <h3>6.2.1. Tag<a class="headerlink" href="#tag" title="Permalink to this headline">¶</a></h3>
-<p>Every time we are ready to have another release, we should add one git tag, with <cite>tito</cite>, we just need to:</p>
+<p>A new git tag need to be added before starting a new release:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ tito tag
 </pre></div>
 </div>
 <p>It will:</p>
 <ul class="simple">
-<li>bump version or release, based on which <cite>tagger`we&#8217;re using, see `.tito/tito.props</cite>;</li>
-<li>help us create a annotated git tag based on our version;</li>
-<li>update the spec file accordingly, generate changelog even.</li>
+<li>bump version or release, based on which <cite>tagger</cite> is used, see <cite>.tito/tito.props</cite>;</li>
+<li>create an annotated git tag based on our version;</li>
+<li>update the spec file accordingly, generate changelog event.</li>
 </ul>
 <p>For more options about <cite>tito tag</cite>, run <cite>tito tag &#8211;help</cite>.</p>
 </div>
 <div class="section" id="test-build">
 <h3>6.2.2. Test Build<a class="headerlink" href="#test-build" title="Permalink to this headline">¶</a></h3>
-<p>After we have our release tag, we should do some build tests including source tarball checking, and rpm building testing.</p>
+<p>Once release tag is available, we can do some build tests including source tarball checking, and rpm building testing.</p>
 <blockquote>
-<div><div class="highlight-python"><div class="highlight"><pre># generate source tarball
+<div><div class="highlight-python"><div class="highlight"><pre># generate local source tarball
 $ tito build --tgz --offline
 
-# local rpm build
+# generate local rpm build
 $ tito build --rpm --offline
 </pre></div>
 </div>
 </div></blockquote>
-<p>If everything goes well, you could go to next step and push your commit and tag to remote, otherwise you need to untag:</p>
+<p>If everything goes well, you could push your commit and tag to remote, otherwise the tag need to be undo:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ tito tag -u
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>During developing, we could also generate test build at any time we want, it will based on current <cite>HEAD</cite> instead of latest tag.</p>
+<p>During developing, we could also generate test build any time, which will be based on current <cite>HEAD</cite> instead of latest tag.</p>
 <div class="last highlight-python"><div class="highlight"><pre># generate test builds
 $ tito build --test --tgz/srpm/rpm
 </pre></div>
@@ -132,7 +136,7 @@ $ tito build --test --tgz/srpm/rpm
 </div>
 <div class="section" id="push">
 <h3>6.2.3. Push<a class="headerlink" href="#push" title="Permalink to this headline">¶</a></h3>
-<p>When you&#8217;re happen with your builds, it&#8217;s time to push commit and tag to remote.</p>
+<p>When you&#8217;re happy with your build, it&#8217;s time to push commit and tag to remote.</p>
 <div class="highlight-python"><div class="highlight"><pre>$ git push origin &amp;&amp; git push origin &lt;your_tag&gt;
 </pre></div>
 </div>
@@ -144,21 +148,26 @@ use <cite>tito</cite> to release <cite>PDC</cite> as a <cite>yum</cite> or <cite
 So that user could install <cite>PDC</cite> packages after enable the repo. <a class="footnote-reference" href="#id7" id="id3">[1]</a></p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>Before doing any releases, you should make sure that you have account on both sites and also make sure that you could
+<p>Before doing any release, make sure that you have account on both sites and also make sure that you could
 access to your fedorapeople space <a class="footnote-reference" href="#id8" id="id4">[2]</a> and have enough permissions <a class="footnote-reference" href="#id9" id="id5">[3]</a> to build <cite>PDC</cite> in <cite>Copr</cite>.</p>
-<p>We need you to create a directory called <cite>pdc_srpms/</cite> under your fedorapeople space <cite>public_html/</cite> to hold all the uploaed
+<p>You need to create a directory called <cite>pdc_srpms/</cite> under your fedorapeople space <cite>public_html/</cite> to hold all the uploaded
 srpms.</p>
-<p class="last"><cite>copr-cli</cite> will be used, so please <cite>sudo yum/dnf install copr-cli</cite> and configure it. <a class="footnote-reference" href="#id10" id="id6">[4]</a></p>
+<p class="last"><cite>copr-cli</cite> will be used, installed by <cite>sudo yum/dnf install copr-cli</cite> and configure it. <a class="footnote-reference" href="#id10" id="id6">[4]</a></p>
 </div>
-<p>Currently we have two projects in <cite>Copr</cite>, <cite>pdc</cite> for all tag based releases and <cite>pdc-test</cite> for test builds. We have two
-release targets in <cite>tito</cite>, <cite>copr-pdc</cite> is for <cite>pdc</cite> in <cite>Copr</cite> and <cite>copr-pdc-test</cite> is for <cite>pdc-test</cite>, respectively.</p>
+<p>Currently there are two projects in <cite>Copr</cite>: <cite>pdc</cite> for all tag based releases and <cite>pdc-test</cite> for test builds. We have two
+release targets in <cite>tito</cite>, <cite>copr-pdc</cite> is for <cite>pdc</cite> in <cite>Copr</cite> and <cite>copr-pdc-test</cite> is for <cite>pdc-test</cite> respectively.</p>
+<p>Request as <cite>Builder</cite> for projects <cite>pdc/pdc-test</cite> and <cite>pdc/pdc</cite>, wait until admin approves.</p>
 <p>After all setup, release with <cite>tito</cite>:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ tito release copr-pdc
 # or
 $ tito release copr-pdc-test
 </pre></div>
 </div>
-<p>Go and grab a cup of tea or coffee, after a minute or two the release build result will come out then.</p>
+<p>Go and grab a cup of tea or coffee, the release build will be come out soon</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># test builds: `https://copr.fedoraproject.org/coprs/pdc/pdc-test/builds/`</span>
+<span class="c"># tag based builds: `https://copr.fedoraproject.org/coprs/pdc/pdc/builds/`</span>
+</pre></div>
+</div>
 <table class="docutils footnote" frame="void" id="id7" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
@@ -250,7 +259,7 @@ $ tito release copr-pdc-test
         <li class="right" >
           <a href="model_graphs.html" title="5. PDC Model Graphs"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.1.0-1.49.gb7bb9d4 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC fatal: No names found, cannot describe anything. documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
