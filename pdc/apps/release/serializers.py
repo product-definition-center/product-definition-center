@@ -59,7 +59,8 @@ class ReleaseSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     base_product = serializers.SlugRelatedField(slug_field='base_product_id',
                                                 queryset=BaseProduct.objects.all(),
                                                 required=False,
-                                                default=None)
+                                                default=None,
+                                                allow_null=True)
     product_version = serializers.SlugRelatedField(slug_field='product_version_id',
                                                    queryset=ProductVersion.objects.all(),
                                                    required=False)

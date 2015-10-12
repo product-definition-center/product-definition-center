@@ -996,6 +996,23 @@ class ReleaseUpdateRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertIsNone(models.Release.objects.get(release_id='release-1.0').dist_git_branch)
         self.assertNumChanges([1])
 
+    def test_update_can_reset_base_product(self):
+        self.release.base_product = models.BaseProduct.objects.create(
+            name='Base Product',
+            short='bp',
+            version='1'
+        )
+        self.release.save()
+
+        response = self.client.patch(reverse('release-detail', args=['release-1.0-bp-1']),
+                                     {'base_product': None}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # The dist-git mapping mentioned in changelog because release_id changes.
+        self.assertNumChanges([2])
+        self.assertIsNone(response.data['base_product'])
+        release = models.Release.objects.get(release_id='release-1.0')
+        self.assertIsNone(release.base_product)
+
     def test_update_can_explicitly_erase_optional_field_via_patch(self):
         response = self.client.patch(self.url, {'dist_git': None}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
