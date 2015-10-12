@@ -15,6 +15,7 @@ from pdc.apps.common import views as common_views
 from pdc.apps.package import views as rpm_views
 from pdc.apps.utils import SortedRouter
 from pdc.apps.osbs import views as osbs_views
+from pdc.apps.partners import views as partner_views
 
 
 router = SortedRouter.PDCRouter()
@@ -162,3 +163,10 @@ router.register(r'global-component-contacts',
 router.register(r'release-component-contacts',
                 component_views.ReleaseComponentContactInfoViewSet,
                 base_name='releasecomponentcontacts')
+
+router.register(r'partner-types',
+                partner_views.PartnerTypeViewSet)
+router.register(r'partners',
+                partner_views.PartnerViewSet)
+router.register(r'partners-mapping',
+                partner_views.PartnerMappingViewSet)

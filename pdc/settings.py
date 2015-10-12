@@ -61,6 +61,7 @@ INSTALLED_APPS = (
     'pdc.apps.bindings',
     'pdc.apps.usage',
     'pdc.apps.osbs',
+    'pdc.apps.partners',
 
     'mptt',
 )
