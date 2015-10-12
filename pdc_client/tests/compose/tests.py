@@ -69,6 +69,7 @@ class ComposeTestCase(CLITestCase):
 
     def test_update(self, api):
         api.add_endpoint('composes/awesome-product-20130203.7', 'GET', self.compose_detail)
+        api.add_endpoint('composes/awesome-product-20130203.7', 'PATCH', {})
         with self.expect_output('info.txt'):
             self.runner.run(['compose-update', 'awesome-product-20130203.7',
                              '--acceptance-testing', 'passed',

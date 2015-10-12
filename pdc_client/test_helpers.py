@@ -79,6 +79,8 @@ class MockAPI(object):
         return PathAccumulator(key, self)
 
     def __call__(self, *args, **kwargs):
+        if len(args) == 2 and args[0] == 'PATCH':
+            return self._handle_patch(args[1])
         if len(args) == 1:
             return self._handle_post(args[0])
         elif len(args) == 0:
@@ -104,11 +106,15 @@ class MockAPI(object):
             }
         return data
 
+    def _handle_patch(self, data):
+        self.calls.setdefault(self.will_call, []).append(('PATCH', data))
+        return self.endpoints[self.will_call]['PATCH']
+
     def _fmt_url(self, page):
         return 'http://testserver/?page={}'.format(page)
 
     def __iadd__(self, data):
-        self.calls.setdefault(self.will_call, []).append(('PATCH', data))
+        self._handle_patch(data)
 
 
 def mock_api(func):

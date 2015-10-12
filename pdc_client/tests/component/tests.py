@@ -78,6 +78,7 @@ class GlobalComponentTestCase(CLITestCase):
 
     def test_update(self, api):
         self._setup_detail(api)
+        api.add_endpoint('global-components/1', 'PATCH', {})
         with self.expect_output('global_component/detail.txt'):
             self.runner.run(['global-component-update', '1', '--name', 'new test name'])
         self.assertDictEqual(api.calls,
@@ -180,6 +181,7 @@ class ReleaseComponentTestCase(CLITestCase):
 
     def test_update(self, api):
         self._setup_detail(api)
+        api.add_endpoint('release-components/1', 'PATCH', {})
         with self.expect_output('release_component/detail.txt'):
             self.runner.run(['release-component-update', '1', '--name', 'new test name'])
         self.assertDictEqual(api.calls,

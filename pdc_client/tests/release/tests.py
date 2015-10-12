@@ -71,11 +71,12 @@ class ReleaseTestCase(CLITestCase):
 
     def test_update(self, api):
         self._setup_release_detail(api)
+        api.add_endpoint('releases/release-0.9', 'PATCH', self.release_detail)
         with self.expect_output('detail.txt'):
-            self.runner.run(['release-update', 'release-1.0', '--deactivate'])
+            self.runner.run(['release-update', 'release-0.9', '--version', '1.0'])
         self.assertDictEqual(api.calls,
-                             {'releases/release-1.0': [('PATCH', {'active': False}),
-                                                       ('GET', {})],
+                             {'releases/release-0.9': [('PATCH', {'version': '1.0'})],
+                              'releases/release-1.0': [('GET', {})],
                               'release-variants': [('GET', {'page': 1, 'release': 'release-1.0'})]})
 
     def test_create(self, api):

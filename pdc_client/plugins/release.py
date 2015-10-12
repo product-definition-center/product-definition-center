@@ -108,13 +108,15 @@ class ReleasePlugin(PDCClientPlugin):
     def release_update(self, args):
         data = self.get_release_data(args)
 
+        release_id = None
         if data:
             self.logger.debug('Updating release {} with data {}'.format(args.release_id, data))
-            self.client.releases[args.release_id]._ += data
+            response = self.client.releases[args.release_id]._('PATCH', data)
+            release_id = response['release_id']
         else:
             self.logger.info('No change required, not making a request')
 
-        self.release_info(args)
+        self.release_info(args, release_id)
 
     def release_create(self, args):
         data = self.get_release_data(args)
