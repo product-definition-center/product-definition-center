@@ -197,7 +197,9 @@ class ReleaseComponentPlugin(PDCClientPlugin):
         print fmt.format('Name', release_component['name'])
         print fmt.format('Release ID', release_id)
         print fmt.format('Global Component', release_component['global_component'])
-        print fmt.format('Bugzilla Component', release_component['bugzilla_component'] or '')
+        print fmt.format('Bugzilla Component',
+                         release_component['bugzilla_component']['name']
+                         if release_component['bugzilla_component'] else '')
         print fmt.format('Brew Package', release_component['brew_package'] or '')
         print fmt.format('Dist Git Branch', release_component['dist_git_branch'] or '')
         print fmt.format('Dist Git URL', release_component['dist_git_web_url'] or '')
