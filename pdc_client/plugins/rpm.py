@@ -26,7 +26,7 @@ class RPMPlugin(PDCClientPlugin):
 
         subcmd = self.add_admin_command('rpm-create',
                                         help='create new RPM')
-        self.add_rpm_arguments(subcmd)
+        self.add_rpm_arguments(subcmd, required=True)
         subcmd.set_defaults(func=self.rpm_create)
 
         subcmd = self.add_admin_command('rpm-update',
@@ -35,16 +35,16 @@ class RPMPlugin(PDCClientPlugin):
         self.add_rpm_arguments(subcmd)
         subcmd.set_defaults(func=self.rpm_update)
 
-    def add_rpm_arguments(self, parser):
+    def add_rpm_arguments(self, parser, required=False):
         add_parser_arguments(parser, {
-            'arch': {},
-            'epoch': {'type': int},
+            'arch': {'required': required},
+            'epoch': {'type': int, 'required': required},
             'filename': {},
-            'name': {},
-            'release': {},
-            'srpm_name': {},
+            'name': {'required': required},
+            'release': {'required': required},
+            'srpm_name': {'required': required},
             'srpm_nevra': {},
-            'version': {},
+            'version': {'required': required},
             'linked_releases': {'nargs': '*', 'metavar': 'RELEASE_ID'}})
         add_parser_arguments(parser, {
             'dependencies__requires': {'nargs': '*', 'metavar': 'DEPENDENCY', 'arg': 'requires'},

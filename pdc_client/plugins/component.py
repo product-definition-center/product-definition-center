@@ -32,12 +32,12 @@ class GlobalComponentPlugin(PDCClientPlugin):
 
         subcmd = self.add_admin_command('global-component-create',
                                         help='create new global component')
-        self.add_global_component_arguments(subcmd)
+        self.add_global_component_arguments(subcmd, required=True)
         subcmd.set_defaults(func=self.global_component_create)
 
-    def add_global_component_arguments(self, parser):
+    def add_global_component_arguments(self, parser, required=False):
         add_parser_arguments(parser, {
-            'name': {},
+            'name': {'required': required},
             'dist_git_path': {}}
         )
         add_parser_arguments(parser, {
@@ -135,21 +135,21 @@ class ReleaseComponentPlugin(PDCClientPlugin):
 
         subcmd = self.add_admin_command('release-component-create',
                                         help='create new release')
-        self.add_release_component_arguments(subcmd)
-        subcmd.add_argument('--release', dest='release')
-        subcmd.add_argument('--global-component', dest='global_component')
+        self.add_release_component_arguments(subcmd, required=True)
+        subcmd.add_argument('--release', dest='release', required=True)
+        subcmd.add_argument('--global-component', dest='global_component', required=True)
         subcmd.set_defaults(func=self.release_component_create)
 
     def add_include_inactive_release_argument(self, parser):
         parser.add_argument('--include-inactive-release', action='store_true',
                             help='show component(s) in both active and inactive releases')
 
-    def add_release_component_arguments(self, parser):
+    def add_release_component_arguments(self, parser, required=False):
         group = parser.add_mutually_exclusive_group()
         group.add_argument('--activate', action='store_const', const=True, dest='active')
         group.add_argument('--deactivate', action='store_const', const=False, dest='active')
         add_parser_arguments(parser, {
-            'name': {},
+            'name': {'required': required},
             'dist_git_branch': {},
             'bugzilla_component': {},
             'brew_package': {},

@@ -31,19 +31,19 @@ class ReleasePlugin(PDCClientPlugin):
 
         subcmd = self.add_admin_command('release-create',
                                         help='create new release')
-        self.add_release_arguments(subcmd)
+        self.add_release_arguments(subcmd, required=True)
         subcmd.set_defaults(func=self.release_create)
 
-    def add_release_arguments(self, parser):
+    def add_release_arguments(self, parser, required=False):
         group = parser.add_mutually_exclusive_group()
         group.add_argument('--activate', action='store_const', const=True, dest='active')
         group.add_argument('--deactivate', action='store_const', const=False, dest='active')
         add_parser_arguments(parser, {
-            'version': {},
-            'short': {},
-            'release_type': {},
+            'version': {'required': required},
+            'short': {'required': required},
+            'release_type': {'required': required},
             'product_version': {},
-            'name': {},
+            'name': {'required': required},
             'base_product': {},
             'bugzilla__product': {'arg': 'bugzilla-product'},
             'dist_git__branch': {'arg': 'dist-git-branch'}})

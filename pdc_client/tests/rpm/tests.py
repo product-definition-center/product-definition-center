@@ -90,9 +90,10 @@ class RpmTestCase(CLITestCase):
                              '--srpm-name', 'bash',
                              '--epoch', '0',
                              '--version', '4.3.42',
+                             '--arch', 'x86_64',
                              '--release', '1'])
         self.assertEqual(api.calls['rpms'],
-                         [('POST', {'name': 'bash', 'srpm_name': 'bash',
+                         [('POST', {'name': 'bash', 'srpm_name': 'bash', 'arch': 'x86_64',
                                     'epoch': 0, 'version': '4.3.42', 'release': '1'})])
         self.assertEqual(api.calls['rpms/1'],
                          [('GET', {})])
