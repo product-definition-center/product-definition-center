@@ -3,6 +3,7 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+from django.core.exceptions import ValidationError
 from django.db import transaction
 import json
 
@@ -55,16 +56,25 @@ def get_or_create_integrated_release(request, orig_release, release):
         short=release.short.lower(),
         version=release.version.split('.')[0]
     )
-    integrated_release, _ = _logged_get_or_create(
-        request, models.Release,
-        name=release.name,
-        short=release.short.lower(),
-        release_type=orig_release.release_type,
-        version=release.version,
-        base_product=integrated_base_product,
-        integrated_with=orig_release,
-        product_version=integrated_product_version
-    )
+    try:
+        integrated_release, _ = _logged_get_or_create(
+            request, models.Release,
+            name=release.name,
+            short=release.short.lower(),
+            release_type=orig_release.release_type,
+            version=release.version,
+            base_product=integrated_base_product,
+            integrated_with=orig_release,
+            product_version=integrated_product_version
+        )
+    except ValidationError:
+        msg = ('Failed to create release {}-{}-{} for integrated layered product.'
+               + ' A conflicting release already exists.'
+               + ' There is likely a version mismatch between the imported'
+               + ' release and its layered integrated product in the composeinfo.')
+        raise ValidationError(
+            msg.format(release.short.lower(), release.version, integrated_base_product.base_product_id)
+        )
     return integrated_release
 
 
