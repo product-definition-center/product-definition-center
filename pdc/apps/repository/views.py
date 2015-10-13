@@ -69,6 +69,18 @@ class RepoViewSet(ChangeSetCreateModelMixin,
         """
         return super(RepoViewSet, self).create(*args, **kwargs)
 
+    def retrieve(self, *args, **kwargs):
+        """
+        __Method__: `GET`
+
+        __URL__: $LINK:repo-detail:id$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(RepoViewSet, self).retrieve(*args, **kwargs)
+
     def list(self, *args, **kwargs):
         """
         __Method__: `GET`
