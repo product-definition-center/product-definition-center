@@ -2,7 +2,7 @@ Release ID           release-1.0
 Name                 Test Release
 Short Name           release
 Version              1.0
-Type                 ga
+Release Type         ga
 Product Version      release-1
 Base Product         
 Activity             active

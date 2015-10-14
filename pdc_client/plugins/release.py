@@ -81,7 +81,7 @@ class ReleasePlugin(PDCClientPlugin):
         print fmt.format('Name', release['name'])
         print fmt.format('Short Name', release['short'])
         print fmt.format('Version', release['version'])
-        print fmt.format('Type', release['release_type'])
+        print fmt.format('Release Type', release['release_type'])
         print fmt.format('Product Version', release['product_version'] or '')
         print fmt.format('Base Product', release['base_product'] or '')
         print fmt.format('Activity', 'active' if release['active'] else 'inactive')
