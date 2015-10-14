@@ -1013,6 +1013,23 @@ class ReleaseUpdateRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         release = models.Release.objects.get(release_id='release-1.0')
         self.assertIsNone(release.base_product)
 
+    def test_update_can_reset_product_version(self):
+        self.release.product_version = models.ProductVersion.objects.create(
+            name='Base Product',
+            short='p',
+            version='1',
+            product=models.Product.objects.create(name='Product', short='p')
+        )
+        self.release.save()
+
+        response = self.client.patch(reverse('release-detail', args=['release-1.0']),
+                                     {'product_version': None}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNumChanges([1])
+        self.assertIsNone(response.data['product_version'])
+        release = models.Release.objects.get(release_id='release-1.0')
+        self.assertIsNone(release.product_version)
+
     def test_update_can_explicitly_erase_optional_field_via_patch(self):
         response = self.client.patch(self.url, {'dist_git': None}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
