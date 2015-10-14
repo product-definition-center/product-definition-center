@@ -1391,7 +1391,10 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
 
         __Data__:
 
-        %(WRITABLE_SERIALIZER)s
+            {
+                "name":                        "string",
+                "parent_pk":                   "int"
+            }
 
         __Response__:
 
@@ -1472,7 +1475,10 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
 
         __Data__:
 
-        %(WRITABLE_SERIALIZER)s
+            {
+                "name":                        "string",         # required
+                "parent_pk: (default=None)":   "int"             # optional
+            }
 
         __Response__:
 
