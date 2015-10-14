@@ -2,6 +2,10 @@
 {% load i18n %}
 
 {% block content %}
+<button class="btn btn-default btn-lg pull-right help-button" data-toggle="modal" data-target="#helpOverlay">
+    <span class="glyphicon glyphicon-question-sign"></span> Help
+</button>
+
 <h2 class="page-header">{% trans "Base Products" %}</h2>
 
 <form method="GET" style="float: left;">
@@ -14,4 +18,26 @@
 {% include "base_product_list_include.html" %}
 {% include "pagination.html" %}
 
+<div class="modal fade" id="helpOverlay" tabindex="-1" role="dialog" aria-labelledby="helpOverlay" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">Help</h4>
+      </div>
+      <div class="modal-body">
+          <p>A <em>base product</em> represents the operating system on which a
+          <a href="{% url "release/index" %}">release</a>
+          is supposed to run on.</p>
+
+          <p>In reality, base products often correspond to
+          <a href="{% url "product_version/index" %}">product version</a>
+          of that OS.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

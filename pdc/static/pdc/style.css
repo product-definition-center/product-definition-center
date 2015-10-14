@@ -64,3 +64,6 @@ ul.pagination.pull-right {
 .table .list-inline {
     margin-bottom: 0;
 }
+.help-button {
+    margin-top: 1em;
+}
