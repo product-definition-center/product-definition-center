@@ -67,8 +67,11 @@
                 <li>
                   <a href='{% url 'auth/logout' %}?next={{ request.path }}'>{% trans 'Log-out' %}</a>
                 </li>
-                {% if user.is_superuser %}
                 <li class="divider"></li>
+                <li>
+                  <a href='{% url 'changeset/list' %}'>{% trans 'Changes' %}</a>
+                </li>
+                {% if user.is_superuser %}
                 <li>
                   <a href='{% url 'home' %}admin/'>{% trans 'PDC Administration Interface' %}</a>
                 </li>
