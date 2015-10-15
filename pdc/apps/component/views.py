@@ -221,6 +221,7 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
                 'dist_git_path':       string,         # optional
                 'upstream':            dict,           # optional
             }
+
         __Response__:
 
             {
@@ -262,15 +263,17 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
 
         __Method__:
 
-        PUT: for full fields update
-            {'name': 'new_name', 'dist_git_path': 'new_dist_git_path'}
+        PUT/PATCH: for update
 
-        PATCH: for partial update
-            {'name': 'new_name'}
-            or
-            {'dist_git_path': 'new_dist_git_path'}
-            or
-            {'name': 'new_name', 'dist_git_path': 'new_dist_git_path'}
+        __Data__:
+
+            # accept any field(s) from 'name', 'dist_git_path' and 'upstream'
+            {'name': 'new_name',
+             'dist_git_path': 'new_dist_git_path',
+             'upstream': {'homepage': 'homepage',
+                          'scm_type': 'scm-type',
+                          'scm_url': 'url'}
+            }
 
         __URL__: $LINK:globalcomponent-detail:instance_pk$
 
