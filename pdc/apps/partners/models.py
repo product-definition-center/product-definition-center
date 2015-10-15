@@ -21,8 +21,8 @@ class Partner(models.Model):
     binary = models.BooleanField(default=True)
     source = models.BooleanField(default=True)
     enabled = models.BooleanField(default=True)
-    ftp_dir = models.CharField(max_length=500)
-    rsync_dir = models.CharField(max_length=500)
+    ftp_dir = models.CharField(max_length=500, blank=True)
+    rsync_dir = models.CharField(max_length=500, blank=True)
 
     def __unicode__(self):
         return u'{0.short} ({0.name})'.format(self)
