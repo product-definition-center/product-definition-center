@@ -8,11 +8,16 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.query import QuerySet
 from django.forms.models import model_to_dict
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
 
 
 class ContactRole(models.Model):
 
     name = models.CharField(max_length=128, unique=True)
+    count_limit = models.IntegerField(default=1,
+                                      help_text=_('Contact count limit of the role for each component.'))
+    UNLIMITED = 0
 
     def __unicode__(self):
         return u"%s" % self.name
@@ -142,7 +147,19 @@ class RoleContactSpecificManager(models.Manager):
         return self.get_queryset().create(**create_kwargs)
 
 
-class GlobalComponentContact(models.Model):
+class ValidateRoleCountMixin(object):
+
+    def clean(self):
+        if self.role.count_limit != ContactRole.UNLIMITED:
+            q = type(self).objects.filter(component=self.component, role=self.role)
+            if self.pk:
+                q = q.exclude(pk=self.pk)
+            if q.count() >= self.role.count_limit:
+                raise ValidationError(
+                    {'detail': 'Exceed contact role limit for the component. The limit is %d.' % self.role.count_limit})
+
+
+class GlobalComponentContact(ValidateRoleCountMixin, models.Model):
 
     role      = models.ForeignKey(ContactRole, on_delete=models.PROTECT)
     contact   = models.ForeignKey(Contact, on_delete=models.PROTECT)
@@ -150,10 +167,10 @@ class GlobalComponentContact(models.Model):
                                   on_delete=models.PROTECT)
 
     def __unicode__(self):
-        return u'%s: %s: %s' % (unicode(self.component), self.contact_role, unicode(self.contact))
+        return u'%s: %s: %s' % (unicode(self.component), unicode(self.role), unicode(self.contact))
 
     class Meta:
-        unique_together = (('role', 'component'),)
+        unique_together = (('role', 'component', 'contact'), )
 
     def export(self, fields=None):
         return {
@@ -163,7 +180,7 @@ class GlobalComponentContact(models.Model):
         }
 
 
-class ReleaseComponentContact(models.Model):
+class ReleaseComponentContact(ValidateRoleCountMixin, models.Model):
 
     role      = models.ForeignKey(ContactRole, on_delete=models.PROTECT)
     contact   = models.ForeignKey(Contact, on_delete=models.PROTECT)
@@ -171,10 +188,10 @@ class ReleaseComponentContact(models.Model):
                                   on_delete=models.PROTECT)
 
     def __unicode__(self):
-        return u'%s: %s: %s' % (unicode(self.component), self.contact_role, unicode(self.contact))
+        return u'%s: %s: %s' % (unicode(self.component), unicode(self.role), unicode(self.contact))
 
     class Meta:
-        unique_together = (('role', 'component'), )
+        unique_together = (('role', 'component', 'contact'), )
 
     def export(self, fields=None):
         return {

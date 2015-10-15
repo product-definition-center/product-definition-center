@@ -19,5 +19,21 @@
         "fields": {
             "name": "cc"
         }
+    },
+    {
+        "model": "contact.ContactRole",
+        "pk": 4,
+        "fields": {
+            "name": "watcher",
+            "count_limit": 0
+        }
+    },
+    {
+        "model": "contact.ContactRole",
+        "pk": 5,
+        "fields": {
+            "name": "allow_3_role",
+            "count_limit": 3
+        }
     }
 ]
