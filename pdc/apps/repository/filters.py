@@ -5,7 +5,7 @@
 #
 import django_filters as filters
 
-from pdc.apps.common.filters import MultiValueFilter
+from pdc.apps.common.filters import MultiValueFilter, MultiIntFilter
 from . import models
 
 
@@ -18,7 +18,7 @@ class RepoFilter(filters.FilterSet):
     repo_family = MultiValueFilter(name='repo_family__name')
     service = MultiValueFilter(name='service__name')
     shadow = filters.BooleanFilter()
-    product_id = MultiValueFilter()
+    product_id = MultiIntFilter()
 
     class Meta:
         model = models.Repo
