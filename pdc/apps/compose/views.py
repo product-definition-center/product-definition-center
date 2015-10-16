@@ -711,8 +711,9 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
         """
         __URL__: $LINK:composerpmmapping-detail:compose_id:package$
 
-        Allows to create and destroy overrides. The request should send JSON data
-        in following format:
+        Unlike other API end-points, patching RPM mapping requires you to specify all the fields. The request data
+        should be a list of objects where each object has exactly the keys listed in documentation below. Only `include`
+        field can be left out if `action` is not `create`.
 
             [
                 {
