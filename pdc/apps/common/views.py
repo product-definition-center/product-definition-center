@@ -17,7 +17,7 @@ from .filters import LabelFilter, SigKeyFilter
 
 class ArchListView(ListView):
     model = Arch
-    queryset = Arch.objects.all()
+    queryset = Arch.objects.all().order_by('name')
     allow_empty = True
     template_name = "arch_list.html"
     context_object_name = "arch_list"
