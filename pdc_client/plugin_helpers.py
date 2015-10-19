@@ -102,6 +102,28 @@ def add_parser_arguments(parser, args, group=None, prefix=DATA_PREFIX):
         parser.add_argument('--' + arg_name, dest=prefix + arg, **kwargs)
 
 
+def add_create_update_args(parser, required_args, optional_args, create=False):
+    """Wrapper around ``add_parser_arguments``.
+
+    If ``create`` is True, one argument group will be created for each of
+    ``required_args`` and ``optional_args``. Each required argument will have
+    the ``required`` parameter set to True automatically.
+
+    If ``create`` is False, only one group of optional arguments will be
+    created containing all the arguments.
+
+    The arguments should be specified the same way as for
+    ``add_parser_arguments``.
+    """
+    if create:
+        for key in required_args:
+            required_args[key]['required'] = True
+        add_parser_arguments(parser, required_args, group='required arguments')
+    else:
+        optional_args.update(required_args)
+    add_parser_arguments(parser, optional_args)
+
+
 def extract_arguments(args, prefix=DATA_PREFIX):
     """Return a dict of arguments created by `add_parser_arguments`.
 

@@ -7,7 +7,9 @@
 import json
 
 from pdc_client import get_paged
-from pdc_client.plugin_helpers import PDCClientPlugin, add_parser_arguments, extract_arguments
+from pdc_client.plugin_helpers import (PDCClientPlugin,
+                                       extract_arguments,
+                                       add_create_update_args)
 
 
 class ReleasePlugin(PDCClientPlugin):
@@ -38,15 +40,18 @@ class ReleasePlugin(PDCClientPlugin):
         group = parser.add_mutually_exclusive_group()
         group.add_argument('--activate', action='store_const', const=True, dest='active')
         group.add_argument('--deactivate', action='store_const', const=False, dest='active')
-        add_parser_arguments(parser, {
-            'version': {'required': required},
-            'short': {'required': required},
-            'release_type': {'required': required},
+
+        required_args = {
+            'version': {},
+            'short': {},
+            'release_type': {},
+            'name': {}}
+        optional_args = {
             'product_version': {},
-            'name': {'required': required},
             'base_product': {},
             'bugzilla__product': {'arg': 'bugzilla-product'},
-            'dist_git__branch': {'arg': 'dist-git-branch'}})
+            'dist_git__branch': {'arg': 'dist-git-branch'}}
+        add_create_update_args(parser, required_args, optional_args, required)
 
         self.run_hook('release_parser_setup', parser)
 

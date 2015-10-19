@@ -8,7 +8,10 @@ import json
 import sys
 
 from pdc_client import get_paged
-from pdc_client.plugin_helpers import PDCClientPlugin, add_parser_arguments, extract_arguments
+from pdc_client.plugin_helpers import (PDCClientPlugin,
+                                       add_parser_arguments,
+                                       extract_arguments,
+                                       add_create_update_args)
 
 
 class GlobalComponentPlugin(PDCClientPlugin):
@@ -36,10 +39,10 @@ class GlobalComponentPlugin(PDCClientPlugin):
         subcmd.set_defaults(func=self.global_component_create)
 
     def add_global_component_arguments(self, parser, required=False):
-        add_parser_arguments(parser, {
-            'name': {'required': required},
-            'dist_git_path': {}}
-        )
+        add_create_update_args(parser,
+                               {'name': {}},
+                               {'dist_git_path': {}},
+                               required)
         add_parser_arguments(parser, {
             'upstream__homepage': {'arg': 'homepage'},
             'upstream__scm_type': {'arg': 'scm-type'},
@@ -148,14 +151,14 @@ class ReleaseComponentPlugin(PDCClientPlugin):
         group = parser.add_mutually_exclusive_group()
         group.add_argument('--activate', action='store_const', const=True, dest='active')
         group.add_argument('--deactivate', action='store_const', const=False, dest='active')
-        add_parser_arguments(parser, {
-            'name': {'required': required},
-            'dist_git_branch': {},
-            'bugzilla_component': {},
-            'brew_package': {},
-            'type': {},
-            'srpm__name': {'arg': 'srpm-name'}}
-        )
+        add_create_update_args(parser,
+                               {'name': {}},
+                               {'dist_git_branch': {},
+                                'bugzilla_component': {},
+                                'brew_package': {},
+                                'type': {},
+                                'srpm__name': {'arg': 'srpm-name'}},
+                               required)
 
     def list_release_components(self, args):
         filters = extract_arguments(args, prefix='filter_')

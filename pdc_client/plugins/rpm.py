@@ -8,7 +8,10 @@ import sys
 import json
 
 from pdc_client import get_paged
-from pdc_client.plugin_helpers import PDCClientPlugin, add_parser_arguments, extract_arguments
+from pdc_client.plugin_helpers import (PDCClientPlugin,
+                                       add_parser_arguments,
+                                       extract_arguments,
+                                       add_create_update_args)
 
 
 class RPMPlugin(PDCClientPlugin):
@@ -36,16 +39,19 @@ class RPMPlugin(PDCClientPlugin):
         subcmd.set_defaults(func=self.rpm_update)
 
     def add_rpm_arguments(self, parser, required=False):
-        add_parser_arguments(parser, {
-            'arch': {'required': required},
-            'epoch': {'type': int, 'required': required},
+        required_args = {
+            'arch': {},
+            'epoch': {'type': int},
+            'name': {},
+            'release': {},
+            'srpm_name': {},
+            'version': {}}
+        optional_args = {
             'filename': {},
-            'name': {'required': required},
-            'release': {'required': required},
-            'srpm_name': {'required': required},
             'srpm_nevra': {},
-            'version': {'required': required},
-            'linked_releases': {'nargs': '*', 'metavar': 'RELEASE_ID'}})
+            'linked_releases': {'nargs': '*', 'metavar': 'RELEASE_ID'}}
+        add_create_update_args(parser, required_args, optional_args, required)
+
         add_parser_arguments(parser, {
             'dependencies__requires': {'nargs': '*', 'metavar': 'DEPENDENCY', 'arg': 'requires'},
             'dependencies__provides': {'nargs': '*', 'metavar': 'DEPENDENCY', 'arg': 'provides'},
