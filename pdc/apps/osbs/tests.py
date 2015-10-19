@@ -134,3 +134,17 @@ class OSBSRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertTrue(records.get(component__name='python27').autorebuild)
         self.assertFalse(records.get(component__name='MySQL-python').autorebuild)
         self.assertNumChanges([6])  # 1 release, 3 components, 2 osbs records
+
+    def test_update_with_wrong_key(self):
+        response = self.client.put(reverse('osbs-detail', args=['release-1.0/python27']),
+                                   {'autorebuild': False, 'wrongkey': True},
+                                   format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {"detail": 'Unknown fields: "wrongkey".'})
+
+    def test_partial_update_with_wrong_key(self):
+        response = self.client.patch(reverse('osbs-detail', args=['release-1.0/python27']),
+                                     {'wrongkey': False},
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {"detail": 'Unknown fields: "wrongkey".'})
