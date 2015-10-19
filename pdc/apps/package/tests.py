@@ -1098,6 +1098,34 @@ class ImageRESTTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 3)
 
+    def test_query_disc_number_with_wrong_value(self):
+        key = 'disc_number'
+        value = 'wrongvalue'
+        response = self.client.get(reverse('image-list'), {key: value})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {"detail": [u'Value [%s] of %s is not an integer' % (value, key)]})
+
+    def test_query_disc_count_with_wrong_value(self):
+        key = 'disc_count'
+        value = 'wrongvalue'
+        response = self.client.get(reverse('image-list'), {key: value})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {"detail": [u'Value [%s] of %s is not an integer' % (value, key)]})
+
+    def test_query_mtime_with_wrong_value(self):
+        key = 'mtime'
+        value = 'wrongvalue'
+        response = self.client.get(reverse('image-list'), {key: value})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {"detail": [u'Value [%s] of %s is not an integer' % (value, key)]})
+
+    def test_query_size_with_wrong_value(self):
+        key = 'size'
+        value = 'wrongvalue'
+        response = self.client.get(reverse('image-list'), {key: value})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {"detail": [u'Value [%s] of %s is not an integer' % (value, key)]})
+
 
 class BuildImageRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
