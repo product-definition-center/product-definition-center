@@ -12,6 +12,7 @@ from django.core.urlresolvers import reverse
 
 from rest_framework.test import APITestCase
 from rest_framework import status
+from rest_framework import serializers
 
 from .serializers import DynamicFieldsSerializerMixin
 from .models import Label, SigKey
@@ -433,3 +434,138 @@ class FilterDocumentingTestCase(TestCase):
             ' * `key_id` (string)\n'
             ' * `name` (string)'
         )
+
+
+class SerializerDocumentingTestCase(TestCase):
+    def test_result_is_cached(self):
+        serializer = mock.Mock(spec=[])
+        viewset = mock.Mock(spec=[])
+        viewset.get_serializer = lambda: serializer
+        with mock.patch('pdc.apps.common.renderers.describe_serializer') as func:
+            func.return_value = 'result'
+            renderers.get_serializer(viewset, True)
+            renderers.get_serializer(viewset, True)
+            func.assert_called_once_with(serializer, True)
+
+    def test_result_is_cached_separately_for_different_args(self):
+        serializer = mock.Mock(spec=[])
+        viewset = mock.Mock(spec=[])
+        viewset.get_serializer = lambda: serializer
+        with mock.patch('pdc.apps.common.renderers.describe_serializer') as func:
+            func.return_value = 'result'
+            renderers.get_serializer(viewset, True)
+            renderers.get_serializer(viewset, False)
+            func.assert_has_calls([mock.call(serializer, True),
+                                   mock.call(serializer, False)])
+
+    def test_describe_by_class_attr(self):
+        class DummySerializer(object):
+            doc_format = {"foo": "bar"}
+
+        instance = DummySerializer()
+        result = renderers.describe_serializer(instance, False)
+        self.assertEqual(result, {'foo': 'bar'})
+
+    def test_describe_fields(self):
+        class DummySerializer(serializers.Serializer):
+            str = serializers.CharField()
+            int = serializers.IntegerField()
+
+        instance = DummySerializer()
+        result = renderers.describe_serializer(instance, False)
+        self.assertEqual(result, {'str': 'string', 'int': 'int'})
+
+    def test_describe_read_only_field(self):
+        class DummySerializer(serializers.Serializer):
+            field = serializers.CharField(read_only=True)
+
+        instance = DummySerializer()
+        result = renderers.describe_serializer(instance, True)
+        self.assertEqual(result, {'field (read-only)': 'string'})
+
+    def test_describe_read_only_field_can_be_excluded(self):
+        class DummySerializer(serializers.Serializer):
+            field = serializers.CharField(read_only=True)
+
+        instance = DummySerializer()
+        result = renderers.describe_serializer(instance, False)
+        self.assertEqual(result, {})
+
+    def test_describe_nullable_field(self):
+        class DummySerializer(serializers.Serializer):
+            field = serializers.CharField(allow_null=True)
+
+        instance = DummySerializer()
+        result = renderers.describe_serializer(instance, True)
+        self.assertEqual(result, {'field (nullable)': 'string'})
+
+    def test_describe_field_with_default_value(self):
+        class DummySerializer(serializers.Serializer):
+            field = serializers.CharField(required=False, default='foo')
+
+        instance = DummySerializer()
+        result = renderers.describe_serializer(instance, True)
+        self.assertEqual(result, {'field (optional, default="foo")': 'string'})
+
+    def test_describe_field_with_default_from_model(self):
+        default = mock.Mock()
+        default.default = True
+        DummyModel = mock.Mock()
+        DummyModel._meta.get_field = lambda _: default
+
+        class DummySerializer(serializers.Serializer):
+            field = serializers.CharField(required=False)
+
+            class Meta:
+                model = DummyModel
+
+        instance = DummySerializer()
+        result = renderers.describe_serializer(instance, True)
+        self.assertEqual(result, {'field (optional, default=true)': 'string'})
+
+    def test_describe_field_with_complex_default(self):
+        class DummyDefault(object):
+            doc_format = 'some string format'
+
+        class DummySerializer(serializers.Serializer):
+            field = serializers.CharField(required=False, default=DummyDefault)
+
+        instance = DummySerializer()
+        result = renderers.describe_serializer(instance, True)
+        self.assertEqual(result, {'field (optional, default="some string format")': 'string'})
+
+    def test_describe_field_with_custom_type(self):
+        class DummyField(serializers.Field):
+            doc_format = '{"foo": "bar"}'
+            writable_doc_format = '{"baz": "quux"}'
+
+        class DummySerializer(serializers.Serializer):
+            field = DummyField()
+
+        instance = DummySerializer()
+        result = renderers.describe_serializer(instance, True)
+        self.assertEqual(result, {'field': {'foo': 'bar'}})
+        result = renderers.describe_serializer(instance, False)
+        self.assertEqual(result, {'field': {'baz': 'quux'}})
+
+    def test_describe_nested_serializer(self):
+        class DummyNestedSerializer(serializers.Serializer):
+            field = serializers.CharField()
+
+        class DummySerializer(serializers.Serializer):
+            top_level = DummyNestedSerializer()
+
+        instance = DummySerializer()
+        result = renderers.describe_serializer(instance, True)
+        self.assertEqual(result, {'top_level': {'field': 'string'}})
+
+    def test_describe_nested_serializer_many(self):
+        class DummyNestedSerializer(serializers.Serializer):
+            field = serializers.CharField()
+
+        class DummySerializer(serializers.Serializer):
+            top_level = DummyNestedSerializer(many=True)
+
+        instance = DummySerializer()
+        result = renderers.describe_serializer(instance, True)
+        self.assertEqual(result, {'top_level': [{'field': 'string'}]})
