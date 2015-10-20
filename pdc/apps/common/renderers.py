@@ -307,7 +307,9 @@ def get_default_value(serializer, field_name, field):
     """
     value = field.default
     if hasattr(value, 'doc_format'):
-        return "'%s'" % value.doc_format
+        return (value.doc_format
+                if isinstance(value.doc_format, basestring)
+                else str(value.doc_format))
     if value == fields.empty:
         # Try to get default from model field.
         try:
@@ -315,11 +317,6 @@ def get_default_value(serializer, field_name, field):
             return default if default != NOT_PROVIDED else None
         except (FieldDoesNotExist, AttributeError):
             return None
-    if isinstance(value, basestring):
-        # It's a string, wrap it with quotes.
-        return "'%s'" % value
-    if value is None:
-        return "null"
     return value
 
 
@@ -340,7 +337,7 @@ def describe_serializer(serializer, include_read_only):
                     continue
             elif not field.required:
                 notes.append('optional')
-                default = get_default_value(serializer, field_name, field)
+                default = json.dumps(get_default_value(serializer, field_name, field))
                 if not (default is None and field.allow_null):
                     notes.append('default=%s' % default)
             if field.allow_null:
