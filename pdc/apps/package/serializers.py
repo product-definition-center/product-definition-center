@@ -23,7 +23,8 @@ class DefaultFilenameGenerator(object):
 
 
 class DependencySerializer(serializers.BaseSerializer):
-    doc_format = '{"dependency type (string)": ["string"]}'
+    doc_format = '{ "recommends": ["string"], "suggests": ["string"], "obsoletes": ["string"],' \
+                 '"provides": ["string"], "conflicts": ["string"], "requires": ["string"] }'
 
     def to_representation(self, deps):
         return deps
