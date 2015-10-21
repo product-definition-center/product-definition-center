@@ -51,6 +51,10 @@ models_svg:
 doc:
 	make -C docs/ html
 
+deploy_doc:
+	./regenerate-model-svg.py
+	make -C docs/ setup_gh_pages generate deploy
+
 build:
 	python setup.py build
 

@@ -7,6 +7,7 @@ addons:
             - uuid-dev
             - swig
             - libldap2-dev
+            - graphviz
 # The sed command is a terrible hack: we can't easily install koji on Ubuntu.
 # PDC does not need it, it is a dependency of kobo. However, PDC does not use
 # any part of kobo that would actively use koji, se we just delete the
@@ -26,10 +27,7 @@ script:
 after_success:
     - coverage combine
     - coveralls
-    - cd docs
-    - make setup_gh_pages
-    - make generate
-    - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then make deploy; fi
+    - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then make deploy_doc; fi
 cache:
     directories:
         - $HOME/.cache/pip
