@@ -7,6 +7,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.query import QuerySet
+from django.db.models import Count
 from django.forms.models import model_to_dict
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
@@ -18,6 +19,25 @@ class ContactRole(models.Model):
     count_limit = models.IntegerField(default=1,
                                       help_text=_('Contact count limit of the role for each component.'))
     UNLIMITED = 0
+
+    def _get_max_component_role_count(self, component_model, role):
+        if not component_model.objects.filter(role=role).exists():
+            return 0
+        return component_model.objects.filter(role=role).values("component_id").annotate(contact_count=Count('id')).\
+            order_by('-contact_count')[0]['contact_count']
+
+    def clean(self):
+        if self.pk:
+            role = ContactRole.objects.get(pk=self.pk)
+            old_limit = role.count_limit
+            # must check when decrease count limit
+            if self.count_limit < old_limit:
+                rc_max_count = self._get_max_component_role_count(ReleaseComponentContact, role)
+                gc_max_count = self._get_max_component_role_count(GlobalComponentContact, role)
+                if self.count_limit < max(rc_max_count, gc_max_count):
+                    raise ValidationError(
+                        {'detail': 'Count limit can\'t be lower than %d according to existing data.' %
+                                   max(rc_max_count, gc_max_count)})
 
     def __unicode__(self):
         return u"%s" % self.name

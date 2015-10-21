@@ -2739,6 +2739,72 @@ class GlobalComponentContactInfoRESTTestCase(TestCaseWithChangeSetMixin, APITest
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_constraint_to_contact_role_count_limit_change(self):
+        data = {'component': 'python', 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist2'}}
+        response = self.client.post(self.list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = {'component': 'python', 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist1'}}
+        response = self.client.post(self.list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = {'component': 'python', 'role': 'allow_3_role',
+                'contact': {"username": "person1", "email": "person1@test.com"}}
+        response = self.client.post(self.list_url, data, format='json')
+        pk = response.data['id']
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        contact_role_url = reverse('contactrole-detail', args=['allow_3_role'])
+        data = {'count_limit': '4'}
+        response = self.client.patch(contact_role_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        contact_role_url = reverse('contactrole-detail', args=['allow_3_role'])
+        data = {'count_limit': '2'}
+        response = self.client.patch(contact_role_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # remove one role contact and try again
+        response = self.client.delete(reverse('globalcomponentcontacts-detail', args=[pk]))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        data = {'count_limit': '2'}
+        response = self.client.patch(contact_role_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_constraint_to_contact_role_count_limit_change_for_different_roles(self):
+        data = {'component': 'python', 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist2'}}
+        response = self.client.post(self.list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = {'component': 'python', 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist1'}}
+        response = self.client.post(self.list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = {'component': 'python', 'role': 'allow_3_role',
+                'contact': {"username": "person1", "email": "person1@test.com"}}
+        response = self.client.post(self.list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = {'component': 'python', 'role': 'cc',
+                'contact': {"username": "person1", "email": "person1@test.com"}}
+        response = self.client.post(self.list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        contact_role_url = reverse('contactrole-detail', args=['allow_3_role'])
+        data = {'count_limit': '2'}
+        response = self.client.patch(contact_role_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        contact_role_url = reverse('contactrole-detail', args=['cc'])
+        data = {'count_limit': '2'}
+        response = self.client.patch(contact_role_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        contact_role_url = reverse('contactrole-detail', args=['cc'])
+        data = {'count_limit': '1'}
+        response = self.client.patch(contact_role_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 class ReleaseComponentContactInfoRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
@@ -2948,4 +3014,70 @@ class ReleaseComponentContactInfoRESTTestCase(TestCaseWithChangeSetMixin, APITes
         url = reverse('releasecomponentcontacts-detail', args=[pk_watcher])
         data = {'role': 'allow_3_role'}
         response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_constraint_to_contact_role_count_limit_change(self):
+        data = {'component': {'id': 2}, 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist2'}}
+        response = self.client.post(self.list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = {'component': {'id': 2}, 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist1'}}
+        response = self.client.post(self.list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = {'component': {'id': 2}, 'role': 'allow_3_role',
+                'contact': {"username": "person1", "email": "person1@test.com"}}
+        response = self.client.post(self.list_url, data, format='json')
+        pk = response.data['id']
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        contact_role_url = reverse('contactrole-detail', args=['allow_3_role'])
+        data = {'count_limit': '4'}
+        response = self.client.patch(contact_role_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        contact_role_url = reverse('contactrole-detail', args=['allow_3_role'])
+        data = {'count_limit': '2'}
+        response = self.client.patch(contact_role_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # remove one role contact and try again
+        response = self.client.delete(reverse('releasecomponentcontacts-detail', args=[pk]))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        data = {'count_limit': '2'}
+        response = self.client.patch(contact_role_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_constraint_to_contact_role_count_limit_change_for_different_roles(self):
+        data = {'component': {'id': 2}, 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist2'}}
+        response = self.client.post(self.list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = {'component': {'id': 2}, 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist1'}}
+        response = self.client.post(self.list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = {'component': {'id': 2}, 'role': 'allow_3_role',
+                'contact': {"username": "person1", "email": "person1@test.com"}}
+        response = self.client.post(self.list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = {'component': {'id': 2}, 'role': 'cc',
+                'contact': {"username": "person1", "email": "person1@test.com"}}
+        response = self.client.post(self.list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        contact_role_url = reverse('contactrole-detail', args=['allow_3_role'])
+        data = {'count_limit': '2'}
+        response = self.client.patch(contact_role_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        contact_role_url = reverse('contactrole-detail', args=['cc'])
+        data = {'count_limit': '2'}
+        response = self.client.patch(contact_role_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        contact_role_url = reverse('contactrole-detail', args=['cc'])
+        data = {'count_limit': '1'}
+        response = self.client.patch(contact_role_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
