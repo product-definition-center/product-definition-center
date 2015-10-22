@@ -1,11 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
+{% load pdctags %}
 
 {% block content %}
 
-<button class="btn btn-default btn-lg pull-right" data-toggle="modal" data-target="#helpOverlay">
-    <span class="glyphicon glyphicon-question-sign"></span> Help
-</button>
+{% include "help_button.html" %}
 
 <h1 class="page-header">Override management for <strong>{{ package }}</strong> in <strong>{{ release_id }}</strong></h1>
 
@@ -174,51 +173,38 @@ There are errors in the form.
 {% endif %}
 
 
-<div class="modal fade" id="helpOverlay" tabindex="-1" role="dialog" aria-labelledby="helpOverlay" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel">Help</h4>
-      </div>
-      <div class="modal-body">
-        <table class="table">
-          <thead>
-            <tr>
-              <th class="center-align">ComposeRPM</th>
-              <th class="center-align">Override</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="center-align"><span class="glyphicon glyphicon-ok"></span></td>
-              <td class="center-align"><span class="glyphicon glyphicon-remove"></span></td>
-              <td>Unchecking will create exclude override.</td>
-            </tr>
-            <tr class="bg-danger">
-              <td class="center-align"><span class="glyphicon glyphicon-ok"></span></td>
-              <td class="center-align">Exclude</td>
-              <td>Checking will remove the override.</td>
-            </tr>
-            <tr class="bg-success">
-              <td class="center-align"><span class="glyphicon glyphicon-remove"></span></td>
-              <td class="center-align">Include</td>
-              <td>Unchecking will remove the override.</td>
-            </tr>
-          </tbody>
-        </table>
-        <p>Include overrides for existing compose RPM or exclude overrides for
-        non-existing compose RPM can only exist if they have
-        <code>do_not_delete</code> set to to <code>True</code>. Such overrides
-        are listed below the form.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+{% helpmodal %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="center-align">ComposeRPM</th>
+          <th class="center-align">Override</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="center-align"><span class="glyphicon glyphicon-ok"></span></td>
+          <td class="center-align"><span class="glyphicon glyphicon-remove"></span></td>
+          <td>Unchecking will create exclude override.</td>
+        </tr>
+        <tr class="bg-danger">
+          <td class="center-align"><span class="glyphicon glyphicon-ok"></span></td>
+          <td class="center-align">Exclude</td>
+          <td>Checking will remove the override.</td>
+        </tr>
+        <tr class="bg-success">
+          <td class="center-align"><span class="glyphicon glyphicon-remove"></span></td>
+          <td class="center-align">Include</td>
+          <td>Unchecking will remove the override.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Include overrides for existing compose RPM or exclude overrides for
+    non-existing compose RPM can only exist if they have
+    <code>do_not_delete</code> set to to <code>True</code>. Such overrides are
+    listed below the form.</p>
+{% endhelpmodal %}
 
 
 {% endblock %}

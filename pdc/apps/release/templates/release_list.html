@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load pdctags %}
 
 {% block content %}
-<button class="btn btn-default btn-lg pull-right help-button" data-toggle="modal" data-target="#helpOverlay">
-    <span class="glyphicon glyphicon-question-sign"></span> Help
-</button>
+{% include "help_button.html" %}
 
 <h2 class="page-header">{% trans "Releases" %}</h2>
 
@@ -18,29 +17,17 @@
 {% include "release_list_include.html" %}
 {% include "pagination.html" %}
 
-<div class="modal fade" id="helpOverlay" tabindex="-1" role="dialog" aria-labelledby="helpOverlay" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel">Help</h4>
-      </div>
-      <div class="modal-body">
-          <p>A <em>release</em> is a collection of software with a unique
-          identity and specific life cycle.</p>
+{% helpmodal %}
+    <p>A <em>release</em> is a collection of software with a unique identity
+    and specific life cycle.</p>
 
-          <p>Ideally, releases should be immutable. Once they are finished, the
-          content and definition is not supposed to change.</p>
+    <p>Ideally, releases should be immutable. Once they are finished, the
+    content and definition is not supposed to change.</p>
 
-          <p>A release is divided into <em>variants</em>. These contain subset
-          of release content targetted at a specific user, for example
-          <em>server</em> or <em>workstation</em>. Each variant can be built
-          for multiple architectures.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+    <p>A release is divided into <em>variants</em>. These contain subset of
+    release content targetted at a specific user, for example <em>server</em>
+    or <em>workstation</em>. Each variant can be built for multiple
+    architectures.</p>
+{% endhelpmodal %}
+
 {% endblock %}
