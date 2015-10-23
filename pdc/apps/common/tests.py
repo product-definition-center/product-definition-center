@@ -4,6 +4,7 @@
 # http://opensource.org/licenses/MIT
 #
 import mock
+import json
 
 from django.test import TestCase
 from django.core.exceptions import ValidationError
@@ -569,3 +570,18 @@ class SerializerDocumentingTestCase(TestCase):
         instance = DummySerializer()
         result = renderers.describe_serializer(instance, True)
         self.assertEqual(result, {'top_level': [{'field': 'string'}]})
+
+
+class JSONResponseFor404(APITestCase):
+    def test_returns_html_without_header(self):
+        response = self.client.get('/foo/bar')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertIn('<html>', response.content)
+
+    def test_respects_accept_header(self):
+        response = self.client.get('/foo/bar', HTTP_ACCEPT='application/json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        try:
+            json.loads(response.content)
+        except ValueError:
+            self.fail('Response was not JSON')

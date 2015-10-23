@@ -13,6 +13,9 @@ import sys
 import logging
 
 
+NOT_FOUND_JSON_RESPONSE = {'detail': 'Not found'}
+
+
 def exception_handler(exc, context):
     """
     This handler will overwrite rest framework default handler, additionally,
@@ -38,7 +41,7 @@ def exception_handler(exc, context):
             return Response({'detail': msg},
                             status=status.HTTP_400_BAD_REQUEST)
         elif isinstance(exc, exceptions.ObjectDoesNotExist):
-            return Response({'detail': 'Not found'},
+            return Response(NOT_FOUND_JSON_RESPONSE,
                             status=status.HTTP_404_NOT_FOUND)
         elif isinstance(exc, ProtectedError):
             return Response({"detail": "%s %s" % exc.args},

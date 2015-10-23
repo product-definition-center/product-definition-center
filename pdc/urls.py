@@ -77,6 +77,8 @@ urlpatterns = [
     url(r'^changes/(?P<id>\d+)/$', ChangesetDetailView.as_view(), name='changeset/detail'),
 ]
 
+handler404 = 'pdc.apps.common.views.handle404'
+
 if settings.DEBUG:
     try:
         import debug_toolbar

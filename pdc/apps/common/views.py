@@ -3,16 +3,21 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+import json
+
 from django.shortcuts import render
+from django.views import defaults
+from django.http import HttpResponse
 
 from kobo.django.views.generic import ListView
 
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 
 from .models import Arch, SigKey, Label
 from . import viewsets as pdc_viewsets
 from .serializers import LabelSerializer, ArchSerializer, SigKeySerializer
 from .filters import LabelFilter, SigKeyFilter
+from . import handlers
 
 
 class ArchListView(ListView):
@@ -381,3 +386,11 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
 
 def home(request):
     return render(request, "home/index.html")
+
+
+def handle404(request):
+    if 'application/json' in request.META.get('HTTP_ACCEPT', ''):
+        return HttpResponse(json.dumps(handlers.NOT_FOUND_JSON_RESPONSE),
+                            status=status.HTTP_404_NOT_FOUND,
+                            content_type='application/json')
+    return defaults.page_not_found(request)
