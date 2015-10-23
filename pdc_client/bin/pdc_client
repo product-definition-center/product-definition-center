@@ -25,7 +25,7 @@ def debug_request(func):
         self = args[0]
         if self.debug:
             print "> ", func.__name__.upper(), self.client[self.resource]._
-            for key, value in self.session.headers.items():
+            for key, value in self.client.session.headers.items():
                 print "> ", key, ": ", value
         return func(*args, **kwargs)
 
