@@ -18,6 +18,22 @@ class OSBSViewSet(common_viewsets.StrictQueryParamMixin,
                   common_viewsets.MultiLookupFieldMixin,
                   mixins.RetrieveModelMixin,
                   viewsets.GenericViewSet):
+    """
+    ## Metadata for OpenShift Build Service
+
+    This viewset provides a list of all components relevant to OSBS. This
+    connection is realized through the `has_osbs` flag on [release component
+    types]($URL:releasecomponenttype-list$). The components appear in this API
+    automatically when they are assigned the proper type. Records here can only
+    be changed, they can't be created or deleted.
+
+    Currently there is just one flag tracked here:
+
+     * `autorebuild`: This flag indicates whether the component should be
+       automatically rebuilt when its dependencies change. If the value in PDC
+       is `null`, it indicates that the client should use its default value.
+    """
+
     queryset = models.OSBSRecord.objects.filter(component__type__has_osbs=True)
     serializer_class = serializers.OSBSSerializer
     filter_class = filters.OSBSFilter
