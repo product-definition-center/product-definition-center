@@ -9,7 +9,12 @@ Current PDC Model Graphs:
 overview
 --------
 
-.. image:: models_svg/all.svg
+.. image:: models_svg/overview.svg
+
+auth
+----
+
+.. image:: models_svg/auth.svg
 
 bindings
 --------
@@ -41,10 +46,20 @@ contact
 
 .. image:: models_svg/contact.svg
 
+osbs
+----
+
+.. image:: models_svg/osbs.svg
+
 package
 -------
 
 .. image:: models_svg/package.svg
+
+partners
+--------
+
+.. image:: models_svg/partners.svg
 
 release
 -------
@@ -55,3 +70,8 @@ repository
 ----------
 
 .. image:: models_svg/repository.svg
+
+usage
+-----
+
+.. image:: models_svg/usage.svg
