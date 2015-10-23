@@ -1932,7 +1932,7 @@ class _BaseContactViewSet(viewsets.PDCModelViewSet):
     def destroy(self, *args, **kwargs):
         """Remove association between component and contact.
 
-        __Method__: `GET`
+        __Method__: `DELETE`
 
         __URL__: $LINK:%(BASENAME)s-detail:pk$
 
