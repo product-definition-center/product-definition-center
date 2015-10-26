@@ -346,7 +346,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
             curl -H "Content-Type: application/json"  -X POST -d '{"name": "test"}' $URL:contactrole-list$
             # output
-            {"name": "test"}
+            {"name": "test", "count_limit": 1}
         """
         return super(ContactRoleViewSet, self).create(request, *args, **kwargs)
 
@@ -378,9 +378,11 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
                 "results": [
                     {
                         "name": "qe_leader",
+                        "count_limit": 1
                     },
                     {
                         "name": "qe_group",
+                        "count_limit": 1
                     },
                     ...
                 ]
@@ -397,6 +399,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
                 "results": [
                     {
                         "name": "test",
+                        "count_limit": 1
                     }
                 ]
             }
@@ -420,7 +423,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
             curl -H "Content-Type: application/json" $URL:contactrole-detail:QE_Leader$
             # output
-            {"name": "QE_Leader"}
+            {"name": "QE_Leader", "count_limit": 1}
         """
         return super(ContactRoleViewSet, self).retrieve(request, *args, **kwargs)
 
@@ -446,13 +449,13 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
             curl -X PUT -d '{"name": "new_name"}' -H "Content-Type: application/json" $URL:contactrole-detail:QE_Ack$
             # output
-            {"name": "new_name"}
+            {"name": "new_name", "count_limit": 1}
 
         PATCH:
 
-            curl -X PATCH -d '{"name": "new_name"}' -H "Content-Type: application/json" $URL:contactrole-detail:QE_Ack$
+            curl -X PATCH -d '{"count_limit": "unlimited"}' -H "Content-Type: application/json" $URL:contactrole-detail:QE_Ack$
             # output
-            {"name": "new_name"}
+            {"name": "new_name", "count_limit": "unlimited"}
         """
         return super(ContactRoleViewSet, self).update(request, *args, **kwargs)
 
