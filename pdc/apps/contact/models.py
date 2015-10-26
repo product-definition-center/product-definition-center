@@ -43,7 +43,7 @@ class ContactRole(models.Model):
         return u"%s" % self.name
 
     def export(self, fields=None):
-        _fields = ['name'] if fields is None else fields
+        _fields = ['name', 'count_limit'] if fields is None else fields
         return model_to_dict(self, fields=_fields)
 
 

@@ -14,13 +14,29 @@ from pdc.apps.common.fields import ChoiceSlugField
 from .models import ContactRole, Person, Maillist, Contact, RoleContact
 
 
+class LimitField(serializers.IntegerField):
+    UNLIMITED_STR = 'unlimited'
+    doc_format = '"{}"|int'.format(UNLIMITED_STR)
+
+    def __init__(self, unlimited_value, **kwargs):
+        super(LimitField, self).__init__(**kwargs)
+        self.unlimited_value = unlimited_value
+
+    def to_representation(self, obj):
+        if obj == self.unlimited_value:
+            return self.__class__.UNLIMITED_STR
+        return super(LimitField, self).to_representation(obj)
+
+    def to_internal_value(self, value):
+        if value == self.__class__.UNLIMITED_STR:
+            return self.unlimited_value
+        return super(LimitField, self).to_internal_value(value)
+
+
 class ContactRoleSerializer(StrictSerializerMixin,
                             serializers.HyperlinkedModelSerializer):
     name = serializers.SlugField()
-
-    def to_representation(self, instance):
-        count_limit = instance.count_limit if instance.count_limit != ContactRole.UNLIMITED else 'unlimited'
-        return {'name': instance.name, 'count_limit': count_limit}
+    count_limit = LimitField(required=False, unlimited_value=ContactRole.UNLIMITED)
 
     class Meta:
         model = ContactRole

@@ -12,7 +12,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from pdc.apps.common.test_utils import TestCaseWithChangeSetMixin
-from .models import RoleContact, Person
+from .models import ContactRole, RoleContact, Person
 
 
 class ContactRoleRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
@@ -93,6 +93,22 @@ class ContactRoleRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.delete(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("protected", response.content)
+        self.assertNumChanges([])
+
+    def test_update_limit_unlimited(self):
+        response = self.client.patch(reverse('contactrole-detail', args=['allow_3_role']),
+                                     {'count_limit': 'unlimited'},
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNumChanges([1])
+        role = ContactRole.objects.get(name='allow_3_role')
+        self.assertEqual(role.count_limit, ContactRole.UNLIMITED)
+
+    def test_update_limit_with_random_string(self):
+        response = self.client.patch(reverse('contactrole-detail', args=['allow_3_role']),
+                                     {'count_limit': 'many'},
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertNumChanges([])
 
 
