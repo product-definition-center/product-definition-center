@@ -44,7 +44,9 @@ from . import lib
 
 class ComposeListView(SearchView):
     form_class = ComposeSearchForm
-    queryset = Compose.objects.all()
+    queryset = Compose.objects.all() \
+        .select_related('release', 'compose_type') \
+        .prefetch_related('linked_releases')
     allow_empty = True
     template_name = "compose_list.html"
     context_object_name = "compose_list"
@@ -52,7 +54,10 @@ class ComposeListView(SearchView):
 
 
 class ComposeDetailView(DetailView):
-    model = Compose
+    queryset = Compose.objects.select_related('release', 'compose_type') \
+        .prefetch_related('linked_releases', 'variant_set__variantarch_set',
+                          'variant_set__variantarch_set__arch',
+                          'variant_set__variant_type')
     pk_url_kwarg = "id"
     template_name = "compose_detail.html"
 

@@ -20,6 +20,6 @@
 </dl>
 
 <h3 class="sub-header">{% trans 'Releases' %}</h3>
-{% include "release_list_include.html" %}
+{% include "release_list_include.html" with release_list=product_version.release_set.all %}
 
 {% endblock %}

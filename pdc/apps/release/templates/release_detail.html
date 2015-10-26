@@ -59,9 +59,9 @@
     <td>
         {{ variant.variant_uid }}
         {% if variant.integrated_from %}
-            <span class="pull-right">(integrated from <a href="{% url "release/detail" variant.integrated_from.release.id %}">{{ variant.integrated_from.release.release_id }}</a>)</span>
+            <span class="pull-right">(integrated from <a href="{% url "release/detail" variant.integrated_from.id %}">{{ variant.integrated_from.release_id }}</a>)</span>
         {% elif variant.integrated_to %}
-            <span class="pull-right">(integrated to <a href="{% url "release/detail" variant.integrated_to.release.id %}">{{ variant.integrated_to.release }}</a>)</span>
+            <span class="pull-right">(integrated to <a href="{% url "release/detail" variant.integrated_to.id %}">{{ variant.integrated_to }}</a>)</span>
         {% endif %}
     </td>
     <td>{{ variant.variant_id }}</td>
@@ -89,12 +89,10 @@
   </tr>
  </thead>
  <tbody>
-{% for variant in release.variant_set.all %}
-{% for variantarch in variant.variantarch_set.all %}
-{% for repo in variantarch.repos.all %}
+{% for repo in repos %}
   <tr>
     <td class="text-right">{{ repo.pk }}</td>
-    <td>{{ variant.variant_uid }}.{{ variantarch.arch }}</td>
+    <td>{{ repo.variant_arch.variant.variant_uid }}.{{ repo.variant_arch.arch }}</td>
     <td>{{ repo.service }}</td>
     <td>{{ repo.repo_family }}</td>
     <td>{{ repo.content_format }}</td>
@@ -103,8 +101,6 @@
     <td>{{ repo.name }}</td>
     <td>{{ repo.product_id|default_if_none:"&mdash;" }}</td>
   </tr>
-{% endfor %}
-{% endfor %}
 {% endfor %}
  </tbody>
 </table>

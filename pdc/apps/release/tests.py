@@ -435,6 +435,52 @@ class ProductVersionUpdateRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(pv.product.name, 'Test')
 
 
+class ActiveCountTestCase(APITestCase):
+    fixtures = ["pdc/apps/release/fixtures/tests/active-filter.json"]
+
+    def test_active_for_product_version_with_mixed(self):
+        pv = models.ProductVersion.objects.get(pk=3)
+        self.assertTrue(pv.active)
+        self.assertEqual(pv.release_count, 2)
+        self.assertEqual(pv.active_release_count, 1)
+
+    def test_active_for_product_version_with_active_only(self):
+        pv = models.ProductVersion.objects.get(pk=2)
+        self.assertTrue(pv.active)
+        self.assertEqual(pv.release_count, 1)
+        self.assertEqual(pv.active_release_count, 1)
+
+    def test_active_for_product_version_with_inactive_only(self):
+        pv = models.ProductVersion.objects.get(pk=4)
+        self.assertFalse(pv.active)
+        self.assertEqual(pv.release_count, 1)
+        self.assertEqual(pv.active_release_count, 0)
+
+    def test_active_for_product_with_mixed(self):
+        p = models.Product.objects.get(pk=2)
+        self.assertTrue(p.active)
+        self.assertEqual(p.product_version_count, 3)
+        self.assertEqual(p.active_product_version_count, 2)
+        self.assertEqual(p.release_count, 4)
+        self.assertEqual(p.active_release_count, 2)
+
+    def test_active_for_product_with_active_only(self):
+        p = models.Product.objects.get(pk=1)
+        self.assertTrue(p.active)
+        self.assertEqual(p.product_version_count, 1)
+        self.assertEqual(p.active_product_version_count, 1)
+        self.assertEqual(p.release_count, 1)
+        self.assertEqual(p.active_release_count, 1)
+
+    def test_active_for_product_with_inactive_only(self):
+        p = models.Product.objects.get(pk=3)
+        self.assertFalse(p.active)
+        self.assertEqual(p.product_version_count, 1)
+        self.assertEqual(p.active_product_version_count, 0)
+        self.assertEqual(p.release_count, 1)
+        self.assertEqual(p.active_release_count, 0)
+
+
 class ActiveFilterTestCase(APITestCase):
     fixtures = ["pdc/apps/release/fixtures/tests/active-filter.json"]
 
@@ -1309,7 +1355,7 @@ class ReleaseImportTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertItemsEqual(release.trees,
                               ['Client.x86_64', 'Server.x86_64', 'Server.s390x',
                                'Server.ppc64', 'Server-SAP.x86_64'])
-        self.assertEqual(release.variant_set.get(variant_uid='Server-SAP').integrated_from.release.release_id,
+        self.assertEqual(release.variant_set.get(variant_uid='Server-SAP').integrated_from.release_id,
                          'sap-1.0-tp-1')
 
         response = self.client.get(reverse('product-detail', args=['sap']))
@@ -1328,7 +1374,7 @@ class ReleaseImportTestCase(TestCaseWithChangeSetMixin, APITestCase):
                               'active': True, 'release_type': 'ga', 'dist_git': None})
         release = models.Release.objects.get(release_id='sap-1.0-tp-1')
         self.assertItemsEqual(release.trees, ['Server-SAP.x86_64'])
-        self.assertEqual(release.variant_set.get(variant_uid='Server-SAP').integrated_to.release.release_id,
+        self.assertEqual(release.variant_set.get(variant_uid='Server-SAP').integrated_to.release_id,
                          'tp-1.0')
 
     def test_import_via_get(self):

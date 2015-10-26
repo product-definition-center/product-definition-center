@@ -20,6 +20,7 @@ from .serializers import (ProductSerializer, ProductVersionSerializer,
                           ReleaseSerializer, BaseProductSerializer,
                           ReleaseTypeSerializer, ReleaseVariantSerializer,
                           VariantTypeSerializer)
+from pdc.apps.repository import models as repo_models
 from pdc.apps.common.viewsets import (ChangeSetModelMixin,
                                       ChangeSetCreateModelMixin,
                                       ChangeSetUpdateModelMixin,
@@ -30,7 +31,7 @@ from . import lib
 
 class ReleaseListView(SearchView):
     form_class = ReleaseSearchForm
-    queryset = models.Release.objects.all()
+    queryset = models.Release.objects.select_related('release_type', 'product_version', 'base_product')
     allow_empty = True
     template_name = "release_list.html"
     context_object_name = "release_list"
@@ -38,9 +39,19 @@ class ReleaseListView(SearchView):
 
 
 class ReleaseDetailView(DetailView):
-    model = models.Release
+    queryset = models.Release.objects.select_related('release_type') \
+        .prefetch_related('variant_set__variant_type',
+                          'variant_set__variantarch_set__arch')
     pk_url_kwarg = "id"
     template_name = "release_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ReleaseDetailView, self).get_context_data(**kwargs)
+        context['repos'] = repo_models.Repo.objects.filter(
+            variant_arch__variant__release=self.object
+        ).select_related('variant_arch', 'variant_arch__arch',
+                         'content_category', 'content_format', 'repo_family', 'service')
+        return context
 
 
 class BaseProductListView(SearchView):
@@ -60,13 +71,15 @@ class BaseProductDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(BaseProductDetailView, self).get_context_data(**kwargs)
-        context["release_list"] = models.Release.objects.filter(base_product=self.get_object().id)
+        context["release_list"] = models.Release.objects.filter(
+            base_product=self.object.id
+        ).select_related('product_version', 'base_product', 'release_type')
         return context
 
 
 class ProductListView(SearchView):
     form_class = ProductSearchForm
-    queryset = models.Product.objects.all()
+    queryset = models.Product.objects.prefetch_related('productversion_set__release_set')
     allow_empty = True
     template_name = "product_list.html"
     context_object_name = "product_list"
@@ -74,15 +87,10 @@ class ProductListView(SearchView):
 
 
 class ProductDetailView(DetailView):
-    model = models.Product
+    queryset = models.Product.objects.prefetch_related('productversion_set__release_set')
     pk_url_kwarg = "id"
     template_name = "product_detail.html"
     context_object_name = "product"
-
-    def get_context_data(self, **kwargs):
-        context = super(ProductDetailView, self).get_context_data(**kwargs)
-        context['product_version_list'] = self.get_object().productversion_set.all()
-        return context
 
 
 class ProductViewSet(ChangeSetCreateModelMixin,
@@ -98,7 +106,7 @@ class ProductViewSet(ChangeSetCreateModelMixin,
     the form of `product_version_id` (both in requests and responses).
     """
 
-    queryset = models.Product.objects.all().prefetch_related('productversion_set')
+    queryset = models.Product.objects.prefetch_related('productversion_set')
     serializer_class = ProductSerializer
     lookup_field = 'short'
     filter_class = filters.ProductFilter
@@ -181,7 +189,7 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
     `short` name. Similarly releases are referenced by `release_id`. This
     applies to both requests and responses.
     """
-    queryset = models.ProductVersion.objects.all().select_related('product').prefetch_related('release_set')
+    queryset = models.ProductVersion.objects.select_related('product').prefetch_related('release_set')
     serializer_class = ProductVersionSerializer
     lookup_field = 'product_version_id'
     lookup_value_regex = '[^/]+'
@@ -279,7 +287,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
     particular release as well as composes linked to it. It is possible to
     distinguish between these cases by retrieving a detail of the compose.
     """
-    queryset = models.Release.objects.all() \
+    queryset = models.Release.objects \
                      .select_related('product_version', 'release_type', 'base_product') \
                      .prefetch_related('compose_set')
     serializer_class = ReleaseSerializer
@@ -517,7 +525,7 @@ class BaseProductViewSet(ChangeSetCreateModelMixin,
 
 class ProductVersionListView(SearchView):
     form_class = ProductVersionSearchForm
-    queryset = models.ProductVersion.objects.all()
+    queryset = models.ProductVersion.objects.prefetch_related('release_set')
     allow_empty = True
     template_name = "product_version_list.html"
     context_object_name = "product_version_list"
@@ -525,15 +533,10 @@ class ProductVersionListView(SearchView):
 
 
 class ProductVersionDetailView(DetailView):
-    model = models.ProductVersion
+    queryset = models.ProductVersion.objects.prefetch_related('release_set__release_type')
     pk_url_kwarg = "id"
     template_name = "product_version_detail.html"
     context_object_name = "product_version"
-
-    def get_context_data(self, **kwargs):
-        context = super(ProductVersionDetailView, self).get_context_data(**kwargs)
-        context['release_list'] = self.get_object().release_set.all()
-        return context
 
 
 def product_pages(request):

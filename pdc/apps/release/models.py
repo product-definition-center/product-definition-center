@@ -72,24 +72,23 @@ class Product(models.Model):
 
     @property
     def active(self):
-        releases = Release.objects.filter(active=True).filter(product_version__product=self)
-        return bool(releases)
+        return self.active_release_count > 0
 
     @property
     def product_version_count(self):
-        return ProductVersion.objects.filter(product=self).count()
+        return self.productversion_set.count()
 
     @property
     def active_product_version_count(self):
-        return ProductVersion.objects.filter(product=self).filter(release__active=True).distinct().count()
+        return sum(1 for pv in self.productversion_set.all() if pv.active)
 
     @property
     def release_count(self):
-        return Release.objects.filter(product_version__product=self).count()
+        return sum(pv.release_count for pv in self.productversion_set.all())
 
     @property
     def active_release_count(self):
-        return Release.objects.filter(product_version__product=self).filter(active=True).distinct().count()
+        return sum(pv.active_release_count for pv in self.productversion_set.all())
 
     def export(self):
         return {
@@ -114,16 +113,15 @@ class ProductVersion(models.Model):
 
     @property
     def active(self):
-        releases = Release.objects.filter(product_version=self).filter(active=True)
-        return bool(releases)
+        return self.active_release_count > 0
 
     @property
     def release_count(self):
-        return Release.objects.filter(product_version=self).count()
+        return self.release_set.count()
 
     @property
     def active_release_count(self):
-        return Release.objects.filter(product_version=self).filter(active=True).count()
+        return sum(1 for r in self.release_set.all() if r.active)
 
     def get_product_version_id(self):
         return u"%s-%s" % (self.short.lower(), self.version)
@@ -236,6 +234,19 @@ class Release(models.Model):
         except ValueError:
             return [self.short]
 
+    @property
+    def integrated_release_variants(self):
+        """
+        Returns mapping from Variant-UID to release instance from which the
+        variant is integrated.
+        """
+        if not hasattr(self, '_integrated_release_variants'):
+            self._integrated_release_variants = {}
+            for release in self.integrated_releases.all():
+                for variant in release.variant_set.all():
+                    self._integrated_release_variants[variant.variant_uid] = release
+        return self._integrated_release_variants
+
 
 @receiver(pre_save, sender=Release)
 def populate_release_id(sender, instance, **kwargs):
@@ -273,27 +284,18 @@ class Variant(models.Model):
     @property
     def integrated_from(self):
         """
-        If this variant is created from an integrated release, return a
-        corresponding variant in the integrated release. Othwerwise, return
-        None.
+        If this variant is created from an integrated release, return the
+        integrated release. Othwerwise, return None.
         """
-        for release in self.release.integrated_releases.all():
-            variants = release.variant_set.filter(variant_uid=self.variant_uid)
-            if variants:
-                return variants.first()
-        return None
+        return self.release.integrated_release_variants.get(self.variant_uid)
 
     @property
     def integrated_to(self):
         """
-        If this variant belongs to an integrated release, return a
-        corresponding variant in that release. Otherwise, return None.
+        If this variant belongs to an integrated release, return that release.
+        Otherwise, return None.
         """
-        integrated_to_release = self.release.integrated_with
-        if not integrated_to_release:
-            return None
-        variants = integrated_to_release.variant_set.filter(variant_uid=self.variant_uid)
-        return variants.first() if variants else None
+        return self.release.integrated_with
 
     def export(self):
         return {
