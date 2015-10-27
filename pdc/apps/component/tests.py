@@ -1713,7 +1713,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('releasecomponent-list')
         data = {
             "global_component": "MySQL-python",
-            "releases": "release-1.0",
+            "releases": ["release-1.0"],
             "contacts": [{
                 "contact_role": "pm",
                 "contact": {
@@ -1748,7 +1748,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('releasecomponent-list')
         data = {
             "global_component": "MySQL-python",
-            "releases": [self.rhel5_inactive.release_id],
+            "release": self.rhel5_inactive.release_id,
             "name": "MySQL-python-1.2.5"
         }
         response = self.client.post(url, format='json', data=data)

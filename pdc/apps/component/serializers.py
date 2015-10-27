@@ -7,7 +7,6 @@ import json
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404
 from django.utils import six
 from django.utils.text import capfirst
 
@@ -324,8 +323,7 @@ class ReleaseComponentSerializer(DynamicFieldsSerializerMixin,
     bugzilla_component = TreeForeignKeyField(read_only=False, required=False, allow_null=True)
     brew_package = serializers.CharField(required=False)
     active = serializers.BooleanField(required=False, default=True)
-    type = ChoiceSlugField(slug_field='name', queryset=ReleaseComponentType.objects.all(), required=False,
-                           allow_null=True)
+    type = ChoiceSlugField(slug_field='name', queryset=ReleaseComponentType.objects.all(), required=False)
 
     def update(self, instance, validated_data):
         signals.releasecomponent_serializer_extract_data.send(sender=self, validated_data=validated_data)
@@ -374,42 +372,8 @@ class ReleaseComponentSerializer(DynamicFieldsSerializerMixin,
         return super(ReleaseComponentSerializer, self).to_internal_value(data)
 
     def validate_release(self, value):
-        if not isinstance(value, Release):
-            if isinstance(value, dict):
-                release_id = value['release_id']
-            else:
-                release_id = value
-            if release_id is None or release_id.strip() == "":
-                self._errors = {'release': 'This field is required.'}
-                return
-            release = get_object_or_404(Release, release_id=release_id)
-            if not release.is_active():
-                self._errors = {'release': 'Can not create a release component with an inactive release.'}
-                return
-            value = release
-        return value
-
-    def validate_global_component(self, value):
-        if not isinstance(value, GlobalComponent):
-            global_component_name = value
-            if global_component_name is None or global_component_name.strip() == "":
-                self._errors = {'global_component': 'This field is required.'}
-                return
-            gc = get_object_or_404(GlobalComponent, name=global_component_name)
-            value = gc
-        return value
-
-    def validate_name(self, value):
-        if value.strip() == "":
-            self._errors = {'name': 'This field is required.'}
-        return value
-
-    def validate_type(self, value):
-        if not isinstance(value, ReleaseComponentType):
-            if value is not None and value.strip() != "":
-                value = get_object_or_404(ReleaseComponentType, name=value.strip())
-            else:
-                raise serializers.ValidationError("This field can't be set to null.")
+        if not value.is_active():
+            raise serializers.ValidationError('Can not create a release component with an inactive release.')
         return value
 
     class Meta:
