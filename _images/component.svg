@@ -154,23 +154,8 @@
 <path fill="none" stroke="black" d="M525.99,-161.45C511.13,-150.27 497.42,-136.47 489,-120 481.48,-105.29 488.61,-93.081 501.69,-83.291"/>
 <text text-anchor="middle" x="540.5" y="-112.8" font-family="Helvetica,sans-Serif" font-size="8.00">upstream (globalcomponent)</text>
 </g>
-<!-- pdc_apps_common_models_Label -->
-<g id="node22" class="node"><title>pdc_apps_common_models_Label</title>
-<polygon fill="palegoldenrod" stroke="palegoldenrod" points="921.5,-44.5 921.5,-61.5 962.5,-61.5 962.5,-44.5 921.5,-44.5"/>
-<polygon fill="#698b22" stroke="#698b22" points="922,-44 922,-61 963,-61 963,-44 922,-44"/>
-<text text-anchor="start" x="926.5" y="-50.6333" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
-<text text-anchor="start" x="931.5" y="-50.6333" font-family="Helvetica Bold" font-size="8.00" fill="white">Label</text>
-<text text-anchor="start" x="953.5" y="-50.6333" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
-</g>
-<!-- pdc_apps_component_models_GlobalComponent&#45;&gt;pdc_apps_common_models_Label -->
-<g id="edge23" class="edge"><title>pdc_apps_component_models_GlobalComponent&#45;&gt;pdc_apps_common_models_Label</title>
-<path fill="none" stroke="black" d="M637.24,-155.97C657.05,-138.01 682.37,-118.73 709,-108 792.19,-74.473 830.18,-130.9 910,-90 915.85,-87.005 921.08,-82.442 925.54,-77.532"/>
-<ellipse fill="black" stroke="black" cx="634.207" cy="-158.774" rx="4.00002" ry="4.00002"/>
-<ellipse fill="black" stroke="black" cx="928.211" cy="-74.3025" rx="4.00002" ry="4.00002"/>
-<text text-anchor="middle" x="754" y="-112.8" font-family="Helvetica,sans-Serif" font-size="8.00">labels (globalcomponent)</text>
-</g>
 <!-- pdc_apps_contact_models_RoleContact -->
-<g id="node24" class="node"><title>pdc_apps_contact_models_RoleContact</title>
+<g id="node22" class="node"><title>pdc_apps_contact_models_RoleContact</title>
 <polygon fill="palegoldenrod" stroke="palegoldenrod" points="995.5,-44.5 995.5,-61.5 1064.5,-61.5 1064.5,-44.5 995.5,-44.5"/>
 <polygon fill="#698b22" stroke="#698b22" points="996,-44 996,-61 1065,-61 1065,-44 996,-44"/>
 <text text-anchor="start" x="1000.5" y="-50.6333" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
@@ -178,11 +163,26 @@
 <text text-anchor="start" x="1055.5" y="-50.6333" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
 </g>
 <!-- pdc_apps_component_models_GlobalComponent&#45;&gt;pdc_apps_contact_models_RoleContact -->
-<g id="edge25" class="edge"><title>pdc_apps_component_models_GlobalComponent&#45;&gt;pdc_apps_contact_models_RoleContact</title>
+<g id="edge23" class="edge"><title>pdc_apps_component_models_GlobalComponent&#45;&gt;pdc_apps_contact_models_RoleContact</title>
 <path fill="none" stroke="black" d="M664.13,-157.57C678.27,-150.25 693.34,-143.27 708,-138 746.79,-124.04 760.11,-133.67 799,-120 809.88,-116.18 810.98,-111.38 822,-108 889.15,-87.411 913.54,-115.46 979,-90 987.59,-86.661 996.04,-81.514 1003.5,-76.111"/>
 <ellipse fill="black" stroke="black" cx="660.368" cy="-159.554" rx="4.00002" ry="4.00002"/>
 <ellipse fill="black" stroke="black" cx="1006.91" cy="-73.5334" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="871.5" y="-112.8" font-family="Helvetica,sans-Serif" font-size="8.00">contacts (globalcomponent)</text>
+</g>
+<!-- pdc_apps_common_models_Label -->
+<g id="node24" class="node"><title>pdc_apps_common_models_Label</title>
+<polygon fill="palegoldenrod" stroke="palegoldenrod" points="921.5,-44.5 921.5,-61.5 962.5,-61.5 962.5,-44.5 921.5,-44.5"/>
+<polygon fill="#698b22" stroke="#698b22" points="922,-44 922,-61 963,-61 963,-44 922,-44"/>
+<text text-anchor="start" x="926.5" y="-50.6333" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
+<text text-anchor="start" x="931.5" y="-50.6333" font-family="Helvetica Bold" font-size="8.00" fill="white">Label</text>
+<text text-anchor="start" x="953.5" y="-50.6333" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
+</g>
+<!-- pdc_apps_component_models_GlobalComponent&#45;&gt;pdc_apps_common_models_Label -->
+<g id="edge25" class="edge"><title>pdc_apps_component_models_GlobalComponent&#45;&gt;pdc_apps_common_models_Label</title>
+<path fill="none" stroke="black" d="M637.24,-155.97C657.05,-138.01 682.37,-118.73 709,-108 792.19,-74.473 830.18,-130.9 910,-90 915.85,-87.005 921.08,-82.442 925.54,-77.532"/>
+<ellipse fill="black" stroke="black" cx="634.207" cy="-158.774" rx="4.00002" ry="4.00002"/>
+<ellipse fill="black" stroke="black" cx="928.211" cy="-74.3025" rx="4.00002" ry="4.00002"/>
+<text text-anchor="middle" x="754" y="-112.8" font-family="Helvetica,sans-Serif" font-size="8.00">labels (globalcomponent)</text>
 </g>
 <!-- pdc_apps_component_models_ReleaseComponentType -->
 <g id="node8" class="node"><title>pdc_apps_component_models_ReleaseComponentType</title>
@@ -271,19 +271,19 @@
 <text text-anchor="start" x="636" y="-314.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_BugzillaComponent -->
-<g id="edge7" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_BugzillaComponent</title>
+<g id="edge11" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_BugzillaComponent</title>
 <path fill="none" stroke="black" d="M454.34,-310.86C421.32,-293.71 385.56,-275.14 352.76,-258.11"/>
 <ellipse fill="black" stroke="black" cx="458.231" cy="-312.884" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="478.5" y="-280.8" font-family="Helvetica,sans-Serif" font-size="8.00">bugzilla_component (releasecomponent)</text>
 </g>
 <!-- pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_GlobalComponent -->
-<g id="edge9" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_GlobalComponent</title>
+<g id="edge7" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_GlobalComponent</title>
 <path fill="none" stroke="black" d="M583.82,-298.28C586.72,-276.25 589.76,-253.1 592.19,-234.61"/>
 <ellipse fill="black" stroke="black" cx="583.282" cy="-302.374" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="657" y="-280.8" font-family="Helvetica,sans-Serif" font-size="8.00">global_component (releasecomponent)</text>
 </g>
 <!-- pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_ReleaseComponentType -->
-<g id="edge11" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_ReleaseComponentType</title>
+<g id="edge9" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_ReleaseComponentType</title>
 <path fill="none" stroke="black" d="M667.01,-301.29C699.92,-275.93 735.2,-248.73 761.29,-228.61"/>
 <ellipse fill="black" stroke="black" cx="663.636" cy="-303.895" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="745" y="-280.8" font-family="Helvetica,sans-Serif" font-size="8.00">type (release_components)</text>
