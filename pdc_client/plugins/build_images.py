@@ -13,27 +13,28 @@ from pdc_client.plugin_helpers import PDCClientPlugin, add_parser_arguments, ext
 
 class BuildImagePlugin(PDCClientPlugin):
     def register(self):
-        subcmd = self.add_command('build-image-list', help='list all build images')
-        subcmd.add_argument('--show-md5', action='store_true',
-                            help='whether to display md5 checksums')
-        add_parser_arguments(subcmd, {'component_name': {},
-                                      'rpm_version': {},
-                                      'rpm_release': {},
-                                      'image_id': {},
-                                      'image_format': {},
-                                      'md5': {},
-                                      'archive_build_nvr': {},
-                                      'archive_name': {},
-                                      'archive_size': {},
-                                      'archive_md5': {},
-                                      'release_id': {}},
+        self.set_command('build-image')
+
+        list_parser = self.add_action('list', help='list all build images')
+        list_parser.add_argument('--show-md5', action='store_true',
+                                 help='whether to display md5 checksums')
+        add_parser_arguments(list_parser, {'component_name': {},
+                                           'rpm_version': {},
+                                           'rpm_release': {},
+                                           'image_id': {},
+                                           'image_format': {},
+                                           'md5': {},
+                                           'archive_build_nvr': {},
+                                           'archive_name': {},
+                                           'archive_size': {},
+                                           'archive_md5': {},
+                                           'release_id': {}},
                              group='Filtering')
+        list_parser.set_defaults(func=self.list_build_image)
 
-        subcmd.set_defaults(func=self.list_build_image)
-
-        subcmd = self.add_command('build-image-info', help='display details of a build image')
-        subcmd.add_argument('image_id', metavar='IMAGE_ID')
-        subcmd.set_defaults(func=self.build_image_info)
+        info_parser = self.add_action('info', help='display details of a build image')
+        info_parser.add_argument('image_id', metavar='IMAGE_ID')
+        info_parser.set_defaults(func=self.build_image_info)
 
     def _print_build_image_list(self, build_images, with_md5=False):
         fmt = '{image_id}'

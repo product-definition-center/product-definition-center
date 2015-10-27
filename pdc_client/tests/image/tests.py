@@ -74,7 +74,7 @@ class ImageTestCase(CLITestCase):
     def test_list(self, api):
         self._setup_list(api)
         with self.expect_output('list_multi_page.txt'):
-            self.runner.run(['image-list'])
+            self.runner.run(['image', 'list'])
         self.assertEqual(api.calls['images'],
                          [('GET', {'page': 1}),
                           ('GET', {'page': 2})])
@@ -82,7 +82,7 @@ class ImageTestCase(CLITestCase):
     def test_list_json(self, api):
         self._setup_list(api)
         with self.expect_output('list_multi_page.json', parse_json=True):
-            self.runner.run(['--json', 'image-list'])
+            self.runner.run(['--json', 'image', 'list'])
         self.assertEqual(api.calls['images'],
                          [('GET', {'page': 1}),
                           ('GET', {'page': 2})])
@@ -93,7 +93,7 @@ class ImageTestCase(CLITestCase):
                    'file-name', 'image-format', 'arch', 'md5', 'implant-md5']
         for filter in filters:
             with self.expect_output('empty.txt'):
-                self.runner.run(['image-list', '--' + filter, filter])
+                self.runner.run(['image', 'list', '--' + filter, filter])
         self.assertEqual(api.calls['images'],
                          [('GET', {'page': 1, filter.replace('-', '_'): filter})
                           for filter in filters])
@@ -101,7 +101,7 @@ class ImageTestCase(CLITestCase):
     def test_show_sha256(self, api):
         self._setup_list(api)
         with self.expect_output('list_multi_page_with_sha256.txt'):
-            self.runner.run(['image-list', '--show-sha256'])
+            self.runner.run(['image', 'list', '--show-sha256'])
         self.assertEqual(api.calls['images'],
                          [('GET', {'page': 1}),
                           ('GET', {'page': 2})])
@@ -109,14 +109,14 @@ class ImageTestCase(CLITestCase):
     def test_info(self, api):
         self._setup_detail(api)
         with self.expect_output('info.txt'):
-            self.runner.run(['image-info', 'unique_filename.iso'])
+            self.runner.run(['image', 'info', 'unique_filename.iso'])
         self.assertEqual(api.calls['images'],
                          [('GET', {'file_name': 'unique_filename.iso'})])
 
     def test_info_json(self, api):
         self._setup_detail(api)
         with self.expect_output('info.json', parse_json=True):
-            self.runner.run(['--json', 'image-info', 'unique_filename.iso'])
+            self.runner.run(['--json', 'image', 'info', 'unique_filename.iso'])
         self.assertEqual(api.calls['images'],
                          [('GET', {'file_name': 'unique_filename.iso'})])
 
@@ -124,14 +124,14 @@ class ImageTestCase(CLITestCase):
         self._setup_duplicit_detail(api)
         with self.expect_output('duplicit.txt'):
             with self.expect_failure():
-                self.runner.run(['image-info', 'unique_filename.iso'])
+                self.runner.run(['image', 'info', 'unique_filename.iso'])
         self.assertEqual(api.calls['images'],
                          [('GET', {'file_name': 'unique_filename.iso'})])
 
     def test_info_with_sha(self, api):
         self._setup_detail(api)
         with self.expect_output('info.txt'):
-            self.runner.run(['image-info', 'unique_filename.iso',
+            self.runner.run(['image', 'info', 'unique_filename.iso',
                              '--sha256', '3333333333333333333333333333333333333333333333333333333333333333'])
         self.assertEqual(api.calls['images'],
                          [('GET', {'file_name': 'unique_filename.iso',

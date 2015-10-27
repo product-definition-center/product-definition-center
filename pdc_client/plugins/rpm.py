@@ -16,27 +16,27 @@ from pdc_client.plugin_helpers import (PDCClientPlugin,
 
 class RPMPlugin(PDCClientPlugin):
     def register(self):
-        subcmd = self.add_command('rpm-list', help='list all rpms')
+        self.set_command('rpm')
+
+        list_parser = self.add_action('list', help='list all rpms')
         filters = ('name version release arch compose conflicts obsoletes provides '
                    'suggests recommends requires'.split())
         for arg in filters:
-            subcmd.add_argument('--' + arg, dest='filter_' + arg)
-        subcmd.set_defaults(func=self.rpm_list)
+            list_parser.add_argument('--' + arg, dest='filter_' + arg)
+        list_parser.set_defaults(func=self.rpm_list)
 
-        subcmd = self.add_command('rpm-info', help='display details of an RPM')
-        subcmd.add_argument('rpmid', metavar='ID')
-        subcmd.set_defaults(func=self.rpm_info)
+        info_parser = self.add_action('info', help='display details of an RPM')
+        info_parser.add_argument('rpmid', metavar='ID')
+        info_parser.set_defaults(func=self.rpm_info)
 
-        subcmd = self.add_admin_command('rpm-create',
-                                        help='create new RPM')
-        self.add_rpm_arguments(subcmd, required=True)
-        subcmd.set_defaults(func=self.rpm_create)
+        create_parser = self.add_action('create', help='create new RPM')
+        self.add_rpm_arguments(create_parser, required=True)
+        create_parser.set_defaults(func=self.rpm_create)
 
-        subcmd = self.add_admin_command('rpm-update',
-                                        help='update existing RPM')
-        subcmd.add_argument('rpmid', metavar='ID')
-        self.add_rpm_arguments(subcmd)
-        subcmd.set_defaults(func=self.rpm_update)
+        update_parser = self.add_action('update', help='update existing RPM')
+        update_parser.add_argument('rpmid', metavar='ID')
+        self.add_rpm_arguments(update_parser)
+        update_parser.set_defaults(func=self.rpm_update)
 
     def add_rpm_arguments(self, parser, required=False):
         required_args = {

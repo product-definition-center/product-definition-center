@@ -11,7 +11,6 @@ from datetime import datetime
 from pdc_client import get_paged
 from pdc_client.plugin_helpers import PDCClientPlugin, add_parser_arguments, extract_arguments
 
-
 info_desc = """Generally there may be duplicate file names. If the file name
 you provide matches more that image, you will get a list of all those images
 together with their SHA256 checksums. You desambiguate by providing the
@@ -31,27 +30,28 @@ def size_format(num):
 
 class ImagePlugin(PDCClientPlugin):
     def register(self):
-        subcmd = self.add_command('image-list', help='list all images')
-        subcmd.add_argument('--show-sha256', action='store_true',
-                            help='whether to display SHA256 checksums along with the file names')
-        add_parser_arguments(subcmd, {'arch': {},
-                                      'compose': {},
-                                      'file_name': {},
-                                      'image_format': {},
-                                      'image_type': {},
-                                      'implant_md5': {},
-                                      'md5': {},
-                                      'sha1': {},
-                                      'sha256': {},
-                                      'volume_id': {}},
-                             group='Filtering')
-        subcmd.set_defaults(func=self.image_list)
+        self.set_command('image')
 
-        subcmd = self.add_command('image-info', help='display details of an image',
-                                  description=info_desc)
-        subcmd.add_argument('filename', metavar='FILENAME')
-        subcmd.add_argument('--sha256', nargs='?')
-        subcmd.set_defaults(func=self.image_info)
+        list_parser = self.add_action('list', help='list all images')
+        list_parser.add_argument('--show-sha256', action='store_true',
+                                 help='whether to display SHA256 checksums along with the file names')
+        add_parser_arguments(list_parser, {'arch': {},
+                                           'compose': {},
+                                           'file_name': {},
+                                           'image_format': {},
+                                           'image_type': {},
+                                           'implant_md5': {},
+                                           'md5': {},
+                                           'sha1': {},
+                                           'sha256': {},
+                                           'volume_id': {}},
+                             group='Filtering')
+        list_parser.set_defaults(func=self.image_list)
+
+        info_parser = self.add_action('info', help='display details of an image', description=info_desc)
+        info_parser.add_argument('filename', metavar='FILENAME')
+        info_parser.add_argument('--sha256', nargs='?')
+        info_parser.set_defaults(func=self.image_info)
 
     def _print_image_list(self, images, with_sha=False):
         fmt = '{file_name}'
@@ -110,5 +110,6 @@ class ImagePlugin(PDCClientPlugin):
                 print '\nUsed in composes:'
                 for compose in image['composes']:
                     print ' * {}'.format(compose)
+
 
 PLUGIN_CLASSES = [ImagePlugin]

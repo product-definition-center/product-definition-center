@@ -54,7 +54,7 @@ class GlobalComponentTestCase(CLITestCase):
 
     def test_list_without_filters(self, api):
         with self.expect_failure():
-            self.runner.run(['global-component-list'])
+            self.runner.run(['global-component', 'list'])
 
     def test_list_multi_page(self, api):
         api.add_endpoint('global-components', 'GET', [
@@ -63,7 +63,7 @@ class GlobalComponentTestCase(CLITestCase):
             for x in range(1, 26)
         ])
         with self.expect_output('global_component/list_multi_page.txt'):
-            self.runner.run(['global-component-list',
+            self.runner.run(['global-component', 'list',
                              '--label', 'test label'])
         self.assertEqual(api.calls['global-components'],
                          [('GET', {'page': 1, 'label': 'test label'}),
@@ -72,7 +72,7 @@ class GlobalComponentTestCase(CLITestCase):
     def test_detail(self, api):
         self._setup_detail(api)
         with self.expect_output('global_component/detail.txt'):
-            self.runner.run(['global-component-info', '1'])
+            self.runner.run(['global-component', 'info', '1'])
         self.assertDictEqual(api.calls,
                              {'global-components/1': [('GET', {})]})
 
@@ -80,7 +80,7 @@ class GlobalComponentTestCase(CLITestCase):
         self._setup_detail(api)
         api.add_endpoint('global-components/1', 'PATCH', {})
         with self.expect_output('global_component/detail.txt'):
-            self.runner.run(['global-component-update', '1', '--name', 'new test name'])
+            self.runner.run(['global-component', 'update', '1', '--name', 'new test name'])
         self.assertDictEqual(api.calls,
                              {'global-components/1': [('PATCH', {'name': 'new test name'}),
                                                       ('GET', {})]})
@@ -89,7 +89,7 @@ class GlobalComponentTestCase(CLITestCase):
         api.add_endpoint('global-components', 'POST', self.detail)
         self._setup_detail(api)
         with self.expect_output('global_component/detail.txt'):
-            self.runner.run(['global-component-create',
+            self.runner.run(['global-component', 'create',
                              '--name', 'Test Global Component',
                              '--dist-git-path', 'test_global_component'])
         self.assertDictEqual(api.calls,
@@ -100,14 +100,14 @@ class GlobalComponentTestCase(CLITestCase):
     def test_info_json(self, api):
         self._setup_detail(api)
         with self.expect_output('global_component/detail.json', parse_json=True):
-            self.runner.run(['--json', 'global-component-info', '1'])
+            self.runner.run(['--json', 'global-component', 'info', '1'])
         self.assertDictEqual(api.calls,
                              {'global-components/1': [('GET', {})]})
 
     def test_list_json(self, api):
         api.add_endpoint('global-components', 'GET', [self.detail])
         with self.expect_output('global_component/list.json', parse_json=True):
-            self.runner.run(['--json', 'global-component-list',
+            self.runner.run(['--json', 'global-component', 'list',
                              '--label', 'test label'])
 
 
@@ -155,7 +155,7 @@ class ReleaseComponentTestCase(CLITestCase):
 
     def test_list_without_filters(self, api):
         with self.expect_failure():
-            self.runner.run(['release-component-list'])
+            self.runner.run(['release-component', 'list'])
 
     def test_list_multi_page(self, api):
         api.add_endpoint('release-components', 'GET', [
@@ -166,7 +166,7 @@ class ReleaseComponentTestCase(CLITestCase):
             for x in range(1, 26)
         ])
         with self.expect_output('release_component/list_multi_page.txt'):
-            self.runner.run(['release-component-list',
+            self.runner.run(['release-component', 'list',
                              '--release', 'Test Release'])
         self.assertEqual(api.calls['release-components'],
                          [('GET', {'page': 1, 'release': 'Test Release'}),
@@ -175,7 +175,7 @@ class ReleaseComponentTestCase(CLITestCase):
     def test_detail(self, api):
         self._setup_detail(api)
         with self.expect_output('release_component/detail.txt'):
-            self.runner.run(['release-component-info', '1'])
+            self.runner.run(['release-component', 'info', '1'])
         self.assertDictEqual(api.calls,
                              {'release-components/1': [('GET', {})]})
 
@@ -183,7 +183,7 @@ class ReleaseComponentTestCase(CLITestCase):
         self._setup_detail(api)
         api.add_endpoint('release-components/1', 'PATCH', {})
         with self.expect_output('release_component/detail.txt'):
-            self.runner.run(['release-component-update', '1', '--name', 'new test name'])
+            self.runner.run(['release-component', 'update', '1', '--name', 'new test name'])
         self.assertDictEqual(api.calls,
                              {'release-components/1': [('PATCH', {'name': 'new test name'}),
                                                        ('GET', {})]})
@@ -192,7 +192,7 @@ class ReleaseComponentTestCase(CLITestCase):
         api.add_endpoint('release-components', 'POST', self.detail)
         self._setup_detail(api)
         with self.expect_output('release_component/detail.txt'):
-            self.runner.run(['release-component-create',
+            self.runner.run(['release-component', 'create',
                              '--name', 'Test Release Component',
                              '--release', 'test_release',
                              '--global-component', 'test_global_component'])
@@ -206,12 +206,12 @@ class ReleaseComponentTestCase(CLITestCase):
     def test_info_json(self, api):
         self._setup_detail(api)
         with self.expect_output('release_component/detail.json', parse_json=True):
-            self.runner.run(['--json', 'release-component-info', '1'])
+            self.runner.run(['--json', 'release-component', 'info', '1'])
         self.assertDictEqual(api.calls,
                              {'release-components/1': [('GET', {})]})
 
     def test_list_json(self, api):
         api.add_endpoint('release-components', 'GET', [self.detail])
         with self.expect_output('release_component/list.json', parse_json=True):
-            self.runner.run(['--json', 'release-component-list',
+            self.runner.run(['--json', 'release-component', 'list',
                              '--release', 'test_release'])

@@ -42,7 +42,7 @@ class ReleaseTestCase(CLITestCase):
             for x in range(25)
         ])
         with self.expect_output('list_multi_page.txt'):
-            self.runner.run(['release-list'])
+            self.runner.run(['release', 'list'])
         self.assertEqual(api.calls['releases'],
                          [('GET', {'page': 1, 'active': True}),
                           ('GET', {'page': 2, 'active': True})])
@@ -50,21 +50,21 @@ class ReleaseTestCase(CLITestCase):
     def test_list_inactive(self, api):
         api.add_endpoint('releases', 'GET', [])
         with self.expect_output('empty.txt'):
-            self.runner.run(['release-list', '--inactive'])
+            self.runner.run(['release', 'list', '--inactive'])
         self.assertEqual(api.calls['releases'],
                          [('GET', {'page': 1, 'active': False})])
 
     def test_list_all(self, api):
         api.add_endpoint('releases', 'GET', [])
         with self.expect_output('empty.txt'):
-            self.runner.run(['release-list', '--all'])
+            self.runner.run(['release', 'list', '--all'])
         self.assertEqual(api.calls['releases'],
                          [('GET', {'page': 1})])
 
     def test_detail(self, api):
         self._setup_release_detail(api)
         with self.expect_output('detail.txt'):
-            self.runner.run(['release-info', 'release-1.0'])
+            self.runner.run(['release', 'info', 'release-1.0'])
         self.assertDictEqual(api.calls,
                              {'releases/release-1.0': [('GET', {})],
                               'release-variants': [('GET', {'page': 1, 'release': 'release-1.0'})]})
@@ -73,7 +73,7 @@ class ReleaseTestCase(CLITestCase):
         self._setup_release_detail(api)
         api.add_endpoint('releases/release-0.9', 'PATCH', self.release_detail)
         with self.expect_output('detail.txt'):
-            self.runner.run(['release-update', 'release-0.9', '--version', '1.0'])
+            self.runner.run(['release', 'update', 'release-0.9', '--version', '1.0'])
         self.assertDictEqual(api.calls,
                              {'releases/release-0.9': [('PATCH', {'version': '1.0'})],
                               'releases/release-1.0': [('GET', {})],
@@ -83,7 +83,7 @@ class ReleaseTestCase(CLITestCase):
         api.add_endpoint('releases', 'POST', self.release_detail)
         self._setup_release_detail(api)
         with self.expect_output('detail.txt'):
-            self.runner.run(['release-create', '--short', 'release',
+            self.runner.run(['release', 'create', '--short', 'release',
                              '--version', '1.0',
                              '--name', 'Test Release',
                              '--release-type', 'ga'])
@@ -98,7 +98,7 @@ class ReleaseTestCase(CLITestCase):
     def test_info_json(self, api):
         self._setup_release_detail(api)
         with self.expect_output('detail.json', parse_json=True):
-            self.runner.run(['--json', 'release-info', 'release-1.0'])
+            self.runner.run(['--json', 'release', 'info', 'release-1.0'])
         self.assertDictEqual(api.calls,
                              {'releases/release-1.0': [('GET', {})],
                               'release-variants': [('GET', {'page': 1, 'release': 'release-1.0'})]})
@@ -106,8 +106,8 @@ class ReleaseTestCase(CLITestCase):
     def test_list_json(self, api):
         api.add_endpoint('releases', 'GET', [self.release_detail])
         with self.expect_output('list.json', parse_json=True):
-            self.runner.run(['--json', 'release-list'])
+            self.runner.run(['--json', 'release', 'list'])
 
     def test_can_not_activate_and_deactivate(self, api):
         with self.expect_failure():
-            self.runner.run(['release-update', 'release-1.0', '--activate', '--deactivate'])
+            self.runner.run(['release', 'update', 'release-1.0', '--activate', '--deactivate'])

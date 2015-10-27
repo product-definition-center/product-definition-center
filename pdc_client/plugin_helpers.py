@@ -33,7 +33,6 @@
 #
 
 import logging
-import sys
 
 
 DATA_PREFIX = 'data__'
@@ -47,7 +46,6 @@ class PDCClientPlugin(object):
     def __init__(self, runner):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.runner = runner
-        self.help_all = '--help-all' in sys.argv
 
     @property
     def client(self):
@@ -62,22 +60,18 @@ class PDCClientPlugin(object):
     def register(self):
         raise NotImplementedError('Plugin must implement `register` method.')
 
-    def add_command(self, *args, **kwargs):
-        """Define new subcommand.
+    def set_command(self, *args, **kwargs):
+        """Define new command.
 
         For accepted arguments, see `argparse.ArgumentParser.add_argument`.
         """
-        return self.parser.add_parser(*args, **kwargs)
+        if 'help' not in kwargs:
+            kwargs['help'] = ''
+        cmd = self.parser.add_parser(*args, **kwargs)
+        self.subparsers = cmd.add_subparsers(metavar='ACTION')
 
-    def add_admin_command(self, *args, **kwargs):
-        """Define new admin subcommand.
-
-        Help of this subcommand will be hidden for regular --help option, but
-        will show when --help-all is used. Otherwise identical to add_command.
-        """
-        if not self.help_all:
-            kwargs.pop('help', None)
-        return self.parser.add_parser(*args, **kwargs)
+    def add_action(self, *args, **kwargs):
+        return self.subparsers.add_parser(*args, **kwargs)
 
 
 def add_parser_arguments(parser, args, group=None, prefix=DATA_PREFIX):

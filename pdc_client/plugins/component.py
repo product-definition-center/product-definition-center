@@ -16,27 +16,27 @@ from pdc_client.plugin_helpers import (PDCClientPlugin,
 
 class GlobalComponentPlugin(PDCClientPlugin):
     def register(self):
-        subcmd = self.add_command('global-component-list', help='list all global components')
+        self.set_command('global-component')
+
+        list_parser = self.add_action('list', help='list all global components')
         filters = ('dist_git_path contact_role email label name upstream_homepage upstream_scm_type '
                    'upstream_scm_url'.split())
         for arg in filters:
-            subcmd.add_argument('--' + arg.replace('_', '-'), dest='filter_' + arg)
-        subcmd.set_defaults(func=self.list_global_components)
+            list_parser.add_argument('--' + arg.replace('_', '-'), dest='filter_' + arg)
+        list_parser.set_defaults(func=self.list_global_components)
 
-        subcmd = self.add_command('global-component-info', help='display details of a global component')
-        subcmd.add_argument('global_component_id', metavar='GLOBAL_COMPONENT_ID')
-        subcmd.set_defaults(func=self.global_component_info)
+        info_parser = self.add_action('info', help='display details of a global component')
+        info_parser.add_argument('global_component_id', metavar='GLOBAL_COMPONENT_ID')
+        info_parser.set_defaults(func=self.global_component_info)
 
-        subcmd = self.add_admin_command('global-component-update',
-                                        help='update an existing global component')
-        subcmd.add_argument('global_component_id', metavar='GLOBAL_COMPONENT_ID')
-        self.add_global_component_arguments(subcmd)
-        subcmd.set_defaults(func=self.global_component_update)
+        update_parser = self.add_action('update', help='update an existing global component')
+        update_parser.add_argument('global_component_id', metavar='GLOBAL_COMPONENT_ID')
+        self.add_global_component_arguments(update_parser)
+        update_parser.set_defaults(func=self.global_component_update)
 
-        subcmd = self.add_admin_command('global-component-create',
-                                        help='create new global component')
-        self.add_global_component_arguments(subcmd, required=True)
-        subcmd.set_defaults(func=self.global_component_create)
+        create_parser = self.add_action('create', help='create new global component')
+        self.add_global_component_arguments(create_parser, required=True)
+        create_parser.set_defaults(func=self.global_component_create)
 
     def add_global_component_arguments(self, parser, required=False):
         add_create_update_args(parser,
@@ -117,31 +117,31 @@ class GlobalComponentPlugin(PDCClientPlugin):
 
 class ReleaseComponentPlugin(PDCClientPlugin):
     def register(self):
-        subcmd = self.add_command('release-component-list', help='list all release components')
-        self.add_include_inactive_release_argument(subcmd)
+        self.set_command('release-component')
+
+        list_parser = self.add_action('list', help='list all release components')
+        self.add_include_inactive_release_argument(list_parser)
         filters = ('active brew_package bugzilla_component contact_role email global_component name release srpm_name '
                    'type'.split())
         for arg in filters:
-            subcmd.add_argument('--' + arg.replace('_', '-'), dest='filter_' + arg)
-        subcmd.set_defaults(func=self.list_release_components)
+            list_parser.add_argument('--' + arg.replace('_', '-'), dest='filter_' + arg)
+        list_parser.set_defaults(func=self.list_release_components)
 
-        subcmd = self.add_command('release-component-info', help='display details of a release component')
-        self.add_include_inactive_release_argument(subcmd)
-        subcmd.add_argument('release_component_id', metavar='RELEASE_COMPONENT_ID')
-        subcmd.set_defaults(func=self.release_component_info)
+        info_parser = self.add_action('info', help='display details of a release component')
+        self.add_include_inactive_release_argument(info_parser)
+        info_parser.add_argument('release_component_id', metavar='RELEASE_COMPONENT_ID')
+        info_parser.set_defaults(func=self.release_component_info)
 
-        subcmd = self.add_admin_command('release-component-update',
-                                        help='update an existing release component')
-        subcmd.add_argument('release_component_id', metavar='RELEASE_COMPONENT_ID')
-        self.add_release_component_arguments(subcmd)
-        subcmd.set_defaults(func=self.release_component_update)
+        update_parser = self.add_action('update', help='update an existing release component')
+        update_parser.add_argument('release_component_id', metavar='RELEASE_COMPONENT_ID')
+        self.add_release_component_arguments(update_parser)
+        update_parser.set_defaults(func=self.release_component_update)
 
-        subcmd = self.add_admin_command('release-component-create',
-                                        help='create new release')
-        self.add_release_component_arguments(subcmd, required=True)
-        subcmd.add_argument('--release', dest='release', required=True)
-        subcmd.add_argument('--global-component', dest='global_component', required=True)
-        subcmd.set_defaults(func=self.release_component_create)
+        create_parser = self.add_action('create', help='create new release component')
+        self.add_release_component_arguments(create_parser, required=True)
+        create_parser.add_argument('--release', dest='release', required=True)
+        create_parser.add_argument('--global-component', dest='global_component', required=True)
+        create_parser.set_defaults(func=self.release_component_create)
 
     def add_include_inactive_release_argument(self, parser):
         parser.add_argument('--include-inactive-release', action='store_true',

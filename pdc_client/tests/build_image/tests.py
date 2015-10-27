@@ -55,7 +55,7 @@ class BuildImageTestCase(CLITestCase):
     def test_list(self, api):
         self._setup_list_1(api)
         with self.expect_output('list_multi_page.txt'):
-            self.runner.run(['build-image-list'])
+            self.runner.run(['build-image', 'list'])
         self.assertEqual(api.calls['build-images'],
                          [('GET', {'page': 1}),
                           ('GET', {'page': 2})])
@@ -64,5 +64,5 @@ class BuildImageTestCase(CLITestCase):
         self._setup_detail(api)
         self._setup_list_2(api)
         with self.expect_output('detail.json', parse_json=True):
-            self.runner.run(['--json', 'build-image-info', 'test_image_1'])
+            self.runner.run(['--json', 'build-image', 'info', 'test_image_1'])
         self.assertEqual(api.calls['build-images'], [('GET', {'image_id': 'test_image_1'})])

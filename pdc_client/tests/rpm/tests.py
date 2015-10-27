@@ -15,7 +15,7 @@ class RpmTestCase(CLITestCase):
 
     def test_list_without_filters(self, api):
         with self.expect_failure():
-            self.runner.run(['rpm-list'])
+            self.runner.run(['rpm', 'list'])
 
     def _setup_list(self, api):
         api.add_endpoint('rpms', 'GET', [
@@ -31,7 +31,7 @@ class RpmTestCase(CLITestCase):
     def test_list(self, api):
         self._setup_list(api)
         with self.expect_output('list.txt'):
-            self.runner.run(['rpm-list', '--name', 'bash'])
+            self.runner.run(['rpm', 'list', '--name', 'bash'])
         self.assertEqual(api.calls['rpms'],
                          [('GET', {'page': 1, 'name': 'bash'}),
                           ('GET', {'page': 2, 'name': 'bash'})])
@@ -39,7 +39,7 @@ class RpmTestCase(CLITestCase):
     def test_list_json(self, api):
         self._setup_list(api)
         with self.expect_output('list.json', parse_json=True):
-            self.runner.run(['--json', 'rpm-list', '--name', 'bash'])
+            self.runner.run(['--json', 'rpm', 'list', '--name', 'bash'])
         self.assertEqual(api.calls['rpms'],
                          [('GET', {'page': 1, 'name': 'bash'}),
                           ('GET', {'page': 2, 'name': 'bash'})])
@@ -73,19 +73,19 @@ class RpmTestCase(CLITestCase):
     def test_info(self, api):
         self._setup_detail(api)
         with self.expect_output('info.txt'):
-            self.runner.run(['rpm-info', '1'])
+            self.runner.run(['rpm', 'info', '1'])
         self.assertEqual(api.calls['rpms/1'], [('GET', {})])
 
     def test_info_json(self, api):
         self._setup_detail(api)
         with self.expect_output('info.json', parse_json=True):
-            self.runner.run(['--json', 'rpm-info', '1'])
+            self.runner.run(['--json', 'rpm', 'info', '1'])
         self.assertEqual(api.calls['rpms/1'], [('GET', {})])
 
     def test_create(self, api):
         self._setup_detail(api)
         with self.expect_output('info.txt'):
-            self.runner.run(['rpm-create',
+            self.runner.run(['rpm', 'create',
                              '--name', 'bash',
                              '--srpm-name', 'bash',
                              '--epoch', '0',
@@ -101,7 +101,7 @@ class RpmTestCase(CLITestCase):
     def test_update(self, api):
         self._setup_detail(api)
         with self.expect_output('info.txt'):
-            self.runner.run(['rpm-update', '1',
+            self.runner.run(['rpm', 'update', '1',
                              '--name', 'bash',
                              '--srpm-name', 'bash',
                              '--epoch', '0',

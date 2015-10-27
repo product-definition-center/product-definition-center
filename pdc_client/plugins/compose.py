@@ -12,29 +12,32 @@ from pdc_client.plugin_helpers import PDCClientPlugin, add_parser_arguments, ext
 
 class ComposePlugin(PDCClientPlugin):
     def register(self):
-        subcmd = self.add_command('compose-list', help='list all composes')
-        subcmd.add_argument('--deleted', action='store_true',
-                            help='show deleted composes')
-        subcmd.set_defaults(func=self.list_composes)
+        self.set_command('compose')
 
-        subcmd = self.add_command('compose-info', help='display details of a compose')
-        subcmd.add_argument('compose_id', metavar='COMPOSE_ID')
-        subcmd.set_defaults(func=self.compose_info)
+        list_parser = self.add_action('list', help='list all composes')
+        list_parser.add_argument('--deleted', action='store_true',
+                                 help='show deleted composes')
+        list_parser.set_defaults(func=self.list_composes)
 
-        subcmd = self.add_admin_command('compose-update',
+        info_parser = self.add_action('info', help='display details of a compose')
+        info_parser.add_argument('compose_id', metavar='COMPOSE_ID')
+        info_parser.set_defaults(func=self.compose_info)
+
+        update_parser = self.add_action('update',
                                         help='partial update an existing compose.',
                                         description='only some compose fields can be modified by this call.\
-                                                    these are acceptance_testing, linked_releases and rtt_tested_architectures.')
-        subcmd.add_argument('compose_id', metavar='COMPOSE_ID')
-        self.add_compose_arguments(subcmd)
-        subcmd.set_defaults(func=self.compose_update)
-        self.compose_update = subcmd
+                                            these are acceptance_testing, linked_releases and rtt_tested_architectures.')
+        update_parser.add_argument('compose_id', metavar='COMPOSE_ID')
+        self.add_compose_arguments(update_parser)
+        update_parser.set_defaults(func=self.compose_update)
+        self.compose_update = update_parser
 
     def add_compose_arguments(self, parser):
         add_parser_arguments(parser, {
             'acceptance_testing': {'choices': ['passed', 'failed', 'untested']},
             'linked_releases': {'nargs': '*', 'metavar': 'RELEASE_ID'},
-            'rtt_tested_architectures': {'nargs': '*', 'default': [], 'help': 'input format VARIANT:ARCHES:TESTING_STATUS'}})
+            'rtt_tested_architectures': {'nargs': '*', 'default': [],
+                                         'help': 'input format VARIANT:ARCHES:TESTING_STATUS'}})
 
     def list_composes(self, args):
         filters = {}
@@ -64,7 +67,7 @@ class ComposePlugin(PDCClientPlugin):
         print fmt.format('Compose Date', compose['compose_date'])
         print fmt.format('Compose Respin', compose['compose_respin'])
         print fmt.format('Compose Type', compose['compose_type'])
-        print fmt. format('Acceptance Testing', compose['acceptance_testing'])
+        print fmt.format('Acceptance Testing', compose['acceptance_testing'])
         print fmt.format('Deleted', compose['deleted'])
         print fmt.format('Release', compose['release'])
         print fmt.format('Rpm Mapping Template', compose['rpm_mapping_template'])
@@ -106,7 +109,8 @@ class ComposePlugin(PDCClientPlugin):
         for rtt in rtts:
             parts = rtt.split(':')
             if not len(parts) == 3:
-                self.compose_update.error('Please input rtt-tested-architectures in format VARIANT:ARCHES:TESTING_STATUS.\n')
+                self.compose_update.error(
+                    'Please input rtt-tested-architectures in format VARIANT:ARCHES:TESTING_STATUS.\n')
 
             variant = parts[0]
             arches = parts[1]
@@ -116,5 +120,6 @@ class ComposePlugin(PDCClientPlugin):
         data['rtt_tested_architectures'] = dic
 
         return data
+
 
 PLUGIN_CLASSES = [ComposePlugin]

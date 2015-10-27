@@ -41,7 +41,7 @@ class ComposeTestCase(CLITestCase):
             for x in range(23)
         ])
         with self.expect_output('list_multi_page.txt'):
-            self.runner.run(['compose-list'])
+            self.runner.run(['compose', 'list'])
         self.assertEqual(api.calls['composes'],
                          [('GET', {'page': 1, 'deleted': False}),
                           ('GET', {'page': 2, 'deleted': False})])
@@ -49,21 +49,21 @@ class ComposeTestCase(CLITestCase):
     def test_list_deleted(self, api):
         api.add_endpoint('composes', 'GET', [])
         with self.expect_output('empty.txt'):
-            self.runner.run(['compose-list', '--deleted'])
+            self.runner.run(['compose', 'list', '--deleted'])
         self.assertEqual(api.calls['composes'],
                          [('GET', {'page': 1, 'deleted': True})])
 
     def test_info(self, api):
         api.add_endpoint('composes/awesome-product-20130203.7', 'GET', self.compose_detail)
         with self.expect_output('info.txt'):
-            self.runner.run(['compose-info', 'awesome-product-20130203.7'])
+            self.runner.run(['compose', 'info', 'awesome-product-20130203.7'])
         self.assertDictEqual(api.calls,
                              {'composes/awesome-product-20130203.7': [('GET', {})]})
 
     def test_info_json(self, api):
         api.add_endpoint('composes/awesome-product-20130203.7', 'GET', self.compose_detail)
         with self.expect_output('info.json', parse_json=True):
-            self.runner.run(['--json', 'compose-info', 'awesome-product-20130203.7'])
+            self.runner.run(['--json', 'compose', 'info', 'awesome-product-20130203.7'])
         self.assertDictEqual(api.calls,
                              {'composes/awesome-product-20130203.7': [('GET', {})]})
 
@@ -71,7 +71,7 @@ class ComposeTestCase(CLITestCase):
         api.add_endpoint('composes/awesome-product-20130203.7', 'GET', self.compose_detail)
         api.add_endpoint('composes/awesome-product-20130203.7', 'PATCH', {})
         with self.expect_output('info.txt'):
-            self.runner.run(['compose-update', 'awesome-product-20130203.7',
+            self.runner.run(['compose', 'update', 'awesome-product-20130203.7',
                              '--acceptance-testing', 'passed',
                              '--linked-releases', 'sap-7.0-awesome-product',
                              '--rtt-tested-architectures', 'Workstation:x86_64:passed'
@@ -84,7 +84,7 @@ class ComposeTestCase(CLITestCase):
 
     def test_update_wrong_input1(self, api):
         with self.expect_failure():
-            self.runner.run(['compose-update', 'awesome-product-20130203.7',
+            self.runner.run(['compose', 'update', 'awesome-product-20130203.7',
                              '--acceptance-testing', 'passed',
                              '--linked-releases', 'sap-7.0-awesome-product',
                              '--rtt-tested-architectures', 'Workstation:x86_64:passed:wronginput'
@@ -92,7 +92,7 @@ class ComposeTestCase(CLITestCase):
 
     def test_update_wrong_input2(self, api):
         with self.expect_failure():
-            self.runner.run(['compose-update', 'awesome-product-20130203.7',
+            self.runner.run(['compose', 'update', 'awesome-product-20130203.7',
                              '--acceptance-testing', 'wronginput',
                              '--linked-releases', 'sap-7.0-awesome-product',
                              '--rtt-tested-architectures', 'Workstation:x86_64:passed'
