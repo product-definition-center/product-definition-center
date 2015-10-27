@@ -19,6 +19,7 @@ class LimitField(serializers.IntegerField):
     doc_format = '"{}"|int'.format(UNLIMITED_STR)
 
     def __init__(self, unlimited_value, **kwargs):
+        kwargs['min_value'] = 0
         super(LimitField, self).__init__(**kwargs)
         self.unlimited_value = unlimited_value
 

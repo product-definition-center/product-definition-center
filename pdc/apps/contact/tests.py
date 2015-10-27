@@ -111,6 +111,14 @@ class ContactRoleRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertNumChanges([])
 
+    def test_update_limit_to_negative(self):
+        response = self.client.patch(reverse('contactrole-detail', args=['allow_3_role']),
+                                     {'count_limit': -1},
+                                     format='json')
+        self.assertIn('greater than or equal to 0',
+                      response.data.get('count_limit')[0])
+        self.assertNumChanges([])
+
 
 class PersonRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = ['pdc/apps/contact/fixtures/tests/person.json', ]

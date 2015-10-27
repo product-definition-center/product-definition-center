@@ -16,8 +16,10 @@ from django.utils.translation import ugettext_lazy as _
 class ContactRole(models.Model):
 
     name = models.CharField(max_length=128, unique=True)
-    count_limit = models.IntegerField(default=1,
-                                      help_text=_('Contact count limit of the role for each component.'))
+    count_limit = models.PositiveSmallIntegerField(
+        default=1,
+        help_text=_('Contact count limit of the role for each component.')
+    )
     UNLIMITED = 0
 
     def _get_max_component_role_count(self, component_model, role):
