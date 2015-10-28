@@ -25,6 +25,11 @@ class PersonViewSet(viewsets.PDCModelViewSet):
     You can use ``curl`` in terminal, with -X _method_ (GET|POST|PUT|PATCH|DELETE),
     -d _data_ (a json string). or GUI plugins for
     browsers, such as ``RESTClient``, ``RESTConsole``.
+
+    Please access this endpoint by
+    [%(HOST_NAME)s/%(API_PATH)s/contacts/people/](/%(API_PATH)s/contacts/people/).
+    Endpoint
+    [%(HOST_NAME)s/%(API_PATH)s/persons/](/%(API_PATH)s/persons/) is deprecated.
     """
 
     def create(self, request, *args, **kwargs):
@@ -152,7 +157,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
     """
     ##Overview##
 
-    This page shows the usage of the **Maillist API**, please see the
+    This page shows the usage of the **Mailing list API**, please see the
     following for more details.
 
     ##Test tools##
@@ -160,6 +165,11 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
     You can use ``curl`` in terminal, with -X _method_ (GET|POST|PUT|PATCH|DELETE),
     -d _data_ (a json string). or GUI plugins for
     browsers, such as ``RESTClient``, ``RESTConsole``.
+
+    Please access this endpoint by
+    [%(HOST_NAME)s/%(API_PATH)s/contacts/mailing-lists/](/%(API_PATH)s/contacts/mailing-lists/).
+    Endpoint
+    [%(HOST_NAME)s/%(API_PATH)s/maillists/](/%(API_PATH)s/maillists/) is deprecated.
     """
 
     def create(self, request, *args, **kwargs):

@@ -307,6 +307,11 @@ class ContentCategoryViewSet(StrictQueryParamMixin,
                              viewsets.GenericViewSet):
     """
     API endpoint that allows content_category to be viewed.
+
+    Please access this endpoint by [%(HOST_NAME)s/%(API_PATH)s/content-delivery-content-categories/](/%(API_PATH)s/
+    content-delivery-content-categories/).
+    Endpoint [%(HOST_NAME)s/%(API_PATH)s/content-delivery-content-category/](/%(API_PATH)s/
+    content-delivery-content-category/) is deprecated.
     """
     serializer_class = serializers.ContentCategorySerializer
     queryset = models.ContentCategory.objects.all()
@@ -329,6 +334,12 @@ class ContentFormatViewSet(StrictQueryParamMixin,
                            viewsets.GenericViewSet):
     """
     API endpoint that allows content_format to be viewed.
+
+    Please access this endpoint by
+    [%(HOST_NAME)s/%(API_PATH)s/content-delivery-content-formats/](/%(API_PATH)s/content-delivery-content-formats/).
+    Endpoint
+    [%(HOST_NAME)s/%(API_PATH)s/content-delivery-content-format/](/%(API_PATH)s/content-delivery-content-format/)
+    is deprecated.
     """
     serializer_class = serializers.ContentFormatSerializer
     queryset = models.ContentFormat.objects.all()
@@ -351,6 +362,11 @@ class ServiceViewSet(StrictQueryParamMixin,
                      viewsets.GenericViewSet):
     """
     API endpoint that allows service to be viewed.
+
+    Please access this endpoint by
+    [%(HOST_NAME)s/%(API_PATH)s/content-delivery-services/](/%(API_PATH)s/content-delivery-services/).
+    Endpoint
+    [%(HOST_NAME)s/%(API_PATH)s/content-delivery-service/](/%(API_PATH)s/content-delivery-service/) is deprecated.
     """
     serializer_class = serializers.ServiceSerializer
     queryset = models.Service.objects.all()

@@ -38,9 +38,13 @@ router.register(r'releases', release_views.ReleaseViewSet)
 router.register(r'base-products', release_views.BaseProductViewSet)
 router.register(r'release-types', release_views.ReleaseTypeViewSet, base_name='releasetype')
 
+# TODO: these two end-points will be removed
+router.register(r'persons', contact_views.PersonViewSet, base_name='persondeprecated')
+router.register(r'maillists', contact_views.MaillistViewSet, base_name='maillistdeprecated')
+
 # register contact view sets
-router.register(r'persons', contact_views.PersonViewSet)
-router.register(r'maillists', contact_views.MaillistViewSet)
+router.register(r'contacts/people', contact_views.PersonViewSet, base_name='person')
+router.register(r'contacts/mailing-lists', contact_views.MaillistViewSet, base_name='maillist')
 router.register(r'contact-roles', contact_views.ContactRoleViewSet)
 router.register(r'role-contacts', contact_views.RoleContactViewSet)
 
@@ -147,11 +151,20 @@ router.register(r'release-variants',
                 release_views.ReleaseVariantViewSet)
 router.register(r'variant-types', release_views.VariantTypeViewSet,
                 base_name='varianttype')
+
+# TODO: these three end-points will be removed
 router.register(r'content-delivery-content-category', repo_views.ContentCategoryViewSet,
-                base_name='contentdeliverycontentcategory')
+                base_name='contentcategorydeprecated')
 router.register(r'content-delivery-content-format', repo_views.ContentFormatViewSet,
-                base_name='contentdeliverycontentformat')
+                base_name='contentformatdeprecated')
 router.register(r'content-delivery-service', repo_views.ServiceViewSet,
+                base_name='contentservicedeprecated')
+
+router.register(r'content-delivery-content-categories', repo_views.ContentCategoryViewSet,
+                base_name='contentdeliverycontentcategory')
+router.register(r'content-delivery-content-formats', repo_views.ContentFormatViewSet,
+                base_name='contentdeliverycontentformat')
+router.register(r'content-delivery-services', repo_views.ServiceViewSet,
                 base_name='contentdeliveryservice')
 
 router.register(r'osbs', osbs_views.OSBSViewSet,
