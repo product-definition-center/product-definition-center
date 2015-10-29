@@ -184,13 +184,13 @@
 <text text-anchor="start" x="516" y="-134.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_repository_models_Repo&#45;&gt;pdc_apps_repository_models_Service -->
-<g id="edge5" class="edge"><title>pdc_apps_repository_models_Repo&#45;&gt;pdc_apps_repository_models_Service</title>
+<g id="edge3" class="edge"><title>pdc_apps_repository_models_Repo&#45;&gt;pdc_apps_repository_models_Service</title>
 <path fill="none" stroke="black" d="M334.24,-144.7C280.25,-122.56 217.88,-96.986 170.51,-77.555"/>
 <ellipse fill="black" stroke="black" cx="338.099" cy="-146.282" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="268" y="-100.8" font-family="Helvetica,sans-Serif" font-size="8.00">service (repo)</text>
 </g>
 <!-- pdc_apps_repository_models_Repo&#45;&gt;pdc_apps_repository_models_ContentFormat -->
-<g id="edge9" class="edge"><title>pdc_apps_repository_models_Repo&#45;&gt;pdc_apps_repository_models_ContentFormat</title>
+<g id="edge5" class="edge"><title>pdc_apps_repository_models_Repo&#45;&gt;pdc_apps_repository_models_ContentFormat</title>
 <path fill="none" stroke="black" d="M364.49,-121.22C345.81,-105.9 327.04,-90.505 311.48,-77.741"/>
 <ellipse fill="black" stroke="black" cx="367.719" cy="-123.871" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="387.5" y="-100.8" font-family="Helvetica,sans-Serif" font-size="8.00">content_format (repo)</text>
@@ -202,7 +202,7 @@
 <text text-anchor="middle" x="495.5" y="-100.8" font-family="Helvetica,sans-Serif" font-size="8.00">content_category (repo)</text>
 </g>
 <!-- pdc_apps_repository_models_Repo&#45;&gt;pdc_apps_repository_models_RepoFamily -->
-<g id="edge3" class="edge"><title>pdc_apps_repository_models_Repo&#45;&gt;pdc_apps_repository_models_RepoFamily</title>
+<g id="edge9" class="edge"><title>pdc_apps_repository_models_Repo&#45;&gt;pdc_apps_repository_models_RepoFamily</title>
 <path fill="none" stroke="black" d="M539.51,-121.22C558.19,-105.9 576.96,-90.505 592.52,-77.741"/>
 <ellipse fill="black" stroke="black" cx="536.281" cy="-123.871" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="600.5" y="-100.8" font-family="Helvetica,sans-Serif" font-size="8.00">repo_family (repo)</text>

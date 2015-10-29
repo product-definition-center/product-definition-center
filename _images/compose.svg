@@ -267,13 +267,13 @@
 <text text-anchor="start" x="494" y="-474.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_compose_models_VariantArch&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState -->
-<g id="edge9" class="edge"><title>pdc_apps_compose_models_VariantArch&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState</title>
+<g id="edge11" class="edge"><title>pdc_apps_compose_models_VariantArch&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState</title>
 <path fill="none" stroke="black" d="M411.89,-458.21C411.18,-454.77 410.54,-451.34 410,-448 387.03,-304.7 384.82,-129.92 384.85,-65.962"/>
 <ellipse fill="black" stroke="black" cx="412.798" cy="-462.324" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="447.5" y="-282.8" font-family="Helvetica,sans-Serif" font-size="8.00">rtt_testing_status (variantarch)</text>
 </g>
 <!-- pdc_apps_compose_models_VariantArch&#45;&gt;pdc_apps_compose_models_Variant -->
-<g id="edge11" class="edge"><title>pdc_apps_compose_models_VariantArch&#45;&gt;pdc_apps_compose_models_Variant</title>
+<g id="edge9" class="edge"><title>pdc_apps_compose_models_VariantArch&#45;&gt;pdc_apps_compose_models_Variant</title>
 <path fill="none" stroke="black" d="M412.56,-457.99C412.73,-450.3 414.26,-442.71 418,-436 423.57,-426 431.14,-417.21 439.76,-409.5"/>
 <ellipse fill="black" stroke="black" cx="412.727" cy="-462.333" rx="4" ry="4"/>
 <text text-anchor="middle" x="454.5" y="-440.8" font-family="Helvetica,sans-Serif" font-size="8.00">variant (variantarch)</text>
