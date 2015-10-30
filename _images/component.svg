@@ -366,14 +366,14 @@
 <text text-anchor="start" x="719" y="-496.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_component_models_ReleaseComponentGroup&#45;&gt;pdc_apps_component_models_ReleaseComponent -->
-<g id="edge15" class="edge"><title>pdc_apps_component_models_ReleaseComponentGroup&#45;&gt;pdc_apps_component_models_ReleaseComponent</title>
+<g id="edge13" class="edge"><title>pdc_apps_component_models_ReleaseComponentGroup&#45;&gt;pdc_apps_component_models_ReleaseComponent</title>
 <path fill="none" stroke="black" d="M584.55,-482.62C580.94,-478.74 577.71,-474.55 575,-470 570.93,-463.16 568.33,-455.54 566.79,-447.67"/>
 <ellipse fill="black" stroke="black" cx="587.663" cy="-485.65" rx="4.00002" ry="4.00002"/>
 <ellipse fill="black" stroke="black" cx="566.187" cy="-443.675" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="651" y="-462.8" font-family="Helvetica,sans-Serif" font-size="8.00">components (release_component_groups)</text>
 </g>
 <!-- pdc_apps_component_models_ReleaseComponentGroup&#45;&gt;pdc_apps_component_models_GroupType -->
-<g id="edge13" class="edge"><title>pdc_apps_component_models_ReleaseComponentGroup&#45;&gt;pdc_apps_component_models_GroupType</title>
+<g id="edge15" class="edge"><title>pdc_apps_component_models_ReleaseComponentGroup&#45;&gt;pdc_apps_component_models_GroupType</title>
 <path fill="none" stroke="black" d="M705.34,-481.69C723.33,-456.84 745.49,-426.22 761.69,-403.82"/>
 <ellipse fill="black" stroke="black" cx="702.972" cy="-484.968" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="794.5" y="-462.8" font-family="Helvetica,sans-Serif" font-size="8.00">group_type (release_component_groups)</text>
