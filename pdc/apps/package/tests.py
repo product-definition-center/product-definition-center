@@ -578,6 +578,21 @@ class RPMDepsAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(with_version.version, '0.1.0')
         self.assertNumChanges([1])
 
+    def test_create_rpm_with_duplicate_deps(self):
+        data = {'name': 'fake_bash', 'version': '1.2.3', 'epoch': 0,
+                'release': '4.b1', 'arch': 'x86_64', 'srpm_name': 'bash',
+                'filename': 'bash-1.2.3-4.b1.x86_64.rpm',
+                'linked_releases': [], 'srpm_nevra': 'fake_bash-0:1.2.3-4.b1.src',
+                'dependencies': {'requires': ['required-package', 'required-package'],
+                                 'obsoletes': ['obsolete-package'],
+                                 'suggests': ['suggested-package >= 1.0.0', 'suggested-package >= 1.0.0'],
+                                 'recommends': ['recommended = 0.1.0'],
+                                 'provides': ['/bin/bash', '/usr/bin/whatever'],
+                                 'conflicts': ['nothing']}}
+        response = self.client.post(reverse('rpms-list'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNumChanges([1])
+
     def test_put_to_rpm_with_none(self):
         data = {
             'name': 'bash',

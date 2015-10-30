@@ -154,11 +154,6 @@ class Dependency(models.Model):
     comparison = models.CharField(max_length=50, blank=True, null=True)
     rpm = models.ForeignKey(RPM)
 
-    class Meta:
-        unique_together = (
-            ('type', 'name', 'version', 'comparison', 'rpm')
-        )
-
     def __unicode__(self):
         base_str = self.name
         if self.version:
