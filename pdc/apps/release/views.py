@@ -748,10 +748,19 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
     `release_id/variant_uid` is used in URL for retrieving, updating or
     deleting a single variant as well as in bulk operations.
     """
-    queryset = models.Variant.objects.all().order_by('id')
+    queryset = models.Variant.objects.order_by('id')
     serializer_class = ReleaseVariantSerializer
     filter_class = filters.ReleaseVariantFilter
     lookup_fields = (('release__release_id', r'[^/]+'), ('variant_uid', r'[^/]+'))
+
+    def get_queryset(self):
+        # Selecting related fields (using a JOIN statement can be done always).
+        # Preloading with a separate request could be actually be slow if there
+        # is no filter, so it's done only on list request with paging enabled.
+        queryset = self.queryset.select_related('variant_type', 'release')
+        if self.action == 'list' and self.paginator.get_page_size(self.request):
+            queryset = queryset.prefetch_related('variantarch_set__arch')
+        return queryset
 
     def create(self, *args, **kwargs):
         """
