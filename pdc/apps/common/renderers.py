@@ -263,7 +263,7 @@ def _get_details_for_slug(serializer, field_name, field):
     displayed.
     """
     model = ''
-    if hasattr(field, 'queryset') and field.queryset:
+    if hasattr(field, 'queryset') and hasattr(field.queryset, 'model'):
         model = field.queryset.model.__name__ + '.'
     return '%s%s' % (model, field.slug_field)
 
