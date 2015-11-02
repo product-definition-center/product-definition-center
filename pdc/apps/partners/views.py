@@ -37,7 +37,7 @@ class PartnerTypeViewSet(StrictQueryParamMixin,
 
 
 class PartnerViewSet(PDCModelViewSet):
-    queryset = models.Partner.objects.all().order_by('id')
+    queryset = models.Partner.objects.select_related('type').order_by('id')
     lookup_field = 'short'
     serializer_class = serializers.PartnerSerializer
     filter_class = filters.PartnerFilterSet
