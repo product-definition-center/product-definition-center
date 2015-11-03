@@ -32,7 +32,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
     Please access this endpoint by [%(HOST_NAME)s/%(API_PATH)s/content-delivery-repos/](/%(API_PATH)s/content-delivery-repos/).
     Endpoint [%(HOST_NAME)s/%(API_PATH)s/repos/](/%(API_PATH)s/repos/) is deprecated.
     """
-    queryset = models.Repo.objects.all().select_related()
+    queryset = models.Repo.objects.all().select_related().order_by('id')
     serializer_class = serializers.RepoSerializer
     filter_class = filters.RepoFilter
 
@@ -258,7 +258,7 @@ class RepoFamilyViewSet(StrictQueryParamMixin,
     -d _data_ (a json string). or GUI plugins for
     browsers, such as ``RESTClient``, ``RESTConsole``.
     """
-    queryset = models.RepoFamily.objects.all()
+    queryset = models.RepoFamily.objects.all().order_by('id')
     serializer_class = serializers.RepoFamilySerializer
     filter_class = filters.RepoFamilyFilter
 
@@ -314,7 +314,7 @@ class ContentCategoryViewSet(StrictQueryParamMixin,
     content-delivery-content-category/) is deprecated.
     """
     serializer_class = serializers.ContentCategorySerializer
-    queryset = models.ContentCategory.objects.all()
+    queryset = models.ContentCategory.objects.all().order_by('id')
 
     def list(self, request, *args, **kwargs):
         """
@@ -342,7 +342,7 @@ class ContentFormatViewSet(StrictQueryParamMixin,
     is deprecated.
     """
     serializer_class = serializers.ContentFormatSerializer
-    queryset = models.ContentFormat.objects.all()
+    queryset = models.ContentFormat.objects.all().order_by('id')
 
     def list(self, request, *args, **kwargs):
         """
@@ -369,7 +369,7 @@ class ServiceViewSet(StrictQueryParamMixin,
     [%(HOST_NAME)s/%(API_PATH)s/content-delivery-service/](/%(API_PATH)s/content-delivery-service/) is deprecated.
     """
     serializer_class = serializers.ServiceSerializer
-    queryset = models.Service.objects.all()
+    queryset = models.Service.objects.all().order_by('id')
 
     def list(self, request, *args, **kwargs):
         """

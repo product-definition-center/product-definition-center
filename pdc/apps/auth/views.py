@@ -279,7 +279,7 @@ class PermissionViewSet(StrictQueryParamMixin,
         """
         return super(PermissionViewSet, self).list(request, *args, **kwargs)
 
-    queryset = Permission.objects.all()
+    queryset = Permission.objects.all().order_by("id")
     serializer_class = serializers.PermissionSerializer
     filter_class = filters.PermissionFilter
 
@@ -481,7 +481,7 @@ class GroupViewSet(ChangeSetUpdateModelMixin,
         """
         return super(GroupViewSet, self).update(request, *args, **kwargs)
 
-    queryset = Group.objects.all()
+    queryset = Group.objects.all().order_by('id')
     serializer_class = serializers.GroupSerializer
     filter_class = filters.GroupFilter
     Group.export = group_obj_export

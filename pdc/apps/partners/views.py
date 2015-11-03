@@ -20,7 +20,7 @@ from . import serializers
 class PartnerTypeViewSet(StrictQueryParamMixin,
                          mixins.ListModelMixin,
                          viewsets.GenericViewSet):
-    queryset = models.PartnerType.objects.all()
+    queryset = models.PartnerType.objects.all().order_by('id')
     serializer_class = serializers.PartnerTypeSerializer
 
     def list(self, request, *args, **kwargs):
@@ -37,7 +37,7 @@ class PartnerTypeViewSet(StrictQueryParamMixin,
 
 
 class PartnerViewSet(PDCModelViewSet):
-    queryset = models.Partner.objects.all()
+    queryset = models.Partner.objects.all().order_by('id')
     lookup_field = 'short'
     serializer_class = serializers.PartnerSerializer
     filter_class = filters.PartnerFilterSet
@@ -123,7 +123,7 @@ class PartnerMappingViewSet(StrictQueryParamMixin,
         'partner',
         'variant_arch__arch',
         'variant_arch__variant__release'
-    )
+    ).order_by('id')
     serializer_class = serializers.PartnerMappingSerializer
     lookup_fields = (
         ('partner__short', r'[^/]+'),

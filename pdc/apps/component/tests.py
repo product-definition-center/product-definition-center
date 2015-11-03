@@ -228,8 +228,8 @@ class GlobalComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 2)
-        self.assertEqual(response.data['results'][0]['name'], 'MySQL-python')
-        self.assertEqual(response.data['results'][1]['name'], 'python')
+        self.assertEqual(response.data['results'][0]['name'], 'python')
+        self.assertEqual(response.data['results'][1]['name'], 'MySQL-python')
 
     def test_query_global_components_with_upstream(self):
         url = reverse('globalcomponent-list')

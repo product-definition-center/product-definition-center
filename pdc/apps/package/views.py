@@ -20,7 +20,7 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
     """
     API endpoint that allows RPMs to be viewed.
     """
-    queryset = models.RPM.objects.all()
+    queryset = models.RPM.objects.all().order_by("id")
     serializer_class = serializers.RPMSerializer
     filter_class = filters.RPMFilter
 
@@ -129,7 +129,7 @@ class ImageViewSet(pdc_viewsets.StrictQueryParamMixin,
     """
     List and query images.
     """
-    queryset = models.Image.objects.all()
+    queryset = models.Image.objects.all().order_by('id')
     serializer_class = serializers.ImageSerializer
     filter_class = filters.ImageFilter
 
@@ -159,7 +159,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
     """
     ViewSet for  BuildImage.
     """
-    queryset = models.BuildImage.objects.all()
+    queryset = models.BuildImage.objects.all().order_by('id')
     serializer_class = serializers.BuildImageSerializer
     filter_class = filters.BuildImageFilter
 

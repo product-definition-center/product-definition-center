@@ -30,7 +30,7 @@ class ArchListView(ListView):
 
 class SigKeyListView(ListView):
     model = SigKey
-    queryset = SigKey.objects.all()
+    queryset = SigKey.objects.all().order_by('id')
     allow_empty = True
     template_name = "sigkey_list.html"
     context_object_name = "sigkey_list"
@@ -50,7 +50,7 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
     browsers, such as ``RESTClient``, ``RESTConsole``.
     """
     serializer_class = LabelSerializer
-    queryset = Label.objects.all()
+    queryset = Label.objects.all().order_by('id')
     filter_class = LabelFilter
 
     def create(self, request, *args, **kwargs):
@@ -225,7 +225,7 @@ class ArchViewSet(pdc_viewsets.ChangeSetCreateModelMixin,
     browsers, such as ``RESTClient``, ``RESTConsole``.
     """
     serializer_class = ArchSerializer
-    queryset = Arch.objects.all()
+    queryset = Arch.objects.all().order_by('id')
     lookup_field = 'name'
 
     def list(self, request, *args, **kwargs):
@@ -307,7 +307,7 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
     browsers, such as ``RESTClient``, ``RESTConsole``.
     """
     serializer_class = SigKeySerializer
-    queryset = SigKey.objects.all()
+    queryset = SigKey.objects.all().order_by('id')
     filter_class = SigKeyFilter
     lookup_field = 'key_id'
 

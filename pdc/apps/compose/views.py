@@ -46,7 +46,7 @@ class ComposeListView(SearchView):
     form_class = ComposeSearchForm
     queryset = Compose.objects.all() \
         .select_related('release', 'compose_type') \
-        .prefetch_related('linked_releases')
+        .prefetch_related('linked_releases').order_by('id')
     allow_empty = True
     template_name = "compose_list.html"
     context_object_name = "compose_list"
@@ -428,7 +428,7 @@ class ComposeViewSet(StrictQueryParamMixin,
     template contains a string `{{package}}` which should be replaced with the
     package name you are interested in.
     """
-    queryset = Compose.objects.all()
+    queryset = Compose.objects.all().order_by('id')
     serializer_class = ComposeSerializer
     filter_class = ComposeFilter
     lookup_field = 'compose_id'
@@ -877,7 +877,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
     """
 
     serializer_class = OverrideRPMSerializer
-    queryset = OverrideRPM.objects.all()
+    queryset = OverrideRPM.objects.all().order_by('id')
     filter_class = OverrideRPMFilter
 
     def create(self, *args, **kwargs):

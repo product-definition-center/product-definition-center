@@ -31,7 +31,7 @@ from . import lib
 
 class ReleaseListView(SearchView):
     form_class = ReleaseSearchForm
-    queryset = models.Release.objects.select_related('release_type', 'product_version', 'base_product')
+    queryset = models.Release.objects.select_related('release_type', 'product_version', 'base_product').order_by('id')
     allow_empty = True
     template_name = "release_list.html"
     context_object_name = "release_list"
@@ -56,7 +56,7 @@ class ReleaseDetailView(DetailView):
 
 class BaseProductListView(SearchView):
     form_class = BaseProductSearchForm
-    queryset = models.BaseProduct.objects.all()
+    queryset = models.BaseProduct.objects.all().order_by('id')
     allow_empty = True
     template_name = "base_product_list.html"
     context_object_name = "base_product_list"
@@ -79,7 +79,7 @@ class BaseProductDetailView(DetailView):
 
 class ProductListView(SearchView):
     form_class = ProductSearchForm
-    queryset = models.Product.objects.prefetch_related('productversion_set__release_set')
+    queryset = models.Product.objects.prefetch_related('productversion_set__release_set').order_by('id')
     allow_empty = True
     template_name = "product_list.html"
     context_object_name = "product_list"
@@ -106,7 +106,7 @@ class ProductViewSet(ChangeSetCreateModelMixin,
     the form of `product_version_id` (both in requests and responses).
     """
 
-    queryset = models.Product.objects.prefetch_related('productversion_set')
+    queryset = models.Product.objects.prefetch_related('productversion_set').order_by('id')
     serializer_class = ProductSerializer
     lookup_field = 'short'
     filter_class = filters.ProductFilter
@@ -189,7 +189,7 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
     `short` name. Similarly releases are referenced by `release_id`. This
     applies to both requests and responses.
     """
-    queryset = models.ProductVersion.objects.select_related('product').prefetch_related('release_set')
+    queryset = models.ProductVersion.objects.select_related('product').prefetch_related('release_set').order_by('id')
     serializer_class = ProductVersionSerializer
     lookup_field = 'product_version_id'
     lookup_value_regex = '[^/]+'
@@ -289,7 +289,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
     """
     queryset = models.Release.objects \
                      .select_related('product_version', 'release_type', 'base_product') \
-                     .prefetch_related('compose_set')
+                     .prefetch_related('compose_set').order_by('id')
     serializer_class = ReleaseSerializer
     lookup_field = 'release_id'
     lookup_value_regex = '[^/]+'
@@ -456,7 +456,7 @@ class BaseProductViewSet(ChangeSetCreateModelMixin,
     """
     An API endpoint providing access to base products.
     """
-    queryset = models.BaseProduct.objects.all()
+    queryset = models.BaseProduct.objects.all().order_by('id')
     serializer_class = BaseProductSerializer
     lookup_field = 'base_product_id'
     lookup_value_regex = '[^/]+'
@@ -525,7 +525,7 @@ class BaseProductViewSet(ChangeSetCreateModelMixin,
 
 class ProductVersionListView(SearchView):
     form_class = ProductVersionSearchForm
-    queryset = models.ProductVersion.objects.prefetch_related('release_set')
+    queryset = models.ProductVersion.objects.prefetch_related('release_set').order_by('id')
     allow_empty = True
     template_name = "product_version_list.html"
     context_object_name = "product_version_list"
@@ -700,7 +700,7 @@ class ReleaseTypeViewSet(StrictQueryParamMixin,
     -d _data_ (a json string). or GUI plugins for
     browsers, such as ``RESTClient``, ``RESTConsole``.
     """
-    queryset = models.ReleaseType.objects.all()
+    queryset = models.ReleaseType.objects.all().order_by('id')
     serializer_class = ReleaseTypeSerializer
     filter_class = filters.ReleaseTypeFilter
 
@@ -748,7 +748,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
     `release_id/variant_uid` is used in URL for retrieving, updating or
     deleting a single variant as well as in bulk operations.
     """
-    queryset = models.Variant.objects.all()
+    queryset = models.Variant.objects.all().order_by('id')
     serializer_class = ReleaseVariantSerializer
     filter_class = filters.ReleaseVariantFilter
     lookup_fields = (('release__release_id', r'[^/]+'), ('variant_uid', r'[^/]+'))
@@ -884,7 +884,7 @@ class VariantTypeViewSet(StrictQueryParamMixin,
     API endpoint that allows variant_types to be viewed.
     """
     serializer_class = VariantTypeSerializer
-    queryset = models.VariantType.objects.all()
+    queryset = models.VariantType.objects.all().order_by('id')
 
     def list(self, request, *args, **kwargs):
         """

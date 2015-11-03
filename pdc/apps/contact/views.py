@@ -149,7 +149,7 @@ class PersonViewSet(viewsets.PDCModelViewSet):
         return super(PersonViewSet, self).destroy(request, *args, **kwargs)
 
     serializer_class = PersonSerializer
-    queryset = Person.objects.all()
+    queryset = Person.objects.all().order_by('id')
     filter_class = PersonFilterSet
 
 
@@ -317,7 +317,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
         return super(MaillistViewSet, self).destroy(request, *args, **kwargs)
 
     serializer_class = MaillistSerializer
-    queryset = Maillist.objects.all()
+    queryset = Maillist.objects.all().order_by('id')
     filter_class = MaillistFilterSet
 
 
@@ -489,7 +489,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
         return super(ContactRoleViewSet, self).destroy(request, *args, **kwargs)
 
     serializer_class = ContactRoleSerializer
-    queryset = ContactRole.objects.all()
+    queryset = ContactRole.objects.all().order_by('id')
     filter_class = ContactRoleFilterSet
     lookup_field = 'name'
     overwrite_lookup_field = False
@@ -747,11 +747,11 @@ class RoleContactViewSet(viewsets.PDCModelViewSet):
         return super(RoleContactViewSet, self).destroy(request, *args, **kwargs)
 
     serializer_class = RoleContactSerializer
-    queryset = RoleContact.objects.all()
+    queryset = RoleContact.objects.all().order_by('id')
     extra_query_params = ('contact_role', 'username', 'mail_name', 'email')
 
     def get_queryset(self):
-        queryset = RoleContact.objects.all()
+        queryset = RoleContact.objects.all().order_by('id')
 
         filters = self.request.query_params
         person_kwarg = {}

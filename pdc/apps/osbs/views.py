@@ -34,7 +34,7 @@ class OSBSViewSet(common_viewsets.StrictQueryParamMixin,
        is `null`, it indicates that the client should use its default value.
     """
 
-    queryset = models.OSBSRecord.objects.filter(component__type__has_osbs=True)
+    queryset = models.OSBSRecord.objects.filter(component__type__has_osbs=True).order_by('component__id')
     serializer_class = serializers.OSBSSerializer
     filter_class = filters.OSBSFilter
     lookup_fields = (('component__release__release_id', r'[^/]+'),

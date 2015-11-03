@@ -102,7 +102,7 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
 
     """
     model = GlobalComponent
-    queryset = GlobalComponent.objects.all()
+    queryset = GlobalComponent.objects.all().order_by('id')
     serializer_class = GlobalComponentSerializer
     filter_class = ComponentFilter
 
@@ -354,7 +354,7 @@ class GlobalComponentContactViewSet(HackedComponentContactMixin,
     """
 
     model = GlobalComponent
-    queryset = GlobalComponent.objects.all()
+    queryset = GlobalComponent.objects.all().order_by('id')
     serializer_class = HackedContactSerializer
     filter_class = RoleContactFilter
 
@@ -512,7 +512,7 @@ class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
     browsers, such as ``RESTClient``, ``RESTConsole``.
     """
     model = Label
-    queryset = Label.objects.all()
+    queryset = Label.objects.all().order_by('id')
     serializer_class = LabelSerializer
     filter_class = LabelFilter
 
@@ -634,7 +634,7 @@ class ReleaseComponentTypeViewSet(viewsets.StrictQueryParamMixin,
     API endpoint that allows release_component_types to be viewed.
     """
     serializer_class = ReleaseComponentTypeSerializer
-    queryset = ReleaseComponentType.objects.all()
+    queryset = ReleaseComponentType.objects.all().order_by('id')
 
     def list(self, request, *args, **kwargs):
         """
@@ -674,7 +674,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
 
     """
     model = ReleaseComponent
-    queryset = model.objects.all()
+    queryset = model.objects.all().order_by('id')
     serializer_class = ReleaseComponentSerializer
     filter_class = ReleaseComponentFilter
     extra_query_params = ('include_inactive_release', )
@@ -1107,7 +1107,7 @@ class ReleaseComponentContactViewSet(HackedComponentContactMixin,
     API]($URL:releasecomponentcontacts-list$) instead.
     """
     model = ReleaseComponent
-    queryset = ReleaseComponent.objects.all()
+    queryset = ReleaseComponent.objects.all().order_by('id')
     serializer_class = HackedContactSerializer
     gcc_serializer_class = HackedContactSerializer
     extra_query_params = ('contact_role', )
@@ -1351,7 +1351,7 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
 
     """
     model = BugzillaComponent
-    queryset = model.objects.all()
+    queryset = model.objects.all().order_by('id')
     serializer_class = BugzillaComponentSerializer
     filter_class = BugzillaComponentFilter
 
@@ -1592,7 +1592,7 @@ class GroupTypeViewSet(viewsets.PDCModelViewSet):
     API endpoint that allows component_group_types to be viewed or edited.
     """
     serializer_class = GroupTypeSerializer
-    queryset = GroupType.objects.all()
+    queryset = GroupType.objects.all().order_by('id')
     filter_class = GroupTypeFilter
 
     def create(self, request, *args, **kwargs):
@@ -1673,7 +1673,7 @@ class GroupViewSet(viewsets.PDCModelViewSet):
     API endpoint that allows component_groups to be viewed or edited.
     """
     serializer_class = GroupSerializer
-    queryset = ReleaseComponentGroup.objects.all()
+    queryset = ReleaseComponentGroup.objects.all().order_by('id')
     filter_class = GroupFilter
 
     def create(self, request, *args, **kwargs):
@@ -1780,7 +1780,7 @@ class ReleaseComponentRelationshipTypeViewSet(viewsets.StrictQueryParamMixin,
     API endpoint that allows release_component_relationship_types to be viewed.
     """
     serializer_class = RCRelationshipTypeSerializer
-    queryset = ReleaseComponentRelationshipType.objects.all()
+    queryset = ReleaseComponentRelationshipType.objects.all().order_by('id')
 
     def list(self, request, *args, **kwargs):
         """
@@ -1800,7 +1800,7 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
     API endpoint that allows release component relationship to be viewed or edited.
     """
     serializer_class = ReleaseComponentRelationshipSerializer
-    queryset = ReleaseComponentRelationship.objects.all()
+    queryset = ReleaseComponentRelationship.objects.all().order_by('id')
     filter_class = ReleaseComponentRelationshipFilter
 
     def create(self, request, *args, **kwargs):
@@ -1999,7 +1999,7 @@ class _BaseContactViewSet(viewsets.PDCModelViewSet):
 # TODO Remove Info from name once 0.2.0 gets out
 class GlobalComponentContactInfoViewSet(_BaseContactViewSet):
 
-    queryset = GlobalComponentContact.objects.all().select_related()
+    queryset = GlobalComponentContact.objects.all().select_related().order_by('id')
     serializer_class = GlobalComponentContactSerializer
     filter_class = GlobalComponentContactFilter
     docstring_macros = {
@@ -2011,7 +2011,7 @@ class GlobalComponentContactInfoViewSet(_BaseContactViewSet):
 # TODO Remove Info from name once 0.2.0 gets out
 class ReleaseComponentContactInfoViewSet(_BaseContactViewSet):
 
-    queryset = ReleaseComponentContact.objects.all().select_related()
+    queryset = ReleaseComponentContact.objects.all().select_related().order_by('id')
     serializer_class = ReleaseComponentContactSerializer
     filter_class = ReleaseComponentContactFilter
     docstring_macros = {
