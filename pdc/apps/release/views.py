@@ -543,10 +543,6 @@ def product_pages(request):
     return render(request, "product_pages.html", {})
 
 
-def release_pages(request):
-    return render(request, "release_pages.html", {})
-
-
 class ReleaseCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
     queryset = models.Release.objects.none()   # Required for permissions
 

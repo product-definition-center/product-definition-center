@@ -59,7 +59,6 @@ urlpatterns = [
     url(r"^product/$", ProductListView.as_view(), name="product/index"),
     url(r"^product/(?P<id>\d+)/$", ProductDetailView.as_view(), name="product/detail"),
     url(r'^product-index/$', release_views.product_pages, name='product_pages'),
-    url(r'^release-index/$', release_views.release_pages, name='release_pages'),
 
     url(r"^product-version/$",
         ProductVersionListView.as_view(),
