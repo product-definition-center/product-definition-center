@@ -203,9 +203,37 @@ LDAP_USERS_DN = "ou=users,dc=example,dc=com"
 LDAP_GROUPS_DN = "ou=groups,dc=example,dc=com"
 LDAP_CACHE_HOURS = 24
 
+
+#
 # CORS settings
+#
+
+# The requests can come from any origin (hostname). If this is undesirable, use
+# settings_local.py module, set this to False and either set
+# CORS_ORIGIN_WHITELIST to a tuple of hostnames that are allowed to contact the
+# API, or set CORS_ORIGIN_REGEX_WHITELIST, which again is a tuple of regular
+# expressions.
 CORS_ORIGIN_ALLOW_ALL = True
+
+# Only the REST API can be accessed. If settings local override REST_API_URL,
+# make sure to update this setting as well.
 CORS_URLS_REGEX = '^/%s.*$' % REST_API_URL
+
+# We want HTML/JS clients to be able to use Kerberos authentication.
+CORS_ALLOW_CREDENTIALS = True
+
+# Allow default headers from django-cors-headers package as well as
+# PDC-Change-Comment custom header.
+CORS_ALLOW_HEADERS = (
+    'x-requested-with',
+    'content-type',
+    'accept',
+    'origin',
+    'authorization',
+    'x-csrftoken',
+    'pdc-change-comment',
+)
+
 
 # mock kerberos login for debugging
 DEBUG_USER = None
