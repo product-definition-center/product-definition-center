@@ -4,9 +4,11 @@
 
 {% block content %}
 
-{% include "help_button.html" %}
 
-<h1 class="page-header">Override management for <strong>{{ package }}</strong> in <strong>{{ release_id }}</strong></h1>
+<h1 class="page-header">
+    Override management for <strong>{{ package }}</strong> in <strong>{{ release_id }}</strong>
+    {% include "help_button.html" %}
+</h1>
 
 <p>Based on <strong>{{ compose.compose_id }}</strong></p>
 
@@ -173,7 +175,7 @@ There are errors in the form.
 {% endif %}
 
 
-{% helpmodal %}
+{% helppopover %}
     <table class="table">
       <thead>
         <tr>
@@ -204,7 +206,7 @@ There are errors in the form.
     non-existing compose RPM can only exist if they have
     <code>do_not_delete</code> set to to <code>True</code>. Such overrides are
     listed below the form.</p>
-{% endhelpmodal %}
+{% endhelppopover %}
 
 
 {% endblock %}

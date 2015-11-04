@@ -3,9 +3,11 @@
 {% load pdctags %}
 
 {% block content %}
-{% include "help_button.html" %}
 
-<h2 class="page-header">{% trans "Composes" %}</h2>
+<h2 class="page-header">
+    {% trans "Composes" %}
+    {% include "help_button.html" %}
+</h2>
 
 <form method="GET" style="float: left;">
   {% csrf_token %}
@@ -17,7 +19,7 @@
 {% include "compose_list_include.html" %}
 {% include "pagination.html" %}
 
-{% helpmodal %}
+{% helppopover %}
     <p>A <em>compose</em> is a snapshot of a
     <a href="{% url "release/index" %}">release</a> with unique identifier
     derived from release identifier and date.</p>
@@ -26,6 +28,6 @@
     metadata like <code>.treeinfo</code>, repodata etc.</p>
 
     <p>Like a release, a compose is divided into <em>variants</em>.</p>
-{% endhelpmodal %}
+{% endhelppopover %}
 
 {% endblock %}

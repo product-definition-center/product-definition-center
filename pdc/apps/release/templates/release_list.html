@@ -3,9 +3,11 @@
 {% load pdctags %}
 
 {% block content %}
-{% include "help_button.html" %}
 
-<h2 class="page-header">{% trans "Releases" %}</h2>
+<h2 class="page-header">
+    {% trans "Releases" %}
+    {% include "help_button.html" %}
+</h2>
 
 <form method="GET" style="float: left;">
   {% csrf_token %}
@@ -17,7 +19,7 @@
 {% include "release_list_include.html" %}
 {% include "pagination.html" %}
 
-{% helpmodal %}
+{% helppopover %}
     <p>A <em>release</em> is a collection of software with a unique identity
     and specific life cycle.</p>
 
@@ -28,6 +30,6 @@
     release content targetted at a specific user, for example <em>server</em>
     or <em>workstation</em>. Each variant can be built for multiple
     architectures.</p>
-{% endhelpmodal %}
+{% endhelppopover %}
 
 {% endblock %}

@@ -3,9 +3,11 @@
 {% load pdctags %}
 
 {% block content %}
-{% include "help_button.html" %}
 
-<h2 class="page-header">{% trans "Product Versions" %}</h2>
+<h2 class="page-header">
+    {% trans "Product Versions" %}
+    {% include "help_button.html" %}
+</h2>
 
 <form method="GET" style="float: left;">
   {% csrf_token %}
@@ -17,13 +19,13 @@
 {% include "product_version_list_include.html" %}
 {% include "pagination.html" %}
 
-{% helpmodal %}
+{% helppopover %}
     <p>In PDC, a <em>product version</em> is just a group of
     <a href="{% url "release/index" %}">releases</a>
     with the same name and major version.</p>
 
     <p>Product versions are only used for grouping and organizing releases.
     They do not have any metadata on their own.</p>
-{% endhelpmodal %}
+{% endhelppopover %}
 
 {% endblock %}

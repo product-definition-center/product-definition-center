@@ -67,3 +67,11 @@ ul.pagination.pull-right {
 .help-button {
     margin-top: 1em;
 }
+/* Increase width of popovers and add some shadow */
+.popover {
+    max-width: 30%;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+}
+.popover-content {
+    font-size: 12px;
+}

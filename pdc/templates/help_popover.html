@@ -1,0 +1,23 @@
+<div class="hidden help-content">{{ content }}</div>
+
+<script type="text/javascript">
+var mouseIn = false;
+const timeout = 500;
+$("body").on('mouseenter', ".popover", function () { mouseIn = true });
+$("body").on('mouseleave', ".popover", function () { mouseIn = false });
+$(".help-trigger").popover({
+    content: function () { return $(".help-content").html(); },
+    html: true,
+    trigger: 'hover',
+    delay: {hide: timeout},
+    viewport: {selector: "body", padding: 100},
+}).on('hide.bs.popover', function () {
+    if (mouseIn) {
+        $('.popover').on('mouseleave', function() {
+                setTimeout(function () {
+                        $('.help-trigger').popover('hide');
+                        }, timeout)});
+        return false;
+    }
+});
+</script>

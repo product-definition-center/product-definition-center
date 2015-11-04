@@ -3,9 +3,11 @@
 {% load pdctags %}
 
 {% block content %}
-{% include "help_button.html" %}
 
-<h2 class="page-header">{% trans "Products" %}</h2>
+<h2 class="page-header">
+    {% trans "Products" %}
+    {% include "help_button.html" %}
+</h2>
 
 <form method="GET" style="float: left;">
   {% csrf_token %}
@@ -17,13 +19,13 @@
 {% include "product_list_include.html" %}
 {% include "pagination.html" %}
 
-{% helpmodal %}
+{% helppopover %}
     <p>In PDC, a <em>product</em> is just a group of
     <a href="{% url "product_version/index" %}">product versions</a> with the
     same name.</p>
 
     <p>Products are only used for grouping and organizing releases. They do not
     have any metadata on their own.</p>
-{% endhelpmodal %}
+{% endhelppopover %}
 
 {% endblock %}
