@@ -15,7 +15,6 @@ from pdc.apps.release.views import ProductListView, ProductDetailView
 from pdc.apps.release.views import ProductVersionListView, ProductVersionDetailView
 from pdc.apps.compose.views import ComposeListView, ComposeDetailView
 from pdc.apps.compose.views import ComposeRPMListView, RPMOverrideFormView, ComposeImageListView
-from pdc.apps.common.views import ArchListView, SigKeyListView
 from pdc.apps.changeset.views import ChangesetListView, ChangesetDetailView
 from pdc.apps.common import views as common_views
 from pdc.apps.auth import views as auth_views
@@ -66,9 +65,6 @@ urlpatterns = [
     url(r"^product-version/(?P<id>\d+)/$",
         ProductVersionDetailView.as_view(),
         name="product_version/detail"),
-
-    url(r"^arch$", ArchListView.as_view(), name="arch/index"),
-    url(r"^sigkey$", SigKeyListView.as_view(), name="sigkey/index"),
 
     url(r"^%s%s/" % (settings.REST_API_URL, settings.REST_API_VERSION), include(router.urls)),
 

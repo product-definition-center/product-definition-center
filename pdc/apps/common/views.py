@@ -9,8 +9,6 @@ from django.shortcuts import render
 from django.views import defaults
 from django.http import HttpResponse
 
-from kobo.django.views.generic import ListView
-
 from rest_framework import viewsets, mixins, status
 
 from .models import Arch, SigKey, Label
@@ -18,22 +16,6 @@ from . import viewsets as pdc_viewsets
 from .serializers import LabelSerializer, ArchSerializer, SigKeySerializer
 from .filters import LabelFilter, SigKeyFilter
 from . import handlers
-
-
-class ArchListView(ListView):
-    model = Arch
-    queryset = Arch.objects.all().order_by('name')
-    allow_empty = True
-    template_name = "arch_list.html"
-    context_object_name = "arch_list"
-
-
-class SigKeyListView(ListView):
-    model = SigKey
-    queryset = SigKey.objects.all().order_by('id')
-    allow_empty = True
-    template_name = "sigkey_list.html"
-    context_object_name = "sigkey_list"
 
 
 class LabelViewSet(pdc_viewsets.PDCModelViewSet):

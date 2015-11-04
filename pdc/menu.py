@@ -17,8 +17,6 @@ menu = (
 
     MenuItem("Releases", "release/index"),
     MenuItem("Composes", "compose/index"),
-    MenuItem("Arches", "arch/index"),
-    MenuItem("SigKeys", "sigkey/index"),
     MenuItem("API", "api-root"),
 )
 
