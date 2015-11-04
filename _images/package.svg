@@ -283,13 +283,13 @@
 <text text-anchor="start" x="624" y="-274.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_package_models_Image&#45;&gt;pdc_apps_package_models_ImageFormat -->
-<g id="edge7" class="edge"><title>pdc_apps_package_models_Image&#45;&gt;pdc_apps_package_models_ImageFormat</title>
+<g id="edge5" class="edge"><title>pdc_apps_package_models_Image&#45;&gt;pdc_apps_package_models_ImageFormat</title>
 <path fill="none" stroke="black" d="M531.5,-258.85C517.99,-227.52 504.54,-196.32 495.6,-175.59"/>
 <ellipse fill="black" stroke="black" cx="533.165" cy="-262.707" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="567" y="-240.8" font-family="Helvetica,sans-Serif" font-size="8.00">image_format (image)</text>
 </g>
 <!-- pdc_apps_package_models_Image&#45;&gt;pdc_apps_package_models_ImageType -->
-<g id="edge5" class="edge"><title>pdc_apps_package_models_Image&#45;&gt;pdc_apps_package_models_ImageType</title>
+<g id="edge7" class="edge"><title>pdc_apps_package_models_Image&#45;&gt;pdc_apps_package_models_ImageType</title>
 <path fill="none" stroke="black" d="M613.8,-258.56C614.88,-255 615.95,-251.47 617,-248 624.38,-223.5 632.45,-195.39 638.02,-175.77"/>
 <ellipse fill="black" stroke="black" cx="612.571" cy="-262.575" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="656" y="-240.8" font-family="Helvetica,sans-Serif" font-size="8.00">image_type (image)</text>
