@@ -14,10 +14,12 @@ class PartnerFilterSet(django_filters.FilterSet):
     enabled = filters.CaseInsensitiveBooleanFilter()
     binary = filters.CaseInsensitiveBooleanFilter()
     source = filters.CaseInsensitiveBooleanFilter()
+    name = django_filters.CharFilter(lookup_type='icontains')
+    type = django_filters.CharFilter(name='type__name')
 
     class Meta:
         model = models.Partner
-        fields = ('short', 'enabled', 'binary', 'source', 'ftp_dir', 'rsync_dir')
+        fields = ('short', 'name', 'type', 'enabled', 'binary', 'source', 'ftp_dir', 'rsync_dir')
 
 
 class PartnerMappingFilterSet(django_filters.FilterSet):

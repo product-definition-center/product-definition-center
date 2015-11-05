@@ -140,6 +140,16 @@ class PartnerAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 0)
 
+    def test_filter_by_name(self):
+        response = self.client.get(reverse('partner-list'), {'name': 'acme'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_filter_by_type(self):
+        response = self.client.get(reverse('partner-list'), {'type': 'partner'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 0)
+
 
 class PartnerMappingAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
