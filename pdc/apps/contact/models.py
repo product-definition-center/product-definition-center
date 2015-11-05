@@ -29,6 +29,9 @@ class ContactRole(models.Model):
             order_by('-contact_count')[0]['contact_count']
 
     def clean(self):
+        # don't need to do such check if count_limit set to UNLIMITED
+        if self.count_limit == ContactRole.UNLIMITED:
+            return
         if self.pk:
             role = ContactRole.objects.get(pk=self.pk)
             old_limit = role.count_limit
