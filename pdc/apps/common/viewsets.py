@@ -146,6 +146,8 @@ class StrictQueryParamMixin(object):
     `query_params` class attribute on the serializer. Note that this should
     only include the parameters that are passed via URL query string, not
     request body fields.
+
+    It also provides some helper functions for examining request.
     """
     def initial(self, request, *args, **kwargs):
         super(StrictQueryParamMixin, self).initial(request, *args, **kwargs)
@@ -161,6 +163,14 @@ class StrictQueryParamMixin(object):
         extra_keys = set(request.query_params.keys()) - allowed_keys
         if extra_keys:
             raise FieldError('Unknown query params: %s.' % ', '.join(sorted(extra_keys)))
+
+    def is_filtered_list(self):
+        """Return True if the current action is list and pagination is enabled.
+
+        This may be handy for adding prefetching of related models from
+        database.
+        """
+        return self.action == 'list' and self.paginator.get_page_size(self.request)
 
 
 class PDCModelViewSet(StrictQueryParamMixin,

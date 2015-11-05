@@ -758,7 +758,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
         # Preloading with a separate request could be actually be slow if there
         # is no filter, so it's done only on list request with paging enabled.
         queryset = self.queryset.select_related('variant_type', 'release')
-        if self.action == 'list' and self.paginator.get_page_size(self.request):
+        if self.is_filtered_list():
             queryset = queryset.prefetch_related('variantarch_set__arch')
         return queryset
 
