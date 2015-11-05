@@ -107,3 +107,6 @@ class PDCRouter(bulk_operations.BulkRouter):
                 )
 
         return APIRoot.as_view()
+
+
+router = PDCRouter()

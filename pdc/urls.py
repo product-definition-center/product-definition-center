@@ -7,7 +7,8 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 
-from .routers import router
+from pdc.apps.utils.SortedRouter import router
+from django.utils.module_loading import autodiscover_modules
 
 from pdc.apps.release.views import ReleaseListView, ReleaseDetailView
 from pdc.apps.release.views import BaseProductListView, BaseProductDetailView
@@ -19,6 +20,9 @@ from pdc.apps.changeset.views import ChangesetListView, ChangesetDetailView
 from pdc.apps.common import views as common_views
 from pdc.apps.auth import views as auth_views
 from pdc.apps.release import views as release_views
+
+
+autodiscover_modules('routers')
 
 urlpatterns = [
     url(r'^$', common_views.home, name='home'),
