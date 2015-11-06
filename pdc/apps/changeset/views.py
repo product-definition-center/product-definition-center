@@ -33,16 +33,30 @@ class ChangesetDetailView(DetailView):
 class ChangesetViewSet(StrictQueryParamMixin,
                        viewsets.ReadOnlyModelViewSet):
     """
-    ##Overview##
+    PDC tracks every modification that was made through any of the API
+    end-points. This provides an auditable trail of who changed what and when.
+
+    Each request to the API creates one `Changeset`, which contains one or more
+    `Change`s.
+
+    Each `ChangeSet` carries metadata about author and date. Optionally, there
+    can also be a comment, which is an arbitrary string. It is extracted from
+    the `PDC-Change-Comment` HTTP header in the request.
+
+    A `Change` has information about which database model was changed, its
+    primary key and old and new value (provided as a JSON). If both the values
+    are provided, the `Change` represents an update in some of the fields. If
+    only new value is provided, the `Change` represents creation of new entity.
+    If only old value is non-null, an entity was deleted.
 
     This page shows the usage of the **Changeset API**, please see the
-    following for more details.
+    following for more details. The access to this data is read-only. It is
+    possible to either request all changesets satisfying given criteria, or
+    view detail of a particular changeset.
     """
 
     def list(self, request, *args, **kwargs):
         """
-        ### LIST
-
         __Method__:
         GET
 
@@ -138,8 +152,6 @@ class ChangesetViewSet(StrictQueryParamMixin,
 
     def retrieve(self, request, *args, **kwargs):
         """
-        ### RETRIEVE
-
         __Method__:
         GET
 
