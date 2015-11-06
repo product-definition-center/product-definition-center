@@ -91,19 +91,22 @@ get if you got all the pages and concatenated them.</dd>
 </dl>
 <p>You can control the details of the paginating by a couple query parameters. The
 <code class="docutils literal"><span class="pre">page</span></code> parameter specifies which page you want. With <code class="docutils literal"><span class="pre">page_size</span></code> you can
-set up different size of a page. There is a special value of <code class="docutils literal"><span class="pre">-1</span></code> for the
-page size, which would turn pagination off and give all the results at once. In
-this case, the response is just the result array without any count or URLS.</p>
+set up different size of a page. The maximum allowed number of results per page
+is 100. Specifying anything higher has the same result as specifying 100. There
+is a special value of <code class="docutils literal"><span class="pre">-1</span></code> for the page size, which would turn pagination off
+and give all the results at once. In this case, the response is just the result
+array without any count or URLS.</p>
 <p>Please be careful when turning the pagination off. If your query could return
-hundreds or thousands of results, consider getting the page by page instead.</p>
+hundreds or thousands of results, consider getting the data page by page
+instead.</p>
 </div>
 <div class="section" id="change-monitoring">
 <h2>1.3. Change monitoring<a class="headerlink" href="#change-monitoring" title="Permalink to this headline">¶</a></h2>
-<p>Whenever a change is performed through the API, a log is create so that it is
+<p>Whenever a change is performed through the API, a log is created so that it is
 possible to find out what, when, why and by who was changed.</p>
 <p>The changes can be viewed from the API under the <code class="docutils literal"><span class="pre">/rest_api/v1/changesets/</span></code>
-end-point. There is also a view on the web pages under <code class="docutils literal"><span class="pre">/changes/</span></code>. Currently
-there is no link to it.</p>
+end-point. There is also a view on the web pages. A logged-in user can access
+it from the menu in top right corner.</p>
 <p>To store the reason for the change, add HTTP header <code class="docutils literal"><span class="pre">PDC-Change-Comment</span></code>,
 whose value is an arbitrary string that will be stored with the change.</p>
 </div>

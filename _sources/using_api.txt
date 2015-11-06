@@ -55,23 +55,26 @@ The structure of paginated reply is JSON object with following keys:
 
 You can control the details of the paginating by a couple query parameters. The
 ``page`` parameter specifies which page you want. With ``page_size`` you can
-set up different size of a page. There is a special value of ``-1`` for the
-page size, which would turn pagination off and give all the results at once. In
-this case, the response is just the result array without any count or URLS.
+set up different size of a page. The maximum allowed number of results per page
+is 100. Specifying anything higher has the same result as specifying 100. There
+is a special value of ``-1`` for the page size, which would turn pagination off
+and give all the results at once. In this case, the response is just the result
+array without any count or URLS.
 
 Please be careful when turning the pagination off. If your query could return
-hundreds or thousands of results, consider getting the page by page instead.
+hundreds or thousands of results, consider getting the data page by page
+instead.
 
 
 Change monitoring
 -----------------
 
-Whenever a change is performed through the API, a log is create so that it is
+Whenever a change is performed through the API, a log is created so that it is
 possible to find out what, when, why and by who was changed.
 
 The changes can be viewed from the API under the ``/rest_api/v1/changesets/``
-end-point. There is also a view on the web pages under ``/changes/``. Currently
-there is no link to it.
+end-point. There is also a view on the web pages. A logged-in user can access
+it from the menu in top right corner.
 
 To store the reason for the change, add HTTP header ``PDC-Change-Comment``,
 whose value is an arbitrary string that will be stored with the change.
