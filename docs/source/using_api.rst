@@ -55,12 +55,15 @@ The structure of paginated reply is JSON object with following keys:
 
 You can control the details of the paginating by a couple query parameters. The
 ``page`` parameter specifies which page you want. With ``page_size`` you can
-set up different size of a page. There is a special value of ``-1`` for the
-page size, which would turn pagination off and give all the results at once. In
-this case, the response is just the result array without any count or URLS.
+set up different size of a page. The maximum allowed number of results per page
+is 100. Specifying anything higher has the same result as specifying 100. There
+is a special value of ``-1`` for the page size, which would turn pagination off
+and give all the results at once. In this case, the response is just the result
+array without any count or URLS.
 
 Please be careful when turning the pagination off. If your query could return
-hundreds or thousands of results, consider getting the page by page instead.
+hundreds or thousands of results, consider getting the data page by page
+instead.
 
 
 Change monitoring
