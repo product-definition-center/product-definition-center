@@ -526,5 +526,5 @@ class CurrentUserViewSet(mixins.ListModelMixin,
             'is_superuser': user.is_superuser,
             'is_staff': user.is_staff,
             'groups': [g.name for g in user.groups.all()],
-            'permissions': list(user.get_all_permissions()),
+            'permissions': sorted(list(user.get_all_permissions())),
         })

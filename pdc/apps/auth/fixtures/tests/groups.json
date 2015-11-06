@@ -26,5 +26,19 @@
             ]
         ]
     }
+},
+{
+    "pk": 3,
+    "model": "auth.group",
+    "fields": {
+        "name": "group_delete_group",
+        "permissions": [
+            [
+                "delete_group",
+                "auth",
+                "group"
+            ]
+        ]
+    }
 }
 ]

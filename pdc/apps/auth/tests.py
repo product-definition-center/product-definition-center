@@ -126,7 +126,7 @@ class GroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('group-list')
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get('count'), 2)
+        self.assertEqual(response.data.get('count'), 3)
 
     def test_query_with_name(self):
         url = reverse('group-list')
@@ -138,13 +138,13 @@ class GroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('group-list')
         response = self.client.get(url + '?permission_model=group', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get('count'), 2)
+        self.assertEqual(response.data.get('count'), 3)
 
     def test_query_with_permission_app_label(self):
         url = reverse('group-list')
         response = self.client.get(url + '?permission_app_label=auth', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get('count'), 2)
+        self.assertEqual(response.data.get('count'), 3)
 
     def test_query_with_permission_codename(self):
         url = reverse('group-list')
@@ -280,3 +280,15 @@ class CurrentUserTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertItemsEqual(response.data['groups'], ['group_add_group'])
         self.assertItemsEqual(response.data['permissions'], ['auth.add_group'])
+
+    def test_permissions_sorted(self):
+        change_group = Group.objects.get(pk=2).permissions.first()
+        add_group = Group.objects.get(pk=1).permissions.first()
+        delete_group = Group.objects.get(pk=3).permissions.first()
+        self.user.user_permissions.add(delete_group)
+        self.user.user_permissions.add(change_group)
+        self.user.user_permissions.add(add_group)
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(reverse('currentuser-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['permissions'], sorted(response.data['permissions']))
