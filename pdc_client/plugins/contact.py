@@ -10,7 +10,8 @@ import sys
 from pdc_client import get_paged
 from pdc_client.plugin_helpers import (PDCClientPlugin,
                                        extract_arguments,
-                                       add_create_update_args)
+                                       add_create_update_args,
+                                       add_mutually_exclusive_args)
 
 
 def print_component_contacts(component_contacts):
@@ -66,10 +67,12 @@ class GlobalComponentContactPlugin(PDCClientPlugin):
                                {'component': {},
                                 'role': {},
                                 'contact__email': {'arg': 'email'}},
-                               {'contact__username': {'arg': 'username'},
-                                'contact__mail_name': {'arg': 'mail-name'},
-                                },
+                               {},
                                required)
+        add_mutually_exclusive_args(parser,
+                                    {'contact__username': {'arg': 'username'},
+                                     'contact__mail_name': {'arg': 'mail-name'}},
+                                    required)
 
     def list_global_component_contacts(self, args):
         filters = extract_arguments(args, prefix='filter_')
@@ -169,10 +172,12 @@ class ReleaseComponentContactPlugin(PDCClientPlugin):
                                 'component__name': {'arg': 'component'},
                                 'role': {},
                                 'contact__email': {'arg': 'email'}},
-                               {'contact__username': {'arg': 'username'},
-                                'contact__mail_name': {'arg': 'mail-name'},
-                                },
+                               {},
                                required)
+        add_mutually_exclusive_args(parser,
+                                    {'contact__username': {'arg': 'username'},
+                                     'contact__mail_name': {'arg': 'mail-name'}},
+                                    required)
 
     def list_release_component_contacts(self, args):
         filters = extract_arguments(args, prefix='filter_')

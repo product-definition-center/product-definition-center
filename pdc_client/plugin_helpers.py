@@ -96,6 +96,28 @@ def add_parser_arguments(parser, args, group=None, prefix=DATA_PREFIX):
         parser.add_argument('--' + arg_name, dest=prefix + arg, **kwargs)
 
 
+def add_mutually_exclusive_args(parser, args, required=False, prefix=DATA_PREFIX):
+    """
+    Helper method that populates mutually exclusive arguments. The argument values can
+    be later retrieved with `extract_arguments` method.
+
+    The `args` argument to this method should be a dict with strings as
+    keys and dicts as values. The keys will be used as keys in returned
+    data. Their values will be passed as kwargs to `parser.add_argument`.
+    There is special value `arg` that will be used as argument name if
+    present, otherwise a name will be generated based on the key.
+
+    ``required`` will be passed to `parser.add_mutually_exclusive_group` to
+    to indicate that at least one of the mutually exclusive arguments is required.
+    """
+    parser = parser.add_mutually_exclusive_group(required=required)
+    for arg, kwargs in args.iteritems():
+        arg_name = kwargs.pop('arg', arg.replace('_', '-'))
+        if 'metavar' not in kwargs:
+            kwargs['metavar'] = arg.upper()
+        parser.add_argument('--' + arg_name, dest=prefix + arg, **kwargs)
+
+
 def add_create_update_args(parser, required_args, optional_args, create=False):
     """Wrapper around ``add_parser_arguments``.
 
