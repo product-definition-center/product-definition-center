@@ -13,6 +13,15 @@ from pdc_client.plugin_helpers import (PDCClientPlugin,
                                        add_create_update_args)
 
 
+def update_component_contacts(component, component_contacts):
+    contacts = []
+    if component_contacts:
+        for contact in component_contacts:
+            contact.pop('component')
+            contacts.append(contact)
+        component['contacts'] = contacts
+
+
 class GlobalComponentPlugin(PDCClientPlugin):
     def register(self):
         self.set_command('global-component')
@@ -68,6 +77,10 @@ class GlobalComponentPlugin(PDCClientPlugin):
         global_component_id = global_component_id or args.global_component_id
         global_component = self.client['global-components'][global_component_id]._()
 
+        component_contacts = get_paged(self.client['global-component-contacts']._,
+                                       component=global_component['name'])
+        update_component_contacts(global_component, component_contacts)
+
         if args.json:
             print json.dumps(global_component)
             return
@@ -90,7 +103,7 @@ class GlobalComponentPlugin(PDCClientPlugin):
         if global_component['contacts']:
             print 'Contacts:'
             for global_component_contact in global_component['contacts']:
-                print ''.join(['\tRole:\t', global_component_contact['contact_role']])
+                print ''.join(['\tRole:\t', global_component_contact['role']])
                 for name in ('username', 'mail_name'):
                     if name in global_component_contact['contact']:
                         print ''.join(['\t\tName:\t', global_component_contact['contact'][name]])
@@ -185,12 +198,16 @@ class ReleaseComponentPlugin(PDCClientPlugin):
                 include_inactive_release=args.include_inactive_release)
         else:
             release_component = self.client['release-components'][release_component_id]._()
+        release_id = self._get_release_id(release_component)
+
+        component_contacts = get_paged(self.client['release-component-contacts']._,
+                                       component=release_component['name'],
+                                       release=release_id)
+        update_component_contacts(release_component, component_contacts)
 
         if args.json:
             print json.dumps(release_component)
             return
-
-        release_id = self._get_release_id(release_component)
 
         fmt = '{:20} {}'
         print fmt.format('ID', release_component['id'])
@@ -210,7 +227,7 @@ class ReleaseComponentPlugin(PDCClientPlugin):
         if release_component['contacts']:
             print 'Contacts:'
             for release_component_contact in release_component['contacts']:
-                print ''.join(['\tRole:\t', release_component_contact['contact_role']])
+                print ''.join(['\tRole:\t', release_component_contact['role']])
                 for name in ('username', 'mail_name'):
                     if name in release_component_contact['contact']:
                         print ''.join(['\t\tName:\t', release_component_contact['contact'][name]])

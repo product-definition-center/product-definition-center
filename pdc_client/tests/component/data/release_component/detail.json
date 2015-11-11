@@ -11,24 +11,7 @@
     "dist_git_web_url": "http://pkgs.example.com/test_release_component",
     "active": true,
     "brew_package": null,
-    "contacts": [
-        {
-            "url": "http://example.com/release-components/1/contacts/1/",
-            "contact_role": "test_role_a",
-            "contact": {
-                "mail_name": "Test Maillist",
-                "email": "test_mail@example.com"
-            }
-        },
-        {
-            "url": "http://example.com/release-components/1/contacts/2/",
-            "contact_role": "test_role_b",
-            "contact": {
-                "username": "Test User",
-                "email": "test_user@example.com"
-            }
-        }
-    ],
+    "contacts": [],
     "srpm": null,
     "type": "rpm"
 }

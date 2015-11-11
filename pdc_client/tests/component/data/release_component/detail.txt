@@ -10,9 +10,6 @@ Activity             active
 Type                 rpm
 Srpm Name            null
 Contacts:
-	Role:	test_role_a
-		Name:	Test Maillist
-		Email:	test_mail@example.com
-	Role:	test_role_b
-		Name:	Test User
-		Email:	test_user@example.com
+	Role:	pm
+		Name:	maillist1
+		Email:	maillist1@test.com

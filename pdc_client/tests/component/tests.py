@@ -71,21 +71,84 @@ class GlobalComponentTestCase(CLITestCase):
 
     def test_detail(self, api):
         self._setup_detail(api)
+        api.add_endpoint('global-component-contacts',
+                         'GET',
+                         {'count': 1,
+                          'next': None,
+                          'previous': None,
+                          'results': [
+                              {
+                                  'id': 1,
+                                  'component': 'Test Global Component',
+                                  'role': 'pm',
+                                  'contact': {
+                                      'id': 1,
+                                      'mail_name': 'maillist1',
+                                      'email': 'maillist1@test.com'
+                                  }
+                              }
+                          ]})
         with self.expect_output('global_component/detail.txt'):
             self.runner.run(['global-component', 'info', '1'])
         self.assertDictEqual(api.calls,
-                             {'global-components/1': [('GET', {})]})
+                             {'global-components/1': [('GET', {})],
+                              'global-component-contacts':
+                                  [('GET',
+                                    {'component': 'Test Global Component',
+                                     'page': 1})
+                                   ]
+                              })
 
     def test_update(self, api):
         self._setup_detail(api)
+        api.add_endpoint('global-component-contacts',
+                         'GET',
+                         {'count': 1,
+                          'next': None,
+                          'previous': None,
+                          'results': [
+                              {
+                                  'id': 1,
+                                  'component': 'Test Global Component',
+                                  'role': 'pm',
+                                  'contact': {
+                                      'id': 1,
+                                      'mail_name': 'maillist1',
+                                      'email': 'maillist1@test.com'
+                                  }
+                              }
+                          ]})
         api.add_endpoint('global-components/1', 'PATCH', {})
         with self.expect_output('global_component/detail.txt'):
             self.runner.run(['global-component', 'update', '1', '--name', 'new test name'])
         self.assertDictEqual(api.calls,
                              {'global-components/1': [('PATCH', {'name': 'new test name'}),
-                                                      ('GET', {})]})
+                                                      ('GET', {})],
+                              'global-component-contacts':
+                                  [('GET',
+                                    {'component': 'Test Global Component',
+                                     'page': 1})
+                                   ]
+                              })
 
     def test_create(self, api):
+        api.add_endpoint('global-component-contacts',
+                         'GET',
+                         {'count': 1,
+                          'next': None,
+                          'previous': None,
+                          'results': [
+                              {
+                                  'id': 1,
+                                  'component': 'Test Global Component',
+                                  'role': 'pm',
+                                  'contact': {
+                                      'id': 1,
+                                      'mail_name': 'maillist1',
+                                      'email': 'maillist1@test.com'
+                                  }
+                              }
+                          ]})
         api.add_endpoint('global-components', 'POST', self.detail)
         self._setup_detail(api)
         with self.expect_output('global_component/detail.txt'):
@@ -95,14 +158,30 @@ class GlobalComponentTestCase(CLITestCase):
         self.assertDictEqual(api.calls,
                              {'global-components': [('POST', {'name': 'Test Global Component',
                                                      'dist_git_path': 'test_global_component'})],
-                              'global-components/1': [('GET', {})]})
+                              'global-components/1': [('GET', {})],
+                              'global-component-contacts':
+                                  [('GET',
+                                    {'component': 'Test Global Component',
+                                     'page': 1})
+                                   ]
+                              })
 
     def test_info_json(self, api):
+        api.add_endpoint('global-component-contacts', 'GET', {'count': 0,
+                                                              'next': None,
+                                                              'previous': None,
+                                                              'results': []})
         self._setup_detail(api)
         with self.expect_output('global_component/detail.json', parse_json=True):
             self.runner.run(['--json', 'global-component', 'info', '1'])
         self.assertDictEqual(api.calls,
-                             {'global-components/1': [('GET', {})]})
+                             {'global-components/1': [('GET', {})],
+                              'global-component-contacts':
+                                  [('GET',
+                                    {'component': 'Test Global Component',
+                                     'page': 1})
+                                   ]
+                              })
 
     def test_list_json(self, api):
         api.add_endpoint('global-components', 'GET', [self.detail])
@@ -173,22 +252,99 @@ class ReleaseComponentTestCase(CLITestCase):
                           ('GET', {'page': 2, 'release': 'Test Release'})])
 
     def test_detail(self, api):
+        api.add_endpoint('release-component-contacts',
+                         'GET',
+                         {'count': 1,
+                          'next': None,
+                          'previous': None,
+                          'results': [
+                              {
+                                  'id': 1,
+                                  'component': {
+                                      'release': 'test_release',
+                                      'id': 1,
+                                      'name': 'Test Release Component'
+                                  },
+                                  'role': 'pm',
+                                  'contact': {
+                                      'id': 1,
+                                      'mail_name': 'maillist1',
+                                      'email': 'maillist1@test.com'
+                                  }
+                              }
+                          ]})
         self._setup_detail(api)
         with self.expect_output('release_component/detail.txt'):
             self.runner.run(['release-component', 'info', '1'])
         self.assertDictEqual(api.calls,
-                             {'release-components/1': [('GET', {})]})
+                             {'release-components/1': [('GET', {})],
+                              'release-component-contacts':
+                                  [('GET',
+                                    {'component': 'Test Release Component',
+                                     'page': 1,
+                                     'release': 'test_release'})
+                                   ]
+                              })
 
     def test_update(self, api):
+        api.add_endpoint('release-component-contacts',
+                         'GET',
+                         {'count': 1,
+                          'next': None,
+                          'previous': None,
+                          'results': [
+                              {
+                                  'id': 1,
+                                  'component': {
+                                      'release': 'test_release',
+                                      'id': 1,
+                                      'name': 'Test Release Component'
+                                  },
+                                  'role': 'pm',
+                                  'contact': {
+                                      'id': 1,
+                                      'mail_name': 'maillist1',
+                                      'email': 'maillist1@test.com'
+                                  }
+                              }
+                          ]})
         self._setup_detail(api)
         api.add_endpoint('release-components/1', 'PATCH', {})
         with self.expect_output('release_component/detail.txt'):
             self.runner.run(['release-component', 'update', '1', '--name', 'new test name'])
         self.assertDictEqual(api.calls,
                              {'release-components/1': [('PATCH', {'name': 'new test name'}),
-                                                       ('GET', {})]})
+                                                       ('GET', {})],
+                              'release-component-contacts':
+                                  [('GET',
+                                    {'component': 'Test Release Component',
+                                     'page': 1,
+                                     'release': 'test_release'})
+                                   ]
+                              })
 
     def test_create(self, api):
+        api.add_endpoint('release-component-contacts',
+                         'GET',
+                         {'count': 1,
+                          'next': None,
+                          'previous': None,
+                          'results': [
+                              {
+                                  'id': 1,
+                                  'component': {
+                                      'release': 'test_release',
+                                      'id': 1,
+                                      'name': 'Test Release Component'
+                                  },
+                                  'role': 'pm',
+                                  'contact': {
+                                      'id': 1,
+                                      'mail_name': 'maillist1',
+                                      'email': 'maillist1@test.com'
+                                  }
+                              }
+                          ]})
         api.add_endpoint('release-components', 'POST', self.detail)
         self._setup_detail(api)
         with self.expect_output('release_component/detail.txt'):
@@ -201,14 +357,32 @@ class ReleaseComponentTestCase(CLITestCase):
                                                      {'name': 'Test Release Component',
                                                       'release': 'test_release',
                                                       'global_component': 'test_global_component'})],
-                              'release-components/1': [('GET', {})]})
+                              'release-components/1': [('GET', {})],
+                              'release-component-contacts':
+                                  [('GET',
+                                    {'component': 'Test Release Component',
+                                     'page': 1,
+                                     'release': 'test_release'})
+                                   ]
+                              })
 
     def test_info_json(self, api):
+        api.add_endpoint('release-component-contacts', 'GET', {'count': 0,
+                                                               'next': None,
+                                                               'previous': None,
+                                                               'results': []})
         self._setup_detail(api)
         with self.expect_output('release_component/detail.json', parse_json=True):
             self.runner.run(['--json', 'release-component', 'info', '1'])
         self.assertDictEqual(api.calls,
-                             {'release-components/1': [('GET', {})]})
+                             {'release-components/1': [('GET', {})],
+                              'release-component-contacts':
+                                  [('GET',
+                                    {'component': 'Test Release Component',
+                                     'page': 1,
+                                     'release': 'test_release'})
+                                   ]
+                              })
 
     def test_list_json(self, api):
         api.add_endpoint('release-components', 'GET', [self.detail])
