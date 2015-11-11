@@ -4,6 +4,7 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+import sys
 import json
 
 from pdc_client import get_paged
@@ -144,7 +145,8 @@ class ReleaseComponentPlugin(PDCClientPlugin):
         info_parser.set_defaults(func=self.release_component_info)
 
         update_parser = self.add_action('update', help='update an existing release component')
-        update_parser.add_argument('release_component_id', metavar='RELEASE_COMPONENT_ID')
+        update_parser.add_argument('release', metavar='RELEASE')
+        update_parser.add_argument('name', metavar='NAME')
         self.add_release_component_arguments(update_parser)
         update_parser.set_defaults(func=self.release_component_update)
 
@@ -245,14 +247,25 @@ class ReleaseComponentPlugin(PDCClientPlugin):
         response = self.client['release-components']._(data)
         self.release_component_info(args, response['id'])
 
+    def _get_release_component_id(self, release, component_name):
+        release_components = self.client['release-components']._(name=component_name, release=release)
+        if not release_components['count']:
+            return None
+        return release_components['results'][0]['id']
+
     def release_component_update(self, args):
         data = extract_arguments(args)
+        release_component_id = self._get_release_component_id(args.release, args.name)
+        if not release_component_id:
+            sys.stderr.write("The specified release component doesn't exist.\n")
+            sys.exit(1)
+        args.release_component_id = release_component_id
         if args.active is not None:
             data['active'] = args.active
         if data:
-            self.logger.debug('Updating release component %s with data %r',
-                              args.release_component_id, data)
-            self.client['release-components'][args.release_component_id]._ += data
+            self.logger.debug('Updating release component %d with data %r',
+                              release_component_id, data)
+            self.client['release-components'][release_component_id]._ += data
         else:
             self.logger.debug('Empty data, skipping request')
         self.release_component_info(args)

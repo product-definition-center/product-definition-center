@@ -232,6 +232,51 @@ class ReleaseComponentTestCase(CLITestCase):
     def _setup_detail(self, api):
         api.add_endpoint('release-components/1', 'GET', self.detail)
 
+    def _setup_list_filter(self, api):
+        filter_result = {
+            "count": 1,
+            "next": None,
+            "previous": None,
+            "results": [
+                {
+                    'id': '1',
+                    'release': {
+                        'release_id': 'test_release',
+                        'active': True
+                    },
+                    'bugzilla_component': None,
+                    'brew_package': None,
+                    'global_component': 'test_global_component',
+                    'name': 'Test Release Component',
+                    'dist_git_branch': 'test_branch',
+                    'dist_git_web_url': 'http://pkgs.example.com/test_release_component',
+                    'active': True,
+                    'type': 'rpm',
+                    'srpm': None,
+                    'contacts': [
+                        {
+                            'url': 'http://example.com/release-components/1/contacts/1/',
+                            'contact_role': 'test_role_a',
+                            'contact': {
+                                'mail_name': 'Test Maillist',
+                                'email': 'test_mail@example.com'
+                            }
+                        },
+                        {
+                            'url': 'http://example.com/release-components/1/contacts/2/',
+                            'contact_role': 'test_role_b',
+                            'contact': {
+                                'username': 'Test User',
+                                'email': 'test_user@example.com'
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+
+        api.add_endpoint('release-components', 'GET', filter_result)
+
     def test_list_without_filters(self, api):
         with self.expect_failure():
             self.runner.run(['release-component', 'list'])
@@ -309,19 +354,19 @@ class ReleaseComponentTestCase(CLITestCase):
                               }
                           ]})
         self._setup_detail(api)
+        self._setup_list_filter(api)
         api.add_endpoint('release-components/1', 'PATCH', {})
         with self.expect_output('release_component/detail.txt'):
-            self.runner.run(['release-component', 'update', '1', '--name', 'new test name'])
+            self.runner.run(['release-component', 'update', 'test_release', 'Test Release Component',
+                             '--name', 'new test name'])
         self.assertDictEqual(api.calls,
-                             {'release-components/1': [('PATCH', {'name': 'new test name'}),
+                             {'release-components': [
+                                 ('GET', {'name': 'Test Release Component', 'release': 'test_release'})],
+                              'release-components/1': [('PATCH', {'name': 'new test name'}),
                                                        ('GET', {})],
                               'release-component-contacts':
                                   [('GET',
-                                    {'component': 'Test Release Component',
-                                     'page': 1,
-                                     'release': 'test_release'})
-                                   ]
-                              })
+                                    {'component': 'Test Release Component', 'page': 1, 'release': 'test_release'})]})
 
     def test_create(self, api):
         api.add_endpoint('release-component-contacts',
