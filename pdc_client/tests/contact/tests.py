@@ -71,6 +71,14 @@ class GlobalComponentContactTestCase(CLITestCase):
                                                                      'role': 'pm'})],
                               'global-component-contacts/1': [('DELETE', {})]})
 
+    def test_delete_multi_matches(self, api):
+        api.add_endpoint('global-component-contacts', 'GET', [self.detail] * 2)
+        with self.expect_output('global_component_contact/multi_matches.txt'):
+            self.runner.run(['global-component-contact', 'delete-match', '--role', 'pm'])
+        self.assertDictEqual(api.calls,
+                             {'global-component-contacts': [('GET', {'page': 1,
+                                                                     'role': 'pm'})]})
+
     def test_create(self, api):
         api.add_endpoint('global-component-contacts', 'POST', self.detail)
         self._setup_detail(api)
@@ -173,6 +181,14 @@ class ReleaseComponentContactTestCase(CLITestCase):
                              {'release-component-contacts': [('GET', {'page': 1,
                                                                       'role': 'pm'})],
                               'release-component-contacts/1': [('DELETE', {})]})
+
+    def test_delete_multi_matches(self, api):
+        api.add_endpoint('release-component-contacts', 'GET', [self.detail] * 2)
+        with self.expect_output('release_component_contact/multi_matches.txt'):
+            self.runner.run(['release-component-contact', 'delete-match', '--role', 'pm'])
+        self.assertDictEqual(api.calls,
+                             {'release-component-contacts': [('GET', {'page': 1,
+                                                                      'role': 'pm'})]})
 
     def test_create(self, api):
         api.add_endpoint('release-component-contacts', 'POST', self.detail)
