@@ -5,7 +5,6 @@
 # http://opensource.org/licenses/MIT
 #
 import json
-import sys
 
 from pdc_client import get_paged
 from pdc_client.plugin_helpers import (PDCClientPlugin,
@@ -77,8 +76,7 @@ class GlobalComponentContactPlugin(PDCClientPlugin):
     def list_global_component_contacts(self, args):
         filters = extract_arguments(args, prefix='filter_')
         if not filters:
-            sys.stderr.write('At least some filter must be used.\n')
-            sys.exit(1)
+            self.subparsers.choices.get('list').error('At least some filter must be used.')
         global_component_contacts = get_paged(self.client['global-component-contacts']._, **filters)
 
         if args.json:
@@ -121,8 +119,7 @@ class GlobalComponentContactPlugin(PDCClientPlugin):
     def delete_matched_global_component_contact(self, args):
         filters = extract_arguments(args, prefix='filter_')
         if not filters:
-            sys.stderr.write('At least some filter must be used.\n')
-            sys.exit(1)
+            self.subparsers.choices.get('delete-match').error('At least some filter must be used.')
         global_component_contacts = get_paged(self.client['global-component-contacts']._, **filters)
 
         global_component_contacts = list(global_component_contacts)
@@ -182,8 +179,7 @@ class ReleaseComponentContactPlugin(PDCClientPlugin):
     def list_release_component_contacts(self, args):
         filters = extract_arguments(args, prefix='filter_')
         if not filters:
-            sys.stderr.write('At least some filter must be used.\n')
-            sys.exit(1)
+            self.subparsers.choices.get('list').error('At least some filter must be used.')
         release_component_contacts = get_paged(self.client['release-component-contacts']._, **filters)
 
         if args.json:
@@ -228,8 +224,7 @@ class ReleaseComponentContactPlugin(PDCClientPlugin):
     def delete_matched_release_component_contact(self, args):
         filters = extract_arguments(args, prefix='filter_')
         if not filters:
-            sys.stderr.write('At least some filter must be used.\n')
-            sys.exit(1)
+            self.subparsers.choices.get('delete-match').error('At least some filter must be used.')
         release_component_contacts = get_paged(self.client['release-component-contacts']._, **filters)
 
         release_component_contacts = list(release_component_contacts)
