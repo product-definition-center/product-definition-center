@@ -95,6 +95,23 @@ class ReleaseTestCase(CLITestCase):
                               'releases/release-1.0': [('GET', {})],
                               'release-variants': [('GET', {'page': 1, 'release': 'release-1.0'})]})
 
+    def test_clone(self, api):
+        api.add_endpoint('rpc/release/clone', 'POST', self.release_detail)
+        self._setup_release_detail(api)
+        with self.expect_output('detail.txt'):
+            self.runner.run(['release', 'clone', 'old_release_id', '--version', '1.0'])
+        self.assertDictEqual(api.calls,
+                             {'rpc/release/clone': [('POST',
+                                                     {'old_release_id': 'old_release_id',
+                                                      'version': '1.0'})],
+                              'releases/release-1.0': [('GET', {})],
+                              'release-variants': [('GET', {'page': 1, 'release': 'release-1.0'})]})
+
+    def test_clone_fails(self, api):
+        with self.expect_failure():
+            self.runner.run(['release', 'clone', 'old_release_id'])
+        self.assertDictEqual(api.calls, {})
+
     def test_info_json(self, api):
         self._setup_release_detail(api)
         with self.expect_output('detail.json', parse_json=True):

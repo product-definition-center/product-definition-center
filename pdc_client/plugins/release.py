@@ -36,6 +36,14 @@ class ReleasePlugin(PDCClientPlugin):
         self.add_release_arguments(create_parser, required=True)
         create_parser.set_defaults(func=self.release_create)
 
+        clone_parser = self.add_action('clone', help='clone new release from an existed one',
+                                       description=('NOTE: At least one of `short`, `version`, '
+                                                    '`base_product` or `release_type` '
+                                                    'is required.'))
+        clone_parser.add_argument('old_release_id', metavar='OLD_RELEASE_ID')
+        self.add_clone_arguments(clone_parser, required=False)
+        clone_parser.set_defaults(func=self.release_clone)
+
     def add_release_arguments(self, parser, required=False):
         group = parser.add_mutually_exclusive_group()
         group.add_argument('--activate', action='store_const', const=True, dest='active')
@@ -52,6 +60,29 @@ class ReleasePlugin(PDCClientPlugin):
             'bugzilla__product': {'arg': 'bugzilla-product'},
             'dist_git__branch': {'arg': 'dist-git-branch'}}
         add_create_update_args(parser, required_args, optional_args, required)
+
+        self.run_hook('release_parser_setup', parser)
+
+    def add_clone_arguments(self, parser, required=False):
+        active_group = parser.add_mutually_exclusive_group()
+        active_group.add_argument('--activate', action='store_const', const=True, dest='active')
+        active_group.add_argument('--deactivate', action='store_const', const=False, dest='active')
+
+        optional_args = {
+            'short': {},
+            'version': {},
+            'release_type': {},
+            'base_product': {},
+            'name': {},
+            'product_version': {},
+            'bugzilla__product': {'arg': 'bugzilla-product'},
+            'dist_git__branch': {'arg': 'dist-git-branch'},
+            'component_dist_git_branch': {},
+            'include_inactive': {},
+            'include_trees': {},
+            'integrated_with': {}
+        }
+        add_create_update_args(parser, {}, optional_args, required)
 
         self.run_hook('release_parser_setup', parser)
 
@@ -127,6 +158,17 @@ class ReleasePlugin(PDCClientPlugin):
         data = self.get_release_data(args)
         self.logger.debug('Creating release with data {}'.format(data))
         response = self.client.releases._(data)
+        self.release_info(args, response['release_id'])
+
+    def release_clone(self, args):
+        data = self.get_release_data(args)
+        if not any(key in data for key in ['short', 'version', 'base_product', 'release_type']):
+            self.subparsers.choices.get('clone').error(
+                ('At least one of `short`, `version`, `base_product` '
+                 'or `release_type` is required.'))
+        data['old_release_id'] = args.old_release_id
+        self.logger.debug('Clone release with data {}'.format(data))
+        response = self.client.rpc.release.clone._(data)
         self.release_info(args, response['release_id'])
 
     def get_release_data(self, args):
