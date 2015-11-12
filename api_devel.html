@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5. API Development &mdash; PDC fatal: No names found, cannot describe anything. documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'fatal: No names found, cannot describe anything.',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PDC fatal: No names found, cannot describe anything. documentation" href="index.html" />
+    <link rel="next" title="6. PDC Model Graphs" href="model_graphs.html" />
+    <link rel="prev" title="4. Setup development environment" href="development.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="model_graphs.html" title="6. PDC Model Graphs"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="development.html" title="4. Setup development environment"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PDC fatal: No names found, cannot describe anything. documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="api-development">
+<span id="api-devel"></span><h1>5. API Development<a class="headerlink" href="#api-development" title="Permalink to this headline">¶</a></h1>
+<p>Each resource available on the REST API is implemented in terms of a couple
+objects. The main one is a <code class="docutils literal"><span class="pre">ViewSet</span></code>, which may optionally use a
+<code class="docutils literal"><span class="pre">Serializer</span></code> and a <code class="docutils literal"><span class="pre">FilterSet</span></code>.</p>
+<p>This is a guide for adding new resources.</p>
+<div class="section" id="checklist">
+<h2>5.1. Checklist<a class="headerlink" href="#checklist" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first">Identify where to implement it: it can be part of existing application or
+you can create a new application. If you want a new application, use</p>
+<div class="highlight-python"><div class="highlight"><pre>$ mkdir pdc/apps/your_app
+$ python manage.py startapp your_app pdc/apps/your_app
+</pre></div>
+</div>
+</li>
+<li><p class="first">Create your models. Make sure to implement <code class="docutils literal"><span class="pre">export</span></code> method for each model
+that will be editable through the API.</p>
+</li>
+<li><p class="first">Generate migrations</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python manage.py makemigrations your_app
+</pre></div>
+</div>
+</li>
+<li><p class="first">Make sure the <code class="docutils literal"><span class="pre">ViewSet</span></code> inherits from <code class="docutils literal"><span class="pre">StrictQueryParamMixin</span></code> to
+properly handle unknown query parameters.</p>
+</li>
+<li><p class="first">If the resource objects can be created, updated or deleted, use
+<code class="docutils literal"><span class="pre">ChangeSet*</span></code> mixins (or <code class="docutils literal"><span class="pre">PDCModelViewSet</span></code> as single parent).</p>
+</li>
+<li><p class="first">The docstring of the methods will be visible in browsable documentation. Use
+Markdown for formatting. See below for other helpers you can use to simplify
+documentation.</p>
+</li>
+<li><p class="first">Serializer should inherit from <code class="docutils literal"><span class="pre">StrictSerializerMixin</span></code> or implement the
+same logic itself (report error when unknown field is specified).</p>
+</li>
+<li><p class="first">Write test cases for both success and error paths.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="writing-documentation">
+<h2>5.2. Writing documentation<a class="headerlink" href="#writing-documentation" title="Permalink to this headline">¶</a></h2>
+<p>The browsable documentation is exported from docstrings of view set methods. It
+uses <a class="reference external" href="http://daringfireball.net/projects/markdown/syntax">Markdown</a> as a markup language. There are a couple helpers that make
+some things easier.</p>
+<p>First of all, string <code class="docutils literal"><span class="pre">%(HOST_NAME)s</span></code>, <code class="docutils literal"><span class="pre">%(API_ROOT)s</span></code> expand to host name of
+the current server and path to the API root, respectively.</p>
+<p>To include a link to another resource, rather than using the macros above,
+there is a better way:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">$URL:resourcename:param1$</span></code> will expand to URL to that resource. Examples:<ul>
+<li><code class="docutils literal"><span class="pre">$URL:release-list$</span></code> → <code class="docutils literal"><span class="pre">http://pdc.example.com/rest_api/v1/releases/</span></code></li>
+<li><code class="docutils literal"><span class="pre">$URL:product-detail:dp$</span></code> → <code class="docutils literal"><span class="pre">http://pdc.example.com/rest_api/v1/products/dp/</span></code></li>
+</ul>
+</li>
+<li><code class="docutils literal"><span class="pre">$LINK:resourcename:param1:param2$</span></code> will expand to clickable link to that
+resource. The link label will be the URL of the resource (without the host
+name).</li>
+</ul>
+</div></blockquote>
+<p>To describe available query filters, use <code class="docutils literal"><span class="pre">%(FILTERS)s</span></code> macro. This expands to
+an unordered list with filter names and types of the value. The serializer can
+be described with <code class="docutils literal"><span class="pre">%(SERIALIZER)s</span></code>, which expands to a code block with JSON
+describing the data. For create/update actions you may need to use
+<code class="docutils literal"><span class="pre">%(WRITABLE_SERIALIZER)s</span></code> which excludes all read-only fields.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">5. API Development</a><ul>
+<li><a class="reference internal" href="#checklist">5.1. Checklist</a></li>
+<li><a class="reference internal" href="#writing-documentation">5.2. Writing documentation</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="development.html"
+                        title="previous chapter">4. Setup development environment</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="model_graphs.html"
+                        title="next chapter">6. PDC Model Graphs</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/api_devel.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="model_graphs.html" title="6. PDC Model Graphs"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="development.html" title="4. Setup development environment"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PDC fatal: No names found, cannot describe anything. documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2014-2015, PDC Devel Team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

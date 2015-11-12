@@ -16,6 +16,7 @@ Contents:
    bulk_operations
    pdc_client
    development
+   api_devel
    model_graphs
    release
    deployment

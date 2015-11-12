@@ -134,5 +134,5 @@ To run development server, run::
 For development you may find it useful to enable `Django Debug Toolbar
 <http://django-debug-toolbar.readthedocs.org/en/1.3.2/>`_.
 
-Related settings is documented in comment at the to of
+Related settings is documented in comment at the top of
 ``settings_local.py.dist``.
