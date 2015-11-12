@@ -1,0 +1,4 @@
+Multi matches, please delete via ID or provide more restrictions.
+ID         Component                                Role       Email                     Name
+1          Test Global Component                    pm         test_contact@example.com  Test Contact
+1          Test Global Component                    pm         test_contact@example.com  Test Contact

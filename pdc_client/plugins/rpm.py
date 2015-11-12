@@ -4,7 +4,6 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
-import sys
 import json
 
 from pdc_client import get_paged
@@ -64,8 +63,7 @@ class RPMPlugin(PDCClientPlugin):
     def rpm_list(self, args):
         filters = extract_arguments(args, prefix='filter_')
         if not filters:
-            sys.stderr.write('At least some filter must be used.\n')
-            sys.exit(1)
+            self.subparsers.choices.get('list').error('At least some filter must be used.')
         rpms = get_paged(self.client.rpms._, **filters)
         if args.json:
             print json.dumps(list(rpms))

@@ -46,9 +46,10 @@ class MockAPI(object):
     a dictionary mapping resource URLs to lists of request details. Each
     request details is a tuple depending on actual method.
 
-        (GET,   {filters})
-        (POST,  {request data})
-        (PATCH, {request data})
+        (GET,    {filters})
+        (POST,   {request data})
+        (PATCH,  {request data})
+        (DELETE, {request data})
     """
     def __init__(self):
         self.endpoints = {}
@@ -79,8 +80,11 @@ class MockAPI(object):
         return PathAccumulator(key, self)
 
     def __call__(self, *args, **kwargs):
-        if len(args) == 2 and args[0] == 'PATCH':
-            return self._handle_patch(args[1])
+        if len(args) == 2:
+            if args[0] == 'PATCH':
+                return self._handle_patch(args[1])
+            elif args[0] == 'DELETE':
+                return self._handle_delete(args[1])
         if len(args) == 1:
             return self._handle_post(args[0])
         elif len(args) == 0:
@@ -89,6 +93,10 @@ class MockAPI(object):
     def _handle_post(self, data):
         self.calls.setdefault(self.will_call, []).append(('POST', data))
         return self.endpoints[self.will_call]['POST']
+
+    def _handle_delete(self, data):
+        self.calls.setdefault(self.will_call, []).append(('DELETE', data))
+        return self.endpoints[self.will_call]['DELETE']
 
     def _handle_get(self, filters):
         data = self.endpoints[self.will_call]['GET']

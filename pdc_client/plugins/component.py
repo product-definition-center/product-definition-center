@@ -5,7 +5,6 @@
 # http://opensource.org/licenses/MIT
 #
 import json
-import sys
 
 from pdc_client import get_paged
 from pdc_client.plugin_helpers import (PDCClientPlugin,
@@ -52,8 +51,7 @@ class GlobalComponentPlugin(PDCClientPlugin):
     def list_global_components(self, args):
         filters = extract_arguments(args, prefix='filter_')
         if not filters:
-            sys.stderr.write('At least some filter must be used.\n')
-            sys.exit(1)
+            self.subparsers.choices.get('list').error('At least some filter must be used.')
         global_components = get_paged(self.client['global-components']._, **filters)
 
         if args.json:
@@ -163,8 +161,7 @@ class ReleaseComponentPlugin(PDCClientPlugin):
     def list_release_components(self, args):
         filters = extract_arguments(args, prefix='filter_')
         if not filters:
-            sys.stderr.write('At least some filter must be used.\n')
-            sys.exit(1)
+            self.subparsers.choices.get('list').error('At least some filter must be used.')
         if 'include_inactive_release' in args and args.include_inactive_release:
             filters['include_inactive_release'] = True
         release_components = get_paged(self.client['release-components']._, **filters)
