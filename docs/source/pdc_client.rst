@@ -134,15 +134,12 @@ in ``libdefaults`` section. ::
 For Developers
 --------------
 
-Instalation details
+Installation details
 ~~~~~~~~~~~~~~~~~~~
 
 #. yum repository
 
-   If you have installed PDC Server by some yum repository, PDC Client is in
-   the same repository that you used.
-
-   So to install PDC Client, just need to ::
+   Enable PDC yum repository, install PDC Client by ::
 
     $ sudo yum install pdc-client -y
 
@@ -150,11 +147,12 @@ Instalation details
 
    If you have got the code and setup your development environment (see
    :ref:`development`), then you could build from source and install the
-   client and it's dependency package python-pdc ::
+   client ::
 
     $ git checkout `{release-tag}`
-    $ make rpm
-    $ sudo yum install dist/noarch/python-pdc*.noarch.rpm dist/noarch/pdc-client*.noarch.rpm
+    $ cd product-definition-center/pdc_client
+    $ tito build --rpm --offline
+    $ sudo yum install /tmp/tito/noarch/pdc-client*.noarch.rpm
 
 
 General
