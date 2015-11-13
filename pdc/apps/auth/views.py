@@ -65,8 +65,7 @@ def logout(request):
     auth_logout(request)
 
     if backend:
-        if 'logout_url' in backend:
-            redirect_to = backend.logout_url + redirect_to
+        redirect_to = getattr(backend, 'logout_url', '') + redirect_to
 
     return HttpResponseRedirect(redirect_to)
 
