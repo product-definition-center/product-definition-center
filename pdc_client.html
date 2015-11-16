@@ -221,13 +221,11 @@ in <code class="docutils literal"><span class="pre">libdefaults</span></code> se
 </div>
 <div class="section" id="for-developers">
 <h2>3.6. For Developers<a class="headerlink" href="#for-developers" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="instalation-details">
-<h3>3.6.1. Instalation details<a class="headerlink" href="#instalation-details" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="installation-details">
+<h3>3.6.1. Installation details<a class="headerlink" href="#installation-details" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic">
 <li><p class="first">yum repository</p>
-<p>If you have installed PDC Server by some yum repository, PDC Client is in
-the same repository that you used.</p>
-<p>So to install PDC Client, just need to</p>
+<p>Enable PDC yum repository, install PDC Client by</p>
 <div class="highlight-python"><div class="highlight"><pre>$ sudo yum install pdc-client -y
 </pre></div>
 </div>
@@ -235,10 +233,11 @@ the same repository that you used.</p>
 <li><p class="first">build from source</p>
 <p>If you have got the code and setup your development environment (see
 <a class="reference internal" href="development.html#development"><span>Setup development environment</span></a>), then you could build from source and install the
-client and it&#8217;s dependency package python-pdc</p>
+client</p>
 <div class="highlight-python"><div class="highlight"><pre>$ git checkout `{release-tag}`
-$ make rpm
-$ sudo yum install dist/noarch/python-pdc*.noarch.rpm dist/noarch/pdc-client*.noarch.rpm
+$ cd product-definition-center/pdc_client
+$ tito build --rpm --offline
+$ sudo yum install /tmp/tito/noarch/pdc-client*.noarch.rpm
 </pre></div>
 </div>
 </li>
@@ -279,7 +278,7 @@ that lets you access REST APIs in an easy way.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#for-developers">3.6. For Developers</a><ul>
-<li><a class="reference internal" href="#instalation-details">3.6.1. Instalation details</a></li>
+<li><a class="reference internal" href="#installation-details">3.6.1. Installation details</a></li>
 <li><a class="reference internal" href="#general">3.6.2. General</a></li>
 </ul>
 </li>
