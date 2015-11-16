@@ -1,6 +1,0 @@
-ID:                  1
-Component:           Test Global Component
-Role:                pm
-Contact:
-	Name:	Test Contact
-	Email:	test_contact@example.com
