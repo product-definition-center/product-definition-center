@@ -1,0 +1,28 @@
+[
+  {
+    "model": "compose.ComposeTree",
+    "pk": 1,
+    "fields": {
+      "compose": 1,
+      "variant": 1,
+      "arch": "x86_64",
+      "location": 2,
+      "scheme": 1,
+      "url": "nfs://nay.lab.la/",
+      "synced_content": [1]
+    }
+  },
+    {
+    "model": "compose.ComposeTree",
+    "pk": 2,
+    "fields": {
+      "compose": 1,
+      "variant": 2,
+      "arch": "x86_64",
+      "location": 1,
+      "scheme": 1,
+      "url": "nfs://nay.lab.la/",
+      "synced_content": [2]
+    }
+  }
+]

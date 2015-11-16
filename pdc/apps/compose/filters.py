@@ -10,7 +10,7 @@ from django.db.models import Q
 from django.core.exceptions import ValidationError
 
 from pdc.apps.common.filters import value_is_not_empty
-from .models import Compose, OverrideRPM
+from .models import Compose, OverrideRPM, ComposeTree
 
 
 class ComposeFilter(django_filters.FilterSet):
@@ -77,3 +77,15 @@ class OverrideRPMFilter(django_filters.FilterSet):
     class Meta:
         model = OverrideRPM
         fields = ('release', 'variant', 'arch', 'srpm_name', 'rpm_name', 'rpm_arch', 'comment')
+
+
+class ComposeTreeFilter(django_filters.FilterSet):
+    compose         = django_filters.CharFilter(name='compose__compose_id', lookup_type='iexact')
+    variant         = django_filters.CharFilter(name='variant__variant_uid', lookup_type='iexact')
+    arch            = django_filters.CharFilter(lookup_type='iexact')
+    location        = django_filters.CharFilter(name='location__short', lookup_type='iexact')
+    scheme          = django_filters.CharFilter(name='scheme__name', lookup_type='iexact')
+
+    class Meta:
+        model = ComposeTree
+        fields = ('compose', 'variant', 'arch', 'location', 'scheme')

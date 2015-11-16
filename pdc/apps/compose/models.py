@@ -505,3 +505,41 @@ class ComposeImage(models.Model):
         unique_together = (
             ("variant_arch", "image"),
         )
+
+
+class Location(models.Model):
+    name = models.CharField(max_length=50)
+    short = models.CharField(max_length=50, unique=True)
+
+
+class Scheme(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+
+class ComposeTree(models.Model):
+    compose             = models.ForeignKey("Compose")
+    variant             = models.ForeignKey("Variant")
+    arch                = models.CharField(max_length=50)
+    location            = models.ForeignKey("Location")
+    scheme              = models.ForeignKey("Scheme")
+    url                 = models.CharField(max_length=100)
+    synced_content      = models.ManyToManyField('repository.ContentCategory')
+
+    class Meta:
+        unique_together = (
+            ("compose", "variant", "arch", "location"),
+        )
+
+    def __unicode__(self):
+        return u"%s-%s-%s-%s" % (self.compose, self.variant, self.arch, self.location)
+
+    def export(self):
+        return {
+            "compose": self.compose.compose_id,
+            "variant": self.variant.variant_uid,
+            "arch": self.arch,
+            "location": self.location.short,
+            "scheme": self.scheme.name,
+            "url": self.url,
+            "synced_content": [item.name for item in self.synced_content.all()]
+        }

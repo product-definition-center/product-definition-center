@@ -8,9 +8,10 @@ from rest_framework.reverse import reverse
 
 from pdc.apps.common.serializers import StrictSerializerMixin, DynamicFieldsSerializerMixin
 from pdc.apps.common.fields import ChoiceSlugField
-from .models import Compose, OverrideRPM, ComposeAcceptanceTestingState
+from .models import Compose, OverrideRPM, ComposeAcceptanceTestingState, ComposeTree, Variant, Location, Scheme
 from pdc.apps.release.models import Release
 from pdc.apps.utils.utils import urldecode
+from pdc.apps.repository.models import ContentCategory
 
 
 class StrictManyRelatedField(serializers.ManyRelatedField):
@@ -97,3 +98,31 @@ class OverrideRPMSerializer(StrictSerializerMixin, serializers.ModelSerializer):
         model = OverrideRPM
         fields = ('id', 'release', 'variant', 'arch', 'srpm_name', 'rpm_name',
                   'rpm_arch', 'include', 'comment', 'do_not_delete')
+
+
+class ComposeTreeSerializer(StrictSerializerMixin,
+                            DynamicFieldsSerializerMixin,
+                            serializers.ModelSerializer):
+    compose                 = serializers.SlugRelatedField(slug_field='compose_id', queryset=Compose.objects.all())
+    variant                 = serializers.SlugRelatedField(slug_field='variant_uid', queryset=Variant.objects.all())
+    arch                    = serializers.CharField()
+    location                = ChoiceSlugField(slug_field='short', queryset=Location.objects.all())
+    scheme                  = ChoiceSlugField(slug_field='name', queryset=Scheme.objects.all())
+    url                     = serializers.CharField()
+    synced_content          = ChoiceSlugField(slug_field='name', many=True, queryset=ContentCategory.objects.all())
+
+    class Meta:
+        model = ComposeTree
+        fields = ('compose', 'variant', 'arch', 'location',
+                  'scheme', 'url', 'synced_content')
+
+    def validate(self, attrs):
+        super(ComposeTreeSerializer, self).validate(attrs)
+        compose = attrs.get('compose', None)
+        variant = attrs.get('variant', None)
+        arch = attrs.get('arch', None)
+        if compose == variant.compose and arch in [i.name for i in variant.arches]:
+            return attrs
+        else:
+            raise serializers.ValidationError('The combination with compose %s, variant %s, arch %s does not exist' %
+                                              (compose, variant, arch))

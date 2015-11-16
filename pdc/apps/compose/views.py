@@ -31,14 +31,17 @@ from pdc.apps.common.hacks import bool_from_native, convert_str_to_bool, as_dict
 from pdc.apps.common.viewsets import (ChangeSetCreateModelMixin,
                                       StrictQueryParamMixin,
                                       NoEmptyPatchMixin,
-                                      ChangeSetDestroyModelMixin)
+                                      ChangeSetDestroyModelMixin,
+                                      ChangeSetModelMixin,
+                                      MultiLookupFieldMixin)
 from pdc.apps.release.models import Release
 from .models import (Compose, VariantArch, Variant, ComposeRPM, OverrideRPM,
-                     ComposeImage, ComposeRPMMapping, ComposeAcceptanceTestingState)
+                     ComposeImage, ComposeRPMMapping, ComposeAcceptanceTestingState,
+                     ComposeTree)
 from .forms import (ComposeSearchForm, ComposeRPMSearchForm, ComposeImageSearchForm,
                     ComposeRPMDisableForm, OverrideRPMForm, VariantArchForm, OverrideRPMActionForm)
-from .serializers import ComposeSerializer, OverrideRPMSerializer
-from .filters import ComposeFilter, OverrideRPMFilter
+from .serializers import ComposeSerializer, OverrideRPMSerializer, ComposeTreeSerializer
+from .filters import ComposeFilter, OverrideRPMFilter, ComposeTreeFilter
 from . import lib
 
 
@@ -1399,3 +1402,142 @@ class FindComposeWithOlderPackageViewSet(StrictQueryParamMixin, FindComposeMixin
             return Response(self._get_composes_for_product_version())
         return Response(status=status.HTTP_400_BAD_REQUEST,
                         data={'detail': 'One of product_version, release or compose argument is required.'})
+
+
+class ComposeTreeViewSet(ChangeSetModelMixin,
+                         StrictQueryParamMixin,
+                         MultiLookupFieldMixin,
+                         viewsets.GenericViewSet):
+    """
+    API endpoint that allows querying compose-variant-arch relevant to location.
+
+    ##Test tools##
+
+    You can use ``curl`` in terminal, with -X _method_ (GET|POST|PUT|DELETE),
+    -d _data_ (a json string). or GUI plugins for
+    browsers, such as ``RESTClient``, ``RESTConsole``.
+    """
+    queryset = ComposeTree.objects.all()
+    serializer_class = ComposeTreeSerializer
+    filter_class = ComposeTreeFilter
+    lookup_fields = (
+        ('compose__compose_id', r'[^/]+'),
+        ('variant__variant_uid', r'[^/]+'),
+        ('arch', r'[^/]+'),
+        ('location__short', r'[^/]+'),
+    )
+
+    def list(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:composetreelocations-list$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+        __Response__: a paged list of following objects
+
+        %(SERIALIZER)s
+        """
+        return super(ComposeTreeViewSet, self).list(*args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        """
+        __Method__: POST
+
+        __URL__: $LINK:composetreelocations-list$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+         * *synced_content*: $LINK:contentdeliverycontentcategory-list$
+
+        __Response__: Same as input data.
+
+        __NOTE__:
+        If synced_content is omitted, all content types are filled in.
+        """
+        if not request.data.get("synced_content"):
+            request.data["synced_content"] = ['binary', 'debug', 'source']
+        return super(ComposeTreeViewSet, self).create(request, *args, **kwargs)
+
+    def retrieve(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:composetreelocations-detail:compose_id}/{variant_uid}/{arch}/{location$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ComposeTreeViewSet, self).retrieve(*args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        # This method is used by bulk update and partial update, but should not
+        # be called directly.
+        if not kwargs.get('partial', False):
+            return self.http_method_not_allowed(request, *args, **kwargs)
+
+        if not request.data:
+            return NoEmptyPatchMixin.make_response()
+
+        updatable_keys = set(['scheme', 'url', 'synced_content'])
+        if set(request.data.keys()) - updatable_keys:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={'detail': 'Only these properties can be updated: %s'
+                                  % ', '.join(updatable_keys)})
+
+        return super(ComposeTreeViewSet, self).update(request, *args, **kwargs)
+
+    def bulk_update(self, *args, **kwargs):
+        """
+        It is possible to perform bulk partial update on composetreelocation with `PATCH`
+        method. The input must be a JSON object with composetreelocation identifiers as
+        keys. Values for these keys should be in the same format as when
+        updating a single composetreelocation.
+        """
+        return bulk_operations.bulk_update_impl(self, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        """
+        Only some composetreelocation fields can be modified by this call. They are
+        `scheme`, `synced_content` and `url`. Trying to change anything else
+        will result in 400 BAD REQUEST response.
+
+        __Method__: PATCH
+
+        __URL__: $LINK:composetreelocations-detail:compose_id}/{variant_uid}/{arch}/{location$
+
+        __Data__:
+
+            {
+                "scheme": string,
+                "synced_content": [string],
+                "url": string
+            }
+
+        If the same content category is specified in `synced_content` multiple times, it
+        will be saved only once.
+
+        __Response__:
+        same as for retrieve
+        """
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        __Method__:
+        DELETE
+
+        __URL__: $LINK:composetreelocations-detail:compose_id}/{variant_uid}/{arch}/{location$
+
+        __Response__:
+
+            STATUS: 204 NO CONTENT
+        """
+        return super(ComposeTreeViewSet, self).destroy(request, *args, **kwargs)
