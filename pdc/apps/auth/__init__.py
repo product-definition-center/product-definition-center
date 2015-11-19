@@ -128,7 +128,7 @@ Using Token
 -----------
 
     # obtain token
-    curl --negotiate -u : -H "Content-Type: application/json"  https://pdc.example.com/rest_api/v1/auth/token/obtain
+    curl --negotiate -u : -H "Accept: application/json"  https://pdc.example.com/rest_api/v1/auth/token/obtain
     # you will get a `Response` like:
     {"token": "00bf04e8187f6e6d54f510515e8bde88e5bb7904"}
 

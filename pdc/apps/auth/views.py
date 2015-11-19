@@ -116,7 +116,7 @@ class TokenViewSet(StrictQueryParamMixin, viewsets.ViewSet):
 
     * obtain token
 
-            curl --negotiate -u : -H "Content-Type: application/json"  $URL:token-obtain$
+            curl --negotiate -u : -H "Accept: application/json"  $URL:token-obtain$
 
         you will get a `Response` like:
 
@@ -132,7 +132,7 @@ class TokenViewSet(StrictQueryParamMixin, viewsets.ViewSet):
 
     * in case you want refresh your token, you can do it with:
 
-            curl --negotiate -u : -H "Content-Type: application/json"  $URL:token-refresh$
+            curl --negotiate -u : -H "Accept: application/json"  $URL:token-refresh$
 
         you will get a `Response` with refreshed token:
 
@@ -157,7 +157,7 @@ class TokenViewSet(StrictQueryParamMixin, viewsets.ViewSet):
 
         Run:
 
-            curl --negotiate -u : -H "Content-Type: application/json"  $URL:token-obtain$
+            curl --negotiate -u : -H "Accept: application/json"  $URL:token-obtain$
 
         you will get a `Response` like:
 
@@ -186,9 +186,9 @@ class TokenViewSet(StrictQueryParamMixin, viewsets.ViewSet):
 
         Run:
 
-            curl --negotiate -u : -H "Content-Type: application/json"  $URL:token-refresh$
+            curl --negotiate -u : -H "Accept: application/json"  $URL:token-refresh$
             # or
-            curl --negotiate -u : -X PUT -H "Content-Type: application/json"  $URL:token-refresh$
+            curl --negotiate -u : -X PUT -H "Accept: application/json"  $URL:token-refresh$
 
         you will get a `Response` with refreshed token:
 
@@ -242,7 +242,7 @@ class PermissionViewSet(StrictQueryParamMixin,
 
         __Example__:
 
-            curl -H "Content-Type: application/json"  -X GET $URL:permission-list$
+            curl -H "Accept: application/json"  -X GET $URL:permission-list$
             # output
             {
                 "count": 150,
@@ -260,7 +260,7 @@ class PermissionViewSet(StrictQueryParamMixin,
 
         With query params:
 
-            curl -H "Content-Type: application/json"  -G $URL:permission-list$ --data-urlencode "codename=add_logentry"
+            curl -H "Accept: application/json"  -G $URL:permission-list$ --data-urlencode "codename=add_logentry"
             # output
             {
                 "count": 1,
