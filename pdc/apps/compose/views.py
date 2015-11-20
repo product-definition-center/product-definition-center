@@ -1417,13 +1417,13 @@ class ComposeTreeViewSet(ChangeSetModelMixin,
     -d _data_ (a json string). or GUI plugins for
     browsers, such as ``RESTClient``, ``RESTConsole``.
     """
-    queryset = ComposeTree.objects.all()
+    queryset = ComposeTree.objects.select_related('compose', 'variant', 'arch').all()
     serializer_class = ComposeTreeSerializer
     filter_class = ComposeTreeFilter
     lookup_fields = (
         ('compose__compose_id', r'[^/]+'),
         ('variant__variant_uid', r'[^/]+'),
-        ('arch', r'[^/]+'),
+        ('arch__name', r'[^/]+'),
         ('location__short', r'[^/]+'),
     )
 

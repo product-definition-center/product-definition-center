@@ -5,7 +5,7 @@
     "fields": {
       "compose": 1,
       "variant": 1,
-      "arch": "x86_64",
+      "arch": 47,
       "location": 2,
       "scheme": 1,
       "url": "nfs://nay.lab.la/",
@@ -18,7 +18,7 @@
     "fields": {
       "compose": 1,
       "variant": 2,
-      "arch": "x86_64",
+      "arch": 47,
       "location": 1,
       "scheme": 1,
       "url": "nfs://nay.lab.la/",

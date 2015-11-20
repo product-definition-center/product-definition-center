@@ -519,10 +519,10 @@ class Scheme(models.Model):
 class ComposeTree(models.Model):
     compose             = models.ForeignKey("Compose")
     variant             = models.ForeignKey("Variant")
-    arch                = models.CharField(max_length=50)
+    arch                = models.ForeignKey("common.Arch")
     location            = models.ForeignKey("Location")
     scheme              = models.ForeignKey("Scheme")
-    url                 = models.CharField(max_length=100)
+    url                 = models.CharField(max_length=255)
     synced_content      = models.ManyToManyField('repository.ContentCategory')
 
     class Meta:
@@ -537,7 +537,7 @@ class ComposeTree(models.Model):
         return {
             "compose": self.compose.compose_id,
             "variant": self.variant.variant_uid,
-            "arch": self.arch,
+            "arch": self.arch.name,
             "location": self.location.short,
             "scheme": self.scheme.name,
             "url": self.url,

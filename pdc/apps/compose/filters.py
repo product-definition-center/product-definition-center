@@ -82,7 +82,7 @@ class OverrideRPMFilter(django_filters.FilterSet):
 class ComposeTreeFilter(django_filters.FilterSet):
     compose         = django_filters.CharFilter(name='compose__compose_id', lookup_type='iexact')
     variant         = django_filters.CharFilter(name='variant__variant_uid', lookup_type='iexact')
-    arch            = django_filters.CharFilter(lookup_type='iexact')
+    arch            = django_filters.CharFilter(name='arch__name', lookup_type='iexact')
     location        = django_filters.CharFilter(name='location__short', lookup_type='iexact')
     scheme          = django_filters.CharFilter(name='scheme__name', lookup_type='iexact')
 

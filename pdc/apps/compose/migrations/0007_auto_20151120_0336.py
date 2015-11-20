@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import migrations, models
+from django.db import models, migrations
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('common', '0002_auto_20150512_0703'),
         ('repository', '0002_auto_20150512_0724'),
         ('compose', '0006_auto_20150821_0616'),
     ]
@@ -16,8 +17,8 @@ class Migration(migrations.Migration):
             name='ComposeTree',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('arch', models.CharField(max_length=50)),
-                ('url', models.CharField(max_length=100)),
+                ('url', models.CharField(max_length=255)),
+                ('arch', models.ForeignKey(to='common.Arch')),
                 ('compose', models.ForeignKey(to='compose.Compose')),
             ],
         ),
