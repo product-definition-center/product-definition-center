@@ -1,0 +1,16 @@
+[
+  {
+    "model": "compose.Scheme",
+    "pk": 1,
+    "fields": {
+      "name": "nfs"
+    }
+  },
+  {
+    "model": "compose.Scheme",
+    "pk": 2,
+    "fields": {
+      "name": "http"
+    }
+  }
+]
