@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>4. Setup development environment &mdash; PDC fatal: No names found, cannot describe anything. documentation</title>
+    <title>3. Setup development environment &mdash; PDC fatal: No names found, cannot describe anything. documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="PDC fatal: No names found, cannot describe anything. documentation" href="index.html" />
-    <link rel="next" title="5. API Development" href="api_devel.html" />
-    <link rel="prev" title="3. PDC Client" href="pdc_client.html" /> 
+    <link rel="next" title="4. API Development" href="api_devel.html" />
+    <link rel="prev" title="2. Bulk operations" href="bulk_operations.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -35,10 +35,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="api_devel.html" title="5. API Development"
+          <a href="api_devel.html" title="4. API Development"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="pdc_client.html" title="3. PDC Client"
+          <a href="bulk_operations.html" title="2. Bulk operations"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PDC fatal: No names found, cannot describe anything. documentation</a> &raquo;</li> 
       </ul>
@@ -50,17 +50,17 @@
           <div class="body" role="main">
             
   <div class="section" id="setup-development-environment">
-<span id="development"></span><h1>4. Setup development environment<a class="headerlink" href="#setup-development-environment" title="Permalink to this headline">¶</a></h1>
+<span id="development"></span><h1>3. Setup development environment<a class="headerlink" href="#setup-development-environment" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="source-code">
-<h2>4.1. Source Code<a class="headerlink" href="#source-code" title="Permalink to this headline">¶</a></h2>
+<h2>3.1. Source Code<a class="headerlink" href="#source-code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre>$ git clone https://github.com/release-engineering/product-definition-center.git
 </pre></div>
 </div>
 </div>
 <div class="section" id="installation">
-<h2>4.2. Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<h2>3.2. Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="option-1-start-it-on-rpm">
-<h3>4.2.1. Option 1: Start it on RPM<a class="headerlink" href="#option-1-start-it-on-rpm" title="Permalink to this headline">¶</a></h3>
+<h3>3.2.1. Option 1: Start it on RPM<a class="headerlink" href="#option-1-start-it-on-rpm" title="Permalink to this headline">¶</a></h3>
 <p>For development purposes, install following dependencies:</p>
 <ul class="simple">
 <li>python = 2.7</li>
@@ -87,7 +87,7 @@ REPOs: <a class="reference external" href="https://copr.fedoraproject.org/coprs/
 </ul>
 </div>
 <div class="section" id="option-2-start-it-on-virtualenv">
-<h3>4.2.2. Option 2: Start it on virtualenv<a class="headerlink" href="#option-2-start-it-on-virtualenv" title="Permalink to this headline">¶</a></h3>
+<h3>3.2.2. Option 2: Start it on virtualenv<a class="headerlink" href="#option-2-start-it-on-virtualenv" title="Permalink to this headline">¶</a></h3>
 <ul>
 <li><p class="first">Koji is not available on PyPI. You must install the <cite>koji</cite> package to your
 system via <code class="docutils literal"><span class="pre">yum</span></code> before creating a virtualenv.</p>
@@ -116,7 +116,7 @@ $ pip install -r requirements/devel.txt
 </ul>
 </div>
 <div class="section" id="option-3-start-it-on-docker">
-<h3>4.2.3. Option 3: Start it on Docker<a class="headerlink" href="#option-3-start-it-on-docker" title="Permalink to this headline">¶</a></h3>
+<h3>3.2.3. Option 3: Start it on Docker<a class="headerlink" href="#option-3-start-it-on-docker" title="Permalink to this headline">¶</a></h3>
 <ul>
 <li><p class="first">Install Docker: see the <a class="reference external" href="https://docs.docker.com/installation/">official installation
 guide</a> for details. Generally, it
@@ -153,7 +153,7 @@ $ sudo service docker start
 </div>
 </div>
 <div class="section" id="customize-settings">
-<h2>4.3. Customize settings<a class="headerlink" href="#customize-settings" title="Permalink to this headline">¶</a></h2>
+<h2>3.3. Customize settings<a class="headerlink" href="#customize-settings" title="Permalink to this headline">¶</a></h2>
 <p>You can use the dist settings template by copying it to <cite>settings_local.py</cite>:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ cp settings_local.py.dist settings_local.py
 </pre></div>
@@ -166,14 +166,14 @@ but keeping nested <code class="docutils literal"><span class="pre">DEFAULT_PERM
 disable authentication.</p>
 </div>
 <div class="section" id="init-database">
-<h2>4.4. Init database<a class="headerlink" href="#init-database" title="Permalink to this headline">¶</a></h2>
+<h2>3.4. Init database<a class="headerlink" href="#init-database" title="Permalink to this headline">¶</a></h2>
 <p>To initialize database, run:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ python manage.py migrate --noinput
 </pre></div>
 </div>
 </div>
 <div class="section" id="run-devel-server">
-<h2>4.5. Run devel server<a class="headerlink" href="#run-devel-server" title="Permalink to this headline">¶</a></h2>
+<h2>3.5. Run devel server<a class="headerlink" href="#run-devel-server" title="Permalink to this headline">¶</a></h2>
 <p>To run development server, run:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ make run
 </pre></div>
@@ -192,27 +192,27 @@ disable authentication.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">4. Setup development environment</a><ul>
-<li><a class="reference internal" href="#source-code">4.1. Source Code</a></li>
-<li><a class="reference internal" href="#installation">4.2. Installation</a><ul>
-<li><a class="reference internal" href="#option-1-start-it-on-rpm">4.2.1. Option 1: Start it on RPM</a></li>
-<li><a class="reference internal" href="#option-2-start-it-on-virtualenv">4.2.2. Option 2: Start it on virtualenv</a></li>
-<li><a class="reference internal" href="#option-3-start-it-on-docker">4.2.3. Option 3: Start it on Docker</a></li>
+<li><a class="reference internal" href="#">3. Setup development environment</a><ul>
+<li><a class="reference internal" href="#source-code">3.1. Source Code</a></li>
+<li><a class="reference internal" href="#installation">3.2. Installation</a><ul>
+<li><a class="reference internal" href="#option-1-start-it-on-rpm">3.2.1. Option 1: Start it on RPM</a></li>
+<li><a class="reference internal" href="#option-2-start-it-on-virtualenv">3.2.2. Option 2: Start it on virtualenv</a></li>
+<li><a class="reference internal" href="#option-3-start-it-on-docker">3.2.3. Option 3: Start it on Docker</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#customize-settings">4.3. Customize settings</a></li>
-<li><a class="reference internal" href="#init-database">4.4. Init database</a></li>
-<li><a class="reference internal" href="#run-devel-server">4.5. Run devel server</a></li>
+<li><a class="reference internal" href="#customize-settings">3.3. Customize settings</a></li>
+<li><a class="reference internal" href="#init-database">3.4. Init database</a></li>
+<li><a class="reference internal" href="#run-devel-server">3.5. Run devel server</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="pdc_client.html"
-                        title="previous chapter">3. PDC Client</a></p>
+  <p class="topless"><a href="bulk_operations.html"
+                        title="previous chapter">2. Bulk operations</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="api_devel.html"
-                        title="next chapter">5. API Development</a></p>
+                        title="next chapter">4. API Development</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -244,10 +244,10 @@ disable authentication.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="api_devel.html" title="5. API Development"
+          <a href="api_devel.html" title="4. API Development"
              >next</a> |</li>
         <li class="right" >
-          <a href="pdc_client.html" title="3. PDC Client"
+          <a href="bulk_operations.html" title="2. Bulk operations"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PDC fatal: No names found, cannot describe anything. documentation</a> &raquo;</li> 
       </ul>

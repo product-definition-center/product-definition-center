@@ -14,7 +14,6 @@ Contents:
 
    using_api
    bulk_operations
-   pdc_client
    development
    api_devel
    model_graphs

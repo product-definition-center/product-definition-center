@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>7. Release &mdash; PDC fatal: No names found, cannot describe anything. documentation</title>
+    <title>6. Release &mdash; PDC fatal: No names found, cannot describe anything. documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="PDC fatal: No names found, cannot describe anything. documentation" href="index.html" />
-    <link rel="next" title="8. Deployment" href="deployment.html" />
-    <link rel="prev" title="6. PDC Model Graphs" href="model_graphs.html" /> 
+    <link rel="next" title="7. Deployment" href="deployment.html" />
+    <link rel="prev" title="5. PDC Model Graphs" href="model_graphs.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -35,10 +35,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="deployment.html" title="8. Deployment"
+          <a href="deployment.html" title="7. Deployment"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="model_graphs.html" title="6. PDC Model Graphs"
+          <a href="model_graphs.html" title="5. PDC Model Graphs"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PDC fatal: No names found, cannot describe anything. documentation</a> &raquo;</li> 
       </ul>
@@ -50,9 +50,9 @@
           <div class="body" role="main">
             
   <div class="section" id="release">
-<span id="id1"></span><h1>7. Release<a class="headerlink" href="#release" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>6. Release<a class="headerlink" href="#release" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="versioning">
-<h2>7.1. Versioning<a class="headerlink" href="#versioning" title="Permalink to this headline">¶</a></h2>
+<h2>6.1. Versioning<a class="headerlink" href="#versioning" title="Permalink to this headline">¶</a></h2>
 <p>PDC versioning is based on <a class="reference external" href="http://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <p>And it&#8217;s RPM compatible.</p>
 <p>Given a version number MAJOR.MINOR.PATCH, increment the:</p>
@@ -81,7 +81,7 @@ Examples: 1.0.0-12.g1234abc, 1.0.0-s5.4.g1234abc.</p>
 </ol>
 </div>
 <div class="section" id="release-instruction">
-<h2>7.2. Release Instruction<a class="headerlink" href="#release-instruction" title="Permalink to this headline">¶</a></h2>
+<h2>6.2. Release Instruction<a class="headerlink" href="#release-instruction" title="Permalink to this headline">¶</a></h2>
 <p>In practice, we use <cite>tito</cite> to add git tag and do release including tag based on releases and current HEAD based on test releases.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -96,7 +96,7 @@ Examples: 1.0.0-12.g1234abc, 1.0.0-s5.4.g1234abc.</p>
 </ol>
 <p>For each step, more detail are:</p>
 <div class="section" id="tag">
-<h3>7.2.1. Tag<a class="headerlink" href="#tag" title="Permalink to this headline">¶</a></h3>
+<h3>6.2.1. Tag<a class="headerlink" href="#tag" title="Permalink to this headline">¶</a></h3>
 <p>A new git tag need to be added before starting a new release:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ tito tag
 </pre></div>
@@ -110,7 +110,7 @@ Examples: 1.0.0-12.g1234abc, 1.0.0-s5.4.g1234abc.</p>
 <p>For more options about <cite>tito tag</cite>, run <cite>tito tag &#8211;help</cite>.</p>
 </div>
 <div class="section" id="test-build">
-<h3>7.2.2. Test Build<a class="headerlink" href="#test-build" title="Permalink to this headline">¶</a></h3>
+<h3>6.2.2. Test Build<a class="headerlink" href="#test-build" title="Permalink to this headline">¶</a></h3>
 <p>Once release tag is available, we can do some build tests including source tarball checking, and rpm building testing.</p>
 <blockquote>
 <div><div class="highlight-python"><div class="highlight"><pre># generate local source tarball
@@ -135,14 +135,14 @@ $ tito build --test --tgz/srpm/rpm
 </div>
 </div>
 <div class="section" id="push">
-<h3>7.2.3. Push<a class="headerlink" href="#push" title="Permalink to this headline">¶</a></h3>
+<h3>6.2.3. Push<a class="headerlink" href="#push" title="Permalink to this headline">¶</a></h3>
 <p>When you&#8217;re happy with your build, it&#8217;s time to push commit and tag to remote.</p>
 <div class="highlight-python"><div class="highlight"><pre>$ git push origin &amp;&amp; git push origin &lt;your_tag&gt;
 </pre></div>
 </div>
 </div>
 <div class="section" id="id2">
-<h3>7.2.4. Release<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3>6.2.4. Release<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>Thanks to <a class="reference external" href="https://fedorapeople.org/">fedorapeople.org</a> and <a class="reference external" href="https://copr.fedoraproject.org/">Fedora Copr</a>, we could
 use <cite>tito</cite> to release <cite>PDC</cite> as a <cite>yum</cite> or <cite>dnf</cite> repo.
 So that user could install <cite>PDC</cite> packages after enable the repo. <a class="footnote-reference" href="#id7" id="id3">[1]</a></p>
@@ -204,13 +204,13 @@ $ tito release copr-pdc-test
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">7. Release</a><ul>
-<li><a class="reference internal" href="#versioning">7.1. Versioning</a></li>
-<li><a class="reference internal" href="#release-instruction">7.2. Release Instruction</a><ul>
-<li><a class="reference internal" href="#tag">7.2.1. Tag</a></li>
-<li><a class="reference internal" href="#test-build">7.2.2. Test Build</a></li>
-<li><a class="reference internal" href="#push">7.2.3. Push</a></li>
-<li><a class="reference internal" href="#id2">7.2.4. Release</a></li>
+<li><a class="reference internal" href="#">6. Release</a><ul>
+<li><a class="reference internal" href="#versioning">6.1. Versioning</a></li>
+<li><a class="reference internal" href="#release-instruction">6.2. Release Instruction</a><ul>
+<li><a class="reference internal" href="#tag">6.2.1. Tag</a></li>
+<li><a class="reference internal" href="#test-build">6.2.2. Test Build</a></li>
+<li><a class="reference internal" href="#push">6.2.3. Push</a></li>
+<li><a class="reference internal" href="#id2">6.2.4. Release</a></li>
 </ul>
 </li>
 </ul>
@@ -219,10 +219,10 @@ $ tito release copr-pdc-test
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="model_graphs.html"
-                        title="previous chapter">6. PDC Model Graphs</a></p>
+                        title="previous chapter">5. PDC Model Graphs</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="deployment.html"
-                        title="next chapter">8. Deployment</a></p>
+                        title="next chapter">7. Deployment</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -254,10 +254,10 @@ $ tito release copr-pdc-test
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="deployment.html" title="8. Deployment"
+          <a href="deployment.html" title="7. Deployment"
              >next</a> |</li>
         <li class="right" >
-          <a href="model_graphs.html" title="6. PDC Model Graphs"
+          <a href="model_graphs.html" title="5. PDC Model Graphs"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PDC fatal: No names found, cannot describe anything. documentation</a> &raquo;</li> 
       </ul>
