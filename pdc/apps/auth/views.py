@@ -81,7 +81,7 @@ def refresh_ldap_groups(request):
     if request.is_ajax():
         return HttpResponse(json.dumps({
             'username': user.username,
-            'fullname': user.first_name + ' ' + user.last_name,
+            'fullname': user.full_name,
             'e-mail': user.email,
             'is_superuser': user.is_superuser,
             'is_staff': user.is_staff,
@@ -520,7 +520,7 @@ class CurrentUserViewSet(mixins.ListModelMixin,
                             data={'detail': 'Access denied to unauthorized users.'})
         return Response(data={
             'username': user.username,
-            'fullname': user.get_full_name(),
+            'fullname': user.full_name,
             'e-mail': user.email,
             'is_superuser': user.is_superuser,
             'is_staff': user.is_staff,

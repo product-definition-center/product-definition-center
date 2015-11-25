@@ -31,8 +31,7 @@ def get_ldap_user(l, login):
     user = user[0]
     return {
         "login": user[1]["uid"][0],
-        "first_name": user[1]["givenName"][0],
-        "last_name": user[1]["sn"][0],
+        "full_name": user[1]["givenName"][0] + ' ' + user[1]["sn"][0],
         "email": user[1]["mail"][0],
     }
 
@@ -59,8 +58,7 @@ def update_user_from_ldap(user, conn=None):
             l.unbind()
 
     if user_data:
-        user.first_name = user_data["first_name"]
-        user.last_name = user_data["last_name"]
+        user.full_name = user_data["full_name"]
         user.email = user_data["email"]
 
     group_ids = set()
@@ -73,10 +71,7 @@ def update_user_from_ldap(user, conn=None):
 
 
 def update_user_from_auth_mellon(user, request):
-    # We just throw everything in first_name, as we don't need it split anyway
-    #  and splitting names is.. tricky
-    user.first_name = request.META['MELLON_fullname']
-    user.last_name = ''
+    user.full_name = request.META['MELLON_fullname']
     user.email = request.META['MELLON_email']
 
     group_ids = set()

@@ -58,8 +58,7 @@ if __name__ == '__main__':
                     g, _ = models.Group.objects.get_or_create(name=group)
                     user_groups.add(g.id)
 
-            user.first_name = data["first_name"]
-            user.last_name = data["last_name"]
+            user.full_name = data["full_name"]
             user.email = data["email"]
             user.groups = sorted(user_groups)
             user.save()

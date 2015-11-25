@@ -44,8 +44,7 @@ class LDAPSyncTestCase(TestCase):
         backends.update_user_from_ldap(user, self.connection)
 
         user = get_user_model().objects.get(username='jdoe')
-        self.assertEqual(user.first_name, 'Joe')
-        self.assertEqual(user.last_name, 'Doe')
+        self.assertEqual(user.full_name, 'Joe Doe')
         self.assertEqual(user.email, 'jdoe@test.com')
         self.assertEqual(set(g.name for g in user.groups.all()), set(['test1', 'test2']))
 
@@ -248,8 +247,7 @@ class CurrentUserTestCase(APITestCase):
     def setUp(self):
         self.user = get_user_model().objects.create(username='alice',
                                                     email='alice@example.com',
-                                                    first_name='Alice',
-                                                    last_name='von Test')
+                                                    full_name='Alice von Test')
         self.user.save()
 
     def test_can_access_data_authorized(self):
