@@ -33,8 +33,5 @@ router.register('rpc/find-older-compose-by-compose-rpm/(?P<compose_id>[^/]+)/(?P
 router.register('rpc/find-composes-by-product-version-rpm/(?P<product_version>[^/]+)/(?P<rpm_name>[^/]+)',
                 views.FindComposeByProductVersionRPMViewSet,
                 base_name='findcomposesbypvr')
-router.register(r'compose/package',
-                views.FindComposeWithOlderPackageViewSet,
-                base_name='findcomposewitholderpackage')
 router.register(r'compose-tree-locations', views.ComposeTreeViewSet,
                 base_name='composetreelocations')

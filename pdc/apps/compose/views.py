@@ -1364,46 +1364,6 @@ class FindComposeByProductVersionRPMViewSet(StrictQueryParamMixin, FindComposeMi
         return Response(self._get_composes_for_product_version())
 
 
-class FindComposeWithOlderPackageViewSet(StrictQueryParamMixin, FindComposeMixin,
-                                         viewsets.ReadOnlyModelViewSet):
-    """
-    This API endpoint allows finding composes with different version of a
-    package. The other use-case that it serves gives for a release a list of
-    composes with versions of included packages.
-    """
-    queryset = ComposeRPM.objects.none()    # Required for permissions
-    extra_query_params = ('release', 'compose', 'rpm_name', 'to_dict', 'product_version', 'included_compose_type',
-                          'excluded_compose_type', 'latest')
-
-    def list(self, request):
-        """
-        This endpoint is deprecated. Please use instead:
-        $LINK:findcomposebyrr-list:release_id:rpm_name$,
-        $LINK:findoldercomposebycr-list:compose_id:rpm_name$,
-        $LINK:findcomposesbypvr-list:product_version:rpm_name$
-        """
-        self.rpm_name = request.query_params.get('rpm_name')
-        self.release_id = request.query_params.get('release')
-        self.compose_id = request.query_params.get('compose')
-        self.product_version = request.query_params.get('product_version')
-        self.included_compose_type = request.query_params.get('included_compose_type')
-        self.excluded_compose_type = request.query_params.get('excluded_compose_type')
-        self._get_query_param_or_false(request, 'to_dict')
-        self._get_query_param_or_false(request, 'latest')
-
-        if not self.rpm_name:
-            return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data={'detail': 'The rpm_name is required.'})
-        if self.release_id:
-            return Response(self._get_composes_for_release())
-        if self.compose_id:
-            return Response(self._get_older_compose())
-        if self.product_version:
-            return Response(self._get_composes_for_product_version())
-        return Response(status=status.HTTP_400_BAD_REQUEST,
-                        data={'detail': 'One of product_version, release or compose argument is required.'})
-
-
 class ComposeTreeViewSet(ChangeSetModelMixin,
                          StrictQueryParamMixin,
                          MultiLookupFieldMixin,
