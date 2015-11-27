@@ -11,12 +11,6 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from pdc.apps.common.test_utils import TestCaseWithChangeSetMixin
-from pdc.apps.contact.models import (Person,
-                                     Maillist,
-                                     RoleContact,
-                                     ContactRole,
-                                     GlobalComponentContact,
-                                     ReleaseComponentContact)
 from pdc.apps.release.models import Release, ProductVersion
 from . import models
 
@@ -49,14 +43,6 @@ class GlobalComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(response.data, {'name': 'python'})
 
-    def test_detail_global_component_exclude_contacts_fields(self):
-        url = reverse('globalcomponent-detail', kwargs={'pk': 1})
-        response = self.client.get(url + '?exclude_fields=contacts', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], 'python')
-        self.assertIsNone(response.data['dist_git_path'])
-        self.assertNotIn('contacts', response.data)
-
     def test_create_global_component(self):
         url = reverse('globalcomponent-list')
         data = {'name': 'TestCaseComponent', 'dist_git_path': 'python'}
@@ -64,7 +50,6 @@ class GlobalComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         del response.data['id']
         del response.data['dist_git_web_url']
-        data.update({'contacts': []})
         data.update({'labels': []})
         data.update({'upstream': None})
         self.assertEqual(response.data, data)
@@ -91,7 +76,6 @@ class GlobalComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         del response.data['id']
         del response.data['dist_git_web_url']
-        data.update({'contacts': []})
         data.update({'labels': []})
         self.assertEqual(response.data, data)
 
@@ -103,7 +87,6 @@ class GlobalComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         del response.data['id']
         del response.data['dist_git_web_url']
-        data.update({'contacts': []})
         data.update({'labels': []})
         self.assertEqual(response.data, data)
 
@@ -114,7 +97,6 @@ class GlobalComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         del response.data['id']
         del response.data['dist_git_web_url']
-        del response.data['contacts']
         del response.data['labels']
         del response.data['upstream']
         self.assertEqual(response.data, data)
@@ -245,238 +227,6 @@ class GlobalComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 1)
         self.assertEqual(response.data['results'][0]['name'], 'java')
-
-
-class GlobalComponentContactRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
-    fixtures = [
-        "pdc/apps/component/fixtures/tests/upstream.json",
-        "pdc/apps/component/fixtures/tests/global_component.json",
-        "pdc/apps/contact/fixtures/tests/contact_role.json",
-        "pdc/apps/contact/fixtures/tests/maillist.json",
-        "pdc/apps/contact/fixtures/tests/person.json",
-    ]
-
-    def setUp(self):
-        super(GlobalComponentContactRESTTestCase, self).setUp()
-        person = Person.objects.get(username='person1')
-        person_2 = Person.objects.get(username='person2')
-        maillist = Maillist.objects.get(mail_name="maillist2")
-        pm_type = ContactRole.objects.get(name='pm')
-        qe_type = ContactRole.objects.get(name='qe_ack')
-
-        pm_contact = RoleContact.objects.create(
-            contact=person,
-            contact_role=pm_type)
-
-        mail_contact = RoleContact.objects.create(
-            contact=maillist,
-            contact_role=qe_type)
-
-        another_contact = RoleContact.objects.create(
-            contact=person,
-            contact_role=qe_type)
-
-        pm_contact_2 = RoleContact.objects.create(
-            contact=person_2,
-            contact_role=pm_type)
-
-        python = models.GlobalComponent.objects.get(name='MySQL-python')
-        python.contacts.add(pm_contact, mail_contact)
-
-        self.droplets = [pm_contact, mail_contact, another_contact, pm_contact_2]
-
-    def tearDown(self):
-        super(GlobalComponentContactRESTTestCase, self).tearDown()
-
-        python = models.GlobalComponent.objects.get(name='MySQL-python')
-        python.contacts.clear()
-        for droplet in self.droplets:
-            droplet.delete()
-
-    def test_list_global_component_contacts(self):
-        url = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 2})
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
-        self.assertEqual(response.data[0]['contact_role'], 'pm')
-        self.assertEqual(response.data[1]['contact_role'], 'qe_ack')
-
-    def test_retrieve_global_component_contacts(self):
-        url = reverse('globalcomponentcontact-detail', kwargs={'instance_pk': 2,
-                                                               'pk': 1})
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['contact_role'], 'pm')
-        self.assertEqual(response.data['contact']['username'],
-                         'person1')
-        self.assertEqual(response.data['contact']['email'],
-                         'person1@test.com')
-
-    def test_list_for_non_int_component_id(self):
-        url = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 'hello'})
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_update_global_component_contact(self):
-        url = reverse('globalcomponentcontact-detail', kwargs={'instance_pk': 2,
-                                                               'pk': 1})
-        response = self.client.put(url, format='json', data={})
-        self.assertEqual(response.status_code,
-                         status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def test_delete_global_component_contacts(self):
-        url = reverse('globalcomponentcontact-detail', kwargs={'instance_pk': 2,
-                                                               'pk': 1})
-        response = self.client.delete(url, format='json')
-        self.assertEqual(response.status_code,
-                         status.HTTP_204_NO_CONTENT)
-
-    def test_create_global_component_contacts(self):
-        url = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 2})
-        data = {
-            "contact_role": "qe_ack",
-            "contact": {
-                "username": "person1",
-                "email": "person1@test.com"
-            }
-        }
-        response = self.client.post(url, format='json', data=data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['contact_role'], 'qe_ack')
-        self.assertEqual(response.data['contact']['username'],
-                         'person1')
-        self.assertEqual(response.data['contact']['email'],
-                         'person1@test.com')
-        self.assertNumChanges([1])
-
-    def test_create_global_component_contacts_extra_fields(self):
-        url = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 2})
-        data = {
-            "contact_role": "qe_ack",
-            "contact": {
-                "username": "person1",
-                "email": "person1@test.com"
-            },
-            "foo": "bar",
-        }
-        response = self.client.post(url, format='json', data=data)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data.get('detail'), 'Unknown fields: "foo".')
-        self.assertNumChanges([])
-
-    def test_create_existed_gc_contacts(self):
-        url = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 2})
-        data = {
-            "contact_role": "qe_ack",
-            "contact": {
-                "username": "person1",
-                "email": "person1@test.com"
-            }
-        }
-        response = self.client.post(url, format='json', data=data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        response_again = self.client.post(url, format='json', data=data)
-        self.assertEqual(response_again.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertNumChanges([1])
-
-    def test_create_existed_gc_contacts_in_list(self):
-        url = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 2})
-        data = {
-            "contact_role": "qe_ack",
-            "contact": {
-                "username": "person1",
-                "email": "person1@test.com"
-            }
-        }
-        response = self.client.post(url, format='json', data=data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        response_again = self.client.post(url, format='json', data=[data])
-        self.assertEqual(response_again.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertNumChanges([1])
-
-    def test_create_gc_contacts_with_inexistent_contact(self):
-        # PDC-260
-        url = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 2})
-        data = {
-            "contact_role": "qe_ack",
-            "contact": {
-                "username": "person3",
-                "email": "person3@test.com"
-            }
-        }
-        response = self.client.post(url, format='json', data=data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['contact_role'], 'qe_ack')
-        self.assertEqual(response.data['contact']['username'],
-                         'person3')
-        self.assertEqual(response.data['contact']['email'],
-                         'person3@test.com')
-        self.assertNumChanges([3])
-
-    def test_create_gc_contacts_with_inexistent_contact_role_should_fail(self):
-        url = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 2})
-        data = {
-            "contact_role": "new_type",
-            "contact": {
-                "username": "person3",
-                "email": "person3@test.com"
-            }
-        }
-        response = self.client.post(url, format='json', data=data)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_create_multiple_global_component_contacts(self):
-        url = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 2})
-        data = [{
-            "contact_role": "qe_ack",
-            "contact": {
-                "username": "person1",
-                "email": "person1@test.com"
-            }
-        }, {
-            "contact_role": "pm",
-            "contact": {
-                "mail_name": "maillist2",
-                "email": "maillist2@test.com"
-            }
-        }]
-        response = self.client.post(url, format='json', data=data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data[0]['contact_role'], 'qe_ack')
-        self.assertEqual(response.data[0]['contact']['username'],
-                         'person1')
-        self.assertEqual(response.data[0]['contact']['email'],
-                         'person1@test.com')
-        self.assertEqual(response.data[1]['contact_role'], 'pm')
-        self.assertEqual(response.data[1]['contact']['mail_name'],
-                         'maillist2')
-        self.assertEqual(response.data[1]['contact']['email'],
-                         'maillist2@test.com')
-        self.assertNumChanges([3])
-
-    def test_query_global_component_contacts(self):
-        url = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 2})
-        url = '%s%s' % (url, '?contact_role=pm')
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['contact_role'], 'pm')
-        self.assertEqual(response.data[0]['contact']['username'], 'person1')
-        self.assertEqual(response.data[0]['contact']['email'], 'person1@test.com')
-
-    def test_query_with_multiple_values(self):
-        url = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 2})
-        url = '%s%s' % (url, '?contact_role=pm&contact_role=qe_ack')
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
-
-    def test_query_with_more_keys(self):
-        url = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 2})
-        url = '%s%s' % (url, '?contact_role=pm&username=person1')
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
 
 
 class GlobalComponentLabelRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
@@ -635,56 +385,11 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         "pdc/apps/component/fixtures/tests/upstream.json",
         "pdc/apps/component/fixtures/tests/global_component.json",
         "pdc/apps/component/fixtures/tests/release_component.json",
-        "pdc/apps/contact/fixtures/tests/contact_role.json",
-        "pdc/apps/contact/fixtures/tests/maillist.json",
-        "pdc/apps/contact/fixtures/tests/person.json",
         "pdc/apps/bindings/fixtures/tests/releasedistgitmapping.json"
     ]
 
     def setUp(self):
         super(ReleaseComponentRESTTestCase, self).setUp()
-        # Initialize release_component contact
-        person = Person.objects.get(username='person1')
-        person_2 = Person.objects.get(username='person2')
-        maillist = Maillist.objects.get(mail_name="maillist2")
-        pm_type = ContactRole.objects.get(name='pm')
-        qe_type = ContactRole.objects.get(name='qe_ack')
-
-        pm_contact = RoleContact.objects.create(
-            contact=person,
-            contact_role=pm_type)
-
-        mail_contact = RoleContact.objects.create(
-            contact=maillist,
-            contact_role=qe_type)
-
-        RoleContact.objects.create(
-            contact=person_2,
-            contact_role=pm_type)
-
-        RoleContact.objects.create(
-            contact=person_2,
-            contact_role=qe_type)
-
-        gc_python = models.GlobalComponent.objects.get(name='python')
-        gc_python.contacts.add(pm_contact, mail_contact)
-
-        rc_python27 = models.ReleaseComponent.objects.get(name='python27')
-        # Initialize release component contact
-        base_name = 'foo'
-        for i in range(2):
-            contact = RoleContact.specific_objects.create(
-                username=base_name + str(i),
-                email=base_name + str(i) + '@example.com',
-                contact_role='QE_Group')
-            rc_python27.contacts.add(contact)
-
-        # Append a new contact with a new contact_role
-        contact = RoleContact.specific_objects.create(
-            username='new',
-            email=base_name + '@example.com',
-            contact_role='type_xx')
-        rc_python27.contacts.add(contact)
 
         # Create an inactive release as well as a release component on top of it.
         pv = ProductVersion.objects.create(
@@ -745,28 +450,6 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(url + '?fields=name', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(['name'], response.data['results'][0].keys())
-
-    def test_detail_release_component_exclude_contacts_fields(self):
-        url = reverse('releasecomponent-list')
-        response = self.client.get(url + '?exclude_fields=contacts', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertNotIn('contacts', response.data)
-
-    def test_filter_release_component_with_params(self):
-        url = reverse('releasecomponent-list')
-        # Query with specific contact_role,
-        # contact_role and email have to be provided together, otherwise the filter will not make sense,
-        # but filter out all release_component
-        data = {'contact_role': 'pm'}
-        response = self.client.get(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 2)
-
-        # Query both contact_role and email.
-        data = {'contact_role': 'QE_Group', 'email': 'foo1@example.com'}
-        response = self.client.get(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 1)
 
     def test_filter_release_component_with_brew_package(self):
         self.test_create_release_component()
@@ -861,19 +544,6 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data['name'], 'python27')
         self.assertEqual(response.data['dist_git_branch'], 'test_branch')
 
-    def test_release_component_contacts_url(self):
-        url = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 1})
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 5)
-        self.assertContains(response, 'release-components', 3)
-        self.assertContains(response, 'global-components', 2)
-
-    def test_list_for_non_int_component_id(self):
-        url = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 'hello'})
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
     def test_detail_release_component_not_exist(self):
         url = reverse('releasecomponent-detail', kwargs={'pk': 9999})
         response = self.client.get(url, format='json')
@@ -888,7 +558,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         del response.data['dist_git_web_url']
         del response.data['srpm']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        data.update({'contacts': [], 'dist_git_branch': "release_branch", 'id': 3,
+        data.update({'dist_git_branch': "release_branch", 'id': 3,
                      'bugzilla_component': None, 'active': True, 'type': 'rpm'})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1])
@@ -919,7 +589,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         del response.data['dist_git_web_url']
         del response.data['srpm']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        data.update({'contacts': [], 'dist_git_branch': "release_branch", 'id': 3,
+        data.update({'dist_git_branch': "release_branch", 'id': 3,
                      'bugzilla_component': None, 'active': True, 'type': 'rpm'})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1])
@@ -1035,7 +705,6 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         del response.data['dist_git_web_url']
         del response.data['dist_git_branch']
-        del response.data['contacts']
         del response.data['srpm']
         del response.data['id']
         del response.data['bugzilla_component']
@@ -1120,13 +789,29 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_bulk_update(self):
+        url = reverse('releasecomponent-list')
+        data = {'1': {'name': 'python34', 'brew_package': 'python-pdc', 'active': 'True', 'dist_git_branch': 'rpm/python2', 'bugzilla_component': None, 'srpm': None, 'type': 'rpm'},
+                '2': {'name': 'MySQL-python34', 'brew_package': 'python-pdc', 'active': 'False'}}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['1'].get('dist_git_branch'), 'rpm/python2')
+        self.assertNumChanges([2])
+
+    def test_bulk_partial_update_not_allowed(self):
+        url = reverse('releasecomponent-list')
+        data = {'1': {'brew_package': 'python-pdc', 'active': 'True'},
+                '2': {'brew_package': 'python-pdc', 'active': 'False'}}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
     def test_create_active_release_component(self):
         url = reverse('releasecomponent-list')
         data = {'release': 'release-1.0', 'global_component': 'python', 'name': 'python34', 'brew_package': 'python-pdc', 'active': 'True'}
         response = self.client.post(url, data, format='json')
         del response.data['dist_git_web_url']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        data.update({'contacts': [], 'dist_git_branch': "release_branch", 'id': 3,
+        data.update({'dist_git_branch': "release_branch", 'id': 3,
                      'bugzilla_component': None, 'srpm': None, 'active': True, 'type': 'rpm'})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1])
@@ -1136,7 +821,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(url, data, format='json')
         del response.data['dist_git_web_url']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        data.update({'contacts': [], 'dist_git_branch': "release_branch", 'id': 3,
+        data.update({'dist_git_branch': "release_branch", 'id': 3,
                      'bugzilla_component': None, 'srpm': None, 'active': True, 'type': 'rpm'})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1, 1])
@@ -1147,7 +832,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(url, data, format='json')
         del response.data['dist_git_web_url']
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        data.update({'contacts': [], 'dist_git_branch': "release_branch", 'id': 3,
+        data.update({'dist_git_branch': "release_branch", 'id': 3,
                      'bugzilla_component': None, 'srpm': None, 'active': False, 'type': 'rpm'})
         self.assertEqual(sorted(response.data), sorted(data))
         self.assertNumChanges([1])
@@ -1364,136 +1049,11 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data, {"name": ["This field is required."]})
         self.assertNumChanges([])
 
-    def test_get_release_component_contact(self):
-        url = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 1})
-        data = {}
-        response = self.client.get(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('http://testserver/rest_api/v1/global-components/1/contacts/1/', response.content)
-        self.assertEqual(len(response.data), 5)
-
-    def test_get_single_release_component_contact(self):
-        url = reverse('releasecomponentcontact-detail', kwargs={'instance_pk': 1, 'pk': 5})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_get_single_release_component_contact_with_bad_component_id(self):
-        url = reverse('releasecomponentcontact-detail', kwargs={'instance_pk': 'hello', 'pk': 5})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
     def test_assign_label_to_global_component_without_name(self):
         url = reverse('globalcomponentlabel-list', kwargs={'instance_pk': 1})
         response = self.client.post(url, format='json', data={})
         self.assertEqual(response.data, {'name': ['This field is required.']})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_add_release_component_contact(self):
-        url = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 2})
-        data = {
-            "contact_role": "QE_Group",
-            "contact": {
-                'username': 'foo1',
-                'email': 'foo1@example.com',
-            }
-        }
-        response = self.client.post(url, data, format='json')
-        response_new = self.client.get(url, {}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response_new.status_code, status.HTTP_200_OK)
-        self.assertIn(response.data, response_new.data)
-        # PDC-288
-        self.assertNumChanges([1])
-
-    def test_add_release_component_contact_extra_fields(self):
-        url = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 2})
-        data = {
-            "contact_role": "QE_Group",
-            "contact": {
-                'username': 'foo1',
-                'email': 'foo1@example.com',
-            },
-            'foo': 'bar'
-        }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data.get('detail'), 'Unknown fields: "foo".')
-        self.assertNumChanges([])
-
-    def test_add_existed_release_component_contact(self):
-        # PDC-272
-        url = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 2})
-        data = {
-            "contact_role": "QE_Group",
-            "contact": {
-                'username': 'foo1',
-                'email': 'foo1@example.com',
-            }
-        }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        response_again = self.client.post(url, data, format='json')
-        self.assertEqual(response_again.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_add_rc_contact_with_inexistent_contact(self):
-        # PDC-272
-        url = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 2})
-        data = {
-            "contact_role": "qe_ack",
-            "contact": {
-                'username': 'foo1',
-                'email': 'foo1@example.com',
-            }
-        }
-        response = self.client.post(url, data, format='json')
-        response_new = self.client.get(url, {}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response_new.status_code, status.HTTP_200_OK)
-        self.assertIn(response.data, response_new.data)
-        # 3 = new_type + new_rolecontact + new_rc_contact
-        self.assertNumChanges([2])
-
-    def test_add_rc_contact_with_inexistent_contact_role_should_fail(self):
-        url = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 2})
-        data = {
-            "contact_role": "new_type",
-            "contact": {
-                'username': 'foo1',
-                'email': 'foo1@example.com',
-            }
-        }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_filter_release_component_contact(self):
-        url = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 1})
-        data = {}
-        qe_group_url = url + "?contact_role=QE_Group"
-        response_new = self.client.get(qe_group_url, data, format='json')
-        self.assertEqual(response_new.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response_new.data), 2)
-
-    def test_filter_release_component_inherited_contact(self):
-        url = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 1})
-        data = {}
-        response = self.client.get(url, data, format='json')
-        qe_group_url = url + "?contact_role=qe_ack"
-        response_filtered = self.client.get(qe_group_url, data, format='json')
-        self.assertEqual(response_filtered.status_code, status.HTTP_200_OK)
-        self.assertIn(response_filtered.data[0], response.data)
-        self.assertEqual(len(response_filtered.data), 1)
-        contact_qe_ack = response_filtered.data[0]
-        self.assertTrue('inherited' in contact_qe_ack)
-        self.assertTrue(contact_qe_ack.get('inherited'))
-
-    def test_filter_release_component_by_email_contact_role(self):
-        url = reverse('releasecomponent-list')
-        data = {}
-        qe_group_url = url + "?email=foo1@example.com&contact_role=QE_Group"
-        response_new = self.client.get(qe_group_url, data, format='json')
-        self.assertEqual(response_new.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_new.data['count'], 1)
-        self.assertEqual(len(response_new.data['results'][0]['contacts']), 5)
 
     def test_filter_release_component_by_bugzillacomponent(self):
         url = reverse('releasecomponent-list')
@@ -1501,264 +1061,6 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response_new = self.client.get(bugzilla_component_url, format='json')
         self.assertEqual(response_new.status_code, status.HTTP_200_OK)
         self.assertEqual(response_new.data['count'], 1)
-
-    def test_same_contact_role_exist_in_both(self):
-        url = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 1})
-        data = {}
-        response = self.client.get(url, data, format='json')
-        gc_contact_pm = response.data[3]
-
-        # Add a new contact whose contact_role is same as one of global_component
-        contact = RoleContact.specific_objects.create(
-            username='release_component',
-            email='release@example.com',
-            contact_role='pm')
-        models.ReleaseComponent.objects.get(pk=1).contacts.add(contact)
-        response = self.client.get(url, data, format='json')
-        rc_contact_pm = response.data[3]
-
-        self.assertNotIn(gc_contact_pm, response.data)
-        self.assertIn(rc_contact_pm, response.data)
-
-    def test_release_component_with_overwrite_email(self):
-        url = reverse('releasecomponent-list')
-        contact = RoleContact.specific_objects.create(
-            username='release_component',
-            email='release@example.com',
-            contact_role='pm')
-        models.ReleaseComponent.objects.get(pk=1).contacts.add(contact)
-        response = self.client.get(url, {'email': 'person1@test.com'}, format='json')
-        self.assertEqual(response.data['count'], 0)
-
-    def test_release_component_with_multiple_overwrite(self):
-        url = reverse('releasecomponent-list')
-        contact = RoleContact.specific_objects.create(
-            username='release_component',
-            email='release@example.com',
-            contact_role='pm')
-        models.ReleaseComponent.objects.get(pk=1).contacts.add(contact)
-        contact = RoleContact.specific_objects.create(
-            username='gc_person_1',
-            email='person1@test.com',
-            contact_role='type_YYY')
-        models.GlobalComponent.objects.get(pk=1).contacts.add(contact)
-        response = self.client.get(url, {'email': 'person1@test.com'}, format='json')
-        self.assertEqual(response.data['count'], 1)
-
-    def test_remove_release_component_contact(self):
-        url = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 1})
-        data = {}
-        response = self.client.get(url, data, format='json')
-        contact = response.data[0]
-        response = self.client.delete(contact['url'], format='json')
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        response = self.client.get(url, data, format='json')
-        self.assertNotIn(contact, response.data)
-        # PDC-288
-        self.assertNumChanges([1])
-
-    def test_update_release_component_contacts(self):
-        url = reverse('releasecomponent-list')
-        data = {
-            "global_component": "python",
-            "releases": ["release-1.0"],
-            "contacts": [{
-                "contact_role": "qe_ack",
-                "contact": {
-                    "username": "person2",
-                    "email": "person2@test.com"
-                }
-            }]
-        }
-        response = self.client.put(url, format='json', data=data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        release_component = response.data[0]
-        self.assertEqual(release_component['global_component'], 'python')
-        self.assertEqual(release_component['release']['release_id'], 'release-1.0')
-        contacts = release_component['contacts']
-
-        self.assertEqual(contacts[0]['contact_role'], 'qe_ack')
-        self.assertEqual(contacts[0]['contact']['username'],
-                         'person2')
-        self.assertEqual(contacts[0]['contact']['email'],
-                         'person2@test.com')
-        self.assertIsNone(contacts[0].get('inherited', None))
-        self.assertNumChanges([1])
-
-    def test_partial_update_release_component_contacts_fails(self):
-        url = reverse('releasecomponent-list')
-        response = self.client.patch(url, data=None)
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def test_update_multiple_release_component_contacts(self):
-        url = reverse('releasecomponent-list')
-        data = {
-            "global_component": "MySQL-python",
-            "releases": ["release-1.0"],
-            "contacts": [{
-                "contact_role": "qe_ack",
-                "contact": {
-                    "username": "person2",
-                    "email": "person2@test.com"
-                }
-            }, {
-                "contact_role": "pm",
-                "contact": {
-                    "username": "person2",
-                    "email": "person2@test.com"
-                }
-            }]
-        }
-        response = self.client.put(url, format='json', data=data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        release_component = response.data[0]
-        self.assertEqual(release_component['global_component'], 'MySQL-python')
-        self.assertEqual(release_component['release']['release_id'], 'release-1.0')
-        contacts = release_component['contacts']
-
-        self.assertEqual(contacts[0]['contact_role'], 'pm')
-        self.assertEqual(contacts[0]['contact']['username'],
-                         'person2')
-        self.assertEqual(contacts[0]['contact']['email'],
-                         'person2@test.com')
-        self.assertIsNone(contacts[0].get('inherited', None))
-        self.assertEqual(contacts[1]['contact_role'], 'qe_ack')
-        self.assertEqual(contacts[1]['contact']['username'],
-                         'person2')
-        self.assertEqual(contacts[1]['contact']['email'],
-                         'person2@test.com')
-        self.assertIsNone(contacts[1].get('inherited', None))
-        self.assertNumChanges([1])
-
-    def test_update_multiple_rc_contacts_with_inexistent_contact(self):
-        # PDC-289
-        url = reverse('releasecomponent-list')
-        data = {
-            "global_component": "MySQL-python",
-            "releases": ["release-1.0"],
-            "contacts": [{
-                "contact_role": "qe_ack",
-                "contact": {
-                    "username": "person2",
-                    "email": "person2@test.com"
-                }
-            }, {
-                "contact_role": "pm",
-                "contact": {
-                    "username": "person2",
-                    "email": "person2@test.com"
-                }
-            }]
-        }
-        response = self.client.put(url, format='json', data=data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        release_component = response.data[0]
-        self.assertEqual(release_component['global_component'], 'MySQL-python')
-        self.assertEqual(release_component['release']['release_id'], 'release-1.0')
-        contacts = release_component['contacts']
-
-        self.assertEqual(contacts[1]['contact_role'], 'qe_ack')
-        self.assertEqual(contacts[1]['contact']['username'],
-                         'person2')
-        self.assertEqual(contacts[1]['contact']['email'],
-                         'person2@test.com')
-        self.assertIsNone(contacts[1].get('inherited', None))
-        self.assertNumChanges([1])
-
-    def test_update_multiple_rc_contacts_with_inexistent_contact_role_should_fail(self):
-        url = reverse('releasecomponent-list')
-        data = {
-            "global_component": "MySQL-python",
-            "releases": ["release-1.0"],
-            "contacts": [{
-                "contact_role": "new_type",
-                "contact": {
-                    "username": "person2",
-                    "email": "person2@test.com"
-                }
-            }, {
-                "contact_role": "pm",
-                "contact": {
-                    "username": "person2",
-                    "email": "person2@test.com"
-                }
-            }]
-        }
-        response = self.client.put(url, format='json', data=data)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_update_duplicated_rc_contacts_with_inexistent_contact(self):
-        # PDC-289
-        url = reverse('releasecomponent-list')
-        data = {
-            "global_component": "MySQL-python",
-            "releases": ["release-1.0"],
-            "contacts": [{
-                "contact_role": "pm",
-                "contact": {
-                    "username": "person2",
-                    "email": "person2@test.com"
-                }
-            }, {
-                "contact_role": "pm",
-                "contact": {
-                    "username": "person2",
-                    "email": "person2@test.com"
-                }
-            }]
-        }
-        response = self.client.put(url, format='json', data=data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        release_component = response.data[0]
-        self.assertEqual(release_component['global_component'], 'MySQL-python')
-        self.assertEqual(release_component['release']['release_id'], 'release-1.0')
-
-        contacts = release_component['contacts']
-        self.assertEqual(len(contacts), 1)
-
-        self.assertEqual(contacts[0]['contact_role'], 'pm')
-        self.assertEqual(contacts[0]['contact']['username'],
-                         'person2')
-        self.assertEqual(contacts[0]['contact']['email'],
-                         'person2@test.com')
-        self.assertIsNone(contacts[0].get('inherited', None))
-        self.assertNumChanges([1])
-
-    def test_bulk_update_with_release(self):
-        # PDC-289
-        url = reverse('releasecomponent-list')
-        data = {
-            "global_component": "MySQL-python",
-            "releases": ["release-1.0"],
-            "contacts": [{
-                "contact_role": "pm",
-                "contact": {
-                    "username": "person2",
-                    "email": "person2@test.com"
-                }
-            }, {
-                "contact_role": "pm",
-                "contact": {
-                    "username": "person2",
-                    "email": "person2@test.com"
-                }
-            }]
-        }
-        response = self.client.put(url, format='json', data=data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        release_component = response.data[0]
-        self.assertEqual(release_component['global_component'], 'MySQL-python')
-        self.assertEqual(release_component['release']['release_id'], 'release-1.0')
-
-        contacts = release_component['contacts']
-        self.assertEqual(len(contacts), 1)
-
-        self.assertEqual(contacts[0]['contact_role'], 'pm')
-        self.assertEqual(contacts[0]['contact']['username'],
-                         'person2')
-        self.assertEqual(contacts[0]['contact']['email'],
-                         'person2@test.com')
-        self.assertIsNone(contacts[0].get('inherited', None))
 
     def test_create_with_inactive_release(self):
         url = reverse('releasecomponent-list')
@@ -1769,46 +1071,6 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         }
         response = self.client.post(url, format='json', data=data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_bulk_delete_contacts(self):
-        url = reverse('releasecomponentcontact-list', args=[1])
-        response = self.client.delete(url, [5, 6, 7], format='json')
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        c = models.ReleaseComponent.objects.get(pk=1)
-        self.assertEqual(c.contacts.count(), 0)
-
-    def test_delete_inherited_contact(self):
-        url = reverse('releasecomponentcontact-detail', kwargs={'instance_pk': 1, 'pk': 2})
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('is inherited from GlobalComponent', response.data.get('detail'))
-
-    def test_delete_inherited_contact_from_globalcomponent(self):
-        url = reverse('releasecomponent-detail', kwargs={'pk': 1})
-        response = self.client.get(url, format='json')
-        length = len(response.data['contacts'])
-
-        url1 = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 1})
-        response1 = self.client.get(url1, format='json')
-        self.assertEqual(length, len(response1.data))
-
-        url2 = reverse('globalcomponentcontact-detail', kwargs={'instance_pk': 1, 'pk': 2})
-        self.client.delete(url2)
-
-        url3 = reverse('globalcomponentcontact-detail', kwargs={'instance_pk': 1, 'pk': 1})
-        self.client.delete(url3)
-
-        url4 = reverse('releasecomponent-detail', kwargs={'pk': 1})
-        response4 = self.client.get(url4, format='json')
-        self.assertEqual(length - 2, len(response4.data['contacts']))
-
-        url5 = reverse('releasecomponentcontact-list', kwargs={'instance_pk': 1})
-        response5 = self.client.get(url5, format='json')
-        self.assertEqual(length - 2, len(response5.data))
-
-        url6 = reverse('globalcomponentcontact-list', kwargs={'instance_pk': 1})
-        response6 = self.client.get(url6)
-        self.assertEqual(response6.data, [])
 
 
 class ReleaseCloneWithComponentsTestCase(TestCaseWithChangeSetMixin, APITestCase):
@@ -1823,7 +1085,6 @@ class ReleaseCloneWithComponentsTestCase(TestCaseWithChangeSetMixin, APITestCase
         "pdc/apps/component/fixtures/tests/upstream.json",
         "pdc/apps/component/fixtures/tests/global_component.json",
         "pdc/apps/component/fixtures/tests/release_component.json",
-        "pdc/apps/contact/fixtures/tests/contact_role.json",
         'pdc/apps/component/fixtures/tests/group_type.json',
         'pdc/apps/component/fixtures/tests/release_component_group.json',
         'pdc/apps/component/fixtures/tests/release_component_relationship.json'
@@ -1860,24 +1121,6 @@ class ReleaseCloneWithComponentsTestCase(TestCaseWithChangeSetMixin, APITestCase
         self.assertEqual(relations.count(), 2)
         self.assertGreater(relations[0].id, 2)
         self.assertNumChanges([6])
-
-    def test_clone_component_with_contact(self):
-        ReleaseComponentContact.objects.create(component=self.rc,
-                                               role=ContactRole.objects.get(name='qe_ack'),
-                                               contact=Person.objects.create(username='person1',
-                                                                             email='person1@example.com'))
-
-        response = self.client.post(reverse('releaseclone-list'),
-                                    {'old_release_id': 'release-1.0', 'version': '1.1'},
-                                    format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertNumChanges([7])
-        contacts = ReleaseComponentContact.objects.filter(component__release__release_id='release-1.1',
-                                                          component__name='python27')
-        self.assertEqual(1, len(contacts))
-        self.assertEqual('qe_ack', contacts[0].role.name)
-        self.assertEqual('person1', contacts[0].contact.person.username)
-        self.assertEqual(2, ReleaseComponentContact.objects.count())
 
     def test_clone_components_change_dist_git_branch(self):
         response = self.client.post(reverse('releaseclone-list'),
@@ -2563,537 +1806,3 @@ class ReleaseComponentRelationshipRESTTestCase(TestCaseWithChangeSetMixin, APITe
 
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-
-class GlobalComponentContactInfoRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
-    fixtures = [
-        "pdc/apps/component/fixtures/tests/global_component.json",
-        "pdc/apps/contact/fixtures/tests/contact_role.json",
-        "pdc/apps/contact/fixtures/tests/maillist.json",
-        "pdc/apps/contact/fixtures/tests/person.json",
-        "pdc/apps/component/fixtures/tests/upstream.json"
-    ]
-
-    @classmethod
-    def setUpTestData(cls):
-        GlobalComponentContact.objects.create(
-            component=models.GlobalComponent.objects.get(name='MySQL-python'),
-            role=ContactRole.objects.get(name='pm'),
-            contact=Person.objects.get(username='person1'))
-        GlobalComponentContact.objects.create(
-            component=models.GlobalComponent.objects.get(name='java'),
-            role=ContactRole.objects.get(name='qe_ack'),
-            contact=Maillist.objects.get(mail_name="maillist2"))
-
-    def setUp(self):
-        self.list_url = reverse('globalcomponentcontacts-list')
-
-    def test_list_global_component_contacts(self):
-        response = self.client.get(self.list_url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get('count'), 2)
-        results = response.data.get('results')
-        self.assertEqual(results[0]['role'], 'pm')
-        self.assertEqual(results[0]['contact']['email'], 'person1@test.com')
-
-        self.assertEqual(results[1]['role'], 'qe_ack')
-        self.assertEqual(results[1]['contact']['mail_name'], 'maillist2')
-
-    def test_retrieve_global_component_contacts(self):
-        response = self.client.get(reverse('globalcomponentcontacts-detail', args=[2]))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['role'], 'qe_ack')
-        self.assertEqual(response.data['contact']['mail_name'], 'maillist2')
-        self.assertEqual(response.data['contact']['email'], 'maillist2@test.com')
-
-    def test_destroy_global_component_contacts(self):
-        self.client.delete(reverse('globalcomponentcontacts-detail', args=[2]))
-        self.assertEqual(0, GlobalComponentContact.objects.filter(pk=2).count())
-
-    def test_filter_global_component_contacts(self):
-        response = self.client.get(self.list_url, {'role': 'pm'})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 1)
-
-        response = self.client.get(self.list_url, {'role': 'no_such_role'})
-        self.assertEqual(response.data['count'], 0)
-
-        response = self.client.get(self.list_url,
-                                   {'role': 'qe_ack', 'contact': 'maillist2'})
-        self.assertEqual(response.data['count'], 1)
-
-        # should not get anything
-        response = self.client.get(self.list_url,
-                                   {'role': 'qe_ack', 'contact': 'person1'})
-        self.assertEqual(response.data['count'], 0)
-
-        # should not get anything
-        response = self.client.get(self.list_url,
-                                   {'role': 'pm', 'contact': 'maillist2'})
-        self.assertEqual(response.data['count'], 0)
-
-        response = self.client.get(self.list_url, {'component': 'java'})
-        self.assertEqual(response.data['count'], 1)
-
-        response = self.client.get(self.list_url, {'component': 'no_component'})
-        self.assertEqual(response.data['count'], 0)
-
-    def test_create_global_component_contacts(self):
-        data = {'component': 'python', 'role': 'pm', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(3, GlobalComponentContact.objects.count())
-
-    def test_patch_global_component_contacts(self):
-        data = {"contact": {"username": "person2", "email": "person2@test.com"}}
-        response = self.client.patch(reverse('globalcomponentcontacts-detail', args=[2]),
-                                     data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        response.data['contact'].pop('id')
-        self.assertEqual(response.data['contact'], data['contact'])
-        self.assertNumChanges([1])
-
-    def test_create_global_component_contacts_exceed_count_limit(self):
-        data = {'component': 'python', 'role': 'cc', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': 'python', 'role': 'cc', 'contact': {'mail_name': 'maillist1'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_create_global_component_contacts_for_unlimited_role(self):
-        data = {'component': 'python', 'role': 'watcher', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': 'python', 'role': 'watcher', 'contact': {'mail_name': 'maillist1'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': 'python', 'role': 'watcher',
-                'contact': {"username": "person1", "email": "person1@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': 'python', 'role': 'watcher',
-                'contact': {"username": "person2", "email": "person2@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    def test_create_global_component_contacts_for_role_limit_3(self):
-        data = {'component': 'python', 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': 'python', 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist1'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': 'python', 'role': 'allow_3_role',
-                'contact': {"username": "person1", "email": "person1@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': 'python', 'role': 'allow_3_role',
-                'contact': {"username": "person2", "email": "person2@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_patch_global_component_contact_exceed_count_limit(self):
-        data = {'component': 'python', 'role': 'cc', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        data = {'component': 'python', 'role': 'watcher', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        pk = response.data['id']
-        url = reverse('globalcomponentcontacts-detail', args=[pk])
-        data = {'role': 'cc'}
-        response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_patch_global_component_contacts_for_role_limit_3(self):
-        data = {'component': 'python', 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': 'python', 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist1'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': 'python', 'role': 'cc',
-                'contact': {"username": "person1", "email": "person1@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        pk_cc = response.data['id']
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': 'python', 'role': 'watcher',
-                'contact': {"username": "person2", "email": "person2@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        pk_watcher = response.data['id']
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        # fourth for allow_3_role
-        url = reverse('globalcomponentcontacts-detail', args=[pk_cc])
-        data = {'role': 'allow_3_role'}
-        response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        url = reverse('globalcomponentcontacts-detail', args=[pk_watcher])
-        data = {'role': 'allow_3_role'}
-        response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-        # remove one and patch again
-        response = self.client.delete(reverse('globalcomponentcontacts-detail', args=[pk_cc]))
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-
-        url = reverse('globalcomponentcontacts-detail', args=[pk_watcher])
-        data = {'role': 'allow_3_role'}
-        response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_constraint_to_contact_role_count_limit_change(self):
-        data = {'component': 'python', 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': 'python', 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist1'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': 'python', 'role': 'allow_3_role',
-                'contact': {"username": "person1", "email": "person1@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        pk = response.data['id']
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        contact_role_url = reverse('contactrole-detail', args=['allow_3_role'])
-        data = {'count_limit': '4'}
-        response = self.client.patch(contact_role_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        contact_role_url = reverse('contactrole-detail', args=['allow_3_role'])
-        data = {'count_limit': '2'}
-        response = self.client.patch(contact_role_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-        # remove one role contact and try again
-        response = self.client.delete(reverse('globalcomponentcontacts-detail', args=[pk]))
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        data = {'count_limit': '2'}
-        response = self.client.patch(contact_role_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_constraint_to_contact_role_count_limit_change_for_different_roles(self):
-        data = {'component': 'python', 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': 'python', 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist1'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': 'python', 'role': 'allow_3_role',
-                'contact': {"username": "person1", "email": "person1@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': 'python', 'role': 'cc',
-                'contact': {"username": "person1", "email": "person1@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        contact_role_url = reverse('contactrole-detail', args=['allow_3_role'])
-        data = {'count_limit': '2'}
-        response = self.client.patch(contact_role_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-        contact_role_url = reverse('contactrole-detail', args=['cc'])
-        data = {'count_limit': '2'}
-        response = self.client.patch(contact_role_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        contact_role_url = reverse('contactrole-detail', args=['cc'])
-        data = {'count_limit': '1'}
-        response = self.client.patch(contact_role_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-
-class ReleaseComponentContactInfoRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
-    fixtures = [
-        "pdc/apps/component/fixtures/tests/global_component.json",
-        "pdc/apps/release/fixtures/tests/release.json",
-        "pdc/apps/component/fixtures/tests/release_component.json",
-        "pdc/apps/contact/fixtures/tests/contact_role.json",
-        "pdc/apps/contact/fixtures/tests/maillist.json",
-        "pdc/apps/contact/fixtures/tests/person.json",
-        "pdc/apps/component/fixtures/tests/upstream.json"
-    ]
-
-    @classmethod
-    def setUpTestData(cls):
-        ReleaseComponentContact.objects.create(
-            component=models.ReleaseComponent.objects.get(name='MySQL-python'),
-            role=ContactRole.objects.get(name='pm'),
-            contact=Person.objects.get(username='person1'))
-        ReleaseComponentContact.objects.create(
-            component=models.ReleaseComponent.objects.get(name='python27'),
-            role=ContactRole.objects.get(name='qe_ack'),
-            contact=Maillist.objects.get(mail_name='maillist2'))
-
-    def setUp(self):
-        self.list_url = reverse('releasecomponentcontacts-list')
-
-    def test_list_release_component_contacts(self):
-        response = self.client.get(self.list_url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get('count'), 2)
-        results = response.data.get('results')
-        for result in results:
-            if result['id'] == 1:
-                self.assertEqual(result['role'], 'pm')
-                self.assertEqual(result['contact']['email'], 'person1@test.com')
-            else:
-                self.assertEqual(result['role'], 'qe_ack')
-                self.assertEqual(result['contact']['mail_name'], 'maillist2')
-
-    def test_retrieve_release_component_contacts(self):
-        response = self.client.get(reverse('releasecomponentcontacts-detail', args=[2]))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['role'], 'qe_ack')
-        self.assertEqual(response.data['contact']['mail_name'], 'maillist2')
-        self.assertEqual(response.data['contact']['email'], 'maillist2@test.com')
-
-    def test_destroy_release_component_contact(self):
-        response = self.client.delete(reverse('releasecomponentcontacts-detail', args=[2]))
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(0, ReleaseComponentContact.objects.filter(pk=2).count())
-
-    def test_filter_release_component_contacts(self):
-        response = self.client.get(self.list_url, {'role': 'pm'})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 1)
-
-        response = self.client.get(self.list_url, {'role': 'no_such_role'})
-        self.assertEqual(response.data['count'], 0)
-
-        response = self.client.get(self.list_url, {'role': 'qe_ack', 'contact': 'maillist2'})
-        self.assertEqual(response.data['count'], 1)
-
-        # should not get anything
-        response = self.client.get(self.list_url, {'role': 'qe_ack', 'contact': 'person1'})
-        self.assertEqual(response.data['count'], 0)
-
-        # should not get anything
-        response = self.client.get(self.list_url, {'role': 'pm', 'contact': 'maillist2'})
-        self.assertEqual(response.data['count'], 0)
-
-        response = self.client.get(self.list_url, {'component': 'python27'})
-        self.assertEqual(response.data['count'], 1)
-
-        response = self.client.get(self.list_url, {'component': 'missing'})
-        self.assertEqual(response.data['count'], 0)
-
-    def test_filter_by_global_component(self):
-        response = self.client.get(self.list_url, {'global_component': 'python'})
-        self.assertEqual(response.data['count'], 1)
-
-    def test_filter_by_email(self):
-        response = self.client.get(self.list_url, {'email': 'person1@test.com'})
-        self.assertEqual(response.data['count'], 1)
-
-        response = self.client.get(self.list_url, {'email': 'maillist2@test.com'})
-        self.assertEqual(response.data['count'], 1)
-
-        response = self.client.get(self.list_url,
-                                   {'email': ['maillist2@test.com', 'person1@test.com']})
-        self.assertEqual(response.data['count'], 2)
-
-        response = self.client.get(self.list_url, {'email': 'bad@test.com'})
-        self.assertEqual(response.data['count'], 0)
-
-    def test_create_release_component_contacts(self):
-        data = {'component': {'id': 2}, 'role': 'cc', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(3, ReleaseComponentContact.objects.count())
-
-    def test_patch_release_component_contacts(self):
-        url = reverse('releasecomponentcontacts-detail', args=[2])
-        data = {"contact": {"username": "person2", "email": "person2@test.com"}}
-        response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        response.data['contact'].pop('id')
-        self.assertEqual(response.data['contact'], data['contact'])
-        self.assertNumChanges([1])
-
-    def test_create_release_component_contacts_exceed_count_limit(self):
-        data = {'component': {'id': 2}, 'role': 'cc', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': {'id': 2}, 'role': 'cc', 'contact': {'mail_name': 'maillist1'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_create_release_component_contacts_for_unlimited_role(self):
-        data = {'component': {'id': 2}, 'role': 'watcher', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': {'id': 2}, 'role': 'watcher', 'contact': {'mail_name': 'maillist1'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': {'id': 2}, 'role': 'watcher',
-                'contact': {"username": "person1", "email": "person1@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': {'id': 2}, 'role': 'watcher',
-                'contact': {"username": "person2", "email": "person2@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    def test_create_release_component_contacts_for_role_limit_3(self):
-        data = {'component': {'id': 2}, 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': {'id': 2}, 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist1'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': {'id': 2}, 'role': 'allow_3_role',
-                'contact': {"username": "person1", "email": "person1@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': {'id': 2}, 'role': 'allow_3_role',
-                'contact': {"username": "person2", "email": "person2@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_patch_release_component_contact_exceed_count_limit(self):
-        data = {'component': {'id': 2}, 'role': 'cc', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        data = {'component': {'id': 2}, 'role': 'watcher', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        pk = response.data['id']
-        url = reverse('releasecomponentcontacts-detail', args=[pk])
-        data = {'role': 'cc'}
-        response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_patch_release_component_contacts_for_role_limit_3(self):
-        data = {'component': {'id': 2}, 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': {'id': 2}, 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist1'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': {'id': 2}, 'role': 'cc',
-                'contact': {"username": "person1", "email": "person1@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        pk_cc = response.data['id']
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': {'id': 2}, 'role': 'watcher',
-                'contact': {"username": "person2", "email": "person2@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        pk_watcher = response.data['id']
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        # fourth for allow_3_role
-        url = reverse('releasecomponentcontacts-detail', args=[pk_cc])
-        data = {'role': 'allow_3_role'}
-        response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        url = reverse('releasecomponentcontacts-detail', args=[pk_watcher])
-        data = {'role': 'allow_3_role'}
-        response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-        # remove one and patch again
-        response = self.client.delete(reverse('releasecomponentcontacts-detail', args=[pk_cc]))
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-
-        url = reverse('releasecomponentcontacts-detail', args=[pk_watcher])
-        data = {'role': 'allow_3_role'}
-        response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_constraint_to_contact_role_count_limit_change(self):
-        data = {'component': {'id': 2}, 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': {'id': 2}, 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist1'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': {'id': 2}, 'role': 'allow_3_role',
-                'contact': {"username": "person1", "email": "person1@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        pk = response.data['id']
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        contact_role_url = reverse('contactrole-detail', args=['allow_3_role'])
-        data = {'count_limit': '4'}
-        response = self.client.patch(contact_role_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        contact_role_url = reverse('contactrole-detail', args=['allow_3_role'])
-        data = {'count_limit': '2'}
-        response = self.client.patch(contact_role_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-        # remove one role contact and try again
-        response = self.client.delete(reverse('releasecomponentcontacts-detail', args=[pk]))
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        data = {'count_limit': '2'}
-        response = self.client.patch(contact_role_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_constraint_to_contact_role_count_limit_change_for_different_roles(self):
-        data = {'component': {'id': 2}, 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist2'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': {'id': 2}, 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist1'}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': {'id': 2}, 'role': 'allow_3_role',
-                'contact': {"username": "person1", "email": "person1@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        data = {'component': {'id': 2}, 'role': 'cc',
-                'contact': {"username": "person1", "email": "person1@test.com"}}
-        response = self.client.post(self.list_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        contact_role_url = reverse('contactrole-detail', args=['allow_3_role'])
-        data = {'count_limit': '2'}
-        response = self.client.patch(contact_role_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-        contact_role_url = reverse('contactrole-detail', args=['cc'])
-        data = {'count_limit': '2'}
-        response = self.client.patch(contact_role_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        contact_role_url = reverse('contactrole-detail', args=['cc'])
-        data = {'count_limit': '1'}
-        response = self.client.patch(contact_role_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)

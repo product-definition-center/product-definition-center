@@ -14,7 +14,6 @@ from django.dispatch import receiver
 from mptt import models as mptt_models
 
 from pdc.apps.common.models import Label
-from pdc.apps.contact.models import RoleContact
 from pdc.apps.common import hacks
 from pdc.apps.release.models import Release
 from pdc.apps.release import signals
@@ -97,7 +96,6 @@ class GlobalComponent(models.Model):
     """Record generic component"""
 
     name            = models.CharField(max_length=100, unique=True)
-    contacts        = models.ManyToManyField(RoleContact, blank=True)
     dist_git_path   = models.CharField(max_length=200, blank=True, null=True)
     labels          = models.ManyToManyField(Label, blank=True)
     upstream        = models.OneToOneField(Upstream, blank=True, null=True)
@@ -113,16 +111,10 @@ class GlobalComponent(models.Model):
         return settings.DIST_GIT_REPO_FORMAT % (dist_git_path)
 
     def export(self, fields=None):
-        _fields = ['name', 'contacts', 'dist_git_path', 'labels', 'upstream'] if fields is None else fields
+        _fields = ['name', 'dist_git_path', 'labels', 'upstream'] if fields is None else fields
         result = dict()
         if 'name' in _fields:
             result['name'] = self.name
-        if 'contacts' in _fields:
-            result['contacts'] = []
-            contacts = self.contacts.all()
-            if contacts:
-                for contact in contacts:
-                    result['contacts'].append(contact.export())
         if 'dist_git_path' in _fields:
             result['dist_git_path'] = self.dist_git_path
         if 'labels' in _fields:
@@ -154,7 +146,6 @@ class ReleaseComponent(models.Model):
                                                     related_name='release_components')
     name                        = models.CharField(max_length=100)
     dist_git_branch             = models.CharField(max_length=100, blank=True, null=True)
-    contacts                    = models.ManyToManyField(RoleContact, blank=True)
     brew_package = models.CharField(max_length=100, blank=True, null=True)
     active = models.BooleanField(default=True)
 
@@ -165,22 +156,6 @@ class ReleaseComponent(models.Model):
 
     def __unicode__(self):
         return u"%s %s" % (self.release, self.name)
-
-    def get_contacts(self, include_global=True):
-        """
-        Get release_component contacts.
-        If flag equals True, the contacts will include global_component contacts
-        which is not in release_component.
-        """
-        rc_contacts = [contact.export() for contact in self.contacts.all()]
-        if include_global:
-            gc_contacts = [contact.export() for contact in self.global_component.contacts.all()]
-            contact_role_lists = [contact['contact_role'] for contact in rc_contacts]
-            for contact in gc_contacts:
-                if contact['contact_role'] in contact_role_lists:
-                    continue
-                rc_contacts.append(contact)
-        return rc_contacts
 
     @property
     def dist_git_web_url(self):
@@ -206,7 +181,7 @@ class ReleaseComponent(models.Model):
 
     def export(self, fields=None):
         _fields = ['release', 'global_component', 'name', 'dist_git_branch', 'type',
-                   'contacts', 'bugzilla_component', 'brew_package', 'active'] if fields is None else fields
+                   'bugzilla_component', 'brew_package', 'active'] if fields is None else fields
         result = dict()
         for attr in ('name', 'dist_git_branch', 'brew_package', 'active'):
             # We do not use inherited_dist_git_branch here because changeset
@@ -228,11 +203,6 @@ class ReleaseComponent(models.Model):
                                                                    self.bugzilla_component.id)
             else:
                 result['bugzilla_component'] = None
-        if 'contacts' in _fields:
-            result['contacts'] = []
-            contacts = self.contacts.all()
-            for contact in contacts:
-                result['contacts'].append(contact.export())
 
         return result
 

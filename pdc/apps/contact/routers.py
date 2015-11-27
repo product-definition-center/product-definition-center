@@ -9,10 +9,12 @@ from . import views
 from pdc.apps.utils.SortedRouter import router
 
 
-# TODO: these two end-points will be removed
-router.register(r'persons', views.PersonViewSet, base_name='persondeprecated')
-router.register(r'maillists', views.MaillistViewSet, base_name='maillistdeprecated')
 router.register(r'contacts/people', views.PersonViewSet, base_name='person')
 router.register(r'contacts/mailing-lists', views.MaillistViewSet, base_name='maillist')
 router.register(r'contact-roles', views.ContactRoleViewSet)
-router.register(r'role-contacts', views.RoleContactViewSet)
+router.register(r'global-component-contacts',
+                views.GlobalComponentContactViewSet,
+                base_name='globalcomponentcontacts')
+router.register(r'release-component-contacts',
+                views.ReleaseComponentContactViewSet,
+                base_name='releasecomponentcontacts')

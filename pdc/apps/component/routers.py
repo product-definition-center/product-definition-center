@@ -12,18 +12,12 @@ from pdc.apps.utils.SortedRouter import router
 router.register(r'global-components',
                 views.GlobalComponentViewSet,
                 base_name='globalcomponent')
-router.register(r'global-components/(?P<instance_pk>[^/.]+)/contacts',
-                views.GlobalComponentContactViewSet,
-                base_name='globalcomponentcontact')
 router.register(r'global-components/(?P<instance_pk>[^/.]+)/labels',
                 views.GlobalComponentLabelViewSet,
                 base_name='globalcomponentlabel')
 router.register(r'release-components',
                 views.ReleaseComponentViewSet,
                 base_name='releasecomponent')
-router.register(r'release-components/(?P<instance_pk>[^/.]+)/contacts',
-                views.ReleaseComponentContactViewSet,
-                base_name='releasecomponentcontact')
 router.register(r'bugzilla-components',
                 views.BugzillaComponentViewSet,
                 base_name='bugzillacomponent')
@@ -35,9 +29,3 @@ router.register(r'release-component-relationships', views.ReleaseComponentRelati
                 base_name='rcrelationship')
 router.register(r'release-component-types', views.ReleaseComponentTypeViewSet,
                 base_name='releasecomponenttype')
-router.register(r'global-component-contacts',
-                views.GlobalComponentContactInfoViewSet,
-                base_name='globalcomponentcontacts')
-router.register(r'release-component-contacts',
-                views.ReleaseComponentContactInfoViewSet,
-                base_name='releasecomponentcontacts')

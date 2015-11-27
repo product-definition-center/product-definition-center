@@ -3,13 +3,14 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
-from django.db.models import Q
 
 from pdc.apps.common import viewsets
-from .models import Person, Maillist, ContactRole, Contact, RoleContact
-from .serializers import (PersonSerializer, MaillistSerializer,
-                          ContactRoleSerializer, RoleContactSerializer)
-from .filters import PersonFilterSet, MaillistFilterSet, ContactRoleFilterSet
+from .models import (Person, Maillist, ContactRole,
+                     GlobalComponentContact, ReleaseComponentContact)
+from .serializers import (PersonSerializer, MaillistSerializer, ContactRoleSerializer,
+                          GlobalComponentContactSerializer, ReleaseComponentContactSerializer)
+from .filters import (PersonFilterSet, MaillistFilterSet, ContactRoleFilterSet,
+                      GlobalComponentContactFilter, ReleaseComponentContactFilter)
 
 
 # Create your views here.
@@ -495,290 +496,123 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
     overwrite_lookup_field = False
 
 
-class RoleContactViewSet(viewsets.PDCModelViewSet):
-    """
-    ##Overview##
-
-    This page shows the usage of the **RoleContact API**, please see the
-    following for more details.
-
-    ##Test tools##
-
-    You can use ``curl`` in terminal, with -X _method_ (GET|POST|PUT|PATCH|DELETE),
-    -d _data_ (a json string). or GUI plugins for
-    browsers, such as ``RESTClient``, ``RESTConsole``.
-    """
-
-    def create(self, request, *args, **kwargs):
+class _BaseContactViewSet(viewsets.PDCModelViewSet):
+    def list(self, *args, **kwargs):
         """
-        ### CREATE
+        __Method__: `GET`
 
-        __Method__:
-        POST
+        __URL__: $LINK:%(BASENAME)s-list$
 
-        __URL__: $LINK:rolecontact-list$
-
-        __Data__:
-
-            {
-                'contact_role':   string,                             # required
-                'contact': {                                          # required
-                               # create contact with person
-                               'username':    string,
-                               'email':       email_address
-                           }
-                           # or
-                           {
-                               # create contact with maillist
-                               'mail_name': string,
-                               'email':     email_address
-                           }
-            }
-
-        *contact_role*: $LINK:contactrole-list$
-
-        __Response__:
-
-            {
-                "id": int,
-                "contact_role": "qe_group",
-                "contact": {
-                    "id": int,                  # id of person or maillist
-                    "mail_name": string,
-                    "email": "email@example.com"
-                }
-            }
-
-        __Example__:
-
-            curl -H "Content-Type: application/json"  -X POST -d '{"contact_role": "qe_group", "contact": {"username": "test", "email": "test@example.com"}}' $URL:rolecontact-list$
-            # output
-            {"id": 1, "contact_role": "qe_group", "contact": {"username": "test", "email": "test@example.com"}}
-        """
-        return super(RoleContactViewSet, self).create(request, *args, **kwargs)
-
-    def list(self, request, *args, **kwargs):
-        """
-        ### LIST
-
-        __Method__:
-        GET
-
-        __URL__: $LINK:rolecontact-list$
-
-        __Query Params__:
+        __Query params__:
 
         %(FILTERS)s
 
-        **NOTE:** Support listed query params. The logic is:
+        The value of `contact` filter should either be a username or mailling
+        list name.
 
-        **"OR"** between the values with the same key, e.g. "?email=A&email=B" => "email==A or email==B",
+        __Response__: a paged list of following objects
 
-        **"AND"** between all the given keys, e.g. "?contact_role=T&email=C" => "contact_role==T and email==C".
+        %(SERIALIZER)s
+        """
+        return super(_BaseContactViewSet, self).list(*args, **kwargs)
+
+    def retrieve(self, *args, **kwargs):
+        """
+        __Method__: `GET`
+
+        __URL__: $LINK:%(BASENAME)s-detail:pk$
 
         __Response__:
 
-            # paged lists
-            {
-                "count": 284,
-                "next": "$URL:rolecontact-list$?page=2",
-                "previous": null,
-                "results": [
-                    {
-                        "id": int,
-                        "contact_role": "qe_group",
-                        "contact": {
-                            "id": int,                  # id of person or maillist
-                            "mail_name": string,
-                            "email": "email@example.com"
-                        }
-                    },
-                    ...
-            }
-
-        __Example__:
-
-            curl -H "Content-Type: application/json"  -X GET $URL:rolecontact-list$
-            # output
-            {
-                "count": 284,
-                "next": "$URL:rolecontact-list$?page=2",
-                "previous": null,
-                "results": [
-                    {
-                        "id": int,
-                        "contact_role": "qe_group",
-                        "contact": {
-                            "id": int,                  # id of person or maillist
-                            "mail_name": string,
-                            "email": "string@example.com"
-                        }
-                    },
-                    ...
-                ]
-            }
-
-        With query params:
-
-            curl -H "Content-Type: application/json"  -G $URL:rolecontact-list$ --data-urlencode "username=test"
-            # output
-            {
-                "count": 1,
-                "next": null,
-                "previous": null,
-                "results": [
-                    {
-                        "id": int,
-                        "contact_role": "qe_group",
-                        "contact": {
-                            "id": int,                  # id of person or maillist
-                            "username": "test",
-                            "email": "test@example.com"
-                        }
-                    }
-                ]
-            }
+        %(SERIALIZER)s
         """
-        return super(RoleContactViewSet, self).list(request, *args, **kwargs)
+        return super(_BaseContactViewSet, self).retrieve(*args, **kwargs)
 
-    def retrieve(self, request, *args, **kwargs):
+    def destroy(self, *args, **kwargs):
+        """Remove association between component and contact.
+
+        __Method__: `DELETE`
+
+        __URL__: $LINK:%(BASENAME)s-detail:pk$
+
+        __Response__: Nothing on success.
         """
-        ### RETRIEVE
+        return super(_BaseContactViewSet, self).destroy(*args, **kwargs)
 
-        __Method__:
-        GET
+    def update(self, *args, **kwargs):
+        """Change details about a contact linked to component.
 
-        __URL__: $LINK:rolecontact-detail:instance_pk$
+        Please not that if you change the `contact` field here, only the single
+        updated relationship between contact and component will be updated.
+        Specifically, no other component will be affected.
+
+        If you update with new contact details and such contact does not exist
+        yet, it will be automatically created. The specific type will be chosen
+        based on whether `username` or `mail_name` was used.
+
+        __Method__: `PUT`, `PATCH`
+
+        __URL__: $LINK:%(BASENAME)s-detail:pk$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        %(WRITABLE_DATA_COMMENT)s
+
+        View [list of available contact roles]($URL:contactrole-list$).
 
         __Response__:
 
-            {
-                "id": int,
-                "contact_role": "qe_group",
-                "contact": {
-                    "id": int,                  # id of person or maillist
-                    "mail_name": string,
-                    "email": "string@example.com"
-                }
-            }
-
-        __Example__:
-
-            curl -H "Content-Type: application/json" $URL:rolecontact-detail:1$
-            # output
-            {"id": 1, "contact_role": "qe_group", "contact": {"id": 1, "username": "test", "email": "test@example.com"}}
+        %(SERIALIZER)s
         """
-        return super(RoleContactViewSet, self).retrieve(request, *args, **kwargs)
+        return super(_BaseContactViewSet, self).update(*args, **kwargs)
 
-    def update(self, request, *args, **kwargs):
-        """
-        ### UPDATE
+    def create(self, *args, **kwargs):
+        """Connect contact details with a component.
 
-        __Method__:
-        PUT: for full fields update
+        If the contact does not exist, it will be created automatically.
 
-            {
-                "contact_role": "new_role",
-                "contact": {'username': 'new_name', 'email': 'new_email'}
-            }
+        __Method__: `POST`
 
-        PATCH: for partial update
+        __URL__: $LINK:%(BASENAME)s-list$
 
-            {
-                "contact_role": "new_role",
-            }
-            or
-            {
-                "contact": {'username': 'new_name', 'email': 'new_email'}
-            }
-            or
-            {
-                "contact_role": "new_role",
-                "contact": {'username': 'new_name', 'email': 'new_email'}
-            }
+        __Data__:
 
-        __URL__: $LINK:rolecontact-detail:instance_pk$
+        %(WRITABLE_SERIALIZER)s
+
+        %(WRITABLE_DATA_COMMENT)s
+
+        Depending on whether `username` or `mail_name` is used, a person or
+        mailling list will be linked to the component.
+
+        View [list of available contact roles]($URL:contactrole-list$).
 
         __Response__:
 
-            {
-                "id": 1,
-                "contact_role": "new_role",
-                "contact": {
-                    "id": int,                  # id of person or maillist
-                    "username": "new_name",
-                    "email": "new_email"
-                }
-            }
-
-        __Example__:
-
-        PUT:
-
-            curl -X PUT -d '{"contact_role": "new_role", "contact": {"username": "new_name", "email": "new_email"}}' -H "Content-Type: application/json" $URL:rolecontact-detail:1$
-            # output
-            {"id": 1, "contact_role": "new_role", "contact": {"id": 1, "username": "new_name", "email": "new_email"}}
-
-        PATCH:
-
-            curl -X PATCH -d '{"contact_role": "new_role"}' -H "Content-Type: application/json" $URL:rolecontact-detail:1$
-            # output
-            {"id": 1, "contact_role": "new_role", "contact": {"id": 1, "username": "new_name", "email": "new_email"}}
+        %(SERIALIZER)s
         """
-        return super(RoleContactViewSet, self).update(request, *args, **kwargs)
+        return super(_BaseContactViewSet, self).create(*args, **kwargs)
 
-    def destroy(self, request, *args, **kwargs):
-        """
-        ### DELETE
 
-        __Method__:
-        DELETE
+class GlobalComponentContactViewSet(_BaseContactViewSet):
 
-        __URL__: $LINK:rolecontact-detail:instance_pk$
+    queryset = GlobalComponentContact.objects.all().select_related().order_by('id')
+    serializer_class = GlobalComponentContactSerializer
+    filter_class = GlobalComponentContactFilter
+    docstring_macros = {
+        'BASENAME': 'globalcomponentcontacts',
+        'WRITABLE_DATA_COMMENT': '',
+    }
 
-        __Response__:
 
-            STATUS: 204 NO CONTENT
+class ReleaseComponentContactViewSet(_BaseContactViewSet):
 
-        __Example__:
-
-            curl -X DELETE -H "Content-Type: application/json" $URL:rolecontact-detail:1$
-        """
-        return super(RoleContactViewSet, self).destroy(request, *args, **kwargs)
-
-    serializer_class = RoleContactSerializer
-    queryset = RoleContact.objects.all().order_by('id')
-    extra_query_params = ('contact_role', 'username', 'mail_name', 'email')
-
-    def get_queryset(self):
-        queryset = RoleContact.objects.all().order_by('id')
-
-        filters = self.request.query_params
-        person_kwarg = {}
-        maillist_kwarg = {}
-
-        if 'contact_role' in filters:
-            contact_role_list = ContactRole.objects.filter(name__in=filters.getlist('contact_role'))
-            queryset = queryset.filter(contact_role__in=contact_role_list)
-
-        if 'username' in filters:
-            person_kwarg["person__username__in"] = filters.getlist('username')
-            if 'email' in filters:
-                person_kwarg['person__email__in'] = filters.getlist('email')
-        if 'mail_name' in filters:
-            maillist_kwarg['maillist__mail_name__in'] = filters.getlist('mail_name')
-            if 'email' in filters:
-                maillist_kwarg['maillist__email__in'] = filters.getlist('email')
-        if 'username' not in filters and 'mail_name' not in filters and 'email' in filters:
-            person_kwarg['person__email__in'] = filters.getlist('email')
-            maillist_kwarg['maillist__email__in'] = filters.getlist('email')
-
-        Q_contacts = Q()
-        if person_kwarg:
-            persons = Contact.objects.filter(**person_kwarg).values_list('id', flat=True)
-            Q_contacts |= Q(contact__in=persons)
-        if maillist_kwarg:
-            maillists = Contact.objects.filter(**maillist_kwarg).values_list('id', flat=True)
-            Q_contacts |= Q(contact__in=maillists)
-
-        return queryset.filter(Q_contacts).distinct()
+    queryset = ReleaseComponentContact.objects.all().select_related().order_by('id')
+    serializer_class = ReleaseComponentContactSerializer
+    filter_class = ReleaseComponentContactFilter
+    docstring_macros = {
+        'BASENAME': 'releasecomponentcontacts',
+        'WRITABLE_DATA_COMMENT': 'The component can be alternatively specified ' +
+                                 'by its id as `{"id": "int"}`.',
+    }
