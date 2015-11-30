@@ -65,6 +65,18 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name = _('user')
         verbose_name_plural = _('users')
 
+    def get_full_name(self):
+        """
+        Returns the full name for the user.
+        """
+        return self.full_name
+
+    def get_short_name(self):
+        """
+        Returns full name as short name for the user.
+        """
+        return self.full_name
+
     def email_user(self, subject, message, from_email=None, **kwargs):
         """
         Sends an email to this User.
