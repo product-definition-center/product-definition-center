@@ -1098,6 +1098,22 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data['dist_git_branch'], 'rpm/python2')
         self.assertNumChanges([1])
 
+    def test_update_release_component_with_global_component(self):
+        url = reverse('releasecomponent-detail', kwargs={'pk': 1})
+        data = {'name': 'python27', 'global_component': 'java'}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['global_component'], 'java')
+        self.assertNumChanges([1])
+
+    def test_patch_release_component_with_global_component(self):
+        url = reverse('releasecomponent-detail', kwargs={'pk': 1})
+        data = {'global_component': 'java'}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['global_component'], 'java')
+        self.assertNumChanges([1])
+
     def test_update_release_component_only_with_empty_body(self):
         url = reverse('releasecomponent-detail', kwargs={'pk': 1})
         data = {}

@@ -362,13 +362,13 @@ class ReleaseComponentSerializer(DynamicFieldsSerializerMixin,
         return ret
 
     def to_internal_value(self, data):
-        # Raise error explictly when release and global_component are given.
+        # Raise error explictly when release are given.
         if self.instance:
-            allowed_keys = self.get_allowed_keys() - set(['release', 'global_component'])
+            allowed_keys = self.get_allowed_keys() - set(['release'])
             extra_fields = set(data.keys()) - allowed_keys
             self.maybe_raise_error(extra_fields)
             data['release'] = self.instance.release
-            data['global_component'] = self.instance.global_component
+            data['global_component'] = data.get('global_component', self.instance.global_component)
         return super(ReleaseComponentSerializer, self).to_internal_value(data)
 
     def validate_release(self, value):

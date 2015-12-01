@@ -827,6 +827,8 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
 
         ``"type"``: release component type, **OPTIONAL**
 
+        ``"global_component"``: release component's global component, **OPTIONAL**
+
         PATCH:
 
         ``name``: new release component's name, **OPTIONAL**
@@ -845,6 +847,8 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
             } OR null,  **OPTIONAL**
 
         ``"type"``: release component type, **OPTIONAL**
+
+        ``"global_component"``: release component's global component, **OPTIONAL**
 
         __URL__: $LINK:releasecomponent-detail:instance_pk$
 
