@@ -1835,14 +1835,9 @@ class ComposeTreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         "pdc/apps/compose/fixtures/tests/location.json",
         "pdc/apps/compose/fixtures/tests/scheme.json",
         "pdc/apps/compose/fixtures/tests/compose.json",
+        "pdc/apps/compose/fixtures/tests/more_composes_variants.json",
         "pdc/apps/compose/fixtures/tests/composetree.json",
     ]
-
-    def setUp(self):
-        self.compose = models.Compose.objects.get(compose_id='compose-1')
-        self.variant = models.Variant.objects.get(variant_uid='Server')
-        self.location = models.Location.objects.get(short='NAY')
-        self.scheme = models.Scheme.objects.get(name='nfs')
 
     def test_list(self):
         response = self.client.get(reverse('composetreelocations-list'), {})

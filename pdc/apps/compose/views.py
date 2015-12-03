@@ -1415,6 +1415,9 @@ class ComposeTreeViewSet(ChangeSetModelMixin,
 
          * *synced_content*: $LINK:contentdeliverycontentcategory-list$
 
+        All fields are required. The required architectures must already be
+        present in PDC. compose/variant/arch combo must exist already for CREATE.
+
         __Response__: Same as input data.
 
         __NOTE__:

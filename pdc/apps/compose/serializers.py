@@ -9,7 +9,8 @@ from rest_framework.reverse import reverse
 from pdc.apps.common.models import Arch
 from pdc.apps.common.serializers import StrictSerializerMixin, DynamicFieldsSerializerMixin
 from pdc.apps.common.fields import ChoiceSlugField
-from .models import Compose, OverrideRPM, ComposeAcceptanceTestingState, ComposeTree, Variant, Location, Scheme
+from .models import (Compose, OverrideRPM, ComposeAcceptanceTestingState,
+                     ComposeTree, Variant, Location, Scheme)
 from pdc.apps.release.models import Release
 from pdc.apps.utils.utils import urldecode
 from pdc.apps.repository.models import ContentCategory
@@ -101,11 +102,25 @@ class OverrideRPMSerializer(StrictSerializerMixin, serializers.ModelSerializer):
                   'rpm_arch', 'include', 'comment', 'do_not_delete')
 
 
+class ComposeTreeVariantField(serializers.Field):
+
+    def to_internal_value(self, data):
+        request_data = self.context.get("request").data
+        compose = None
+        if request_data:
+            compose = request_data.get("compose")
+        variant = Variant.objects.get(compose__compose_id=compose, variant_uid=data)
+        return variant
+
+    def to_representation(self, value):
+        return value.variant_uid
+
+
 class ComposeTreeSerializer(StrictSerializerMixin,
                             DynamicFieldsSerializerMixin,
                             serializers.ModelSerializer):
     compose                 = serializers.SlugRelatedField(slug_field='compose_id', queryset=Compose.objects.all())
-    variant                 = serializers.SlugRelatedField(slug_field='variant_uid', queryset=Variant.objects.all())
+    variant                 = ComposeTreeVariantField()
     arch                    = serializers.SlugRelatedField(slug_field='name', queryset=Arch.objects.all())
     location                = ChoiceSlugField(slug_field='short', queryset=Location.objects.all())
     scheme                  = ChoiceSlugField(slug_field='name', queryset=Scheme.objects.all())
@@ -122,6 +137,7 @@ class ComposeTreeSerializer(StrictSerializerMixin,
         compose = attrs.get('compose', None)
         variant = attrs.get('variant', None)
         arch = attrs.get('arch', None)
+
         if compose == variant.compose and arch in variant.arches:
             return attrs
         else:

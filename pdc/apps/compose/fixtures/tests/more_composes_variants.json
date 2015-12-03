@@ -1,0 +1,29 @@
+[
+  {
+    "model": "compose.Compose",
+    "pk": 2,
+    "fields": {
+      "release": 1,
+      "compose_id": "compose-2",
+      "compose_date": "2014-09-04",
+      "compose_type": 1,
+      "compose_respin": 1,
+      "compose_label": "compose-2014-09-04",
+      "dt_imported": "2014-09-04T11:45:00+00:00",
+      "deleted": false,
+      "acceptance_testing": 1
+    }
+  },
+  {
+    "pk": 3,
+    "model": "compose.Variant",
+    "fields": {
+      "compose": 2,
+      "variant_id": "Server",
+      "variant_uid": "Server",
+      "variant_name": "Server",
+      "deleted": false,
+      "variant_type": 1
+    }
+  }
+]
