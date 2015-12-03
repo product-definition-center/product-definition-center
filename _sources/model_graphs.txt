@@ -56,11 +56,6 @@ package
 
 .. image:: models_svg/package.svg
 
-partners
---------
-
-.. image:: models_svg/partners.svg
-
 release
 -------
 
