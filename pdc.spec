@@ -3,7 +3,7 @@
 %define srcname pdc
 
 Name:           python-%{srcname}
-Version:        0.1.0
+Version:        0.3.rc
 Release:        1%{?dist}
 Summary:        Red Hat Product Definition Center
 Group:          Development/Libraries
@@ -90,6 +90,15 @@ fi
 
 
 %changelog
+* Fri Dec 04 2015 Xiangyang Chu <xchu@redhat.com> 0.3.rc-1
+- Bump Version to '0.3.rc'. (xchu@redhat.com)
+- Remove compose/package api. (xchu@redhat.com)
+- Specify Accept instead of Content-Type in curl examples. (rbean@redhat.com)
+- Use single string field for user names. (ycheng@redhat.com)
+- Add new endpoint API ComposeTree (chuzhang@redhat.com)
+- Create script that can create release-components from compose information
+  (ycheng@redhat.com)
+- Remove pdc_client since pdc-client repo created. (xchu@redhat.com)
 * Fri Sep 11 2015 Xiangyang Chu <xychu2008@gmail.com> 0.1.0-1
 - new package built with tito
 
