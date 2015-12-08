@@ -300,7 +300,7 @@ class Archive(models.Model):
 
 
 class BuildImage(models.Model):
-    image_id            = models.CharField(max_length=200, unique=True, db_index=True)
+    image_id            = models.CharField(max_length=200)
     image_format        = models.ForeignKey(ImageFormat)
     md5                 = models.CharField(max_length=32, validators=[validate_md5])
 
@@ -308,8 +308,13 @@ class BuildImage(models.Model):
     archives            = models.ManyToManyField(Archive)
     releases            = models.ManyToManyField(Release)
 
+    class Meta:
+        unique_together = (
+            ("image_id", "image_format"),
+        )
+
     def __unicode__(self):
-        return u"%s" % self.image_id
+        return u"%s-%s" % (self.image_id, self.image_format)
 
     def export(self, fields=None):
         _fields = ['image_id', 'image_format', 'md5',

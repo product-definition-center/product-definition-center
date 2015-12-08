@@ -1546,3 +1546,24 @@ class BuildImageRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertNumChanges([1])
+
+    def test_create_same_image_id_with_different_format(self):
+        url = reverse('buildimage-list')
+        data = {'image_id': 'new_build',
+                'image_format': 'docker',
+                'md5': "0123456789abcdef0123456789abcdef",
+                'rpms': [{'name': 'new_rpm', 'epoch': 0, 'version': '1.0.0',
+                          'release': '1', 'arch': 'src', 'srpm_name': 'new_srpm'}]
+                }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        url = reverse('buildimage-list')
+        data = {'image_id': 'new_build',
+                'image_format': 'iso',
+                'md5': "0123456789abcdef0123456789abcabc",
+                'rpms': [{'name': 'new_rpm', 'epoch': 0, 'version': '1.0.0',
+                          'release': '1', 'arch': 'src', 'srpm_name': 'new_srpm'}]
+                }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
