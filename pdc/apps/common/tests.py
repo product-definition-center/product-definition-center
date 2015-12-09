@@ -225,7 +225,8 @@ class LabelRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('label-list')
         response = self.client.post(url, format='json', data=self.args_label1)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data, {"name": ["This field must be unique."]})
+        self.assertIn(response.data, [{"name": ["This field must be unique."]},  # DRF v3.2 its own UniqueValidator,
+                                      {"name": ["Label with this name already exists."]}])  # v3.3 use Django's default.
 
     def test_put_update(self):
         url = reverse('label-detail', kwargs={'pk': 1})
