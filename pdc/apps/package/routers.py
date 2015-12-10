@@ -12,3 +12,4 @@ from pdc.apps.utils.SortedRouter import router
 router.register(r'rpms', views.RPMViewSet, base_name='rpms')
 router.register(r'images', views.ImageViewSet)
 router.register(r'build-images', views.BuildImageViewSet)
+router.register(r'build-image-rtt-tests', views.BuildImageRTTTestsViewSet, base_name='buildimagertttests')

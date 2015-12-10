@@ -17,6 +17,7 @@ from pdc.apps.common.validators import validate_md5, validate_sha1, validate_sha
 from pdc.apps.common.hacks import add_returning, parse_epoch_version
 from pdc.apps.common.constants import ARCH_SRC
 from pdc.apps.release.models import Release
+from pdc.apps.compose.models import ComposeAcceptanceTestingState
 
 
 class RPM(models.Model):
@@ -307,6 +308,8 @@ class BuildImage(models.Model):
     rpms                = models.ManyToManyField(RPM)
     archives            = models.ManyToManyField(Archive)
     releases            = models.ManyToManyField(Release)
+    test_result         = models.ForeignKey(ComposeAcceptanceTestingState,
+                                            default=ComposeAcceptanceTestingState.get_untested)
 
     class Meta:
         unique_together = (
@@ -318,7 +321,7 @@ class BuildImage(models.Model):
 
     def export(self, fields=None):
         _fields = ['image_id', 'image_format', 'md5',
-                   'rpms', 'archives', 'releases'] if fields is None else fields
+                   'rpms', 'archives', 'releases', 'test_result'] if fields is None else fields
         result = dict()
         if 'image_id' in _fields:
             result['image_id'] = self.image_id
@@ -326,6 +329,8 @@ class BuildImage(models.Model):
             result['md5'] = self.md5
         if 'image_format' in _fields:
             result['image_format'] = self.image_format.name
+        if 'test_result' in _fields:
+            result['test_result'] = self.test_result.name
 
         for field in ('rpms', 'archives', 'releases'):
             if field in _fields:

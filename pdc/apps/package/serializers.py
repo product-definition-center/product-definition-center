@@ -9,6 +9,8 @@ from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
 from . import models
+from pdc.apps.compose.models import ComposeAcceptanceTestingState
+from pdc.apps.common.fields import ChoiceSlugField
 from pdc.apps.common.serializers import StrictSerializerMixin, DynamicFieldsSerializerMixin
 
 
@@ -206,3 +208,13 @@ class BuildImageSerializer(StrictSerializerMixin, serializers.HyperlinkedModelSe
     class Meta:
         model = models.BuildImage
         fields = ('url', 'image_id', 'image_format', 'md5', 'rpms', 'archives', 'releases')
+
+
+class BuildImageRTTTestsSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+    format = serializers.CharField(source='image_format__name', read_only=True)
+    test_result = ChoiceSlugField(slug_field='name', queryset=ComposeAcceptanceTestingState.objects.all())
+    build_nvr = serializers.CharField(source='image_id', read_only=True)
+
+    class Meta:
+        model = models.BuildImage
+        fields = ('id', 'build_nvr', 'format', 'test_result')

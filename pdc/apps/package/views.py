@@ -5,6 +5,7 @@
 #
 from rest_framework import viewsets, mixins
 
+from contrib.bulk_operations import bulk_operations
 from pdc.apps.common import viewsets as pdc_viewsets
 from . import models
 from . import serializers
@@ -412,3 +413,86 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
             curl -X DELETE -H "Content-Type: application/json" $URL:buildimage-detail:1$
         """
         return super(BuildImageViewSet, self).destroy(request, *args, **kwargs)
+
+
+class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
+                                pdc_viewsets.ChangeSetUpdateModelMixin,
+                                mixins.RetrieveModelMixin,
+                                mixins.ListModelMixin,
+                                viewsets.GenericViewSet):
+    """
+    ViewSet for  BuildImage RTT Tests.
+    """
+    queryset = models.BuildImage.objects.all().order_by('id')
+    serializer_class = serializers.BuildImageRTTTestsSerializer
+    filter_class = filters.BuildImageRTTTestsFilter
+
+    def list(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:buildimagertttests-list$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+        __Response__:
+
+            # paged list
+            {
+              "count": int,
+              "next": url,
+              "previous": url,
+              "results": [
+                {
+                    "build_nvr":    string,
+                    "id":           int,
+                    "test_result":  string
+                },
+                ...
+              ]
+            }
+        """
+        return super(BuildImageRTTTestsViewSet, self).list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        __Method__:
+        GET
+
+        __URL__: $LINK:buildimagertttests-detail:instance_pk$
+
+        __Response__:
+
+            {
+                "build_nvr":    string,
+                "id":           int,
+                "test_result":  string
+            }
+        """
+        return super(BuildImageRTTTestsViewSet, self).retrieve(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        PATCH: It only supports partial update. Only test_result could be updated
+
+        __URL__: $LINK:buildimagertttests-detail:instance_pk$
+
+        __Response__:
+
+            {
+                "build_nvr":    string,
+                "id":           int,
+                "test_result":  string
+            }
+        """
+        return super(BuildImageRTTTestsViewSet, self).update(request, *args, **kwargs)
+
+    def bulk_update(self, *args, **kwargs):
+        """
+        It is possible to perform bulk partial update on 'test_result' with `PATCH`
+        method. The request body should contain an object, where keys are identifiers
+        of objects to be modified and their values use the same format as normal patch.
+        """
+        return bulk_operations.bulk_update_impl(self, *args, **kwargs)
