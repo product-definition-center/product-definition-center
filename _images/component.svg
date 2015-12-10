@@ -256,13 +256,13 @@
 <text text-anchor="start" x="605" y="-314.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_BugzillaComponent -->
-<g id="edge9" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_BugzillaComponent</title>
+<g id="edge11" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_BugzillaComponent</title>
 <path fill="none" stroke="black" d="M423.58,-309.48C392.04,-292.7 358.1,-274.65 326.91,-258.06"/>
 <ellipse fill="black" stroke="black" cx="427.167" cy="-311.384" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="451.5" y="-280.8" font-family="Helvetica,sans-Serif" font-size="8.00">bugzilla_component (releasecomponent)</text>
 </g>
 <!-- pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_GlobalComponent -->
-<g id="edge11" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_GlobalComponent</title>
+<g id="edge9" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_GlobalComponent</title>
 <path fill="none" stroke="black" d="M541.09,-298.23C541.7,-290.69 542.63,-283.17 544,-276 546.67,-262.03 551.69,-247.33 556.87,-234.5"/>
 <ellipse fill="black" stroke="black" cx="540.813" cy="-302.429" rx="4" ry="4"/>
 <text text-anchor="middle" x="614" y="-280.8" font-family="Helvetica,sans-Serif" font-size="8.00">global_component (releasecomponent)</text>
@@ -413,19 +413,19 @@
 <text text-anchor="start" x="300" y="-496.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_component_models_ReleaseComponentRelationship&#45;&gt;pdc_apps_component_models_ReleaseComponent -->
-<g id="edge17" class="edge"><title>pdc_apps_component_models_ReleaseComponentRelationship&#45;&gt;pdc_apps_component_models_ReleaseComponent</title>
+<g id="edge19" class="edge"><title>pdc_apps_component_models_ReleaseComponentRelationship&#45;&gt;pdc_apps_component_models_ReleaseComponent</title>
 <path fill="none" stroke="black" d="M210.87,-480.35C211.64,-472.27 214,-464.39 219,-458 245.32,-424.41 347.93,-401.4 430.72,-387.88"/>
 <ellipse fill="black" stroke="black" cx="210.723" cy="-484.463" rx="4" ry="4"/>
 <text text-anchor="middle" x="301.5" y="-462.8" font-family="Helvetica,sans-Serif" font-size="8.00">from_component (from_release_components)</text>
 </g>
 <!-- pdc_apps_component_models_ReleaseComponentRelationship&#45;&gt;pdc_apps_component_models_ReleaseComponent -->
-<g id="edge19" class="edge"><title>pdc_apps_component_models_ReleaseComponentRelationship&#45;&gt;pdc_apps_component_models_ReleaseComponent</title>
+<g id="edge21" class="edge"><title>pdc_apps_component_models_ReleaseComponentRelationship&#45;&gt;pdc_apps_component_models_ReleaseComponent</title>
 <path fill="none" stroke="black" d="M330.75,-491.51C348.83,-485.04 367.13,-477.82 384,-470 403.07,-461.16 422.71,-450.56 441.39,-439.66"/>
 <ellipse fill="black" stroke="black" cx="326.782" cy="-492.909" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="479.5" y="-462.8" font-family="Helvetica,sans-Serif" font-size="8.00">to_component (to_release_components)</text>
 </g>
 <!-- pdc_apps_component_models_ReleaseComponentRelationship&#45;&gt;pdc_apps_component_models_ReleaseComponentRelationshipType -->
-<g id="edge21" class="edge"><title>pdc_apps_component_models_ReleaseComponentRelationship&#45;&gt;pdc_apps_component_models_ReleaseComponentRelationshipType</title>
+<g id="edge17" class="edge"><title>pdc_apps_component_models_ReleaseComponentRelationship&#45;&gt;pdc_apps_component_models_ReleaseComponentRelationshipType</title>
 <path fill="none" stroke="black" d="M104.82,-502.59C73.08,-493.89 44.581,-482.88 35,-470 15.53,-443.82 45.538,-416.51 75.673,-397.56"/>
 <ellipse fill="black" stroke="black" cx="109.084" cy="-503.723" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="115.5" y="-462.8" font-family="Helvetica,sans-Serif" font-size="8.00">relation_type (releasecomponentrelationship)</text>
