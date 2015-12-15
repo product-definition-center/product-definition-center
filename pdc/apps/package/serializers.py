@@ -211,7 +211,7 @@ class BuildImageSerializer(StrictSerializerMixin, serializers.HyperlinkedModelSe
 
 
 class BuildImageRTTTestsSerializer(StrictSerializerMixin, serializers.ModelSerializer):
-    format = serializers.CharField(source='image_format__name', read_only=True)
+    format = serializers.CharField(source='image_format.name', read_only=True)
     test_result = ChoiceSlugField(slug_field='name', queryset=ComposeAcceptanceTestingState.objects.all())
     build_nvr = serializers.CharField(source='image_id', read_only=True)
 

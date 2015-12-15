@@ -1630,13 +1630,22 @@ class BuildImageRTTTestsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         untested_count = response.data['count']
         self.assertEqual(0, untested_count)
 
-    def test_filter_build_image_test_results_with_test_nvr_and_test_result(self):
+    def test_filter_build_image_test_results_with_format(self):
+        url = reverse('buildimagertttests-list')
+        response = self.client.get(url + '?image_format=docker', format='json')
+        untested_count = response.data['count']
+        self.assertEqual(untested_count, 2)
+
+        response = self.client.get(url + '?image_format=iso', format='json')
+        untested_count = response.data['count']
+        self.assertEqual(0, untested_count)
+
+    def test_filter_build_image_test_results_with_combinations(self):
         url = reverse('buildimagertttests-list')
         response = self.client.get(url + '?build_nvr=my-server-docker-1.0-27', format='json')
         count = response.data['count']
         self.assertEqual(count, 1)
 
-        url = reverse('buildimagertttests-list')
         response = self.client.get(url + '?build_nvr=fake_nvr', format='json')
         count = response.data['count']
         self.assertEqual(count, 0)
@@ -1656,12 +1665,19 @@ class BuildImageRTTTestsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         count = response.data['count']
         self.assertEqual(count, 2)
 
-        url = reverse('buildimagertttests-list')
         response = self.client.get(url + '?build_nvr=my-server-docker-1.0-27&test_result=untested', format='json')
         count = response.data['count']
         self.assertEqual(count, 2)
 
-        url = reverse('buildimagertttests-list')
+        response = self.client.get(url + '?image_format=docker&build_nvr=my-client-docker', format='json')
+        untested_count = response.data['count']
+        self.assertEqual(1, untested_count)
+
+        response = self.client.get(url + '?build_nvr=my-server-docker-1.0-27&test_result=untested&image_format=iso',
+                                   format='json')
+        count = response.data['count']
+        self.assertEqual(count, 1)
+
         response = self.client.get(url + '?build_nvr=my-server-docker-1.0-27&test_result=passed', format='json')
         count = response.data['count']
         self.assertEqual(count, 0)

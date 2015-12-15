@@ -447,6 +447,7 @@ class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
               "results": [
                 {
                     "build_nvr":    string,
+                    "format":       string,
                     "id":           int,
                     "test_result":  string
                 },
@@ -467,6 +468,7 @@ class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
 
             {
                 "build_nvr":    string,
+                "format":       string,
                 "id":           int,
                 "test_result":  string
             }
@@ -483,6 +485,7 @@ class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
 
             {
                 "build_nvr":    string,
+                "format":       string,
                 "id":           int,
                 "test_result":  string
             }

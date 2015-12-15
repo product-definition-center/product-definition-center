@@ -155,7 +155,8 @@ class BuildImageFilter(django_filters.FilterSet):
 class BuildImageRTTTestsFilter(django_filters.FilterSet):
     build_nvr = MultiValueFilter(name='image_id')
     test_result = MultiValueFilter(name='test_result__name')
+    image_format = MultiValueFilter(name='image_format__name')
 
     class Meta:
         model = models.BuildImage
-        fields = ('build_nvr', 'test_result')
+        fields = ('build_nvr', 'test_result', 'image_format')
