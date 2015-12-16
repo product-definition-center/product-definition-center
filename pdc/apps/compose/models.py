@@ -3,6 +3,7 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+from django.core.exceptions import ValidationError
 from django.db import models, connection, transaction
 from django.db.utils import IntegrityError
 
@@ -223,6 +224,11 @@ class Path(models.Model):
 
     def __unicode__(self):
         return unicode(self.path)
+
+    def export(self):
+        return {
+            "path": self.path
+        }
 
     CACHE = {}
 
@@ -501,11 +507,40 @@ class ComposeImage(models.Model):
     variant_arch        = models.ForeignKey(VariantArch, db_index=True)
     image               = models.ForeignKey("package.Image", db_index=True)
     path                = models.ForeignKey(Path)
+    rtt_test_result     = models.ForeignKey(ComposeAcceptanceTestingState,
+                                            default=ComposeAcceptanceTestingState.get_untested)
 
     class Meta:
         unique_together = (
             ("variant_arch", "image"),
         )
+
+    def __unicode__(self):
+        return u"%s/%s" % (self.variant_arch.variant.compose, self.image)
+
+    def export(self):
+        return {
+            "compose": self.variant_arch.variant.compose.compose_id,
+            "variant": self.variant_arch.variant.variant_uid,
+            "arch": self.variant_arch.arch.name,
+            "file_name": self.image.file_name,
+            "path": self.path.path,
+            "test_result": self.rtt_test_result.name
+        }
+
+    def validate_unique(self, exclude=None):
+        super(ComposeImage, self).validate_unique(exclude=exclude)
+        # NOTE(xchu): we assume that for each compose in specific variant_arch,
+        #             the image `file_name` should be unique.
+        if not self.id:
+            qs = self.__class__.objects.filter(variant_arch=self.variant_arch,
+                                               image__file_name=self.image.file_name)
+            if qs.exists():
+                raise ValidationError(
+                    "Unique validation Error in ComposeImage. "
+                    "Compose(%s) with same Image file name(%s) already exists." % (
+                        self.variant_arch.variant.compose, self.image.file_name)
+                )
 
 
 class Location(models.Model):

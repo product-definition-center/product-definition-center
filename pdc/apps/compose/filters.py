@@ -9,8 +9,8 @@ import django_filters
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 
-from pdc.apps.common.filters import value_is_not_empty
-from .models import Compose, OverrideRPM, ComposeTree
+from pdc.apps.common.filters import value_is_not_empty, MultiValueFilter
+from .models import Compose, OverrideRPM, ComposeTree, ComposeImage
 
 
 class ComposeFilter(django_filters.FilterSet):
@@ -89,3 +89,15 @@ class ComposeTreeFilter(django_filters.FilterSet):
     class Meta:
         model = ComposeTree
         fields = ('compose', 'variant', 'arch', 'location', 'scheme')
+
+
+class ComposeImageRTTTestFilter(django_filters.FilterSet):
+    compose         = MultiValueFilter(name='variant_arch__variant__compose__compose_id')
+    variant         = MultiValueFilter(name='variant_arch__variant__variant_uid')
+    arch            = MultiValueFilter(name='variant_arch__arch__name')
+    file_name       = MultiValueFilter(name='image__file_name')
+    test_result     = MultiValueFilter(name='rtt_test_result__name')
+
+    class Meta:
+        model = ComposeImage
+        fields = ('compose', 'variant', 'arch', 'file_name', 'test_result')

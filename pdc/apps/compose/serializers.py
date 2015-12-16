@@ -10,7 +10,7 @@ from pdc.apps.common.models import Arch
 from pdc.apps.common.serializers import StrictSerializerMixin, DynamicFieldsSerializerMixin
 from pdc.apps.common.fields import ChoiceSlugField
 from .models import (Compose, OverrideRPM, ComposeAcceptanceTestingState,
-                     ComposeTree, Variant, Location, Scheme)
+                     ComposeTree, Variant, Location, Scheme, ComposeImage)
 from pdc.apps.release.models import Release
 from pdc.apps.utils.utils import urldecode
 from pdc.apps.repository.models import ContentCategory
@@ -143,3 +143,28 @@ class ComposeTreeSerializer(StrictSerializerMixin,
         else:
             raise serializers.ValidationError('The combination with compose %s, variant %s, arch %s does not exist' %
                                               (compose, variant, arch))
+
+
+class ComposeImageRTTTestSerializer(StrictSerializerMixin,
+                                    DynamicFieldsSerializerMixin,
+                                    serializers.ModelSerializer):
+    compose                 = serializers.CharField(source='variant_arch.variant.compose', read_only=True)
+    variant                 = serializers.CharField(source='variant_arch.variant', read_only=True)
+    arch                    = serializers.CharField(source='variant_arch.arch', read_only=True)
+    file_name               = serializers.CharField(source='image.file_name', read_only=True)
+    test_result             = ChoiceSlugField(source='rtt_test_result', slug_field='name',
+                                              queryset=ComposeAcceptanceTestingState.objects.all())
+
+    class Meta:
+        model = ComposeImage
+        fields = ('compose', 'variant', 'arch', 'file_name', 'test_result')
+
+    def to_internal_value(self, data):
+        ret = {}
+        if 'test_result' in data:
+            try:
+                ret['rtt_test_result'] = ComposeAcceptanceTestingState.objects.get(
+                    name=data.get('test_result'))
+            except Exception as e:
+                raise serializers.ValidationError({"test_result": e})
+        return ret

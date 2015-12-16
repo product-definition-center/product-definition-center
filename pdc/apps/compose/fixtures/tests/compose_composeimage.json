@@ -12,6 +12,7 @@
     "fields": {
         "variant_arch": 1,
         "image": 1,
+        "rtt_test_result": 1,
         "path": 1
     }
   },
@@ -21,6 +22,7 @@
     "fields": {
         "variant_arch": 1,
         "image": 2,
+        "rtt_test_result": 1,
         "path": 1
     }
   },
@@ -30,6 +32,7 @@
     "fields": {
         "variant_arch": 1,
         "image": 3,
+        "rtt_test_result": 1,
         "path": 1
     }
   }

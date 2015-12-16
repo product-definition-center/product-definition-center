@@ -2010,3 +2010,117 @@ class ComposeTreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(models.ComposeTree.objects.count(), 0)
         self.assertNumChanges([2])
+
+
+class ComposeImageRTTTestAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
+    fixtures = [
+        "pdc/apps/release/fixtures/tests/release.json",
+        "pdc/apps/compose/fixtures/tests/variant.json",
+        "pdc/apps/compose/fixtures/tests/variant_arch.json",
+        "pdc/apps/compose/fixtures/tests/compose.json",
+        'pdc/apps/package/fixtures/test/image.json',
+        "pdc/apps/compose/fixtures/tests/compose_composeimage.json",
+    ]
+
+    def test_list(self):
+        response = self.client.get(reverse('composeimagertttests-list'), {})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+
+    def test_query_composeid(self):
+        response = self.client.get(reverse('composeimagertttests-list'), {"compose": "compose-1"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+
+    def test_query_composeid_nonexisting(self):
+        response = self.client.get(reverse('composeimagertttests-list'), {"compose": "does-not-exist"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
+    def test_query_variant(self):
+        response = self.client.get(reverse('composeimagertttests-list'), {"variant": "Server"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+
+    def test_query_variant_nonexisting(self):
+        response = self.client.get(reverse('composeimagertttests-list'), {"variant": "does-not-exist"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
+    def test_query_arch(self):
+        response = self.client.get(reverse('composeimagertttests-list'), {"arch": "x86_64"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+
+    def test_query_arch_nonexisting(self):
+        response = self.client.get(reverse('composeimagertttests-list'), {"arch": "does-not-exist"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
+    def test_query_image_file_name(self):
+        response = self.client.get(reverse('composeimagertttests-list'), {"file_name": "image-1"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+
+    def test_query_image_fiele_name_nonexisting(self):
+        response = self.client.get(reverse('composeimagertttests-list'), {"file_name": "does-not-exist"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
+    def test_query_test_result(self):
+        response = self.client.get(reverse('composeimagertttests-list'), {"test_result": "untested"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+
+    def test_query_test_result_nonexisting(self):
+        response = self.client.get(reverse('composeimagertttests-list'), {"test_result": "does-not-exist"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
+    def test_detail(self):
+        response = self.client.get(reverse('composeimagertttests-detail',
+                                           args=['compose-1/Server/x86_64/image-1']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['file_name'], 'image-1')
+        self.assertEqual(response.data['test_result'], 'untested')
+
+    def test_can_not_perform_full_update(self):
+        response = self.client.put(reverse('composeimagertttests-detail',
+                                           args=['compose-1/Server/x86_64/image-1']), {})
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_can_not_update_other_fields(self):
+        response = self.client.patch(reverse('composeimagertttests-detail',
+                                             args=['compose-1/Server/x86_64/image-1']),
+                                     {'arch': 'i386'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNumChanges([])
+
+    def test_can_update_test_result(self):
+        response = self.client.patch(reverse('composeimagertttests-detail',
+                                             args=['compose-1/Server/x86_64/image-1']),
+                                     {'test_result': 'passed'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('test_result'), 'passed')
+        self.assertNumChanges([1])
+
+    def test_update_unknown_test_result_status(self):
+        response = self.client.patch(reverse('composeimagertttests-detail',
+                                             args=['compose-1/Server/x86_64/image-1']),
+                                     {'test_result': 'unknown'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data.get('test_result'),
+                         'ComposeAcceptanceTestingState matching query does not exist.')
+        self.assertNumChanges([])
+
+    def test_can_bulk_update_test_result(self):
+        url = reverse('composeimagertttests-list')
+        data = {'compose-1/Server/x86_64/image-1': {'test_result': 'passed'},
+                'compose-1/Server/x86_64/image-2': {'test_result': 'passed'}}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['compose-1/Server/x86_64/image-1'].get('test_result'),
+                         'passed')
+        self.assertEqual(response.data['compose-1/Server/x86_64/image-2'].get('test_result'),
+                         'passed')
+        self.assertNumChanges([2])
