@@ -4,7 +4,7 @@
 
 Name:           python-%{srcname}
 Version:        0.3.rc
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Red Hat Product Definition Center
 Group:          Development/Libraries
 License:        MIT
@@ -90,6 +90,10 @@ fi
 
 
 %changelog
+* Wed Dec 16 2015 Cheng Yu <ycheng@redhat.com> 0.3.rc-2
+- Fix the bug that when role count original value is unlimited, no constraint.
+  (ycheng@redhat.com)
+
 * Fri Dec 04 2015 Xiangyang Chu <xchu@redhat.com> 0.3.rc-1
 - Bump Version to '0.3.rc'. (xchu@redhat.com)
 - Remove compose/package api. (xchu@redhat.com)
