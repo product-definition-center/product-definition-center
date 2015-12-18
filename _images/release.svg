@@ -238,13 +238,13 @@
 <text text-anchor="middle" x="163.5" y="-246.8" font-family="Helvetica,sans-Serif" font-size="8.00">release_type (release)</text>
 </g>
 <!-- pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_BaseProduct -->
-<g id="edge7" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_BaseProduct</title>
+<g id="edge5" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_BaseProduct</title>
 <path fill="none" stroke="black" d="M213.88,-265.41C223.33,-249.02 232.94,-232.35 241.29,-217.87"/>
 <ellipse fill="black" stroke="black" cx="211.846" cy="-268.943" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="268" y="-246.8" font-family="Helvetica,sans-Serif" font-size="8.00">base_product (release)</text>
 </g>
 <!-- pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ProductVersion -->
-<g id="edge5" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ProductVersion</title>
+<g id="edge7" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ProductVersion</title>
 <path fill="none" stroke="black" d="M279.64,-283.98C315.96,-264.12 355.75,-242.37 390.17,-223.55"/>
 <ellipse fill="black" stroke="black" cx="275.931" cy="-286.004" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="397" y="-246.8" font-family="Helvetica,sans-Serif" font-size="8.00">product_version (release)</text>
@@ -324,13 +324,13 @@
 <text text-anchor="start" x="533" y="-474.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_release_models_Variant&#45;&gt;pdc_apps_release_models_Release -->
-<g id="edge13" class="edge"><title>pdc_apps_release_models_Variant&#45;&gt;pdc_apps_release_models_Release</title>
+<g id="edge15" class="edge"><title>pdc_apps_release_models_Variant&#45;&gt;pdc_apps_release_models_Release</title>
 <path fill="none" stroke="black" d="M383.76,-464.04C347.97,-444.3 307.85,-422.16 272,-402.38"/>
 <ellipse fill="black" stroke="black" cx="387.358" cy="-466.027" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="375.5" y="-440.8" font-family="Helvetica,sans-Serif" font-size="8.00">release (variant)</text>
 </g>
 <!-- pdc_apps_release_models_Variant&#45;&gt;pdc_apps_release_models_VariantType -->
-<g id="edge15" class="edge"><title>pdc_apps_release_models_Variant&#45;&gt;pdc_apps_release_models_VariantType</title>
+<g id="edge13" class="edge"><title>pdc_apps_release_models_Variant&#45;&gt;pdc_apps_release_models_VariantType</title>
 <path fill="none" stroke="black" d="M496.28,-458.2C500.79,-427.64 505.96,-392.64 509.34,-369.75"/>
 <ellipse fill="black" stroke="black" cx="495.668" cy="-462.323" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="537" y="-440.8" font-family="Helvetica,sans-Serif" font-size="8.00">variant_type (variant)</text>
