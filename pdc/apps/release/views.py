@@ -8,6 +8,7 @@ import json
 from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from kobo.django.views.generic import DetailView, SearchView
+from rest_framework.reverse import reverse
 from rest_framework import viewsets, mixins, status
 from rest_framework.response import Response
 
@@ -630,6 +631,68 @@ class ReleaseCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
                                    release=new_release)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ReleaseComponentCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
+    queryset = models.Release.objects.none()
+
+    def create(self, request):
+        """
+        Clone all release components, component groups and relationships from one Release
+        to another Release, both they are existed.
+
+        __Method__: POST
+
+        __URL__: $LINK:releasecomponentclone-list$
+
+        __Data__:
+
+            {
+                "source_release_id":            string,
+                "target_release_id":            string
+                "component_dist_git_branch":    string,     # optional
+                "include_inactive":             bool,       # optional
+                "include_trees":                [string],   # optional
+            }
+        __Response__:
+            {
+            "url": [the link for target release component]
+            }
+
+        If `component_dist_git_branch` is present, it will be set for all
+        release components under the target release. If missing, release
+        components will be cloned without changes.
+
+        If `include_inactive` is False, the inactive release_components belong to
+        the old release won't be cloned to target release.
+        Default it will clone all release_components to target release.
+
+        If `include_tree` is specified, it should contain a list of
+        Variant.Arch pairs that should be cloned. If not given, all trees will
+        be cloned. If the list is empty, no trees will be cloned.
+        """
+        data = request.data
+        if 'source_release_id' not in data:
+            return Response({'detail': 'Missing source_release_id'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        source_release_id = data.pop('source_release_id')
+        if 'target_release_id' not in data:
+            return Response({'detail': 'Missing target_release_id'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        target_release_id = data.pop('target_release_id')
+        source_release = get_object_or_404(models.Release, release_id=source_release_id)
+        target_release = get_object_or_404(models.Release, release_id=target_release_id)
+        if source_release.releasecomponent_set.count() == 0:
+            return Response({'detail': 'there is no component in source release'},
+                            status=status.HTTP_204_NO_CONTENT)
+        filter_release = "?release=" + target_release_id
+        target_url = reverse(viewname='releasecomponent-list', request=request) + filter_release
+        signals.rpc_release_clone_component.send(sender=target_release.__class__,
+                                                 request=request,
+                                                 original_release=source_release,
+                                                 release=target_release)
+
+        return Response({'url': target_url}, status=status.HTTP_201_CREATED)
 
 
 class ReleaseRPMMappingView(StrictQueryParamMixin, viewsets.GenericViewSet):

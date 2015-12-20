@@ -24,6 +24,12 @@ release_clone = dispatch.Signal(providing_args=['request',
                                                 'original_release',
                                                 'release'])
 
+# This signal is sent when want to clone components from one release to another.
+# The way is to copy all release components, component groups and relationships.
+rpc_release_clone_component = dispatch.Signal(providing_args=['request',
+                                                              'original_release',
+                                                              'release'])
+
 # This signal is sent before validated data is converted into a Release
 # instance. Any module that has additional fields in the dict should remove it
 # and store it for further processing.

@@ -289,6 +289,7 @@ class ReleaseComponentRelationship(models.Model):
         return result
 
 
+@receiver(signals.rpc_release_clone_component)
 @receiver(signals.release_clone)
 def clone_release_components_and_groups(sender, request, original_release, release, **kwargs):
     data = request.data

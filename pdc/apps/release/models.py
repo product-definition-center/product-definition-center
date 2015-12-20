@@ -308,6 +308,7 @@ class Variant(models.Model):
         }
 
 
+@receiver(signals.rpc_release_clone_component)
 @receiver(signals.release_clone)
 def clone_variants(sender, request, original_release, release, **kwargs):
     """

@@ -23,6 +23,10 @@ router.register(r'rpc/release/import-from-composeinfo',
 router.register(r'rpc/release/clone',
                 views.ReleaseCloneViewSet,
                 base_name='releaseclone')
+router.register(r'rpc/release/clone-components',
+                views.ReleaseComponentCloneViewSet,
+                base_name='releasecomponentclone'
+                )
 router.register(r'release-variants',
                 views.ReleaseVariantViewSet)
 router.register(r'variant-types', views.VariantTypeViewSet,

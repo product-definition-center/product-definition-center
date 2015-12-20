@@ -1175,6 +1175,31 @@ class ReleaseCloneWithComponentsTestCase(TestCaseWithChangeSetMixin, APITestCase
         self.assertIn('Value [foobar] of include_inactive is not a boolean',
                       response.content)
 
+    def test_release_components_clone(self):
+        args = {"name": "Supplementary", "short": "supp", "version": "1.1",
+                "release_type": "ga"}
+        target_response = self.client.post(reverse('release-list'), args)
+        self.assertEqual(target_response.status_code, status.HTTP_201_CREATED)
+        target_release_id = target_response.data['release_id']
+        response = self.client.post(reverse('releasecomponentclone-list'),
+                                    {'source_release_id': 'release-1.0',
+                                     'target_release_id': target_release_id,
+                                     'component_dist_git_branch': 'new_branch'},
+                                    format='json')
+        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+
+    def test_release_component_clone_whithout_component(self):
+        args = {"name": "Supplementary", "short": "supp", "version": "1.1",
+                "release_type": "ga"}
+        source_response = self.client.post(reverse('release-list'), args)
+        self.assertEqual(source_response.status_code, status.HTTP_201_CREATED)
+        resource_release_id = source_response.data['release_id']
+        response = self.client.post(reverse('releasecomponentclone-list'),
+                                    {'source_release_id': resource_release_id,
+                                     'target_release_id': 'release-1.0'},
+                                    format='json')
+        self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
+
 
 class BugzillaComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
