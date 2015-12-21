@@ -5,7 +5,7 @@
 Name:           python-%{srcname}
 Version:        0.3.rc
 Release:        2%{?dist}
-Summary:        Red Hat Product Definition Center
+Summary:        Product Definition Center
 Group:          Development/Libraries
 License:        MIT
 URL:            https://github.com/release-engineering/product-definition-center
@@ -13,16 +13,6 @@ Source0:        %{name}-%{version}.tar.gz
 BuildArch:      noarch
 BuildRequires:  python-setuptools
 BuildRequires:  python-sphinx
-Requires:       python-requests
-Requires:       python-requests-kerberos
-Requires:       beanbag
-
-%description
-The Product Definition Center, at its core, is a database that defines every Red Hat products, and their relationships with several important entities.
-
-
-%package -n %{srcname}-server
-Summary: Product Definition Center (PDC) server part
 Requires:       Django >= 1.8.1
 Requires:       django-rest-framework >= 3.1
 Requires:       django-rest-framework < 3.2
@@ -38,11 +28,10 @@ Requires:       python-ldap
 Requires:       python-markdown
 Requires:       python-mock
 Requires:       python-psycopg2
-Requires:       python-requests
-Requires:       python-requests-kerberos
 Requires:       python-django-cors-headers
 
-%description -n %{srcname}-server
+%description
+The Product Definition Center, at its core, is a database that defines every Red Hat products, and their relationships with several important entities.
 This package contains server part of Product Definition Center (PDC)
 
 %prep
@@ -80,7 +69,7 @@ if [ "$1" = 0 ]; then
 fi
 
 
-%files -n %{srcname}-server
+%files
 %defattr(-,root,apache,-)
 %{_defaultdocdir}/pdc
 %{python_sitelib}/%{srcname}

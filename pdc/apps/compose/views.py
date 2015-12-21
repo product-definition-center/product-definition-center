@@ -33,15 +33,17 @@ from pdc.apps.common.viewsets import (ChangeSetCreateModelMixin,
                                       NoEmptyPatchMixin,
                                       ChangeSetDestroyModelMixin,
                                       ChangeSetModelMixin,
-                                      MultiLookupFieldMixin)
+                                      MultiLookupFieldMixin,
+                                      ChangeSetUpdateModelMixin)
 from pdc.apps.release.models import Release
 from .models import (Compose, VariantArch, Variant, ComposeRPM, OverrideRPM,
                      ComposeImage, ComposeRPMMapping, ComposeAcceptanceTestingState,
                      ComposeTree)
 from .forms import (ComposeSearchForm, ComposeRPMSearchForm, ComposeImageSearchForm,
                     ComposeRPMDisableForm, OverrideRPMForm, VariantArchForm, OverrideRPMActionForm)
-from .serializers import ComposeSerializer, OverrideRPMSerializer, ComposeTreeSerializer
-from .filters import ComposeFilter, OverrideRPMFilter, ComposeTreeFilter
+from .serializers import (ComposeSerializer, OverrideRPMSerializer, ComposeTreeSerializer,
+                          ComposeImageRTTTestSerializer)
+from .filters import ComposeFilter, OverrideRPMFilter, ComposeTreeFilter, ComposeImageRTTTestFilter
 from . import lib
 
 
@@ -1362,6 +1364,106 @@ class FindComposeByProductVersionRPMViewSet(StrictQueryParamMixin, FindComposeMi
         self.product_version = kwargs.get('product_version')
         self.rpm_name = kwargs.get('rpm_name')
         return Response(self._get_composes_for_product_version())
+
+
+class ComposeImageRTTTestViewSet(ChangeSetUpdateModelMixin,
+                                 mixins.ListModelMixin,
+                                 mixins.RetrieveModelMixin,
+                                 StrictQueryParamMixin,
+                                 MultiLookupFieldMixin,
+                                 viewsets.GenericViewSet):
+    """
+    API endpoint that allows querying compose-image RTT Test results.
+
+    ##Test tools##
+
+    You can use ``curl`` in terminal, with -X _method_ (GET|POST|PATCH),
+    -d _data_ (a json string). or GUI plugins for
+    browsers, such as ``RESTClient``, ``RESTConsole``.
+    """
+    queryset = ComposeImage.objects.select_related('variant_arch', 'image').all()
+    serializer_class = ComposeImageRTTTestSerializer
+    filter_class = ComposeImageRTTTestFilter
+    lookup_fields = (
+        ('variant_arch__variant__compose__compose_id', r'[^/]+'),
+        ('variant_arch__variant__variant_uid', r'[^/]+'),
+        ('variant_arch__arch__name', r'[^/]+'),
+        ('image__file_name', r'[^/]+'),
+    )
+
+    def list(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:composeimagertttests-list$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+        __Response__: a paged list of following objects
+
+        %(SERIALIZER)s
+        """
+        return super(ComposeImageRTTTestViewSet, self).list(*args, **kwargs)
+
+    def retrieve(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:composeimagertttests-detail:compose_id}/{variant_uid}/{arch}/{file_name$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ComposeImageRTTTestViewSet, self).retrieve(*args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        # This method is used by bulk update and partial update, but should not
+        # be called directly.
+        if not kwargs.get('partial', False):
+            return self.http_method_not_allowed(request, *args, **kwargs)
+
+        if not request.data:
+            return NoEmptyPatchMixin.make_response()
+
+        updatable_keys = set(['test_result'])
+        if set(request.data.keys()) - updatable_keys:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={'detail': 'Only these properties can be updated: %s'
+                                  % ', '.join(updatable_keys)})
+        return super(ComposeImageRTTTestViewSet, self).update(request, *args, **kwargs)
+
+    def bulk_update(self, *args, **kwargs):
+        """
+        It is possible to perform bulk partial update on composeimagertttest with `PATCH`
+        method. The input must be a JSON object with composeimagertttest identifiers as
+        keys. Values for these keys should be in the same format as when
+        updating a single composeimagertttest.
+        """
+        return bulk_operations.bulk_update_impl(self, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        """
+        Only `test_result` fields can be modified by this call.
+        Trying to change anything else will result in 400 BAD REQUEST response.
+
+        __Method__: PATCH
+
+        __URL__: $LINK:composeimagertttests-detail:compose_id}/{variant_uid}/{arch}/{file_name$
+
+        __Data__:
+
+            {
+                "test_result": string
+            }
+
+        __Response__:
+        same as for retrieve
+        """
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
 
 
 class ComposeTreeViewSet(ChangeSetModelMixin,

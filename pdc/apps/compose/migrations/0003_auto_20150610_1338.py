@@ -20,11 +20,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='variantarch',
             name='rtt_testing_status',
-            field=models.ForeignKey(default=pdc.apps.compose.models._get_untested, to='compose.ComposeAcceptanceTestingState'),
+            field=models.ForeignKey(default=pdc.apps.compose.models.ComposeAcceptanceTestingState.get_untested, to='compose.ComposeAcceptanceTestingState'),
         ),
         migrations.AlterField(
             model_name='compose',
             name='acceptance_testing',
-            field=models.ForeignKey(default=pdc.apps.compose.models._get_untested, to='compose.ComposeAcceptanceTestingState'),
+            field=models.ForeignKey(default=pdc.apps.compose.models.ComposeAcceptanceTestingState.get_untested, to='compose.ComposeAcceptanceTestingState'),
         ),
     ]

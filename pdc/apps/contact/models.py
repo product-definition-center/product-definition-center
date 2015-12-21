@@ -132,46 +132,6 @@ class Maillist(Contact):
         return model_to_dict(self, fields=_fields)
 
 
-class RoleContactSpecificManager(models.Manager):
-    def get(self, **kwargs):
-        if kwargs.get('username', None) is not None:
-            obj = Contact.objects.get(person__username=kwargs.get('username'),
-                                      person__email=kwargs.get('email'))
-        elif kwargs.get('mail_name', None) is not None:
-            obj = Contact.objects.get(maillist__mail_name=kwargs.get('mail_name'),
-                                      maillist__email=kwargs.get('email'))
-        else:
-            raise KeyError("Unsupported key for RoleContactSpecificManager.")
-        get_kwargs = {
-            "contact_id": obj.pk,
-        }
-        if kwargs.get('contact_role', None) is not None:
-            contact_role_obj = ContactRole.objects.get(name=kwargs.get('contact_role'))
-            get_kwargs["contact_role"] = contact_role_obj
-        else:
-            raise KeyError("'contact_role' is needed for RoleContactSpecificManager.")
-        return self.get_queryset().get(**get_kwargs)
-
-    def create(self, **kwargs):
-        if kwargs.get('username', None) is not None:
-            obj, _ = Person.objects.get_or_create(username=kwargs.get('username'),
-                                                  email=kwargs.get('email'))
-        elif kwargs.get('mail_name', None) is not None:
-            obj, _ = Maillist.objects.get_or_create(mail_name=kwargs.get('mail_name'),
-                                                    email=kwargs.get('email'))
-        else:
-            raise KeyError("Unsupported key for RoleContactSpecificManager.")
-        create_kwargs = {
-            "contact_id": obj.pk,
-        }
-        if kwargs.get('contact_role', None) is not None:
-            contact_role_obj, _ = ContactRole.objects.get_or_create(name=kwargs.get('contact_role'))
-            create_kwargs["contact_role"] = contact_role_obj
-        else:
-            raise KeyError("'contact_role' is needed for RoleContactSpecificManager.")
-        return self.get_queryset().create(**create_kwargs)
-
-
 class ValidateRoleCountMixin(object):
 
     def clean(self):
@@ -224,28 +184,3 @@ class ReleaseComponentContact(ValidateRoleCountMixin, models.Model):
             'role': self.role.name,
             'component': self.component.name,
         }
-
-
-class RoleContact(models.Model):
-
-    contact_role = models.ForeignKey(ContactRole, related_name='role_contacts',
-                                     on_delete=models.PROTECT)
-    contact      = models.ForeignKey(Contact, related_name='role_contacts',
-                                     on_delete=models.PROTECT)
-
-    objects = models.Manager()
-    specific_objects = RoleContactSpecificManager()
-
-    def __unicode__(self):
-        return u"%s: %s" % (self.contact_role,
-                            unicode(self.contact))
-
-    class Meta:
-        unique_together = (
-            ("contact", "contact_role"),
-        )
-
-    def export(self, fields=None):
-        result = {'contact': self.contact.export(fields=fields)}
-        result['contact_role'] = self.contact_role.name
-        return result

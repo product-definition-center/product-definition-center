@@ -35,3 +35,5 @@ router.register('rpc/find-composes-by-product-version-rpm/(?P<product_version>[^
                 base_name='findcomposesbypvr')
 router.register(r'compose-tree-locations', views.ComposeTreeViewSet,
                 base_name='composetreelocations')
+router.register(r'compose-image-rtt-tests', views.ComposeImageRTTTestViewSet,
+                base_name='composeimagertttests')

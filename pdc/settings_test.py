@@ -37,14 +37,14 @@ REST_FRAMEWORK = {
 
     'DEFAULT_METADATA_CLASS': 'contrib.bulk_operations.metadata.BulkMetadata',
 
-    'PAGINATE_BY': 20,
-
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'pdc.apps.common.renderers.ReadOnlyBrowsableAPIRenderer',
     ),
 
     'EXCEPTION_HANDLER': 'pdc.apps.common.handlers.exception_handler',
+
+    'DEFAULT_PAGINATION_CLASS': 'pdc.apps.common.pagination.AutoDetectedPageNumberPagination',
 
     'NON_FIELD_ERRORS_KEY': 'detail',
 }

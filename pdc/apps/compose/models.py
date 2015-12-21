@@ -3,11 +3,11 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+from django.core.exceptions import ValidationError
 from django.db import models, connection, transaction
 from django.db.utils import IntegrityError
 
 from pdc.apps.common import models as common_models
-from pdc.apps.package import models as package_models
 from pdc.apps.common.hacks import add_returning
 
 from productmd import composeinfo
@@ -23,13 +23,13 @@ class ComposeType(models.Model):
 class ComposeAcceptanceTestingState(models.Model):
     name                = models.CharField(max_length=200, unique=True)
 
+    @staticmethod
+    def get_untested():
+        """Return default acceptance testing status."""
+        return ComposeAcceptanceTestingState.objects.get(name='untested').pk
+
     def __unicode__(self):
         return u"%s" % self.name
-
-
-def _get_untested():
-    """Return default acceptance testing status."""
-    return ComposeAcceptanceTestingState.objects.get(name='untested').pk
 
 
 class Compose(models.Model):
@@ -41,7 +41,8 @@ class Compose(models.Model):
     compose_label       = models.CharField(max_length=200, null=True, blank=True)
     dt_imported         = models.DateTimeField(auto_now_add=True)
     deleted             = models.BooleanField(default=False)
-    acceptance_testing  = models.ForeignKey(ComposeAcceptanceTestingState, default=_get_untested)
+    acceptance_testing  = models.ForeignKey(ComposeAcceptanceTestingState,
+                                            default=ComposeAcceptanceTestingState.get_untested)
     linked_releases     = models.ManyToManyField('release.Release', related_name='linked_composes', blank=True)
 
     class Meta:
@@ -140,7 +141,8 @@ class Compose(models.Model):
         """
         Find all RPMs with given name associated with this compose.
         """
-        return (package_models.RPM.objects.filter(name=rpm_name)
+        from pdc.apps.package.models import RPM
+        return (RPM.objects.filter(name=rpm_name)
                 .filter(composerpm__variant_arch__variant__compose=self)
                 .distinct())
 
@@ -200,7 +202,7 @@ class VariantArch(models.Model):
     variant             = models.ForeignKey(Variant)
     arch                = models.ForeignKey("common.Arch", related_name="+")
     rtt_testing_status  = models.ForeignKey(ComposeAcceptanceTestingState,
-                                            default=_get_untested)
+                                            default=ComposeAcceptanceTestingState.get_untested)
     deleted             = models.BooleanField(default=False)
 
     class Meta:
@@ -222,6 +224,11 @@ class Path(models.Model):
 
     def __unicode__(self):
         return unicode(self.path)
+
+    def export(self):
+        return {
+            "path": self.path
+        }
 
     CACHE = {}
 
@@ -500,11 +507,40 @@ class ComposeImage(models.Model):
     variant_arch        = models.ForeignKey(VariantArch, db_index=True)
     image               = models.ForeignKey("package.Image", db_index=True)
     path                = models.ForeignKey(Path)
+    rtt_test_result     = models.ForeignKey(ComposeAcceptanceTestingState,
+                                            default=ComposeAcceptanceTestingState.get_untested)
 
     class Meta:
         unique_together = (
             ("variant_arch", "image"),
         )
+
+    def __unicode__(self):
+        return u"%s/%s" % (self.variant_arch.variant.compose, self.image)
+
+    def export(self):
+        return {
+            "compose": self.variant_arch.variant.compose.compose_id,
+            "variant": self.variant_arch.variant.variant_uid,
+            "arch": self.variant_arch.arch.name,
+            "file_name": self.image.file_name,
+            "path": self.path.path,
+            "test_result": self.rtt_test_result.name
+        }
+
+    def validate_unique(self, exclude=None):
+        super(ComposeImage, self).validate_unique(exclude=exclude)
+        # NOTE(xchu): we assume that for each compose in specific variant_arch,
+        #             the image `file_name` should be unique.
+        if not self.id:
+            qs = self.__class__.objects.filter(variant_arch=self.variant_arch,
+                                               image__file_name=self.image.file_name)
+            if qs.exists():
+                raise ValidationError(
+                    "Unique validation Error in ComposeImage. "
+                    "Compose(%s) with same Image file name(%s) already exists." % (
+                        self.variant_arch.variant.compose, self.image.file_name)
+                )
 
 
 class Location(models.Model):

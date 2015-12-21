@@ -42,7 +42,7 @@ class APIRootTestCase(APITestCase):
 
     def test_root_includes_release_component_contacts(self):
         response = self.client.get(reverse('api-root'))
-        self.assertIn('release-components/{instance_pk}/contacts', response.data)
+        self.assertIn('release-component-contacts', response.data)
 
     def test_root_includes_release_rpm_mapping(self):
         response = self.client.get(reverse('api-root'))
