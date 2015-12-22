@@ -35,5 +35,13 @@
             "name": "allow_3_role",
             "count_limit": 3
         }
+    },
+    {
+        "model": "contact.ContactRole",
+        "pk": 6,
+        "fields": {
+            "name": "allow_unlimited_role",
+            "count_limit": 0
+        }
     }
 ]

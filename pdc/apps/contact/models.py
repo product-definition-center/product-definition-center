@@ -36,7 +36,7 @@ class ContactRole(models.Model):
             role = ContactRole.objects.get(pk=self.pk)
             old_limit = role.count_limit
             # must check when decrease count limit
-            if self.count_limit < old_limit:
+            if old_limit == ContactRole.UNLIMITED or self.count_limit < old_limit:
                 rc_max_count = self._get_max_component_role_count(ReleaseComponentContact, role)
                 gc_max_count = self._get_max_component_role_count(GlobalComponentContact, role)
                 if self.count_limit < max(rc_max_count, gc_max_count):

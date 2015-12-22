@@ -2,9 +2,9 @@
 
 %define srcname pdc
 
-Name:           %{srcname}-server
-Version:        0.1.0
-Release:        1%{?dist}
+Name:           python-%{srcname}
+Version:        0.3.rc
+Release:        2%{?dist}
 Summary:        Product Definition Center
 Group:          Development/Libraries
 License:        MIT
@@ -79,6 +79,19 @@ fi
 
 
 %changelog
+* Wed Dec 16 2015 Cheng Yu <ycheng@redhat.com> 0.3.rc-2
+- Fix the bug that when role count original value is unlimited, no constraint.
+  (ycheng@redhat.com)
+
+* Fri Dec 04 2015 Xiangyang Chu <xchu@redhat.com> 0.3.rc-1
+- Bump Version to '0.3.rc'. (xchu@redhat.com)
+- Remove compose/package api. (xchu@redhat.com)
+- Specify Accept instead of Content-Type in curl examples. (rbean@redhat.com)
+- Use single string field for user names. (ycheng@redhat.com)
+- Add new endpoint API ComposeTree (chuzhang@redhat.com)
+- Create script that can create release-components from compose information
+  (ycheng@redhat.com)
+- Remove pdc_client since pdc-client repo created. (xchu@redhat.com)
 * Fri Sep 11 2015 Xiangyang Chu <xychu2008@gmail.com> 0.1.0-1
 - new package built with tito
 

@@ -796,6 +796,33 @@ class GlobalComponentContactRESTTestCase(TestCaseWithChangeSetMixin, APITestCase
         response = self.client.patch(contact_role_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_constraint_to_contact_role_count_limit_change_from_unlimited(self):
+        # Add 3 contacts for the role
+        data = {'component': 'python', 'role': 'allow_unlimited_role', 'contact': {'mail_name': 'maillist2'}}
+        response = self.client.post(self.list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = {'component': 'python', 'role': 'allow_unlimited_role', 'contact': {'mail_name': 'maillist1'}}
+        response = self.client.post(self.list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = {'component': 'python', 'role': 'allow_unlimited_role',
+                'contact': {"username": "person1", "email": "person1@test.com"}}
+        response = self.client.post(self.list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # should not change to 2
+        contact_role_url = reverse('contactrole-detail', args=['allow_unlimited_role'])
+        data = {'count_limit': '2'}
+        response = self.client.patch(contact_role_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # could change it to 3
+        contact_role_url = reverse('contactrole-detail', args=['allow_unlimited_role'])
+        data = {'count_limit': '3'}
+        response = self.client.patch(contact_role_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_constraint_to_contact_role_count_limit_change_for_different_roles(self):
         data = {'component': 'python', 'role': 'allow_3_role', 'contact': {'mail_name': 'maillist2'}}
         response = self.client.post(self.list_url, data, format='json')
