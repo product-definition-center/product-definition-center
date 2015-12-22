@@ -46,6 +46,9 @@ def exception_handler(exc, context):
         elif isinstance(exc, ProtectedError):
             return Response({"detail": "%s %s" % exc.args},
                             status=status.HTTP_400_BAD_REQUEST)
+        elif isinstance(exc, ValueError):
+            return Response({'detail': str(exc)},
+                            status=status.HTTP_400_BAD_REQUEST)
         elif isinstance(exc, db.IntegrityError):
             # Refs PEP249
             # Maybe a duplicate PK, FK check fails, index conflict.
