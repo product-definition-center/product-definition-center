@@ -1701,10 +1701,10 @@ class BuildImageRTTTestsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         new_untested_count = response.data['count']
         self.assertEqual(new_untested_count, ori_untested_count - 1)
 
-    def test_update_patch_build_image_test_results_not_allowed_fields(self):
+    def test_patch_build_image_test_results_not_allowed_fields(self):
         data = {'build_nvr': 'fake_nvr', 'format': 'iso', 'test_result': 'untested'}
         url = reverse('buildimagertttests-detail', args=[1])
-        response = self.client.put(url, data, format='json')
+        response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         data = {'format': 'iso', 'test_result': 'untested'}
@@ -1726,3 +1726,14 @@ class BuildImageRTTTestsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('buildimagertttests-detail', args=[1])
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_patch_empty_content_should_not_allowed(self):
+        url = reverse('buildimagertttests-detail', args=[1])
+        response = self.client.patch(url, {}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_put_method_should_not_allowed(self):
+        data = {'build_nvr': 'my-server-docker-1.0-27', 'format': 'docker', 'test_result': 'untested'}
+        url = reverse('buildimagertttests-detail', args=[1])
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)

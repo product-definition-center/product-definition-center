@@ -476,10 +476,29 @@ class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
         return super(BuildImageRTTTestsViewSet, self).retrieve(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
+        # This method is used by bulk update and partial update, but should not
+        # be called directly.
+        if not kwargs.get('partial', False):
+            return self.http_method_not_allowed(request, *args, **kwargs)
+
+        if not request.data:
+            return pdc_viewsets.NoEmptyPatchMixin.make_response()
+        return super(BuildImageRTTTestsViewSet, self).update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
         """
-        PATCH: It only supports partial update. Only test_result could be updated
+        Only `test_result` fields can be modified by this call.
+        Trying to change anything else will result in 400 BAD REQUEST response.
+
+        __Method__: PATCH
 
         __URL__: $LINK:buildimagertttests-detail:instance_pk$
+
+        __Data__:
+
+            {
+                "test_result": string
+            }
 
         __Response__:
 
@@ -490,7 +509,8 @@ class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
                 "test_result":  string
             }
         """
-        return super(BuildImageRTTTestsViewSet, self).update(request, *args, **kwargs)
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
 
     def bulk_update(self, *args, **kwargs):
         """
