@@ -148,7 +148,7 @@ class ComposeTreeSerializer(StrictSerializerMixin,
 class ComposeImageRTTTestSerializer(StrictSerializerMixin,
                                     DynamicFieldsSerializerMixin,
                                     serializers.ModelSerializer):
-    compose                 = serializers.CharField(source='variant_arch.variant.compose', read_only=True)
+    compose                 = serializers.CharField(source='variant_arch.variant.compose.compose_id', read_only=True)
     variant                 = serializers.CharField(source='variant_arch.variant', read_only=True)
     arch                    = serializers.CharField(source='variant_arch.arch', read_only=True)
     file_name               = serializers.CharField(source='image.file_name', read_only=True)
@@ -158,13 +158,3 @@ class ComposeImageRTTTestSerializer(StrictSerializerMixin,
     class Meta:
         model = ComposeImage
         fields = ('compose', 'variant', 'arch', 'file_name', 'test_result')
-
-    def to_internal_value(self, data):
-        ret = {}
-        if 'test_result' in data:
-            try:
-                ret['rtt_test_result'] = ComposeAcceptanceTestingState.objects.get(
-                    name=data.get('test_result'))
-            except Exception as e:
-                raise serializers.ValidationError({"test_result": e})
-        return ret

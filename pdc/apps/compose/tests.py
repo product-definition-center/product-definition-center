@@ -2110,7 +2110,7 @@ class ComposeImageRTTTestAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
                                      {'test_result': 'unknown'})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data.get('test_result'),
-                         'ComposeAcceptanceTestingState matching query does not exist.')
+                         ["'unknown' is not allowed value. Use one of 'untested', 'passed', 'failed'."])
         self.assertNumChanges([])
 
     def test_can_bulk_update_test_result(self):
