@@ -652,7 +652,6 @@ class ReleaseComponentCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSe
                 "target_release_id":            string
                 "component_dist_git_branch":    string,     # optional
                 "include_inactive":             bool,       # optional
-                "include_trees":                [string],   # optional
             }
         __Response__:
             {
@@ -666,10 +665,6 @@ class ReleaseComponentCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSe
         If `include_inactive` is False, the inactive release_components belong to
         the old release won't be cloned to target release.
         Default it will clone all release_components to target release.
-
-        If `include_tree` is specified, it should contain a list of
-        Variant.Arch pairs that should be cloned. If not given, all trees will
-        be cloned. If the list is empty, no trees will be cloned.
         """
         data = request.data
         if 'source_release_id' not in data:
