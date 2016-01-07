@@ -881,6 +881,15 @@ class RPMMappingAPITestCase(APITestCase):
                                               do_not_delete=False, comment="")
         self.assertIsNotNone(orpm)
 
+    def test_partial_update_with_illegal_action(self):
+        self.client.force_authenticate(create_user("user", perms=[]))
+        response = self.client.patch(self.url, [{"action": "fake_action", "srpm_name": "bash", "rpm_name": "bash-magic",
+                                                 "rpm_arch": "src", "variant": "Client", "arch": "x86_64",
+                                                 "do_not_delete": False, "comment": "", "include": True}],
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {"detail": "action should only be 'create' or 'delete'"})
+
     def test_update(self):
         self.client.force_authenticate(create_user("user", perms=[]))
         new_mapping = {'Server': {'x86_64': {'bash': ['x86_64', 'i386']}}}

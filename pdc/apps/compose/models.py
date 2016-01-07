@@ -500,6 +500,8 @@ class OverrideRPM(models.Model):
                 orpm.include = not data['include']
                 orpm.save()
                 new_val = orpm.export()
+        else:
+            raise ValueError("action should only be 'create' or 'delete'")
         return pk, old_val, new_val
 
 

@@ -727,7 +727,7 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
 
             [
                 {
-                    "action":           <str>,
+                    "action":           <str>,      # value should be 'create' or 'delete'
                     "release_id":       <str>,
                     "variant":          <str>,
                     "arch":             <str>,
