@@ -26,7 +26,7 @@ from django.http import Http404
 from contrib.bulk_operations import bulk_operations
 
 from pdc.apps.package.serializers import RPMSerializer
-from pdc.apps.common.models import Arch
+from pdc.apps.common.models import Arch, SigKey
 from pdc.apps.common.hacks import bool_from_native, convert_str_to_bool, as_dict
 from pdc.apps.common.viewsets import (ChangeSetCreateModelMixin,
                                       StrictQueryParamMixin,
@@ -416,7 +416,6 @@ def _apply_changes(request, release, changes):
 
 class ComposeViewSet(StrictQueryParamMixin,
                      mixins.RetrieveModelMixin,
-                     mixins.ListModelMixin,
                      mixins.UpdateModelMixin,
                      viewsets.GenericViewSet):
     """
@@ -438,6 +437,12 @@ class ComposeViewSet(StrictQueryParamMixin,
     filter_class = ComposeFilter
     lookup_field = 'compose_id'
     lookup_value_regex = '[^/]+'
+    context = {}
+
+    def get_serializer_context(self):
+        context = super(ComposeViewSet, self).get_serializer_context()
+        context.update(self.context)
+        return context
 
     def filter_queryset(self, qs):
         """
@@ -451,6 +456,41 @@ class ComposeViewSet(StrictQueryParamMixin,
         if getattr(self, 'order_queryset', False):
             return sorted(qs)
         return qs
+
+    def _fill_in_cache(self, result_queryset):
+        """
+        Cache some information and put them in context to prevent from getting them one by one
+        for each model object in other places.
+        Currently, it caches compose id to it's corresponding Sigkeys' key id mapping.
+        """
+        variant_id_to_compose_id_dict = {}
+        variant_id_list = []
+        for compose_id, variant_id in Variant.objects.filter(
+                compose__in=result_queryset).values_list("compose__id", "id"):
+            variant_id_to_compose_id_dict[variant_id] = compose_id
+            variant_id_list.append(variant_id)
+
+        compose_id_to_va_id_set = {}
+        variant_arch_id_list = []
+        for variant_id, variant_arch_id in VariantArch.objects.filter(
+                variant__id__in=variant_id_list).values_list('variant__id', 'id'):
+            compose_id_to_va_id_set.setdefault(variant_id_to_compose_id_dict[variant_id], set([])).add(variant_arch_id)
+            variant_arch_id_list.append(variant_arch_id)
+
+        va_id_to_key_id_set = {}
+        for key_id, va_id in SigKey.objects.filter(
+                composerpm__variant_arch__id__in=variant_arch_id_list).values_list(
+                'key_id', 'composerpm__variant_arch__id').distinct():
+            va_id_to_key_id_set.setdefault(va_id, set([])).add(key_id)
+
+        compose_id_to_key_id_cache = {}
+        for compose_id, va_id_set in compose_id_to_va_id_set.iteritems():
+            for va_id in va_id_set:
+                if va_id in va_id_to_key_id_set:
+                    key_id_set = compose_id_to_key_id_cache.setdefault(compose_id, set([]))
+                    key_id_set |= va_id_to_key_id_set[va_id]
+
+        self.context = {'compose_id_to_key_id_cache': compose_id_to_key_id_cache}
 
     def retrieve(self, *args, **kwargs):
         """
@@ -483,7 +523,20 @@ class ComposeViewSet(StrictQueryParamMixin,
         %(SERIALIZER)s
         """
         self.order_queryset = True
-        return super(ComposeViewSet, self).list(*args, **kwargs)
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+
+        result_queryset = queryset
+        if page is not None:
+            result_queryset = page
+        self._fill_in_cache(result_queryset)
+
+        serializer = self.get_serializer(result_queryset, many=True)
+        if page is not None:
+            result = self.get_paginated_response(serializer.data)
+        else:
+            result = Response(serializer.data)
+        return result
 
     def update_arch_testing_status(self, data):
         compose_id = self.kwargs[self.lookup_field]

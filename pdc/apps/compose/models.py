@@ -87,10 +87,14 @@ class Compose(models.Model):
         """
         sigkeys = common_models.SigKey.objects.filter(composerpm__variant_arch__variant__compose=self).distinct()
         result = sorted([i.key_id for i in sigkeys])
-        if ComposeRPM.objects.filter(variant_arch__variant__compose=self, sigkey=None).exists():
+        if self.exist_unsigned:
             # detect unsigned RPMs
             result.append(None)
         return result
+
+    @property
+    def exist_unsigned(self):
+        return ComposeRPM.objects.filter(variant_arch__variant__compose=self, sigkey=None).exists()
 
     def get_rpm_mapping(self, package, disable_overrides=False, release=None):
         """
@@ -151,7 +155,8 @@ class Compose(models.Model):
         Get a mapping of all variant.archs to their testing status.
         """
         result = {}
-        for var_arch in VariantArch.objects.filter(variant__compose=self):
+        for var_arch in VariantArch.objects.filter(
+                variant__compose=self).select_related('variant', 'arch', 'rtt_testing_status'):
             variant = result.setdefault(var_arch.variant.variant_uid, {})
             variant[var_arch.arch.name] = var_arch.rtt_testing_status.name
         return result

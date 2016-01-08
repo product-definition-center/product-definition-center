@@ -80,6 +80,13 @@ class ComposeSerializer(StrictSerializerMixin,
 
     def get_sigkeys(self, obj):
         """["string"]"""
+        compose_id_to_key_id_cache = self.context.get("compose_id_to_key_id_cache")
+        if compose_id_to_key_id_cache:
+            result = sorted(list(compose_id_to_key_id_cache.get(obj.id, [])))
+            if obj.exist_unsigned:
+                result.append(None)
+            return result
+
         return obj.sigkeys
 
     def validate(self, attrs):
