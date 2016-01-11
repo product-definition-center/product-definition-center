@@ -417,6 +417,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
 
 class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
                                 pdc_viewsets.ChangeSetUpdateModelMixin,
+                                pdc_viewsets.MultiLookupFieldMixin,
                                 mixins.RetrieveModelMixin,
                                 mixins.ListModelMixin,
                                 viewsets.GenericViewSet):
@@ -426,6 +427,8 @@ class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
     queryset = models.BuildImage.objects.all().order_by('id')
     serializer_class = serializers.BuildImageRTTTestsSerializer
     filter_class = filters.BuildImageRTTTestsFilter
+    lookup_fields = (('image_id', r'[^/]+'),
+                     ('image_format__name', r'[^/]+'))
 
     def list(self, request, *args, **kwargs):
         """
@@ -462,7 +465,7 @@ class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
         __Method__:
         GET
 
-        __URL__: $LINK:buildimagertttests-detail:instance_pk$
+        __URL__: $LINK:buildimagertttests-detail:build_nvr}/{image_format$
 
         __Response__:
 
@@ -492,7 +495,7 @@ class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         __Method__: PATCH
 
-        __URL__: $LINK:buildimagertttests-detail:instance_pk$
+        __URL__: $LINK:buildimagertttests-detail:build_nvr}/{image_format$
 
         __Data__:
 

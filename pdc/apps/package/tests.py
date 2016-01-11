@@ -1610,7 +1610,7 @@ class BuildImageRTTTestsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_build_image_test_result_should_not_be_deleted(self):
-        url = reverse('buildimagertttests-detail', args=[1])
+        url = reverse('buildimagertttests-detail', args=['my-server-docker-1.0-27/docker'])
         response = self.client.delete(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -1686,8 +1686,7 @@ class BuildImageRTTTestsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('buildimagertttests-list')
         response = self.client.get(url + '?test_result=untested', format='json')
         ori_untested_count = response.data['count']
-
-        url = reverse('buildimagertttests-detail', args=[1])
+        url = reverse('buildimagertttests-detail', args=['my-server-docker-1.0-27/docker'])
         data = {'test_result': 'passed'}
         response = self.client.patch(url, data, format='json')
 
@@ -1703,37 +1702,37 @@ class BuildImageRTTTestsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_patch_build_image_test_results_not_allowed_fields(self):
         data = {'build_nvr': 'fake_nvr', 'format': 'iso', 'test_result': 'untested'}
-        url = reverse('buildimagertttests-detail', args=[1])
+        url = reverse('buildimagertttests-detail', args=['my-server-docker-1.0-27/docker'])
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         data = {'format': 'iso', 'test_result': 'untested'}
-        url = reverse('buildimagertttests-detail', args=[1])
+        url = reverse('buildimagertttests-detail', args=['my-server-docker-1.0-27/docker'])
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         data = {'build_nvr': 'fake_nvr', 'test_result': 'untested'}
-        url = reverse('buildimagertttests-detail', args=[1])
+        url = reverse('buildimagertttests-detail', args=['my-server-docker-1.0-27/docker'])
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         data = {'format': 'iso'}
-        url = reverse('buildimagertttests-detail', args=[1])
+        url = reverse('buildimagertttests-detail', args=['my-server-docker-1.0-27/docker'])
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         data = {'build_nvr': 'fake_nvr'}
-        url = reverse('buildimagertttests-detail', args=[1])
+        url = reverse('buildimagertttests-detail', args=['my-server-docker-1.0-27/docker'])
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_patch_empty_content_should_not_allowed(self):
-        url = reverse('buildimagertttests-detail', args=[1])
+        url = reverse('buildimagertttests-detail', args=['my-server-docker-1.0-27/docker'])
         response = self.client.patch(url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_put_method_should_not_allowed(self):
         data = {'build_nvr': 'my-server-docker-1.0-27', 'format': 'docker', 'test_result': 'untested'}
-        url = reverse('buildimagertttests-detail', args=[1])
+        url = reverse('buildimagertttests-detail', args=['my-server-docker-1.0-27/docker'])
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
