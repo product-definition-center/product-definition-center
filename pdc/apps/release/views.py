@@ -11,7 +11,7 @@ from kobo.django.views.generic import DetailView, SearchView
 from rest_framework.reverse import reverse
 from rest_framework import viewsets, mixins, status
 from rest_framework.response import Response
-
+from django.http import Http404
 from . import filters
 from . import signals
 from . import models
@@ -658,7 +658,7 @@ class ReleaseComponentCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSe
             "url": [the link for target release component]
             }
 
-        If `component_dist_git_branch` is present, it will be set for all
+        If `component_dist_git_branch` is present, the value will be set for all
         release components under the target release. If missing, release
         components will be cloned without changes.
 
@@ -675,8 +675,16 @@ class ReleaseComponentCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSe
             return Response({'detail': 'Missing target_release_id'},
                             status=status.HTTP_400_BAD_REQUEST)
         target_release_id = data.pop('target_release_id')
-        source_release = get_object_or_404(models.Release, release_id=source_release_id)
-        target_release = get_object_or_404(models.Release, release_id=target_release_id)
+        try:
+            source_release = get_object_or_404(models.Release, release_id=source_release_id)
+        except Http404:
+            return Response({'detail': 'Source_release_id is not existed'},
+                            status=status.HTTP_404_NOT_FOUND)
+        try:
+            target_release = get_object_or_404(models.Release, release_id=target_release_id)
+        except Http404:
+            return Response({'detail': 'Target_release_id is not existed'},
+                            status=status.HTTP_404_NOT_FOUND)
         if source_release.releasecomponent_set.count() == 0:
             return Response({'detail': 'there is no component in source release'},
                             status=status.HTTP_204_NO_CONTENT)

@@ -1200,6 +1200,20 @@ class ReleaseCloneWithComponentsTestCase(TestCaseWithChangeSetMixin, APITestCase
                                     format='json')
         self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
 
+    def test_release_component_clone_with_error_target_release(self):
+        response = self.client.post(reverse('releasecomponentclone-list'),
+                                    {'source_release_id': 'release-1.0',
+                                     'target_release_id': 'xxxx-1.0'},
+                                    format='json')
+        self.assertEquals(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_release_component_clone_with_error_source_release(self):
+        response = self.client.post(reverse('releasecomponentclone-list'),
+                                    {'source_release_id': 'xxxx-1.0',
+                                     'target_release_id': 'release-1.0'},
+                                    format='json')
+        self.assertEquals(response.status_code, status.HTTP_404_NOT_FOUND)
+
 
 class BugzillaComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
