@@ -232,25 +232,25 @@
 <text text-anchor="start" x="223" y="-280.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ReleaseType -->
-<g id="edge9" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ReleaseType</title>
+<g id="edge5" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ReleaseType</title>
 <path fill="none" stroke="black" d="M129.89,-265.02C121.01,-246.38 111.98,-227.43 104.51,-211.75"/>
 <ellipse fill="black" stroke="black" cx="131.69" cy="-268.799" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="163.5" y="-246.8" font-family="Helvetica,sans-Serif" font-size="8.00">release_type (release)</text>
 </g>
 <!-- pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_BaseProduct -->
-<g id="edge5" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_BaseProduct</title>
+<g id="edge7" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_BaseProduct</title>
 <path fill="none" stroke="black" d="M213.88,-265.41C223.33,-249.02 232.94,-232.35 241.29,-217.87"/>
 <ellipse fill="black" stroke="black" cx="211.846" cy="-268.943" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="268" y="-246.8" font-family="Helvetica,sans-Serif" font-size="8.00">base_product (release)</text>
 </g>
 <!-- pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ProductVersion -->
-<g id="edge7" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ProductVersion</title>
+<g id="edge11" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ProductVersion</title>
 <path fill="none" stroke="black" d="M279.64,-283.98C315.96,-264.12 355.75,-242.37 390.17,-223.55"/>
 <ellipse fill="black" stroke="black" cx="275.931" cy="-286.004" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="397" y="-246.8" font-family="Helvetica,sans-Serif" font-size="8.00">product_version (release)</text>
 </g>
 <!-- pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_Release -->
-<g id="edge11" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_Release</title>
+<g id="edge9" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_Release</title>
 <path fill="none" stroke="black" d="M279.92,-357.16C286.24,-354.22 290,-350.16 290,-345 290,-337.97 283.02,-333 272.13,-330.09"/>
 <ellipse fill="black" stroke="black" cx="275.902" cy="-358.578" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="357" y="-343.8" font-family="Helvetica,sans-Serif" font-size="8.00">integrated_with (integrated_releases)</text>
