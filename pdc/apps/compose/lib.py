@@ -169,6 +169,8 @@ def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
                               'num_linked_rpms': imported_rpms,
                           }))
 
+    return compose_obj.compose_id, imported_rpms
+
 
 @transaction.atomic
 def compose__import_images(request, release_id, composeinfo, image_manifest):
@@ -249,6 +251,8 @@ def compose__import_images(request, release_id, composeinfo, image_manifest):
                               'compose': compose_obj.compose_id,
                               'num_linked_images': imported_images,
                           }))
+
+    return compose_obj.compose_id, imported_images
 
 
 def _find_composes_srpm_name_with_rpm_nvr(nvr):

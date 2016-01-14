@@ -1329,6 +1329,7 @@ class ReleaseImportTestCase(TestCaseWithChangeSetMixin, APITestCase):
             data = json.loads(f.read())
         response = self.client.post(reverse('releaseimportcomposeinfo-list'), data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.get('url'), '/rest_api/v1/releases/tp-1.0/')
         self.assertNumChanges([11])
         self.assertEqual(models.Product.objects.count(), 2)
         self.assertEqual(models.ProductVersion.objects.count(), 2)
@@ -1376,6 +1377,10 @@ class ReleaseImportTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertItemsEqual(release.trees, ['Server-SAP.x86_64'])
         self.assertEqual(release.variant_set.get(variant_uid='Server-SAP').integrated_to.release_id,
                          'tp-1.0')
+
+        response = self.client.post(reverse('releaseimportcomposeinfo-list'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.get('url'), '/rest_api/v1/releases/tp-1.0/')
 
     def test_import_via_get(self):
         data = {'garbage': 'really'}

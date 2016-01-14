@@ -669,6 +669,12 @@ class ComposeRPMView(StrictQueryParamMixin, viewsets.GenericViewSet):
                 "rpm_manifest": rpm_manifest
             }
 
+        __Response__:
+            {
+                "compose_id": string,
+                "imported rpms": int
+            }
+
         The `composeinfo` and `rpm_manifest` values should be actual JSON
         representation of composeinfo and rpm manifest, as stored in
         `composeinfo.json` and `rpm-manifest.json` files.
@@ -700,8 +706,8 @@ class ComposeRPMView(StrictQueryParamMixin, viewsets.GenericViewSet):
                 errors[key] = ["This field is required"]
         if errors:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=errors)
-        lib.compose__import_rpms(request, data['release_id'], data['composeinfo'], data['rpm_manifest'])
-        return Response(status=status.HTTP_201_CREATED)
+        compose_id, imported_rpms = lib.compose__import_rpms(request, data['release_id'], data['composeinfo'], data['rpm_manifest'])
+        return Response(data={'compose': compose_id, 'imported rpms': imported_rpms}, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, **kwargs):
         """
@@ -866,6 +872,12 @@ class ComposeImageView(StrictQueryParamMixin,
                 "image_manifest": image_manifest
             }
 
+        __Response__:
+            {
+                "compose_id": string,
+                "imported images": int
+            }
+
         The `composeinfo` and `image_manifest` values should be actual JSON
         representation of composeinfo and image manifest, as stored in
         `composeinfo.json` and `image-manifest.json` files.
@@ -885,8 +897,8 @@ class ComposeImageView(StrictQueryParamMixin,
                 errors[key] = ["This field is required"]
         if errors:
             return Response(status=400, data=errors)
-        lib.compose__import_images(request, data['release_id'], data['composeinfo'], data['image_manifest'])
-        return Response(status=201)
+        compose_id, imported_images = lib.compose__import_images(request, data['release_id'], data['composeinfo'], data['image_manifest'])
+        return Response(data={'compose': compose_id, 'imported images': imported_images}, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, **kwargs):
         """

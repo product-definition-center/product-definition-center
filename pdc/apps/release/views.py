@@ -437,6 +437,11 @@ class ReleaseImportView(StrictQueryParamMixin, viewsets.GenericViewSet):
         formatting of the file is not important for PDC, and it is possible to
         significantly minimize size of the file by removing indentation)
 
+        __Response__:
+            {
+                "url": string
+            }
+
         __Example__:
 
             $ curl -H 'Content-Type: application/json' -X POST -d @/path/to/composeinfo.json \\
@@ -444,8 +449,9 @@ class ReleaseImportView(StrictQueryParamMixin, viewsets.GenericViewSet):
         """
         if not request.data:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'detail': 'Missing composeinfo'})
-        lib.release__import_from_composeinfo(request, request.data)
-        return Response(status=status.HTTP_201_CREATED)
+        release_obj = lib.release__import_from_composeinfo(request, request.data)
+        url = reverse('release-detail', args=[release_obj])
+        return Response({'url': url}, status=status.HTTP_201_CREATED)
 
 
 class BaseProductViewSet(ChangeSetCreateModelMixin,

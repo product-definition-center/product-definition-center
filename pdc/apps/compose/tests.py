@@ -734,12 +734,23 @@ class ComposeRPMViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
                                      'composeinfo': self.compose_info},
                                     format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.get('compose'), 'TP-1.0-20150310.0')
+        self.assertEqual(response.data.get('imported rpms'), 6)
         self.assertNumChanges([11, 5])
         self.assertEqual(models.ComposeRPM.objects.count(), 6)
         response = self.client.get(reverse('composerpm-detail', args=['TP-1.0-20150310.0']))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(dict(response.data),
                              self.manifest)
+
+        response = self.client.post(reverse('composerpm-list'),
+                                    {'rpm_manifest': self.manifest,
+                                     'release_id': 'tp-1.0',
+                                     'composeinfo': self.compose_info},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.get('compose'), 'TP-1.0-20150310.0')
+        self.assertEqual(response.data.get('imported rpms'), 6)
 
 
 class ComposeImageAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
@@ -774,11 +785,22 @@ class ComposeImageAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
                                      'composeinfo': self.compose_info},
                                     format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.get('compose'), 'TP-1.0-20150310.0')
+        self.assertEqual(response.data.get('imported images'), 4)
         self.assertNumChanges([11, 5])
         self.assertEqual(models.ComposeImage.objects.count(), 4)
         response = self.client.get(reverse('image-list'), {'compose': 'TP-1.0-20150310.0'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 4)
+
+        response = self.client.post(reverse('composeimage-list'),
+                                    {'image_manifest': self.manifest,
+                                     'release_id': 'tp-1.0',
+                                     'composeinfo': self.compose_info},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.get('compose'), 'TP-1.0-20150310.0')
+        self.assertEqual(response.data.get('imported images'), 4)
 
     def test_import_inconsistent_data(self):
         self.manifest['payload']['compose']['id'] = 'TP-1.0-20150315.0'

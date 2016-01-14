@@ -170,3 +170,5 @@ def release__import_from_composeinfo(request, composeinfo_json):
 
     for obj in add_to_changelog:
         _maybe_log(request, True, obj)
+
+    return release_obj
