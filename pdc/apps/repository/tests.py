@@ -311,10 +311,10 @@ class RepositoryMultipleFilterTestCase(APITestCase):
         self.assertEqual(response.data['count'], 2 * 27)
 
     def test_multiple_combination(self):
-        query = ('?service=pulp&service=ftp'
-                 + '&repo_family=beta&repo_family=htb'
-                 + '&content_format=rpm&content_format=iso'
-                 + '&content_category=debug&content_category=binary')
+        query = ('?service=pulp&service=ftp' +
+                 '&repo_family=beta&repo_family=htb' +
+                 '&content_format=rpm&content_format=iso' +
+                 '&content_category=debug&content_category=binary')
         response = self.client.get(reverse('repo-list') + query)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 16)

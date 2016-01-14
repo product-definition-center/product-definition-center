@@ -68,10 +68,10 @@ def get_or_create_integrated_release(request, orig_release, release):
             product_version=integrated_product_version
         )
     except ValidationError:
-        msg = ('Failed to create release {}-{}-{} for integrated layered product.'
-               + ' A conflicting release already exists.'
-               + ' There is likely a version mismatch between the imported'
-               + ' release and its layered integrated product in the composeinfo.')
+        msg = ('Failed to create release {}-{}-{} for integrated layered product.' +
+               ' A conflicting release already exists.' +
+               ' There is likely a version mismatch between the imported' +
+               ' release and its layered integrated product in the composeinfo.')
         raise ValidationError(
             msg.format(release.short.lower(), release.version, integrated_base_product.base_product_id)
         )
