@@ -826,6 +826,18 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
         """
         __URL__: $LINK:composerpmmapping-detail:compose_id:package$
 
+        __Data__:
+
+            {
+                Variants:{
+                    archs:{
+                        rpm_names:[
+                            rpm_arch,
+                        ]
+                    }
+                }
+            }
+
         Allows updating the RPM mapping by using a `PUT` request with data
         containing new mapping. PDC will compute changes between current
         mapping and the requested one. The response contains a list of changes
@@ -833,16 +845,18 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
 
         __Response__:
 
-            {
-                'release_id':       <str>,
-                'srpm_name':        <str>,
-                'action':           <str>,
-                'variant':          <str>,
-                'arch':             <str>,
-                'rpm_name':         <str>,
-                'rpm_arch':         <str>,
-                'include':          <bool>,
-            }
+            [
+                {
+                    'release_id':       <str>,
+                    'srpm_name':        <str>,
+                    'action':           <str>,
+                    'variant':          <str>,
+                    'arch':             <str>,
+                    'rpm_name':         <str>,
+                    'rpm_arch':         <str>,
+                    'include':          <bool>,
+                }
+            ]
 
         By default, no changes are performed on the server. If you add
         `?perform=1` query string parameter, the changes will actually be saved
