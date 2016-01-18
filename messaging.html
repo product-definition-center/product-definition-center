@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>8. Messaging &mdash; PDC 0.3.rc-2.23.g43e23db documentation</title>
+    <title>8. Messaging &mdash; PDC 0.3.rc-2.24.gadbeaeb documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3.rc-2.23.g43e23db',
+        VERSION:     '0.3.rc-2.24.gadbeaeb',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.3.rc-2.23.g43e23db documentation" href="index.html" />
+    <link rel="top" title="PDC 0.3.rc-2.24.gadbeaeb documentation" href="index.html" />
     <link rel="prev" title="7. Deployment" href="deployment.html" /> 
   </head>
   <body role="document">
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="deployment.html" title="7. Deployment"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.23.g43e23db documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.24.gadbeaeb documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -114,10 +114,10 @@ to know which one to use and how to configure it as well.</p>
 <p>If you do not need to send messages out, you could just leave the <cite>MLP</cite> (Messaging Library Package) to empty string
 to use the <cite>DummyMessenger</cite>.</p>
 <p>e.g.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># Messaging Bus Config</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1"># Messaging Bus Config</span>
 <span class="n">MESSAGE_BUS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="c"># MLP: Messaging Library Package</span>
-    <span class="s">&#39;MLP&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="c1"># MLP: Messaging Library Package</span>
+    <span class="s1">&#39;MLP&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -127,10 +127,10 @@ to use the <cite>DummyMessenger</cite>.</p>
 the <cite>MLP</cite> to &#8216;fedmsg&#8217;.</p>
 <p><cite>fedmsg</cite> needs to be installed.</p>
 <p><cite>FedmsgMessenger</cite> config example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># Messaging Bus Config</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1"># Messaging Bus Config</span>
 <span class="n">MESSAGE_BUS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="c"># MLP: Messaging Library Package</span>
-    <span class="s">&#39;MLP&#39;</span><span class="p">:</span> <span class="s">&#39;fedmsg&#39;</span><span class="p">,</span>
+    <span class="c1"># MLP: Messaging Library Package</span>
+    <span class="s1">&#39;MLP&#39;</span><span class="p">:</span> <span class="s1">&#39;fedmsg&#39;</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -147,24 +147,24 @@ pluggable transports.</p>
 <p>To use <cite>KombuMessenger</cite>, you need to add some more items in the settings, including <cite>URL</cite> of
 the broker, <cite>EXCHANGE</cite> and <cite>OPTIONS</cite>.</p>
 <p>e.g.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># Messaging Bus Config</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1"># Messaging Bus Config</span>
 <span class="n">MESSAGE_BUS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="c"># `kombu` config example:</span>
-    <span class="s">&#39;MLP&#39;</span><span class="p">:</span> <span class="s">&#39;kombu&#39;</span><span class="p">,</span>
-    <span class="s">&#39;URL&#39;</span><span class="p">:</span> <span class="s">&#39;amqp://guest:guest@example.com:5672//&#39;</span><span class="p">,</span>
-    <span class="s">&#39;EXCHANGE&#39;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;pdc&#39;</span><span class="p">,</span>
-        <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;topic&#39;</span><span class="p">,</span>
-        <span class="s">&#39;durable&#39;</span><span class="p">:</span> <span class="bp">False</span>
+    <span class="c1"># `kombu` config example:</span>
+    <span class="s1">&#39;MLP&#39;</span><span class="p">:</span> <span class="s1">&#39;kombu&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;URL&#39;</span><span class="p">:</span> <span class="s1">&#39;amqp://guest:guest@example.com:5672//&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;EXCHANGE&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;pdc&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;topic&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;durable&#39;</span><span class="p">:</span> <span class="bp">False</span>
     <span class="p">},</span>
-    <span class="s">&#39;OPTIONS&#39;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="c"># Set these two items to config `kombu` to use ssl.</span>
-        <span class="s">&#39;login_method&#39;</span><span class="p">:</span> <span class="s">&#39;EXTERNAL&#39;</span><span class="p">,</span>
-        <span class="s">&#39;ssl&#39;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s">&#39;ca_certs&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
-            <span class="s">&#39;keyfile&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
-            <span class="s">&#39;certfile&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
-            <span class="s">&#39;cert_reqs&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>  <span class="c"># ssl.CERT_REQUIRED,</span>
+    <span class="s1">&#39;OPTIONS&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># Set these two items to config `kombu` to use ssl.</span>
+        <span class="s1">&#39;login_method&#39;</span><span class="p">:</span> <span class="s1">&#39;EXTERNAL&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ssl&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;ca_certs&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;keyfile&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;certfile&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;cert_reqs&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>  <span class="c1"># ssl.CERT_REQUIRED,</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
@@ -177,12 +177,12 @@ AMQP(v1.0), <cite>ProtonMessenger</cite> should be your choice.</p>
 <p>NOTE: current implementation does not support multi endpoints failover.</p>
 <p><cite>qpid-proton</cite> needs to be installed.</p>
 <p><cite>ProtonMessenger</cite> config example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># Messaging Bus Config</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1"># Messaging Bus Config</span>
 <span class="n">MESSAGE_BUS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s">&#39;MLP&#39;</span><span class="p">:</span> <span class="s">&#39;proton&#39;</span><span class="p">,</span>
-    <span class="s">&#39;URL&#39;</span><span class="p">:</span> <span class="s">&#39;amqps://example.com:5671/com.redhat.pdc&#39;</span><span class="p">,</span>
-    <span class="s">&#39;CERT_FILE&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
-    <span class="s">&#39;KEY_FILE&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;MLP&#39;</span><span class="p">:</span> <span class="s1">&#39;proton&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;URL&#39;</span><span class="p">:</span> <span class="s1">&#39;amqps://example.com:5671/com.redhat.pdc&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CERT_FILE&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;KEY_FILE&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -192,18 +192,18 @@ AMQP(v1.0), <cite>ProtonMessenger</cite> should be your choice.</p>
 acceptable for your application, we recommend you to use <cite>StompMessenger</cite> as it supports multi-endpoints failover.</p>
 <p><cite>stomp.py</cite> needs to be installed.</p>
 <p><cite>StompMessenger</cite> config example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># Messaging Bus Config</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1"># Messaging Bus Config</span>
 <span class="n">MESSAGE_BUS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="c"># `stomp` config items:</span>
-    <span class="s">&#39;MLP&#39;</span><span class="p">:</span> <span class="s">&#39;stomp&#39;</span><span class="p">,</span>
-    <span class="s">&#39;HOST_AND_PORTS&#39;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">(</span><span class="s">&#39;stomp.example1.com&#39;</span><span class="p">,</span> <span class="mi">61613</span><span class="p">),</span>
-        <span class="p">(</span><span class="s">&#39;stomp.example2.com&#39;</span><span class="p">,</span> <span class="mi">61613</span><span class="p">),</span>
-        <span class="p">(</span><span class="s">&#39;stomp.example3.com&#39;</span><span class="p">,</span> <span class="mi">61613</span><span class="p">),</span>
+    <span class="c1"># `stomp` config items:</span>
+    <span class="s1">&#39;MLP&#39;</span><span class="p">:</span> <span class="s1">&#39;stomp&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;HOST_AND_PORTS&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;stomp.example1.com&#39;</span><span class="p">,</span> <span class="mi">61613</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;stomp.example2.com&#39;</span><span class="p">,</span> <span class="mi">61613</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;stomp.example3.com&#39;</span><span class="p">,</span> <span class="mi">61613</span><span class="p">),</span>
     <span class="p">],</span>
-    <span class="s">&#39;TOPIC&#39;</span><span class="p">:</span> <span class="s">&#39;pdc&#39;</span><span class="p">,</span>
-    <span class="s">&#39;CERT_FILE&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
-    <span class="s">&#39;KEY_FILE&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;TOPIC&#39;</span><span class="p">:</span> <span class="s1">&#39;pdc&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CERT_FILE&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;KEY_FILE&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -274,7 +274,7 @@ acceptable for your application, we recommend you to use <cite>StompMessenger</c
         <li class="right" >
           <a href="deployment.html" title="7. Deployment"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.23.g43e23db documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.24.gadbeaeb documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
