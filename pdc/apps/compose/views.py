@@ -799,7 +799,6 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
             [
                 {
                     "action":           <str>,      # value should be 'create' or 'delete'
-                    "release_id":       <str>,
                     "variant":          <str>,
                     "arch":             <str>,
                     "srpm_name":        <str>,
@@ -811,6 +810,14 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
                 }
             ]
         """
+        s = set(["action", "variant", "arch", "srpm_name", "rpm_name", "rpm_arch",
+                 "comment", "do_not_delete"])
+        for i in request.data:
+            if not s.issubset(set(i)):
+                return Response(data={"detail": "Not all fields specified"}, status=status.HTTP_400_BAD_REQUEST)
+            if i['action'].lower().strip() == "create" and "include" not in i:
+                return Response(data={"detail": "No field 'include' when 'action' is create"},
+                                status=status.HTTP_400_BAD_REQUEST)
         compose = get_object_or_404(Compose, compose_id=kwargs['compose_id'])
         _apply_changes(request, compose.release, request.data)
         return Response(status=204)

@@ -912,6 +912,24 @@ class RPMMappingAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, {"detail": "action should only be 'create' or 'delete'"})
 
+    def test_partial_update_without_enough_inputs(self):
+        self.client.force_authenticate(create_user("user", perms=[]))
+        response = self.client.patch(self.url, [{"action": "create", "rpm_name": "bash-magic",
+                                                 "rpm_arch": "src", "variant": "Client", "arch": "x86_64",
+                                                 "do_not_delete": False, "comment": "", "include": True}],
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {"detail": "Not all fields specified"})
+
+    def test_partial_update_without_include(self):
+        self.client.force_authenticate(create_user("user", perms=[]))
+        response = self.client.patch(self.url, [{"action": "create", "srpm_name": "bash", "rpm_name": "bash-magic",
+                                                 "rpm_arch": "src", "variant": "Client", "arch": "x86_64",
+                                                 "do_not_delete": False, "comment": ""}],
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {"detail": "No field 'include' when 'action' is create"})
+
     def test_update(self):
         self.client.force_authenticate(create_user("user", perms=[]))
         new_mapping = {'Server': {'x86_64': {'bash': ['x86_64', 'i386']}}}
