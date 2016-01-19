@@ -694,6 +694,10 @@ class ReleaseComponentCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSe
         if source_release.releasecomponent_set.count() == 0:
             return Response({'detail': 'there is no component in source release'},
                             status=status.HTTP_204_NO_CONTENT)
+        if not target_release.active:
+            return Response({'detail': 'can\'t clone components ' +
+                                       'to an inactive target release %s' % target_release_id},
+                            status=status.HTTP_400_BAD_REQUEST)
         filter_release = "?release=" + target_release_id
         target_url = reverse(viewname='releasecomponent-list', request=request) + filter_release
         signals.rpc_release_clone_component.send(sender=target_release.__class__,
