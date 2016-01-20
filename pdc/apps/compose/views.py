@@ -810,10 +810,18 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
                 }
             ]
         """
-        s = set(["action", "variant", "arch", "srpm_name", "rpm_name", "rpm_arch",
-                 "comment", "do_not_delete"])
+        subset = set(["action", "variant", "arch", "srpm_name", "rpm_name", "rpm_arch",
+                      "comment", "do_not_delete"])
+        field_all = set(["action", "variant", "arch", "srpm_name", "rpm_name", "rpm_arch",
+                         "comment", "do_not_delete", "include"])
+        if not isinstance(request.data, list):
+            return Response(data={"detail": ("Wrong input format")}, status=status.HTTP_400_BAD_REQUEST)
         for i in request.data:
-            if not s.issubset(set(i)):
+            s = set(i) - field_all
+            if s:
+                return Response(data={"detail": ("Fields %s are not valid inputs" % list(s))},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if not subset.issubset(set(i)):
                 return Response(data={"detail": "Not all fields specified"}, status=status.HTTP_400_BAD_REQUEST)
             if i['action'].lower().strip() == "create" and "include" not in i:
                 return Response(data={"detail": "No field 'include' when 'action' is create"},

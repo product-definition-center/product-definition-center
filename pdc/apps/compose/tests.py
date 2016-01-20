@@ -930,6 +930,24 @@ class RPMMappingAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, {"detail": "No field 'include' when 'action' is create"})
 
+    def test_partial_update_with_invalid_inputs(self):
+        self.client.force_authenticate(create_user("user", perms=[]))
+        response = self.client.patch(self.url, [{"action": "create", "srpm_name": "bash", "rpm_name": "bash-magic",
+                                                 "rpm_arch": "src", "variant": "Client", "arch": "x86_64",
+                                                 "do_not_delete": False, "fake1": "", "fake2": True}],
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {"detail": "Fields [u'fake1', u'fake2'] are not valid inputs"})
+
+    def test_partial_update_with_wrong_input_format(self):
+        self.client.force_authenticate(create_user("user", perms=[]))
+        response = self.client.patch(self.url, {"action": "create", "srpm_name": "bash", "rpm_name": "bash-magic",
+                                                "rpm_arch": "src", "variant": "Client", "arch": "x86_64",
+                                                "do_not_delete": False, "comment": "", "include": True},
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {"detail": "Wrong input format"})
+
     def test_update(self):
         self.client.force_authenticate(create_user("user", perms=[]))
         new_mapping = {'Server': {'x86_64': {'bash': ['x86_64', 'i386']}}}
