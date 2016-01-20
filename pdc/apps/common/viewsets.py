@@ -17,6 +17,8 @@ from contrib import drf_introspection
 from rest_framework import mixins, status, viewsets
 from rest_framework.response import Response
 
+from pdc.apps.utils.utils import generate_warning_header_dict
+
 
 class NoSetattrInPreSaveMixin(object):
     """
@@ -70,7 +72,8 @@ class NoEmptyPatchMixin(object):
         """
         return Response(
             status=status.HTTP_400_BAD_REQUEST,
-            data=settings.EMPTY_PATCH_ERROR_RESPONSE
+            data=settings.EMPTY_PATCH_ERROR_RESPONSE,
+            headers=generate_warning_header_dict(settings.EMPTY_PATCH_ERROR_RESPONSE['detail'])
         )
 
 

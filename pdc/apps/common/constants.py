@@ -18,3 +18,6 @@ DEVEL_CONTACT = 'Devel_Owner'
 
 # Arch type
 ARCH_SRC = 'src'
+
+# PDC warning field in response header
+PDC_WARNING_HEADER_NAME = 'pdc-warning'

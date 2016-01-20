@@ -20,6 +20,7 @@ from rest_framework.response import Response
 from pdc.apps.common import viewsets
 from pdc.apps.common.models import Label
 from pdc.apps.common.serializers import LabelSerializer, StrictSerializerMixin
+from pdc.apps.utils.utils import generate_warning_header_dict
 from pdc.apps.common.filters import LabelFilter
 from .models import (GlobalComponent,
                      ReleaseComponent,
@@ -929,7 +930,8 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK,
+                            headers=generate_warning_header_dict("The bugzilla component already exists"))
 
     def destroy(self, request, *args, **kwargs):
         """

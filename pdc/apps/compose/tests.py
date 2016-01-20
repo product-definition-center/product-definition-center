@@ -16,6 +16,7 @@ from rest_framework import status
 
 from pdc.apps.bindings import models as binding_models
 from pdc.apps.common.test_utils import create_user, TestCaseWithChangeSetMixin
+from pdc.apps.common.constants import PDC_WARNING_HEADER_NAME
 from pdc.apps.release.models import Release, ProductVersion
 from pdc.apps.component.models import (ReleaseComponent,
                                        BugzillaComponent)
@@ -489,6 +490,9 @@ class ComposeUpdateTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.patch(reverse('compose-detail', args=['compose-1']),
                                      {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # check response header
+        self.assertEqual(response._headers[PDC_WARNING_HEADER_NAME.lower()],
+                         (PDC_WARNING_HEADER_NAME, 'Partial update with no changes does not make much sense.'))
 
     def test_patch_linked_releases_not_a_list(self):
         response = self.client.patch(reverse('compose-detail', args=['compose-1']),
