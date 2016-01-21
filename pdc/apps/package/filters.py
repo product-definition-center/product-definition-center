@@ -68,6 +68,7 @@ class RPMFilter(django_filters.FilterSet):
     compose     = MultiValueFilter(name='composerpm__variant_arch__variant__compose__compose_id',
                                    distinct=True)
     linked_release = MultiValueFilter(name='linked_releases__release_id', distinct=True)
+    built_for_release = MultiValueFilter(name='built_for_release__release_id', distinct=True)
     provides = django_filters.MethodFilter(action=partial(dependency_filter,
                                                           models.Dependency.PROVIDES))
     requires = django_filters.MethodFilter(action=partial(dependency_filter,
@@ -85,7 +86,7 @@ class RPMFilter(django_filters.FilterSet):
     class Meta:
         model = models.RPM
         fields = ('name', 'version', 'epoch', 'release', 'arch', 'srpm_name',
-                  'srpm_nevra', 'compose', 'filename', 'linked_release',
+                  'srpm_nevra', 'compose', 'filename', 'linked_release', 'built_for_release',
                   'provides', 'requires', 'obsoletes', 'conflicts', 'recommends', 'suggests',
                   'has_no_deps')
 

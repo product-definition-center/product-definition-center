@@ -27,6 +27,7 @@ class RPM(models.Model):
     release             = models.CharField(max_length=200, db_index=True)
     arch                = models.CharField(max_length=200, db_index=True)  # nosrc
     srpm_name           = models.CharField(max_length=200, db_index=True)  # package (name of srpm)
+    built_for_release   = models.ForeignKey('release.Release', null=True, blank=True)
     srpm_nevra          = models.CharField(max_length=200, null=True, blank=True, db_index=True)
     # Well behaved filenames are unique, but that is enforced by having unique NVRA.
     filename            = models.CharField(max_length=4096)

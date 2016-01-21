@@ -559,7 +559,7 @@ class RPMDepsAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
     def test_create_rpm_with_deps(self):
         data = {'name': 'fake_bash', 'version': '1.2.3', 'epoch': 0,
                 'release': '4.b1', 'arch': 'x86_64', 'srpm_name': 'bash',
-                'filename': 'bash-1.2.3-4.b1.x86_64.rpm',
+                'filename': 'bash-1.2.3-4.b1.x86_64.rpm', "built_for_release": None,
                 'linked_releases': [], 'srpm_nevra': 'fake_bash-0:1.2.3-4.b1.src',
                 'dependencies': {'requires': ['required-package'],
                                  'obsoletes': ['obsolete-package'],
@@ -752,8 +752,8 @@ class RPMDepsAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
 class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
         'pdc/apps/common/fixtures/test/sigkey.json',
-        'pdc/apps/release/fixtures/tests/release.json',
-        'pdc/apps/package/fixtures/test/rpm.json',
+        'pdc/apps/package/fixtures/test/release.json',
+        'pdc/apps/package/fixtures/test/rpm2.json',
         'pdc/apps/compose/fixtures/tests/compose.json',
         'pdc/apps/compose/fixtures/tests/compose_composerpm.json',
         'pdc/apps/compose/fixtures/tests/variant_arch.json',
@@ -855,6 +855,7 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                        "arch": "x86_64",
                        "srpm_name": "bash", "srpm_nevra": "bash-0:1.2.3-4.b1.src",
                        "filename": "bash-1.2.3-4.b1.x86_64.rpm", "linked_releases": [],
+                       "built_for_release": "release-1.0",
                        "linked_composes": ["compose-1"], "dependencies": self.empty_deps}
         self.assertEqual(response.data, expect_data)
 
@@ -874,7 +875,22 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                                   "name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1",
                                   "arch": "x86_64", "srpm_name": "bash", "filename": "bash-1.2.3-4.b1.x86_64.rpm",
                                   "linked_releases": ['release-1.0'], "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src",
-                                  "dependencies": self.empty_deps}
+                                  "built_for_release": None, "dependencies": self.empty_deps}
+        self.assertEqual(response.data, expected_response_data)
+        self.assertNumChanges([1])
+
+    def test_create_rpm_with_built_for_release(self):
+        url = reverse('rpms-list')
+        data = {"name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1", "arch": "x86_64",
+                "srpm_name": "bash", "filename": "bash-1.2.3-4.b1.x86_64.rpm", "linked_releases": ['release-1.0'],
+                "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src", "built_for_release": "release-1.0"}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        expected_response_data = {"id": 4, 'linked_composes': [],
+                                  "name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1",
+                                  "arch": "x86_64", "srpm_name": "bash", "filename": "bash-1.2.3-4.b1.x86_64.rpm",
+                                  "linked_releases": ['release-1.0'], "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src",
+                                  "built_for_release": "release-1.0", "dependencies": self.empty_deps}
         self.assertEqual(response.data, expected_response_data)
         self.assertNumChanges([1])
 
@@ -925,10 +941,16 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_partial_update_rpm_with_built_for_release(self):
+        url = reverse('rpms-detail', args=[1])
+        data = {"built_for_release": "release-2.0"}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_update_rpm(self):
         data = {"name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1", "arch": "x86_64",
                 "srpm_name": "bash", "filename": "bash-1.2.3-4.b1.x86_64.rpm", "linked_releases": ['release-1.0'],
-                "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src"}
+                "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src", "built_for_release": 'release-2.0'}
         url = reverse('rpms-detail', args=[1])
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -960,6 +982,16 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('rpms-list')
         response = self.client.delete(url, [1, 2], format='json')
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_filter_with_built_for_release(self):
+        url = reverse('rpms-list')
+        response = self.client.get(url + '?built_for_release=release-2.0', format='json')
+        count = response.data['count']
+        self.assertEqual(count, 1)
+
+        response = self.client.get(url + '?built_for_release=release-1.0', format='json')
+        count = response.data['count']
+        self.assertEqual(count, 1)
 
 
 class ImageRESTTestCase(APITestCase):

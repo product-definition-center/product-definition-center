@@ -61,13 +61,15 @@ class RPMSerializer(StrictSerializerMixin,
     linked_releases = serializers.SlugRelatedField(many=True, slug_field='release_id',
                                                    queryset=models.Release.objects.all(), required=False)
     linked_composes = serializers.SlugRelatedField(read_only=True, slug_field='compose_id', many=True)
+    built_for_release = serializers.SlugRelatedField(slug_field='release_id', queryset=models.Release.objects.all(),
+                                                     default=None, allow_null=True)
     dependencies = DependencySerializer(required=False, default={})
 
     class Meta:
         model = models.RPM
         fields = ('id', 'name', 'version', 'epoch', 'release', 'arch', 'srpm_name',
                   'srpm_nevra', 'filename', 'linked_releases', 'linked_composes',
-                  'dependencies')
+                  'dependencies', 'built_for_release')
 
     def create(self, validated_data):
         dependencies = validated_data.pop('dependencies', [])
