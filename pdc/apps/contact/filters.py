@@ -8,7 +8,7 @@ import django_filters
 from django.db.models import Q
 from django.forms import SelectMultiple
 from django_filters import FilterSet, MethodFilter
-from pdc.apps.common.filters import MultiValueFilter, value_is_not_empty
+from pdc.apps.common.filters import MultiValueFilter, MultiValueRegexFilter, value_is_not_empty
 
 from . import models
 from .models import (Person,
@@ -59,7 +59,7 @@ class _BaseComponentContactFilter(FilterSet):
     contact = MethodFilter(action='filter_by_contact', widget=SelectMultiple)
     email = MethodFilter(action='filter_by_email', widget=SelectMultiple)
     role = MultiValueFilter(name='role__name')
-    component = MultiValueFilter(name='component__name')
+    component = MultiValueRegexFilter(name='component__name')
 
     @value_is_not_empty
     def filter_by_contact(self, qs, value):

@@ -8,6 +8,7 @@ import functools
 
 from django import forms
 from django.core.validators import EMPTY_VALUES
+from django.db.models import Q
 from django.utils import six
 from django_filters.filterset import (BaseFilterSet,
                                       FilterSet,
@@ -15,6 +16,7 @@ from django_filters.filterset import (BaseFilterSet,
                                       FilterSetOptions)
 import django_filters
 import django.forms.widgets as widgets
+import operator
 from .models import Label, SigKey
 from .hacks import convert_str_to_int
 
@@ -45,6 +47,23 @@ class MultiValueFilter(django_filters.MethodFilter):
     @value_is_not_empty
     def filter(self, qs, value):
         qs = qs.filter(**{self.name + '__in': value})
+        if self.distinct:
+            qs = qs.distinct()
+        return qs
+
+
+class MultiValueRegexFilter(MultiValueFilter):
+    """
+    Filter that allows multiple terms to be present and treats them as
+    alternatives with  regular expression match,
+    i.e. it performs OR search.
+    """
+    @value_is_not_empty
+    def filter(self, qs, value):
+        condition_list = []
+        for i in value:
+            condition_list.append(Q(**{self.name + '__regex': i}))
+        qs = qs.filter(reduce(operator.or_, condition_list))
         if self.distinct:
             qs = qs.distinct()
         return qs

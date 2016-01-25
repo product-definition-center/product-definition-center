@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from pdc.apps.common.test_utils import TestCaseWithChangeSetMixin
+from pdc.apps.component import models as component_models
 from .models import ContactRole, Person, Maillist, GlobalComponentContact, ReleaseComponentContact
 
 
@@ -88,7 +89,6 @@ class ContactRoleRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([1])
 
     def test_delete_protect(self):
-        from pdc.apps.component import models as component_models
         GlobalComponentContact.objects.create(
             component=component_models.GlobalComponent.objects.get(name='MySQL-python'),
             role=ContactRole.objects.get(name='qe_ack'),
@@ -269,7 +269,6 @@ class PersonRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([1])
 
     def test_delete_protect(self):
-        from pdc.apps.component import models as component_models
         GlobalComponentContact.objects.create(
             component=component_models.GlobalComponent.objects.get(name='MySQL-python'),
             role=ContactRole.objects.get(name='qe_ack'),
@@ -383,7 +382,6 @@ class MaillistRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([1])
 
     def test_delete_protect(self):
-        from pdc.apps.component import models as component_models
         GlobalComponentContact.objects.create(
             component=component_models.GlobalComponent.objects.get(name='MySQL-python'),
             role=ContactRole.objects.get(name='qe_ack'),
@@ -396,7 +394,6 @@ class MaillistRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([])
 
     def test_multi_delete_protect_no_change_set(self):
-        from pdc.apps.component import models as component_models
         GlobalComponentContact.objects.create(
             component=component_models.GlobalComponent.objects.get(name='MySQL-python'),
             role=ContactRole.objects.get(name='qe_ack'),
@@ -584,7 +581,6 @@ class GlobalComponentContactRESTTestCase(TestCaseWithChangeSetMixin, APITestCase
 
     @classmethod
     def setUpTestData(cls):
-        from pdc.apps.component import models as component_models
         GlobalComponentContact.objects.create(
             component=component_models.GlobalComponent.objects.get(name='MySQL-python'),
             role=ContactRole.objects.get(name='pm'),
@@ -646,6 +642,29 @@ class GlobalComponentContactRESTTestCase(TestCaseWithChangeSetMixin, APITestCase
 
         response = self.client.get(self.list_url, {'component': 'no_component'})
         self.assertEqual(response.data['count'], 0)
+
+    def test_filter_global_component_contacts_by_component_name(self):
+        GlobalComponentContact.objects.create(
+            component=component_models.GlobalComponent.objects.get(name='python'),
+            role=ContactRole.objects.get(name='qe_ack'),
+            contact=Maillist.objects.get(mail_name="maillist2"))
+        response = self.client.get(self.list_url, {'component': 'java*'})
+        self.assertEqual(response.data['count'], 1)
+
+        response = self.client.get(self.list_url, {'component': 'python'})
+        self.assertEqual(response.data['count'], 2)
+
+        response = self.client.get(self.list_url, {'component': '^python'})
+        self.assertEqual(response.data['count'], 1)
+
+        response = self.client.get(self.list_url, {'component': '.+python'})
+        self.assertEqual(response.data['count'], 1)
+
+        response = self.client.get(self.list_url + '?component=java&component=python')
+        self.assertEqual(response.data['count'], 3)
+
+        response = self.client.get(self.list_url + '?component=^jav.*&component=^python$')
+        self.assertEqual(response.data['count'], 2)
 
     def test_create_global_component_contacts(self):
         data = {'component': 'python', 'role': 'pm', 'contact': {'mail_name': 'maillist2'}}
@@ -871,7 +890,6 @@ class ReleaseComponentContactRESTTestCase(TestCaseWithChangeSetMixin, APITestCas
 
     @classmethod
     def setUpTestData(cls):
-        from pdc.apps.component import models as component_models
         ReleaseComponentContact.objects.create(
             component=component_models.ReleaseComponent.objects.get(name='MySQL-python'),
             role=ContactRole.objects.get(name='pm'),
@@ -951,6 +969,26 @@ class ReleaseComponentContactRESTTestCase(TestCaseWithChangeSetMixin, APITestCas
 
         response = self.client.get(self.list_url, {'email': 'bad@test.com'})
         self.assertEqual(response.data['count'], 0)
+
+    def test_filter_release_component_contacts_by_component_name(self):
+        # component names are python27 and MySQL-python
+        response = self.client.get(self.list_url, {'component': 'python'})
+        self.assertEqual(response.data['count'], 2)
+
+        response = self.client.get(self.list_url, {'component': '^python'})
+        self.assertEqual(response.data['count'], 1)
+
+        response = self.client.get(self.list_url, {'component': 'python$'})
+        self.assertEqual(response.data['count'], 1)
+
+        response = self.client.get(self.list_url, {'component': 'python.'})
+        self.assertEqual(response.data['count'], 1)
+
+        response = self.client.get(self.list_url + '?component=python27&component=MySQL-python')
+        self.assertEqual(response.data['count'], 2)
+
+        response = self.client.get(self.list_url + '?component=^python&component=python$')
+        self.assertEqual(response.data['count'], 2)
 
     def test_create_release_component_contacts(self):
         data = {'component': {'id': 2}, 'role': 'cc', 'contact': {'mail_name': 'maillist2'}}
