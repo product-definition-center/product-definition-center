@@ -659,10 +659,15 @@ class ReleaseComponentCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSe
                 "component_dist_git_branch":    string,     # optional
                 "include_inactive":             bool,       # optional
             }
+
         __Response__:
+
             {
             "url": [the link for target release component]
             }
+
+        If the source-release doesn't contains components, which will return
+        400  {'detail': 'there is no component in source release'}.
 
         If `component_dist_git_branch` is present, the value will be set for all
         release components under the target release. If missing, release
@@ -691,9 +696,10 @@ class ReleaseComponentCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSe
         except Http404:
             return Response({'detail': 'Target_release %s is not existed' % target_release_id},
                             status=status.HTTP_404_NOT_FOUND)
+
         if source_release.releasecomponent_set.count() == 0:
             return Response({'detail': 'there is no component in source release'},
-                            status=status.HTTP_204_NO_CONTENT)
+                            status=status.HTTP_400_BAD_REQUEST)
         if not target_release.active:
             return Response({'detail': 'can\'t clone components ' +
                                        'to an inactive target release %s' % target_release_id},

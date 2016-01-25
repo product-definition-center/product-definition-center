@@ -1198,7 +1198,7 @@ class ReleaseCloneWithComponentsTestCase(TestCaseWithChangeSetMixin, APITestCase
                                     {'source_release_id': resource_release_id,
                                      'target_release_id': 'release-1.0'},
                                     format='json')
-        self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_release_component_clone_with_error_target_release(self):
         response = self.client.post(reverse('releasecomponentclone-list'),
