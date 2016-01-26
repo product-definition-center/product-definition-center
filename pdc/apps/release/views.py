@@ -666,8 +666,8 @@ class ReleaseComponentCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSe
             "url": [the link for target release component]
             }
 
-        If the source-release doesn't contains components, which will return
-        400  {'detail': 'there is no component in source release'}.
+        Please make sure source release contains components,
+        cloning source release without components doesn't make much sense.
 
         If `component_dist_git_branch` is present, the value will be set for all
         release components under the target release. If missing, release
