@@ -1973,6 +1973,27 @@ class ComposeTreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertNumChanges([1])
 
+    def test_create_composetree_without_compose(self):
+        url = reverse('composetreelocations-list')
+        data = {'variant': 'Server', 'arch': 'x86_64', 'location': 'BRQ',
+                'url': 'nfs://nay.lab.la/', 'scheme': 'nfs', 'synced_content': ['debug']}
+        response = self.client.post(url, data, format='json')
+        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_composetree_without_variant(self):
+        url = reverse('composetreelocations-list')
+        data = {'compose': 'compose-1', 'arch': 'x86_64', 'location': 'BRQ',
+                'url': 'nfs://nay.lab.la/', 'scheme': 'nfs', 'synced_content': ['debug']}
+        response = self.client.post(url, data, format='json')
+        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_composetree_with_error_compose(self):
+        url = reverse('composetreelocations-list')
+        data = {'compose': 'xxxx', 'variant': 'Server', 'arch': 'x86_64', 'location': 'BRQ',
+                'url': 'nfs://nay.lab.la/', 'scheme': 'nfs', 'synced_content': ['debug']}
+        response = self.client.post(url, data, format='json')
+        self.assertEquals(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_create_composetree_default_syncedcontent(self):
         url = reverse('composetreelocations-list')
         data = {'compose': 'compose-1', 'variant': 'Server', 'arch': 'x86_64', 'location': 'BRQ',

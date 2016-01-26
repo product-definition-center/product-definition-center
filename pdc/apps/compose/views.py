@@ -1644,6 +1644,18 @@ class ComposeTreeViewSet(ChangeSetModelMixin,
         __NOTE__:
         If synced_content is omitted, all content types are filled in.
         """
+        data = request.data
+        if 'compose' not in data:
+            return Response({'detail': 'Missing compose'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        try:
+            get_object_or_404(Compose, compose_id=data['compose'])
+        except Http404:
+            return Response({'detail': 'Compose %s does not existed' % data['compose']},
+                            status=status.HTTP_404_NOT_FOUND)
+        if 'variant' not in data:
+            return Response({'detail': 'Missing variant'},
+                            status=status.HTTP_400_BAD_REQUEST)
         if not request.data.get("synced_content"):
             request.data["synced_content"] = ['binary', 'debug', 'source']
         return super(ComposeTreeViewSet, self).create(request, *args, **kwargs)
