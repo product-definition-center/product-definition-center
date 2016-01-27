@@ -798,13 +798,6 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data['1'].get('dist_git_branch'), 'rpm/python2')
         self.assertNumChanges([2])
 
-    def test_bulk_partial_update_not_allowed(self):
-        url = reverse('releasecomponent-list')
-        data = {'1': {'brew_package': 'python-pdc', 'active': 'True'},
-                '2': {'brew_package': 'python-pdc', 'active': 'False'}}
-        response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-
     def test_create_active_release_component(self):
         url = reverse('releasecomponent-list')
         data = {'release': 'release-1.0', 'global_component': 'python', 'name': 'python34', 'brew_package': 'python-pdc', 'active': 'True'}

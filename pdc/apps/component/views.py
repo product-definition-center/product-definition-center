@@ -723,13 +723,6 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
         """
         return super(ReleaseComponentViewSet, self).destroy(request, *args, **kwargs)
 
-    def bulk_partial_update(self, request):
-        # Without this definition, bulk_operations would pick up PATCH
-        # requests, convert them to PUT with kwargs['partial'] = True and an
-        # error about potentially missing keys would be returned. This way it
-        # says PATCH is not allowed.
-        return self.http_method_not_allowed(request)
-
 
 class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
     """
