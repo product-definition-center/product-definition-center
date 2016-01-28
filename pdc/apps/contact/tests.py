@@ -666,6 +666,16 @@ class GlobalComponentContactRESTTestCase(TestCaseWithChangeSetMixin, APITestCase
         response = self.client.get(self.list_url + '?component=^jav.*&component=^python$')
         self.assertEqual(response.data['count'], 2)
 
+    def test_filter_global_component_contacts_with_empty_component_name(self):
+        response = self.client.get(self.list_url + '?component=')
+        self.assertEqual(response.data['count'], 0)
+
+    def test_filter_global_component_contacts_with_regexp(self):
+        response = self.client.get(self.list_url, {'component': '*abc'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.get(self.list_url, {'component': '(abcd'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_create_global_component_contacts(self):
         data = {'component': 'python', 'role': 'pm', 'contact': {'mail_name': 'maillist2'}}
         response = self.client.post(self.list_url, data, format='json')
@@ -989,6 +999,16 @@ class ReleaseComponentContactRESTTestCase(TestCaseWithChangeSetMixin, APITestCas
 
         response = self.client.get(self.list_url + '?component=^python&component=python$')
         self.assertEqual(response.data['count'], 2)
+
+    def test_filter_release_component_contacts_with_empty_component_name(self):
+        response = self.client.get(self.list_url + '?component=')
+        self.assertEqual(response.data['count'], 0)
+
+    def test_filter_release_component_contacts_with_regexp(self):
+        response = self.client.get(self.list_url, {'component': '*abc'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.get(self.list_url, {'component': '(abcd'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_release_component_contacts(self):
         data = {'component': {'id': 2}, 'role': 'cc', 'contact': {'mail_name': 'maillist2'}}

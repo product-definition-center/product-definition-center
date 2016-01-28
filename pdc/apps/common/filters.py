@@ -7,6 +7,7 @@
 import functools
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.core.validators import EMPTY_VALUES
 from django.db.models import Q
 from django.utils import six
@@ -19,6 +20,7 @@ import django.forms.widgets as widgets
 import operator
 from .models import Label, SigKey
 from .hacks import convert_str_to_int
+from pdc.apps.utils.utils import is_valid_regexp
 
 SelectMultiple = widgets.SelectMultiple
 
@@ -60,12 +62,18 @@ class MultiValueRegexFilter(MultiValueFilter):
     """
     @value_is_not_empty
     def filter(self, qs, value):
-        condition_list = []
-        for i in value:
-            condition_list.append(Q(**{self.name + '__regex': i}))
-        qs = qs.filter(reduce(operator.or_, condition_list))
-        if self.distinct:
-            qs = qs.distinct()
+        if value:
+            for i in value:
+                if not is_valid_regexp(i):
+                    raise ValidationError('At least one parameter is invalid regular expression: %s' % str(i))
+            condition_list = []
+            for i in value:
+                condition_list.append(Q(**{self.name + '__regex': i}))
+            qs = qs.filter(reduce(operator.or_, condition_list))
+            if self.distinct:
+                qs = qs.distinct()
+        else:
+            qs = qs.model.objects.none()
         return qs
 
 

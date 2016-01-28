@@ -3,6 +3,8 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+import re
+
 from pdc.apps.common.hacks import validate_model
 from pdc.apps.common.constants import PDC_WARNING_HEADER_NAME
 from django.db.models.signals import pre_save
@@ -29,3 +31,12 @@ def urldecode(url):
 
 def generate_warning_header_dict(msg):
     return {PDC_WARNING_HEADER_NAME: msg}
+
+
+def is_valid_regexp(in_str):
+    try:
+        re.compile(in_str)
+        result = True
+    except re.error:
+        result = False
+    return result
