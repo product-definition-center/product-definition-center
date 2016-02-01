@@ -113,10 +113,10 @@ class ComposeTreeVariantField(serializers.Field):
 
     def to_internal_value(self, data):
         request_data = self.context.get("request").data
-        compose = None
-        if request_data:
-            compose = request_data.get("compose")
-        variant = Variant.objects.get(compose__compose_id=compose, variant_uid=data)
+        try:
+            variant = Variant.objects.get(compose__compose_id=request_data['compose'], variant_uid=data)
+        except Variant.DoesNotExist:
+            raise serializers.ValidationError("Variant %s does not exist in compose %s" % (data, request_data['compose']))
         return variant
 
     def to_representation(self, value):
