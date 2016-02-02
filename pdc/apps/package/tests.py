@@ -946,6 +946,7 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         data = {"built_for_release": "release-2.0"}
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNumChanges([1])
 
     def test_update_rpm(self):
         data = {"name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1", "arch": "x86_64",

@@ -58,7 +58,7 @@ class RPM(models.Model):
 
     def export(self, fields=None):
         _fields = (set(['name', 'epoch', 'version', 'release', 'arch', 'filename',
-                        'srpm_name', 'srpm_nevra', 'linked_releases', 'dependencies'])
+                        'srpm_name', 'srpm_nevra', 'linked_releases', 'dependencies', 'built_for_release'])
                    if fields is None else set(fields))
         result = model_to_dict(self, fields=_fields - {'linked_releases'})
         if 'linked_releases' in _fields:
@@ -67,6 +67,8 @@ class RPM(models.Model):
                 result['linked_releases'].append(linked_release.release_id)
         if 'dependencies' in _fields:
             result['dependencies'] = self.dependencies
+        if 'built_for_release' in _fields and self.built_for_release:
+            result['built_for_release'] = self.built_for_release.release_id
         return result
 
     @staticmethod
