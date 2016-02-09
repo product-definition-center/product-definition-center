@@ -11,37 +11,25 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from productmd import composeinfo, images, rpms
 from pkg_resources import parse_version
 
 
-def deserialize_composeinfo(data):
-    ci = composeinfo.ComposeInfo()
+def deserialize_wrapper(func, data):
+    """
+    Convert generic productmd exceptions into validation errors.
+    """
     try:
-        ci.deserialize(data)
+        func(data)
     except KeyError as e:
         raise serializers.ValidationError(
-            {'detail': 'Error parsing composeinfo.',
+            {'detail': 'Error parsing productmd metadata.',
              'reason': 'Missing key %s' % e.message}
         )
     except Exception as e:
         raise serializers.ValidationError(
-            {'detail': 'Error parsing composeinfo.',
+            {'detail': 'Error parsing productmd metadata.',
              'reason': str(e)}
         )
-    return ci
-
-
-def deserialize_rpms(data):
-    rm = rpms.Rpms()
-    rm.deserialize(data)
-    return rm
-
-
-def deserialize_images(data):
-    im = images.Images()
-    im.deserialize(data)
-    return im
 
 
 def add_returning(sql):

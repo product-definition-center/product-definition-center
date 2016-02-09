@@ -9,6 +9,7 @@ import os
 import json
 
 import kobo
+import productmd
 
 from django.db import transaction, connection
 from django.db.models import Q
@@ -89,8 +90,11 @@ def _add_compose_create_msg(request, compose_obj):
 def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
     release_obj = release_models.Release.objects.get(release_id=release_id)
 
-    ci = common_hacks.deserialize_composeinfo(composeinfo)
-    rm = common_hacks.deserialize_rpms(rpm_manifest)
+    ci = productmd.composeinfo.ComposeInfo()
+    common_hacks.deserialize_wrapper(ci.deserialize, composeinfo)
+
+    rm = productmd.rpms.Rpms()
+    common_hacks.deserialize_wrapper(rm.deserialize, rpm_manifest)
 
     _maybe_raise_inconsistency_error(ci, rm, 'rpms')
 
@@ -176,8 +180,11 @@ def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
 def compose__import_images(request, release_id, composeinfo, image_manifest):
     release_obj = release_models.Release.objects.get(release_id=release_id)
 
-    ci = common_hacks.deserialize_composeinfo(composeinfo)
-    im = common_hacks.deserialize_images(image_manifest)
+    ci = productmd.composeinfo.ComposeInfo()
+    common_hacks.deserialize_wrapper(ci.deserialize, composeinfo)
+
+    im = productmd.images.Images()
+    common_hacks.deserialize_wrapper(im.deserialize, image_manifest)
 
     _maybe_raise_inconsistency_error(ci, im, 'images')
 
