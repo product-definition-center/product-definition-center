@@ -147,6 +147,8 @@ class ComposeTreeSerializer(StrictSerializerMixin,
 
         if compose == variant.compose and arch in variant.arches:
             return attrs
+        elif compose == variant.compose and arch not in variant.arches:
+            raise serializers.ValidationError('Arch %s does not exist in given compose/variant branch' % arch)
         else:
             raise serializers.ValidationError('The combination with compose %s, variant %s, arch %s does not exist' %
                                               (compose, variant, arch))

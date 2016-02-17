@@ -542,7 +542,7 @@ class _BaseContactViewSet(viewsets.PDCModelViewSet):
     def update(self, *args, **kwargs):
         """Change details about a contact linked to component.
 
-        Please not that if you change the `contact` field here, only the single
+        Please note that if you change the `contact` field here, only the single
         updated relationship between contact and component will be updated.
         Specifically, no other component will be affected.
 
