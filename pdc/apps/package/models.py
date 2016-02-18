@@ -261,7 +261,7 @@ class Image(models.Model):
     size                = models.BigIntegerField()
 
     bootable            = models.BooleanField(default=False)
-    implant_md5         = models.CharField(max_length=32)
+    implant_md5         = models.CharField(max_length=32, null=True, blank=True)
 
     volume_id           = models.CharField(max_length=32, null=True, blank=True)
 

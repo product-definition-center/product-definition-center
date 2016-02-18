@@ -87,7 +87,7 @@
                         "disc_count": 1,
                         "disc_number": 1,
                         "format": "iso",
-                        "implant_md5": "44444444444444444444444444444444",
+                        "implant_md5": null,
                         "mtime": 1399449643,
                         "path": "Server-SAP/source/iso/SAP-1.0-TP-1-20150310.0-Server-source-dvd1.iso",
                         "size": 2156544,
