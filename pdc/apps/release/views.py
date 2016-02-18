@@ -962,6 +962,20 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
 class VariantTypeViewSet(StrictQueryParamMixin,
                          mixins.ListModelMixin,
                          viewsets.GenericViewSet):
+    # TODO: remove this class after next release
+    serializer_class = VariantTypeSerializer
+    queryset = models.VariantType.objects.all().order_by('id')
+
+    def list(self, request, *args, **kwargs):
+        """
+        This end-point is deprecated. Use $LINK:releasevarianttype-list$ instead.
+        """
+        return super(VariantTypeViewSet, self).list(request, *args, **kwargs)
+
+
+class ReleaseVariantTypeViewSet(StrictQueryParamMixin,
+                                mixins.ListModelMixin,
+                                viewsets.GenericViewSet):
     """
     API endpoint that allows variant_types to be viewed.
     """
@@ -972,10 +986,10 @@ class VariantTypeViewSet(StrictQueryParamMixin,
         """
         __Method__: GET
 
-        __URL__: $LINK:varianttype-list$
+        __URL__: $LINK:releasevarianttype-list$
 
         __Response__:
 
         %(SERIALIZER)s
         """
-        return super(VariantTypeViewSet, self).list(request, *args, **kwargs)
+        return super(ReleaseVariantTypeViewSet, self).list(request, *args, **kwargs)

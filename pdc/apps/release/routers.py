@@ -29,5 +29,9 @@ router.register(r'rpc/release/clone-components',
                 )
 router.register(r'release-variants',
                 views.ReleaseVariantViewSet)
+router.register(r'release-variant-types', views.ReleaseVariantTypeViewSet,
+                base_name='releasevarianttype')
+
+# TODO: This API should be removed after 0.9.0 released
 router.register(r'variant-types', views.VariantTypeViewSet,
                 base_name='varianttype')
