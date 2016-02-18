@@ -11,6 +11,9 @@ import django
 from optparse import OptionParser
 
 
+SERVICE_NAME_SEPARATOR = '/'
+
+
 def process_raw_ldap_data(groups):
     """
     Take data from LDAP and return mapping from group names to list of users.
@@ -25,6 +28,12 @@ def process_raw_ldap_data(groups):
             continue    # Skip user groups
         result[group_name] = members
     return result
+
+
+def process_inactive_user(user):
+    user.is_active = False
+    user.groups.clear()
+    user.save()
 
 
 if __name__ == '__main__':
@@ -45,10 +54,13 @@ if __name__ == '__main__':
 
         groups = conn.search_s(settings.LDAP_GROUPS_DN, ldap.SCOPE_SUBTREE)
         groups = process_raw_ldap_data(groups)
+        active_member_set = set([])
 
         for user in get_user_model().objects.all():
             data = backends.get_ldap_user(conn, user.username)
             if not data:
+                if SERVICE_NAME_SEPARATOR not in user.username:
+                    process_inactive_user(user)
                 continue
             del data['login']
             user_groups = set()
