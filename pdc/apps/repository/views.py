@@ -124,8 +124,8 @@ class RepoViewSet(ChangeSetCreateModelMixin,
 
 class RepoCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
     """
-    Please access this endpoint by [%(HOST_NAME)s/%(API_PATH)s/rpc/content-delivery-repos/clone/](/%(API_PATH)s/rpc/content-delivery-repos/clone/).
-    Endpoint [%(HOST_NAME)s/%(API_PATH)s/rpc/repos/clone/](/%(API_PATH)s/rpc/repos/clone/) is deprecated.
+    Please access this endpoint by $LINK:cdreposclone-list$.
+    Endpoint $LINK:repoclone-list$ is deprecated.
     """
     queryset = models.Repo.objects.none()   # Required for permissions
 
@@ -249,8 +249,8 @@ class RepoFamilyViewSet(StrictQueryParamMixin,
     following for more details.
 
 
-    Please access this endpoint by [%(HOST_NAME)s/%(API_PATH)s/content-delivery-repo-families/](/%(API_PATH)s/content-delivery-repo-families/).
-    Endpoint [%(HOST_NAME)s/%(API_PATH)s/repo-families/](/%(API_PATH)s/repo-families/) is deprecated.
+    Please access this endpoint by $LINK:contentdeliveryrepofamily-list$.
+    Endpoint $LINK:repofamily-list$ is deprecated.
 
     ##Test tools##
 
@@ -308,10 +308,8 @@ class ContentCategoryViewSet(StrictQueryParamMixin,
     """
     API endpoint that allows content_category to be viewed.
 
-    Please access this endpoint by [%(HOST_NAME)s/%(API_PATH)s/content-delivery-content-categories/](/%(API_PATH)s/
-    content-delivery-content-categories/).
-    Endpoint [%(HOST_NAME)s/%(API_PATH)s/content-delivery-content-category/](/%(API_PATH)s/
-    content-delivery-content-category/) is deprecated.
+    Please access this endpoint by $LINK:contentdeliverycontentcategory-list$.
+    Endpoint $LINK:contentdeliverycontentcategory-list$ is deprecated.
     """
     serializer_class = serializers.ContentCategorySerializer
     queryset = models.ContentCategory.objects.all().order_by('id')
@@ -335,11 +333,8 @@ class ContentFormatViewSet(StrictQueryParamMixin,
     """
     API endpoint that allows content_format to be viewed.
 
-    Please access this endpoint by
-    [%(HOST_NAME)s/%(API_PATH)s/content-delivery-content-formats/](/%(API_PATH)s/content-delivery-content-formats/).
-    Endpoint
-    [%(HOST_NAME)s/%(API_PATH)s/content-delivery-content-format/](/%(API_PATH)s/content-delivery-content-format/)
-    is deprecated.
+    Please access this endpoint by $LINK:contentdeliverycontentformat-list$.
+    Endpoint $LINK:contentformatdeprecated-list$ is deprecated.
     """
     serializer_class = serializers.ContentFormatSerializer
     queryset = models.ContentFormat.objects.all().order_by('id')
@@ -363,10 +358,8 @@ class ServiceViewSet(StrictQueryParamMixin,
     """
     API endpoint that allows service to be viewed.
 
-    Please access this endpoint by
-    [%(HOST_NAME)s/%(API_PATH)s/content-delivery-services/](/%(API_PATH)s/content-delivery-services/).
-    Endpoint
-    [%(HOST_NAME)s/%(API_PATH)s/content-delivery-service/](/%(API_PATH)s/content-delivery-service/) is deprecated.
+    Please access this endpoint by $LINK:contentdeliveryservice-list$.
+    Endpoint $LINK:contentservicedeprecated-list$ is deprecated.
     """
     serializer_class = serializers.ServiceSerializer
     queryset = models.Service.objects.all().order_by('id')
