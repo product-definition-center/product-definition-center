@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>8. Messaging &mdash; PDC 0.3.rc-2.38.gbcb9b42 documentation</title>
+    <title>8. Messaging &mdash; PDC 0.3.rc-2.39.g8a4eb0d documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3.rc-2.38.gbcb9b42',
+        VERSION:     '0.3.rc-2.39.g8a4eb0d',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.3.rc-2.38.gbcb9b42 documentation" href="index.html" />
+    <link rel="top" title="PDC 0.3.rc-2.39.g8a4eb0d documentation" href="index.html" />
     <link rel="prev" title="7. Deployment" href="deployment.html" /> 
   </head>
   <body role="document">
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="deployment.html" title="7. Deployment"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.38.gbcb9b42 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.39.g8a4eb0d documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -57,7 +57,7 @@ and push generated messages into it while processing the request in the view,
 if no error occurs, before response get returned to user, we pop out all the messages
 and invoke <cite>Messenger</cite> to send them to the Message Bus.</p>
 <p>PDC Messaging Overview and Dataflow:</p>
-<div class="highlight-python"><div class="highlight"><pre>                 User Request           User Response
+<div class="highlight-python"><div class="highlight"><pre><span></span>                 User Request           User Response
                       +                      ^
 +-----+               |                      |
 | PDC |               |                      |
@@ -88,7 +88,7 @@ and invoke <cite>Messenger</cite> to send them to the Message Bus.</p>
 </div>
 <div class="section" id="supported-messengers">
 <h2>8.2. Supported Messengers<a class="headerlink" href="#supported-messengers" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre>                                     +----------------------------------+
+<div class="highlight-python"><div class="highlight"><pre><span></span>                                     +----------------------------------+
                                      |           PDC Messenger          |
                                      +----------------------------------+
                                      |  + __init__()                    |
@@ -114,7 +114,7 @@ to know which one to use and how to configure it as well.</p>
 <p>If you do not need to send messages out, you could just leave the <cite>MLP</cite> (Messaging Library Package) to empty string
 to use the <cite>DummyMessenger</cite>.</p>
 <p>e.g.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c1"># Messaging Bus Config</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Messaging Bus Config</span>
 <span class="n">MESSAGE_BUS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># MLP: Messaging Library Package</span>
     <span class="s1">&#39;MLP&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
@@ -127,7 +127,7 @@ to use the <cite>DummyMessenger</cite>.</p>
 the <cite>MLP</cite> to &#8216;fedmsg&#8217;.</p>
 <p><cite>fedmsg</cite> needs to be installed.</p>
 <p><cite>FedmsgMessenger</cite> config example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c1"># Messaging Bus Config</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Messaging Bus Config</span>
 <span class="n">MESSAGE_BUS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># MLP: Messaging Library Package</span>
     <span class="s1">&#39;MLP&#39;</span><span class="p">:</span> <span class="s1">&#39;fedmsg&#39;</span><span class="p">,</span>
@@ -147,7 +147,7 @@ pluggable transports.</p>
 <p>To use <cite>KombuMessenger</cite>, you need to add some more items in the settings, including <cite>URL</cite> of
 the broker, <cite>EXCHANGE</cite> and <cite>OPTIONS</cite>.</p>
 <p>e.g.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c1"># Messaging Bus Config</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Messaging Bus Config</span>
 <span class="n">MESSAGE_BUS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># `kombu` config example:</span>
     <span class="s1">&#39;MLP&#39;</span><span class="p">:</span> <span class="s1">&#39;kombu&#39;</span><span class="p">,</span>
@@ -177,7 +177,7 @@ AMQP(v1.0), <cite>ProtonMessenger</cite> should be your choice.</p>
 <p>NOTE: current implementation does not support multi endpoints failover.</p>
 <p><cite>qpid-proton</cite> needs to be installed.</p>
 <p><cite>ProtonMessenger</cite> config example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c1"># Messaging Bus Config</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Messaging Bus Config</span>
 <span class="n">MESSAGE_BUS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;MLP&#39;</span><span class="p">:</span> <span class="s1">&#39;proton&#39;</span><span class="p">,</span>
     <span class="s1">&#39;URL&#39;</span><span class="p">:</span> <span class="s1">&#39;amqps://example.com:5671/com.redhat.pdc&#39;</span><span class="p">,</span>
@@ -192,7 +192,7 @@ AMQP(v1.0), <cite>ProtonMessenger</cite> should be your choice.</p>
 acceptable for your application, we recommend you to use <cite>StompMessenger</cite> as it supports multi-endpoints failover.</p>
 <p><cite>stomp.py</cite> needs to be installed.</p>
 <p><cite>StompMessenger</cite> config example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c1"># Messaging Bus Config</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Messaging Bus Config</span>
 <span class="n">MESSAGE_BUS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># `stomp` config items:</span>
     <span class="s1">&#39;MLP&#39;</span><span class="p">:</span> <span class="s1">&#39;stomp&#39;</span><span class="p">,</span>
@@ -274,7 +274,7 @@ acceptable for your application, we recommend you to use <cite>StompMessenger</c
         <li class="right" >
           <a href="deployment.html" title="7. Deployment"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.38.gbcb9b42 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.39.g8a4eb0d documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

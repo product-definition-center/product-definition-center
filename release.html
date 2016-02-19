@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>6. Release &mdash; PDC 0.3.rc-2.38.gbcb9b42 documentation</title>
+    <title>6. Release &mdash; PDC 0.3.rc-2.39.g8a4eb0d documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3.rc-2.38.gbcb9b42',
+        VERSION:     '0.3.rc-2.39.g8a4eb0d',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.3.rc-2.38.gbcb9b42 documentation" href="index.html" />
+    <link rel="top" title="PDC 0.3.rc-2.39.g8a4eb0d documentation" href="index.html" />
     <link rel="next" title="7. Deployment" href="deployment.html" />
     <link rel="prev" title="5. PDC Model Graphs" href="model_graphs.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="model_graphs.html" title="5. PDC Model Graphs"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.38.gbcb9b42 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.39.g8a4eb0d documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -98,7 +98,7 @@ Examples: 1.0.0-12.g1234abc, 1.0.0-s5.4.g1234abc.</p>
 <div class="section" id="tag">
 <h3>6.2.1. Tag<a class="headerlink" href="#tag" title="Permalink to this headline">¶</a></h3>
 <p>A new git tag need to be added before starting a new release:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ tito tag
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ tito tag
 </pre></div>
 </div>
 <p>It will:</p>
@@ -113,7 +113,7 @@ Examples: 1.0.0-12.g1234abc, 1.0.0-s5.4.g1234abc.</p>
 <h3>6.2.2. Test Build<a class="headerlink" href="#test-build" title="Permalink to this headline">¶</a></h3>
 <p>Once release tag is available, we can do some build tests including source tarball checking, and rpm building testing.</p>
 <blockquote>
-<div><div class="highlight-python"><div class="highlight"><pre># generate local source tarball
+<div><div class="highlight-python"><div class="highlight"><pre><span></span># generate local source tarball
 $ tito build --tgz --offline
 
 # generate local rpm build
@@ -122,13 +122,13 @@ $ tito build --rpm --offline
 </div>
 </div></blockquote>
 <p>If everything goes well, you could push your commit and tag to remote, otherwise the tag need to be undo:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ tito tag -u
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ tito tag -u
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>During developing, we could also generate test build any time, which will be based on current <cite>HEAD</cite> instead of latest tag.</p>
-<div class="last highlight-python"><div class="highlight"><pre># generate test builds
+<div class="last highlight-python"><div class="highlight"><pre><span></span># generate test builds
 $ tito build --test --tgz/srpm/rpm
 </pre></div>
 </div>
@@ -137,7 +137,7 @@ $ tito build --test --tgz/srpm/rpm
 <div class="section" id="push">
 <h3>6.2.3. Push<a class="headerlink" href="#push" title="Permalink to this headline">¶</a></h3>
 <p>When you&#8217;re happy with your build, it&#8217;s time to push commit and tag to remote.</p>
-<div class="highlight-python"><div class="highlight"><pre>$ git push origin &amp;&amp; git push origin &lt;your_tag&gt;
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ git push origin &amp;&amp; git push origin &lt;your_tag&gt;
 </pre></div>
 </div>
 </div>
@@ -158,13 +158,13 @@ srpms.</p>
 release targets in <cite>tito</cite>, <cite>copr-pdc</cite> is for <cite>pdc</cite> in <cite>Copr</cite> and <cite>copr-pdc-test</cite> is for <cite>pdc-test</cite> respectively.</p>
 <p>Request as <cite>Builder</cite> for projects <cite>pdc/pdc-test</cite> and <cite>pdc/pdc</cite>, wait until admin approves.</p>
 <p>After all setup, release with <cite>tito</cite>:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ tito release copr-pdc
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ tito release copr-pdc
 # or
 $ tito release copr-pdc-test
 </pre></div>
 </div>
 <p>Go and grab a cup of tea or coffee, the release build will be come out soon</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c1"># test builds: `https://copr.fedoraproject.org/coprs/pdc/pdc-test/builds/`</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># test builds: `https://copr.fedoraproject.org/coprs/pdc/pdc-test/builds/`</span>
 <span class="c1"># tag based builds: `https://copr.fedoraproject.org/coprs/pdc/pdc/builds/`</span>
 </pre></div>
 </div>
@@ -259,7 +259,7 @@ $ tito release copr-pdc-test
         <li class="right" >
           <a href="model_graphs.html" title="5. PDC Model Graphs"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.38.gbcb9b42 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.39.g8a4eb0d documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

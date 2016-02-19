@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>7. Deployment &mdash; PDC 0.3.rc-2.38.gbcb9b42 documentation</title>
+    <title>7. Deployment &mdash; PDC 0.3.rc-2.39.g8a4eb0d documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3.rc-2.38.gbcb9b42',
+        VERSION:     '0.3.rc-2.39.g8a4eb0d',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.3.rc-2.38.gbcb9b42 documentation" href="index.html" />
+    <link rel="top" title="PDC 0.3.rc-2.39.g8a4eb0d documentation" href="index.html" />
     <link rel="next" title="8. Messaging" href="messaging.html" />
     <link rel="prev" title="6. Release" href="release.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="release.html" title="6. Release"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.38.gbcb9b42 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.39.g8a4eb0d documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -53,7 +53,7 @@
 <span id="id1"></span><h1>7. Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="install-via-yum">
 <h2>7.1. Install via yum<a class="headerlink" href="#install-via-yum" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre>$ yum install pdc-server
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ yum install pdc-server
 </pre></div>
 </div>
 <p>The RPM includes a cron job to perform daily synchronization of users with
@@ -62,14 +62,14 @@ configuration.</p>
 </div>
 <div class="section" id="configure-django-settings">
 <h2>7.2. Configure Django settings<a class="headerlink" href="#configure-django-settings" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="c1"># mv settings_local.py.dist to settings_local.py</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># mv settings_local.py.dist to settings_local.py</span>
 <span class="c1"># change database settings in /usr/lib/pythonX.Y/site-packages/pdc/settings_local.py</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="initialize-database">
 <h2>7.3. Initialize database<a class="headerlink" href="#initialize-database" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre># create database
+<div class="highlight-python"><div class="highlight"><pre><span></span># create database
 $ su - postgres
 $ psql
 postgres=# create database &quot;db_name&quot; owner &quot;user_name&quot;;
@@ -82,7 +82,7 @@ $ django-admin migrate --settings=pdc.settings --noinput
 </div>
 <div class="section" id="collect-static">
 <h2>7.4. Collect static<a class="headerlink" href="#collect-static" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre>$ django-admin collectstatic --settings=pdc.settings
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ django-admin collectstatic --settings=pdc.settings
 </pre></div>
 </div>
 </div>
@@ -152,7 +152,7 @@ $ django-admin migrate --settings=pdc.settings --noinput
         <li class="right" >
           <a href="release.html" title="6. Release"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.38.gbcb9b42 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.39.g8a4eb0d documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

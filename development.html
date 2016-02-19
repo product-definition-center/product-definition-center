@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>3. Setup development environment &mdash; PDC 0.3.rc-2.38.gbcb9b42 documentation</title>
+    <title>3. Setup development environment &mdash; PDC 0.3.rc-2.39.g8a4eb0d documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3.rc-2.38.gbcb9b42',
+        VERSION:     '0.3.rc-2.39.g8a4eb0d',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.3.rc-2.38.gbcb9b42 documentation" href="index.html" />
+    <link rel="top" title="PDC 0.3.rc-2.39.g8a4eb0d documentation" href="index.html" />
     <link rel="next" title="4. API Development" href="api_devel.html" />
     <link rel="prev" title="2. Bulk operations" href="bulk_operations.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="bulk_operations.html" title="2. Bulk operations"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.38.gbcb9b42 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.39.g8a4eb0d documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -53,7 +53,7 @@
 <span id="development"></span><h1>3. Setup development environment<a class="headerlink" href="#setup-development-environment" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="source-code">
 <h2>3.1. Source Code<a class="headerlink" href="#source-code" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre>$ git clone https://github.com/release-engineering/product-definition-center.git
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ git clone https://github.com/release-engineering/product-definition-center.git
 </pre></div>
 </div>
 </div>
@@ -91,23 +91,23 @@ REPOs: <a class="reference external" href="https://copr.fedoraproject.org/coprs/
 <ul>
 <li><p class="first">Koji is not available on PyPI. You must install the <cite>koji</cite> package to your
 system via <code class="docutils literal"><span class="pre">yum</span></code> before creating a virtualenv.</p>
-<div class="highlight-python"><div class="highlight"><pre>$ sudo yum install koji
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ sudo yum install koji
 </pre></div>
 </div>
 </li>
 <li><p class="first">After that, run</p>
-<div class="highlight-python"><div class="highlight"><pre>$ pip install virtualenvwrapper
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ pip install virtualenvwrapper
 </pre></div>
 </div>
 <p>and setup according to &#8216;Setup&#8217; steps in <code class="docutils literal"><span class="pre">/usr/bin/virtualenvwrapper.sh</span></code>.
 Then run</p>
-<div class="highlight-python"><div class="highlight"><pre>$ mkvirtualenv pdc --system-site-packages
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ mkvirtualenv pdc --system-site-packages
 </pre></div>
 </div>
 <p>to include <cite>koji</cite> into your <em>pdc</em> virtualenv.</p>
 </li>
 <li><p class="first">Run the following</p>
-<div class="highlight-python"><div class="highlight"><pre>$ workon pdc
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ workon pdc
 $ pip install -r requirements/devel.txt
 </pre></div>
 </div>
@@ -121,18 +121,18 @@ $ pip install -r requirements/devel.txt
 <li><p class="first">Install Docker: see the <a class="reference external" href="https://docs.docker.com/installation/">official installation
 guide</a> for details. Generally, it
 might be enough to run install it with <code class="docutils literal"><span class="pre">yum</span></code> and the run it.</p>
-<div class="highlight-python"><div class="highlight"><pre>$ sudo yum install docker-engine
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ sudo yum install docker-engine
 $ sudo service docker start
 </pre></div>
 </div>
 </li>
 <li><p class="first">Use this command to build a new image</p>
-<div class="highlight-python"><div class="highlight"><pre>$ sudo docker build -t &lt;YOUR_NAME&gt;/pdc &lt;the directory your Dockerfile is located&gt;
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ sudo docker build -t &lt;YOUR_NAME&gt;/pdc &lt;the directory your Dockerfile is located&gt;
 </pre></div>
 </div>
 </li>
 <li><p class="first">Run the container</p>
-<div class="highlight-python"><div class="highlight"><pre>$ docker run -it -P -v $PWD:$PWD &lt;YOUR_NAME&gt;/pdc python $PWD/manage.py runserver 0.0.0.0:8000
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ docker run -it -P -v $PWD:$PWD &lt;YOUR_NAME&gt;/pdc python $PWD/manage.py runserver 0.0.0.0:8000
 </pre></div>
 </div>
 </li>
@@ -141,7 +141,7 @@ $ sudo service docker start
 <li><p class="first">Find the address of the docker machine (127.0.0.1 &#8211;&gt; DOCKER_HOST).</p>
 </li>
 <li><p class="first">Find the mapped port of your running container</p>
-<div class="highlight-python"><div class="highlight"><pre>$ sudo docker ps -l --&gt; PORT
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ sudo docker ps -l --&gt; PORT
 </pre></div>
 </div>
 </li>
@@ -155,7 +155,7 @@ $ sudo service docker start
 <div class="section" id="customize-settings">
 <h2>3.3. Customize settings<a class="headerlink" href="#customize-settings" title="Permalink to this headline">¶</a></h2>
 <p>You can use the dist settings template by copying it to <cite>settings_local.py</cite>:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ cp settings_local.py.dist settings_local.py
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ cp settings_local.py.dist settings_local.py
 </pre></div>
 </div>
 <p>Feel free to customize your <cite>settings_local.py</cite>. Changes will be populated
@@ -168,14 +168,14 @@ disable authentication.</p>
 <div class="section" id="init-database">
 <h2>3.4. Init database<a class="headerlink" href="#init-database" title="Permalink to this headline">¶</a></h2>
 <p>To initialize database, run:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ python manage.py migrate --noinput
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ python manage.py migrate --noinput
 </pre></div>
 </div>
 </div>
 <div class="section" id="run-devel-server">
 <h2>3.5. Run devel server<a class="headerlink" href="#run-devel-server" title="Permalink to this headline">¶</a></h2>
 <p>To run development server, run:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ make run
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ make run
 </pre></div>
 </div>
 <p>For development you may find it useful to enable <a class="reference external" href="http://django-debug-toolbar.readthedocs.org/en/1.3.2/">Django Debug Toolbar</a>.</p>
@@ -249,7 +249,7 @@ disable authentication.</p>
         <li class="right" >
           <a href="bulk_operations.html" title="2. Bulk operations"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.38.gbcb9b42 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.3.rc-2.39.g8a4eb0d documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
