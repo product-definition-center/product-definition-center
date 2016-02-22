@@ -29,8 +29,8 @@ class RepoViewSet(ChangeSetCreateModelMixin,
     """
     An API endpoint providing access to content delivery repositories.
 
-    Please access this endpoint by [%(HOST_NAME)s/%(API_PATH)s/content-delivery-repos/](/%(API_PATH)s/content-delivery-repos/).
-    Endpoint [%(HOST_NAME)s/%(API_PATH)s/repos/](/%(API_PATH)s/repos/) is deprecated.
+    Please access this endpoint by $LINK:contentdeliveryrepos-list$.
+    Endpoint $LINK:repo-list$ is deprecated.
     """
     queryset = models.Repo.objects.all().select_related().order_by('id')
     serializer_class = serializers.RepoSerializer
@@ -40,7 +40,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: `POST`
 
-        __URL__: $LINK:repo-list$
+        __URL__: $LINK:contentdeliveryrepos-list$
 
         __Data__:
 
@@ -73,7 +73,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: `GET`
 
-        __URL__: $LINK:repo-detail:id$
+        __URL__: $LINK:contentdeliveryrepos-detail:id$
 
         __Response__:
 
@@ -85,7 +85,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: `GET`
 
-        __URL__: $LINK:repo-list$
+        __URL__: $LINK:contentdeliveryrepos-list$
 
         __Query params__:
 
@@ -101,7 +101,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: `PUT`, `PATCH`
 
-        __URL__: $LINK:repo-detail:id$
+        __URL__: $LINK:contentdeliveryrepos-detail:id$
 
         __Data__:
 
@@ -117,7 +117,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
         """
         __Method__: `DELETE`
 
-        __URL__: $LINK:repo-detail:id$
+        __URL__: $LINK:contentdeliveryrepos-detail:id$
         """
         return super(RepoViewSet, self).destroy(*args, **kwargs)
 

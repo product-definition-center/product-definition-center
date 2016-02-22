@@ -9,7 +9,8 @@ from . import views
 from pdc.apps.utils.SortedRouter import router
 
 
-router.register(r'content-delivery-repos', views.RepoViewSet)
+router.register(r'content-delivery-repos', views.RepoViewSet,
+                base_name='contentdeliveryrepos')
 router.register(r'content-delivery-repo-families', views.RepoFamilyViewSet,
                 base_name='contentdeliveryrepofamily')
 router.register(r'rpc/content-delivery-repos/clone',
