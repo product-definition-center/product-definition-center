@@ -504,12 +504,12 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
 class RepoFamilyTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def test_list_all(self):
-        response = self.client.get(reverse('repofamily-list'))
+        response = self.client.get(reverse('contentdeliveryrepofamily-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 3)
 
     def test_filter(self):
-        response = self.client.get(reverse('repofamily-list'), data={"name": "di"})
+        response = self.client.get(reverse('contentdeliveryrepofamily-list'), data={"name": "di"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 1)
         self.assertEqual(response.data['results'][0]['name'], 'dist')
