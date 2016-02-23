@@ -848,7 +848,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
         All fields are required. The required architectures must already be
         present in PDC.
 
-        *type*: $LINK:varianttype-list$
+        *type*: $LINK:releasevarianttype-list$
 
         __Response__:
 
@@ -874,7 +874,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
         repositories are connected to some Variant.Arch pair and it is not
         possible to remove an arch with any repositories..
 
-        *type*: $LINK:varianttype-list$
+        *type*: $LINK:releasevarianttype-list$
 
         __Response__:
 
