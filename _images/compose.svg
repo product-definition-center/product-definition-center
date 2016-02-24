@@ -366,22 +366,8 @@
 <ellipse fill="black" stroke="black" cx="392.139" cy="-648.481" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="372.5" y="-598.8" font-family="Helvetica,sans-Serif" font-size="8.00">path (composerpm)</text>
 </g>
-<!-- pdc_apps_package_models_RPM -->
-<g id="node35" class="node"><title>pdc_apps_package_models_RPM</title>
-<polygon fill="palegoldenrod" stroke="palegoldenrod" points="1169.5,-512.5 1169.5,-529.5 1208.5,-529.5 1208.5,-512.5 1169.5,-512.5"/>
-<polygon fill="#698b22" stroke="#698b22" points="1170,-512 1170,-529 1209,-529 1209,-512 1170,-512"/>
-<text text-anchor="start" x="1175" y="-518.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
-<text text-anchor="start" x="1180" y="-518.633" font-family="Helvetica Bold" font-size="8.00" fill="white">RPM</text>
-<text text-anchor="start" x="1199" y="-518.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
-</g>
-<!-- pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_package_models_RPM -->
-<g id="edge39" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_package_models_RPM</title>
-<path fill="none" stroke="black" d="M572.84,-644.01C586.85,-635.9 601.9,-628.69 617,-624 722.34,-591.31 1009,-642.77 1113,-606 1144.9,-594.71 1168.1,-560.58 1180,-539.16"/>
-<ellipse fill="black" stroke="black" cx="569.055" cy="-646.27" rx="4.00002" ry="4.00002"/>
-<text text-anchor="middle" x="1169" y="-598.8" font-family="Helvetica,sans-Serif" font-size="8.00">rpm (composerpm)</text>
-</g>
 <!-- pdc_apps_repository_models_ContentCategory -->
-<g id="node37" class="node"><title>pdc_apps_repository_models_ContentCategory</title>
+<g id="node35" class="node"><title>pdc_apps_repository_models_ContentCategory</title>
 <polygon fill="palegoldenrod" stroke="palegoldenrod" points="929.5,-354.5 929.5,-371.5 1018.5,-371.5 1018.5,-354.5 929.5,-354.5"/>
 <polygon fill="#698b22" stroke="#698b22" points="930,-354 930,-371 1019,-371 1019,-354 930,-354"/>
 <text text-anchor="start" x="935" y="-360.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
@@ -389,10 +375,24 @@
 <text text-anchor="start" x="1009" y="-360.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_repository_models_ContentCategory -->
-<g id="edge41" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_repository_models_ContentCategory</title>
+<g id="edge39" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_repository_models_ContentCategory</title>
 <path fill="none" stroke="black" d="M573.52,-644.13C587.36,-636.11 602.18,-628.89 617,-624 723.64,-588.84 765.45,-649.43 869,-606 936.56,-577.66 907.92,-521.27 956,-466 965.47,-455.12 976.19,-460.72 983,-448 994.2,-427.07 987.89,-399.1 981.57,-381.06"/>
 <ellipse fill="black" stroke="black" cx="569.815" cy="-646.34" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="1014.5" y="-519.8" font-family="Helvetica,sans-Serif" font-size="8.00">content_category (composerpm)</text>
+</g>
+<!-- pdc_apps_package_models_RPM -->
+<g id="node37" class="node"><title>pdc_apps_package_models_RPM</title>
+<polygon fill="palegoldenrod" stroke="palegoldenrod" points="1169.5,-512.5 1169.5,-529.5 1208.5,-529.5 1208.5,-512.5 1169.5,-512.5"/>
+<polygon fill="#698b22" stroke="#698b22" points="1170,-512 1170,-529 1209,-529 1209,-512 1170,-512"/>
+<text text-anchor="start" x="1175" y="-518.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
+<text text-anchor="start" x="1180" y="-518.633" font-family="Helvetica Bold" font-size="8.00" fill="white">RPM</text>
+<text text-anchor="start" x="1199" y="-518.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
+</g>
+<!-- pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_package_models_RPM -->
+<g id="edge41" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_package_models_RPM</title>
+<path fill="none" stroke="black" d="M572.84,-644.01C586.85,-635.9 601.9,-628.69 617,-624 722.34,-591.31 1009,-642.77 1113,-606 1144.9,-594.71 1168.1,-560.58 1180,-539.16"/>
+<ellipse fill="black" stroke="black" cx="569.055" cy="-646.27" rx="4.00002" ry="4.00002"/>
+<text text-anchor="middle" x="1169" y="-598.8" font-family="Helvetica,sans-Serif" font-size="8.00">rpm (composerpm)</text>
 </g>
 <!-- pdc_apps_common_models_SigKey -->
 <g id="node39" class="node"><title>pdc_apps_common_models_SigKey</title>
