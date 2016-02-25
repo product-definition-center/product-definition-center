@@ -15,9 +15,6 @@ router.register(r'composes/(?P<compose_id>[^/]+)/rpm-mapping',
                 base_name='composerpmmapping')
 router.register(r'compose-rpms', views.ComposeRPMView)
 router.register(r'compose-images', views.ComposeImageView)
-router.register(r'rpc/compose/import-images',
-                views.ComposeImportImagesView,
-                base_name='composeimportimages')
 
 router.register('overrides/rpm',
                 views.ReleaseOverridesRPMViewSet,

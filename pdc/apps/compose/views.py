@@ -971,25 +971,6 @@ class ComposeImageView(StrictQueryParamMixin,
         return Response(manifest.serialize({}))
 
 
-class ComposeImportImagesView(StrictQueryParamMixin, viewsets.GenericViewSet):
-    # TODO: remove this class after next release
-    queryset = ComposeImage.objects.none()  # Required for permissions
-
-    def create(self, request):
-        """
-        This end-point is deprecated. Use $LINK:composeimage-list$ instead.
-        """
-        data = request.data
-        errors = {}
-        for key in ('release_id', 'composeinfo', 'image_manifest'):
-            if key not in data:
-                errors[key] = ["This field is required"]
-        if errors:
-            return Response(status=400, data=errors)
-        lib.compose__import_images(request, data['release_id'], data['composeinfo'], data['image_manifest'])
-        return Response(status=201)
-
-
 class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
                                  mixins.ListModelMixin,
                                  ChangeSetCreateModelMixin,

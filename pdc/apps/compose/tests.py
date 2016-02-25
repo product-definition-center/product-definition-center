@@ -768,20 +768,6 @@ class ComposeImageAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         # Caching ids makes it faster, but the cache needs to be cleared for each test.
         models.Path.CACHE = {}
 
-    def test_import_images_by_deprecated_api(self):
-        # TODO: remove this test after next release
-        response = self.client.post(reverse('composeimportimages-list'),
-                                    {'image_manifest': self.manifest,
-                                     'release_id': 'tp-1.0',
-                                     'composeinfo': self.compose_info},
-                                    format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertNumChanges([11, 5])
-        self.assertEqual(models.ComposeImage.objects.count(), 4)
-        response = self.client.get(reverse('image-list'), {'compose': 'TP-1.0-20150310.0'})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get('count'), 4)
-
     def test_import_images(self):
         response = self.client.post(reverse('composeimage-list'),
                                     {'image_manifest': self.manifest,
