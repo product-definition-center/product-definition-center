@@ -8,7 +8,7 @@ from pdc import get_version
 PACKAGE_NAME = 'pdc'
 PACKAGE_VER = get_version()
 PACKAGE_DESC = 'PDC - Product Definition Center'
-PACKAGE_URL = 'https://github.com/release-engineering/product-definition-center.git'  # noqa
+PACKAGE_URL = 'https://github.com/product-definition-center/product-definition-center.git'  # noqa
 
 
 def get_install_requires():
