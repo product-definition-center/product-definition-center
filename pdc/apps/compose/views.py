@@ -36,6 +36,7 @@ from pdc.apps.common.viewsets import (ChangeSetCreateModelMixin,
                                       MultiLookupFieldMixin,
                                       ChangeSetUpdateModelMixin)
 from pdc.apps.release.models import Release
+from pdc.apps.utils.utils import generate_warning_header_dict
 from .models import (Compose, VariantArch, Variant, ComposeRPM, OverrideRPM,
                      ComposeImage, ComposeRPMMapping, ComposeAcceptanceTestingState,
                      ComposeTree)
@@ -492,6 +493,10 @@ class ComposeViewSet(StrictQueryParamMixin,
 
         self.context = {'compose_id_to_key_id_cache': compose_id_to_key_id_cache}
 
+    def _add_messaging_info(self, request, info):
+        if hasattr(request._request, '_messagings'):
+            request._request._messagings.append(('.compose', info))
+
     def retrieve(self, *args, **kwargs):
         """
         __Method__: GET
@@ -593,13 +598,10 @@ class ComposeViewSet(StrictQueryParamMixin,
                                   json.dumps({'linked_releases': old_data['linked_releases']}),
                                   json.dumps({'linked_releases': response.data['linked_releases']}))
             # Add message
-            if hasattr(request._request, '_messagings'):
-                request._request._messagings.append(
-                    ('.compose',
-                     json.dumps({'action': 'update',
-                                 'compose_id': self.object.compose_id,
-                                 'from': old_data,
-                                 'to': response.data})))
+            self._add_messaging_info(request, json.dumps({'action': 'update',
+                                                          'compose_id': self.object.compose_id,
+                                                          'from': old_data,
+                                                          'to': response.data}))
         return response
 
     def perform_update(self, serializer):
@@ -646,6 +648,39 @@ class ComposeViewSet(StrictQueryParamMixin,
         """
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        It will mark the compose as 'deleted'.
+
+        __Method__:
+        DELETE
+
+        __URL__: $LINK:compose-detail:compose_id$
+
+        __Response__:
+
+            STATUS: 204 NO CONTENT
+
+        __Example__:
+
+            curl -X DELETE -H "Content-Type: application/json" $URL:compose-detail:1$
+        """
+        instance = self.get_object()
+        if instance.deleted:
+            return Response(status=status.HTTP_204_NO_CONTENT,
+                            headers=generate_warning_header_dict(
+                                "No change. This compose was marked as deleted already."))
+        else:
+            instance.deleted = True
+            instance.save()
+            request.changeset.add('Compose', instance.pk,
+                                  json.dumps({'deleted': False}),
+                                  json.dumps({'deleted': True}))
+            self._add_messaging_info(request, json.dumps({'action': 'delete',
+                                                          'compose_id': instance.compose_id}))
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ComposeRPMView(StrictQueryParamMixin, viewsets.GenericViewSet):

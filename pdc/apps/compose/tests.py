@@ -384,6 +384,25 @@ class ComposeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 0)
 
+    def test_delete_compose(self):
+        response = self.client.get(reverse('compose-detail', args=["compose-1"]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['deleted'], False)
+
+        response = self.client.delete(reverse('compose-detail', args=["compose-1"]))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertNumChanges([1])
+
+        response = self.client.get(reverse('compose-detail', args=["compose-1"]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['deleted'], True)
+
+    def test_delete_deleted_compose(self):
+        self.client.delete(reverse('compose-detail', args=["compose-1"]))
+        response = self.client.delete(reverse('compose-detail', args=["compose-1"]))
+        self.assertEqual(response._headers[PDC_WARNING_HEADER_NAME.lower()],
+                         (PDC_WARNING_HEADER_NAME, 'No change. This compose was marked as deleted already.'))
+
 
 class ComposeApiOrderingTestCase(APITestCase):
     fixtures = [
@@ -438,6 +457,11 @@ class ComposeUpdateTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def test_can_not_update_compose_label(self):
         response = self.client.patch(reverse('compose-detail', args=['compose-1']),
                                      {'compose_label': 'i am a label'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_can_not_update_compose_to_deleted(self):
+        response = self.client.patch(reverse('compose-detail', args=['compose-1']),
+                                     {'deleted': 'True'})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_linked_releases(self):
