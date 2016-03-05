@@ -86,7 +86,7 @@ def _add_compose_create_msg(request, compose_obj):
     request._request._messagings.append(('.compose', json.dumps(msg)))
 
 
-@transaction.atomic
+@transaction.atomic(savepoint=False)
 def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
     release_obj = release_models.Release.objects.get(release_id=release_id)
 
@@ -176,7 +176,7 @@ def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
     return compose_obj.compose_id, imported_rpms
 
 
-@transaction.atomic
+@transaction.atomic(savepoint=False)
 def compose__import_images(request, release_id, composeinfo, image_manifest):
     release_obj = release_models.Release.objects.get(release_id=release_id)
 
@@ -260,6 +260,14 @@ def compose__import_images(request, release_id, composeinfo, image_manifest):
                           }))
 
     return compose_obj.compose_id, imported_images
+
+
+@transaction.atomic(savepoint=False)
+def compose__full_import(request, release_id, composeinfo, rpm_manifest, image_manifest):
+    compose_id, imported_rpms = compose__import_rpms(request, release_id, composeinfo, rpm_manifest)
+    # if compose__import_images return successfully, it should return same compose id
+    _, imported_images = compose__import_images(request, release_id, composeinfo, image_manifest)
+    return compose_id, imported_rpms, imported_images
 
 
 def _find_composes_srpm_name_with_rpm_nvr(nvr):

@@ -22,7 +22,7 @@ class ChangesetMiddleware(object):
     """
     Create a new changeset for each request. It is accessible via
     `request.changeset`. If the view function ends sucessfully, the changeset
-    is commited iff there are any changes associated with it.
+    is commited if there are any changes associated with it.
     """
 
     def process_view(self, request, view_func, view_args, view_kwargs):

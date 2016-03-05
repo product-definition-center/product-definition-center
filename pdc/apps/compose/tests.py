@@ -837,6 +837,91 @@ class ComposeImageAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertDictEqual(dict(response.data), self.manifest)
 
 
+class ComposeFullImportViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
+
+    def setUp(self):
+        with open('pdc/apps/release/fixtures/tests/composeinfo.json', 'r') as f:
+            self.compose_info = json.loads(f.read())
+        with open('pdc/apps/compose/fixtures/tests/rpm-manifest.json', 'r') as f:
+            self.rpm_manifest = json.loads(f.read())
+        with open('pdc/apps/compose/fixtures/tests/image-manifest.json', 'r') as f:
+            self.image_manifest = json.loads(f.read())
+        self.client.post(reverse('releaseimportcomposeinfo-list'),
+                         self.compose_info, format='json')
+        # Caching ids makes it faster, but the cache needs to be cleared for each test.
+        models.Path.CACHE = {}
+
+    def test_import_and_retrieve_manifest(self):
+        response = self.client.post(reverse('composefullimport-list'),
+                                    {'rpm_manifest': self.rpm_manifest,
+                                     'image_manifest': self.image_manifest,
+                                     'release_id': 'tp-1.0',
+                                     'composeinfo': self.compose_info},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.get('compose'), 'TP-1.0-20150310.0')
+        self.assertEqual(response.data.get('imported rpms'), 6)
+        self.assertEqual(response.data.get('imported images'), 4)
+        self.assertNumChanges([11, 6])
+        self.assertEqual(models.ComposeRPM.objects.count(), 6)
+        self.assertEqual(models.ComposeImage.objects.count(), 4)
+
+        response = self.client.get(reverse('composerpm-detail', args=['TP-1.0-20150310.0']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(dict(response.data),
+                             self.rpm_manifest)
+
+        response = self.client.get(reverse('composeimage-detail', args=['TP-1.0-20150310.0']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(dict(response.data),
+                             self.image_manifest)
+
+        response = self.client.post(reverse('composefullimport-list'),
+                                    {'rpm_manifest': self.rpm_manifest,
+                                     'image_manifest': self.image_manifest,
+                                     'release_id': 'tp-1.0',
+                                     'composeinfo': self.compose_info},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.get('compose'), 'TP-1.0-20150310.0')
+        self.assertEqual(response.data.get('imported rpms'), 6)
+        self.assertEqual(response.data.get('imported images'), 4)
+
+    def test_import_if_rpm_manifest_inconsistent(self):
+        self.rpm_manifest['payload']['compose']['id'] = 'TP-1.0-20150315.0'
+        response = self.client.post(reverse('composefullimport-list'),
+                                    {'rpm_manifest': self.rpm_manifest,
+                                     'image_manifest': self.image_manifest,
+                                     'release_id': 'tp-1.0',
+                                     'composeinfo': self.compose_info},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        response = self.client.get(reverse('composerpm-detail', args=['TP-1.0-20150310.0']))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # rpm manifest inconsistent image should not be imported also.
+        response = self.client.get(reverse('composeimage-detail', args=['TP-1.0-20150310.0']))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_import_if_image_manifest_inconsistent(self):
+        self.image_manifest['payload']['compose']['id'] = 'TP-1.0-20150315.0'
+        response = self.client.post(reverse('composefullimport-list'),
+                                    {'rpm_manifest': self.rpm_manifest,
+                                     'image_manifest': self.image_manifest,
+                                     'release_id': 'tp-1.0',
+                                     'composeinfo': self.compose_info},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        response = self.client.get(reverse('composeimage-detail', args=['TP-1.0-20150310.0']))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # image manifest inconsistent rpm should not be imported also.
+        response = self.client.get(reverse('composerpm-detail', args=['TP-1.0-20150310.0']))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
 class RPMMappingAPITestCase(APITestCase):
     fixtures = [
         "pdc/apps/common/fixtures/test/sigkey.json",

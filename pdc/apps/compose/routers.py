@@ -30,6 +30,9 @@ router.register('rpc/find-older-compose-by-compose-rpm/(?P<compose_id>[^/]+)/(?P
 router.register('rpc/find-composes-by-product-version-rpm/(?P<product_version>[^/]+)/(?P<rpm_name>[^/]+)',
                 views.FindComposeByProductVersionRPMViewSet,
                 base_name='findcomposesbypvr')
+router.register('rpc/compose-full-import',
+                views.ComposeFullImportViewSet,
+                base_name='composefullimport')
 router.register(r'compose-tree-locations', views.ComposeTreeViewSet,
                 base_name='composetreelocations')
 router.register(r'compose-image-rtt-tests', views.ComposeImageRTTTestViewSet,
