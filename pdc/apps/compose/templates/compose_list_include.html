@@ -14,7 +14,11 @@
  </thead>
  <tbody>
 {% for compose in compose_list %}
-  <tr>
+    {% if compose.deleted %}
+        <tr class=deleted>
+    {% else %}
+        <tr>
+    {% endif %}
     <td><a href="{% url "compose/detail" compose.id %}">{{ compose.compose_id }}</a></td>
     <td><a href="{% url "release/detail" compose.release_id %}">{{ compose.release }}</a></td>
     <td>{{ compose.compose_date|date:"Y-m-d" }}</td>
