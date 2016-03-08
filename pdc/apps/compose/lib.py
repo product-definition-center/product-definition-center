@@ -243,6 +243,7 @@ def compose__import_images(request, release_id, composeinfo, image_manifest):
                         'volume_id': i.volume_id,
                         'md5': i.checksums.get("md5", None),
                         'sha1': i.checksums.get("sha1", None),
+                        'subvariant': getattr(i, 'subvariant', None),
                     }
                 )
 

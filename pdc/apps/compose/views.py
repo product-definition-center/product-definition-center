@@ -1075,6 +1075,7 @@ class ComposeImageView(StrictQueryParamMixin,
             im.disc_number = cimage.image.disc_number
             im.disc_count = cimage.image.disc_count
             im.checksums = {'sha256': cimage.image.sha256}
+            im.subvariant = cimage.image.subvariant
             if cimage.image.md5:
                 im.checksums['md5'] = cimage.image.md5
             if cimage.image.sha1:
