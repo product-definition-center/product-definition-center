@@ -34,7 +34,7 @@
     <dt>{% trans "Base Product" %}</dt>
     <dd>
       <a href="{% url "base_product/detail" release.base_product.id %}">
-        {{ release.base_product.name }} ({{ release.base_product.short }}-{{ release.base_product.version }})
+        {{ release.base_product.name }} ({{ release.base_product }})
       </a>
     </dd>
 {% endif %}

@@ -8,6 +8,7 @@ from django.db import transaction
 import json
 
 import productmd
+from productmd.common import create_release_id
 
 from pdc.apps.common import hacks as common_hacks
 from pdc.apps.common import models as common_models
@@ -44,7 +45,8 @@ def get_or_create_integrated_release(request, orig_release, release):
         request, models.BaseProduct,
         name=orig_release.name,
         short=orig_release.short,
-        version=orig_release.version.split('.')[0]
+        version=orig_release.version.split('.')[0],
+        release_type=orig_release.release_type
     )
     integrated_product, _ = _logged_get_or_create(
         request, models.Product,
@@ -70,13 +72,19 @@ def get_or_create_integrated_release(request, orig_release, release):
             product_version=integrated_product_version
         )
     except ValidationError:
-        msg = ('Failed to create release {}-{}-{} for integrated layered product.' +
+        release_id = create_release_id(
+            release.short.lower(),
+            release.version,
+            orig_release.release_type.short,
+            integrated_base_product.short,
+            integrated_base_product.version,
+            integrated_base_product.release_type.short,
+        )
+        msg = ('Failed to create release {} for integrated layered product.' +
                ' A conflicting release already exists.' +
                ' There is likely a version mismatch between the imported' +
                ' release and its layered integrated product in the composeinfo.')
-        raise ValidationError(
-            msg.format(release.short.lower(), release.version, integrated_base_product.base_product_id)
-        )
+        raise ValidationError(msg.format(release_id))
     return integrated_release
 
 
@@ -89,11 +97,13 @@ def release__import_from_composeinfo(request, composeinfo_json):
     common_hacks.deserialize_wrapper(ci.deserialize, composeinfo_json)
 
     if ci.release.is_layered:
+        release_type_obj = models.ReleaseType.objects.get(short=getattr(ci.base_product, "type", "ga"))
         base_product_obj, _ = _logged_get_or_create(
             request, models.BaseProduct,
             name=ci.base_product.name,
             short=ci.base_product.short.lower(),
-            version=ci.base_product.version
+            version=ci.base_product.version,
+            release_type=release_type_obj,
         )
     else:
         base_product_obj = None

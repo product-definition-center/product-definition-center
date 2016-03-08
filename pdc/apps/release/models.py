@@ -14,6 +14,7 @@ from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 
 from productmd.common import RELEASE_SHORT_RE, RELEASE_VERSION_RE
+from productmd.common import create_release_id
 
 from pdc.apps.common.hacks import as_list
 from . import signals
@@ -35,20 +36,20 @@ class BaseProduct(models.Model):
         RegexValidator(regex=RELEASE_SHORT_RE.pattern, message='Only accept lowercase letters, numbers or -')])
     version             = models.CharField(max_length=200)
     name                = models.CharField(max_length=255)
+    release_type        = models.ForeignKey(ReleaseType, blank=False, db_index=True)
 
     class Meta:
         unique_together = (
-            ("short", "version"),
-            ("name", "version"),
+            ("short", "version", "release_type"),
+            ("name", "version", "release_type"),
         )
         ordering = ("base_product_id", )
 
     def __unicode__(self):
-        return u"%s-%s" % (self.short, self.version)
+        return unicode(self.base_product_id)
 
     def get_base_product_id(self):
-        result = u"%s-%s" % (self.short.lower(), self.version)
-        return result
+        return create_release_id(self.short.lower(), self.version, self.release_type.short)
 
     def export(self):
         return {
@@ -56,6 +57,7 @@ class BaseProduct(models.Model):
             "short": self.short,
             "version": self.version,
             "name": self.name,
+            "release_type": self.release_type.short,
         }
 
 
@@ -178,11 +180,14 @@ class Release(models.Model):
         return self.active is True
 
     def get_release_id(self):
-        result = u"%s-%s" % (self.short.lower(), self.version)
+        bp_dict = {}
         if self.base_product:
-            result += u"-%s" % self.base_product.get_base_product_id()
-        result += u"%s" % self.release_type.suffix
-        return result
+            bp_dict = {
+                "bp_short": self.base_product.short.lower(),
+                "bp_version": self.base_product.version,
+                "bp_type": self.base_product.release_type.short,
+            }
+        return create_release_id(self.short.lower(), self.version, self.release_type.short, **bp_dict)
 
     def export(self):
         result = {
