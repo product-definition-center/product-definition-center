@@ -178,13 +178,13 @@
 <text text-anchor="start" x="611" y="-202.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_contact_models_GlobalComponentContact&#45;&gt;pdc_apps_contact_models_ContactRole -->
-<g id="edge9" class="edge"><title>pdc_apps_contact_models_GlobalComponentContact&#45;&gt;pdc_apps_contact_models_ContactRole</title>
+<g id="edge7" class="edge"><title>pdc_apps_contact_models_GlobalComponentContact&#45;&gt;pdc_apps_contact_models_ContactRole</title>
 <path fill="none" stroke="black" d="M446.93,-187.79C442.36,-180.6 441.88,-172.64 448,-164 453.28,-156.53 466.46,-149.42 482.71,-143.03"/>
 <ellipse fill="black" stroke="black" cx="449.667" cy="-191.091" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="502.5" y="-168.8" font-family="Helvetica,sans-Serif" font-size="8.00">role (globalcomponentcontact)</text>
 </g>
 <!-- pdc_apps_contact_models_GlobalComponentContact&#45;&gt;pdc_apps_contact_models_Contact -->
-<g id="edge7" class="edge"><title>pdc_apps_contact_models_GlobalComponentContact&#45;&gt;pdc_apps_contact_models_Contact</title>
+<g id="edge9" class="edge"><title>pdc_apps_contact_models_GlobalComponentContact&#45;&gt;pdc_apps_contact_models_Contact</title>
 <path fill="none" stroke="black" d="M438.11,-194.28C437.74,-194.19 437.37,-194.09 437,-194 385.57,-180.97 365.92,-200.75 319,-176 305.28,-168.77 293.07,-156.92 283.51,-145.59"/>
 <ellipse fill="black" stroke="black" cx="442.067" cy="-195.343" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="379.5" y="-168.8" font-family="Helvetica,sans-Serif" font-size="8.00">contact (globalcomponentcontact)</text>
@@ -235,13 +235,13 @@
 <text text-anchor="start" x="818" y="-202.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_contact_models_ReleaseComponentContact&#45;&gt;pdc_apps_contact_models_ContactRole -->
-<g id="edge13" class="edge"><title>pdc_apps_contact_models_ReleaseComponentContact&#45;&gt;pdc_apps_contact_models_ContactRole</title>
+<g id="edge11" class="edge"><title>pdc_apps_contact_models_ReleaseComponentContact&#45;&gt;pdc_apps_contact_models_ContactRole</title>
 <path fill="none" stroke="black" d="M689.7,-189.46C669.75,-174.99 647.75,-159.04 629.25,-145.63"/>
 <ellipse fill="black" stroke="black" cx="693.141" cy="-191.953" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="748" y="-168.8" font-family="Helvetica,sans-Serif" font-size="8.00">role (releasecomponentcontact)</text>
 </g>
 <!-- pdc_apps_contact_models_ReleaseComponentContact&#45;&gt;pdc_apps_contact_models_Contact -->
-<g id="edge11" class="edge"><title>pdc_apps_contact_models_ReleaseComponentContact&#45;&gt;pdc_apps_contact_models_Contact</title>
+<g id="edge13" class="edge"><title>pdc_apps_contact_models_ReleaseComponentContact&#45;&gt;pdc_apps_contact_models_Contact</title>
 <path fill="none" stroke="black" d="M644.11,-194.31C643.74,-194.21 643.37,-194.1 643,-194 548.19,-167.44 437.84,-145.52 360.38,-131.56"/>
 <ellipse fill="black" stroke="black" cx="648.11" cy="-195.478" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="706" y="-168.8" font-family="Helvetica,sans-Serif" font-size="8.00">contact (releasecomponentcontact)</text>
