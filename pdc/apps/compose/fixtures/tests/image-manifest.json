@@ -52,7 +52,7 @@
                         "size": 397934592,
                         "type": "boot",
                         "volume_id": "TP_1_0_ppc64",
-                        "subvariant": null
+                        "subvariant": "Server"
                     }
                 ],
                 "s390x": [
@@ -73,7 +73,7 @@
                         "size": 2560704512,
                         "type": "dvd",
                         "volume_id": "TP-1.0 Server.s390x",
-                        "subvariant": null
+                        "subvariant": "Server"
                     }
                 ]
             },
@@ -96,7 +96,7 @@
                         "size": 2156544,
                         "type": "dvd",
                         "volume_id": "SAP-1.0 TP-1 Server.src",
-                        "subvariant": null
+                        "subvariant": "Server-SAP"
                     }
                 ]
             }
