@@ -788,6 +788,7 @@ class ComposeRPMView(StrictQueryParamMixin, viewsets.GenericViewSet):
 
 
 class ComposeFullImportViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
+    queryset = Compose.objects.none()    # Required for permissions.
 
     def create(self, request):
         """
