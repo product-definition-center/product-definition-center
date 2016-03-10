@@ -3,8 +3,8 @@
 %define srcname pdc
 
 Name:           python-%{srcname}
-Version:        0.3.rc
-Release:        2%{?dist}
+Version:        0.9.rc
+Release:        3%{?dist}
 Summary:        Product Definition Center
 Group:          Development/Libraries
 License:        MIT
@@ -79,6 +79,73 @@ fi
 
 
 %changelog
+* Fri Feb 26 2016 Cheng Yu <ycheng@redhat.com> 0.9.rc-3
+- Change version and organization name. (ycheng@redhat.com)
+- Automatic commit of package [python-pdc] minor release [0.9.rc-2].
+  (ycheng@redhat.com)
+- Remove deprecated API /rpc/compose/import-images/ (ycheng@redhat.com)
+- Remove permissions from inactive user accounts (ycheng@redhat.com)
+- Remove deprecated end points under repository app. (ycheng@redhat.com)
+- Change links from varianttype-list to releasevarianttype-list.
+  (ycheng@redhat.com)
+- Update the doc for some API (bliu@redhat.com)
+- Update the content-delivery-repos URL (bliu@redhat.com)
+- Add 2 image formats and 1 image type. (ycheng@redhat.com)
+- Rename resource variant-types to release-variant-types. (ycheng@redhat.com)
+- Add more detail error info for compose-tree-locations (bliu@redhat.com)
+- Allow import images work when filed 'implant_md5' is null.
+  (ycheng@redhat.com)
+- Fix the bug when change RPM built_for_release field won't record.
+  (ycheng@redhat.com)
+- Update the error info for compose-tree-location (bliu@redhat.com)
+- Make MultiValueRegexFilter could treat empty string or wrong regexp format
+  (ycheng@redhat.com)
+- Add error message for compose-tree-locations. (bliu@redhat.com)
+- Add optional "built-for-release" field in rpms resource (ycheng@redhat.com)
+- This task have been fixed and just remove unavaliable code (bliu@redhat.com)
+- Add support for regexp for contact searches by component name
+  (ycheng@redhat.com)
+- Update the doc for release-component clone (bliu@redhat.com)
+- Return error info When srouce release doesn't contain component
+  (bliu@redhat.com)
+- Provide a response header field name "pdc-warning" (ycheng@redhat.com)
+- Raise error when there are wrong inputs or wrong input format.
+  (chuzhang@redhat.com)
+- Add error info when release component clone with inactive (bliu@redhat.com)
+- Add response info for composes/{compose_id}/rpm-mapping/{package}
+  (bliu@redhat.com)
+- Raise error when missing some inputs (chuzhang@redhat.com)
+- Improve output when successfully import files composeinfo.json/rpm-
+  manifest.json/image-manifest.json (chuzhang@redhat.com)
+- Add response info for composes/{compose_id}/rpm-mapping/{package}
+  (bliu@redhat.com)
+- Try to improve composes list performance. (ycheng@redhat.com)
+- Allow PATCH on build-image-rtt-tests with build_nvr/format (bliu@redhat.com)
+- Update error info more clear (bliu@redhat.com)
+- Add error info when input error para (bliu@redhat.com)
+- Fix cmposes/{compose_id}/rpm-mapping/{package}] return error if 'action' is
+  invalid (ycheng@redhat.com)
+- Rpc/release/clone-components (bliu@redhat.com)
+- Some improvements for stare image test results. (ycheng@redhat.com)
+- Rpc/release/clone-components (bliu@redhat.com)
+- Handle ValueError in exception_handler (ycheng@redhat.com)
+- Fix the bug that build image rtt test resluts should not allow put method.
+  (ycheng@redhat.com)
+- Move contact releated test to new file accroding to master change.
+  (ycheng@redhat.com)
+- A slightly more friendly default 404 response. (rbean@redhat.com)
+- Add compose image RTT tests APIs. (xchu@redhat.com)
+- Clean up spec file to remove client related content. (xchu@redhat.com)
+- Add format filter for build-image-rtt-tests and fix a bug.
+  (ycheng@redhat.com)
+- Provide new resource for storing RTT test results of brew image builds
+  (ycheng@redhat.com)
+- Make tests pass on DRFv3.3 (xchu@redhat.com)
+- Allow single NVR (image_id) have multiple different formats
+  (ycheng@redhat.com)
+- Change required Django version in range [1.8.1, 1.9) (chuzhang@redhat.com)
+- Drop old contact API. (chuzhang@redhat.com)
+
 * Wed Dec 16 2015 Cheng Yu <ycheng@redhat.com> 0.3.rc-2
 - Fix the bug that when role count original value is unlimited, no constraint.
   (ycheng@redhat.com)
