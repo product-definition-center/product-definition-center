@@ -792,7 +792,7 @@ class ComposeFullImportViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
 
     def create(self, request):
         """
-        Import RPMs and images.
+        Import RPMs, images and set compose tree location.
 
         __Method__: POST
 
@@ -804,19 +804,24 @@ class ComposeFullImportViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
                 "release_id": string,
                 "composeinfo": composeinfo,
                 "rpm_manifest": rpm_manifest,
-                "image_manifest": image_manifest
+                "image_manifest": image_manifest,
+                "location": string,
+                "url": string,
+                "scheme": string
             }
 
         __Response__:
             {
                 "compose_id": string,
                 "imported rpms": int,
-                "imported images": int
+                "imported images": int,
+                "set_locations": int
             }
 
         The `composeinfo`, `rpm_manifest` and `image_manifest`values should be actual JSON
         representation of composeinfo, rpm manifest and image manifest, as stored in
         `composeinfo.json`, `rpm-manifest.json` and `image-manifest.json` files.
+        `location`, `url`, `scheme` are used to set compose tree location.
 
         __Example__:
 
@@ -824,7 +829,8 @@ class ComposeFullImportViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
                 -d "{\\"composeinfo\\": $(cat /path/to/composeinfo.json), \\
                      \\"rpm_manifest\\": $(cat /path/to/rpm-manifest.json), \\
                      \\"image_manifest\\": $(cat /path/to/image_manifest.json), \\
-                     \\"release_id\\": \\"release-1.0\\" }" \\
+                     \\"release_id\\": \\"release-1.0\\", \\"location\\": \\"BOS\\", \\
+                     \\"scheme\\": \\"http\\", \\"url\\": \\"abc.com\\" }" \\
                 $URL:composefullimport-list$
 
         Note that RPM manifests tend to be too large to supply the data via
@@ -833,7 +839,7 @@ class ComposeFullImportViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
             $ { echo -n '{"composeinfo": '; cat /path/to/composeinfo.json
             > echo -n ', "rpm_manifest": '; cat /path/to/rpm-manifest.json
             > echo -n ', "image_manifest": '; cat /path/to/image_manifest.json
-            > echo -n ', "release_id": "release-1.0" }' ; } >post_data.json
+            > echo -n ', "release_id": "release-1.0", \"location\": \"BOS\", \"scheme\": \"http\", \"url\": \"abc.com\" }' ; } >post_data.json
             $ curl -H 'Content-Type: application/json' -X POST -d @post_data.json \\
                 $URL:composefullimport-list$
 
@@ -842,17 +848,21 @@ class ComposeFullImportViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
         """
         data = request.data
         errors = {}
-        for key in ('release_id', 'composeinfo', 'rpm_manifest', 'image_manifest'):
+        for key in ('release_id', 'composeinfo', 'rpm_manifest', 'image_manifest', 'location', 'url', 'scheme'):
             if key not in data:
                 errors[key] = ["This field is required"]
         if errors:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=errors)
-        compose_id, imported_rpms, imported_images = lib.compose__full_import(request, data['release_id'],
-                                                                              data['composeinfo'],
-                                                                              data['rpm_manifest'],
-                                                                              data['image_manifest'])
+        compose_id, imported_rpms, imported_images, set_locations = lib.compose__full_import(request,
+                                                                                             data['release_id'],
+                                                                                             data['composeinfo'],
+                                                                                             data['rpm_manifest'],
+                                                                                             data['image_manifest'],
+                                                                                             data['location'],
+                                                                                             data['url'],
+                                                                                             data['scheme'])
         return Response(data={'compose': compose_id, 'imported rpms': imported_rpms,
-                              'imported images': imported_images},
+                              'imported images': imported_images, 'set_locations': set_locations},
                         status=status.HTTP_201_CREATED)
 
 
