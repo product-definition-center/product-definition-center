@@ -15,22 +15,18 @@ flake8:
 run:
 	python manage.py runserver 0.0.0.0:8000
 
-all_tests: test api_doc_test client_test verify_migrations
+all_tests: test api_doc_test verify_migrations
 
 test:
 	python manage.py test --settings pdc.settings_test pdc contrib
 
 cover_test:
 	coverage run --parallel-mode manage.py test --settings pdc.settings_test pdc contrib
-	coverage run --parallel-mode client_test_run.py
 	coverage combine
 	coverage html --rcfile=tox.ini
 
 api_doc_test:
 	python manage.py test --settings pdc.settings_test tests.check_api_doc
-
-client_test:
-	python client_test_run.py
 
 verify_migrations:
 	bash verify-migrations.sh
