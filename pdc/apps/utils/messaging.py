@@ -36,7 +36,7 @@ class FedmsgMessenger(object):
         self.messenger = fedmsg
 
     def send_message(self, topic, msg):
-        self.messenger.publish(topic=topic, msg=msg)
+        self.messenger.publish(topic=topic.strip('.'), msg=msg)
 
 
 class ProtonMessenger(object):
