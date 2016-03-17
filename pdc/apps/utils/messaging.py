@@ -3,7 +3,10 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+import json
+
 from django.conf import settings
+from django.utils import six
 
 import logging
 
@@ -36,7 +39,10 @@ class FedmsgMessenger(object):
         self.messenger = fedmsg
 
     def send_message(self, topic, msg):
-        self.messenger.publish(topic=topic.strip('.'), msg=msg)
+        topic = topic.strip('.')
+        if isinstance(msg, six.string_types):
+            msg = json.loads(msg)
+        self.messenger.publish(topic=topic, msg=msg)
 
 
 class ProtonMessenger(object):
