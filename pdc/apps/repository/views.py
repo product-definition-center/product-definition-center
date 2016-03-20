@@ -28,9 +28,6 @@ class RepoViewSet(ChangeSetCreateModelMixin,
                   viewsets.GenericViewSet):
     """
     An API endpoint providing access to content delivery repositories.
-
-    Please access this endpoint by $LINK:contentdeliveryrepos-list$.
-    Endpoint $LINK:repo-list$ is deprecated.
     """
     queryset = models.Repo.objects.all().select_related().order_by('id')
     serializer_class = serializers.RepoSerializer
@@ -248,10 +245,6 @@ class RepoFamilyViewSet(StrictQueryParamMixin,
     This page shows the usage of the **ContentDeliveryRepoFamily API**, please see the
     following for more details.
 
-
-    Please access this endpoint by $LINK:contentdeliveryrepofamily-list$.
-    Endpoint $LINK:repofamily-list$ is deprecated.
-
     ##Test tools##
 
     You can use ``curl`` in terminal, with -X _method_ (GET|POST|PUT|PATCH|DELETE),
@@ -307,9 +300,6 @@ class ContentCategoryViewSet(StrictQueryParamMixin,
                              viewsets.GenericViewSet):
     """
     API endpoint that allows content_category to be viewed.
-
-    Please access this endpoint by $LINK:contentdeliverycontentcategory-list$.
-    Endpoint $LINK:contentdeliverycontentcategory-list$ is deprecated.
     """
     serializer_class = serializers.ContentCategorySerializer
     queryset = models.ContentCategory.objects.all().order_by('id')
@@ -332,9 +322,6 @@ class ContentFormatViewSet(StrictQueryParamMixin,
                            viewsets.GenericViewSet):
     """
     API endpoint that allows content_format to be viewed.
-
-    Please access this endpoint by $LINK:contentdeliverycontentformat-list$.
-    Endpoint $LINK:contentformatdeprecated-list$ is deprecated.
     """
     serializer_class = serializers.ContentFormatSerializer
     queryset = models.ContentFormat.objects.all().order_by('id')
@@ -357,9 +344,6 @@ class ServiceViewSet(StrictQueryParamMixin,
                      viewsets.GenericViewSet):
     """
     API endpoint that allows service to be viewed.
-
-    Please access this endpoint by $LINK:contentdeliveryservice-list$.
-    Endpoint $LINK:contentservicedeprecated-list$ is deprecated.
     """
     serializer_class = serializers.ServiceSerializer
     queryset = models.Service.objects.all().order_by('id')
