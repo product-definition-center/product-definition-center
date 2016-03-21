@@ -683,7 +683,17 @@ class ComposeViewSet(StrictQueryParamMixin,
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class ComposeRPMView(StrictQueryParamMixin, viewsets.GenericViewSet):
+class CheckParametersMixin(object):
+
+    def _check_parameters(self, expected_param_list, real_param_list, error_dict, optional_param_list=[]):
+        for key in set(real_param_list) - set(expected_param_list) - set(optional_param_list):
+            error_dict[key] = ["This field is illegal"]
+
+        for key in set(expected_param_list) - set(real_param_list):
+            error_dict[key] = ["This field is required"]
+
+
+class ComposeRPMView(StrictQueryParamMixin, CheckParametersMixin, viewsets.GenericViewSet):
     lookup_field = 'compose_id'
     lookup_value_regex = '[^/]+'
     queryset = ComposeRPM.objects.none()    # Required for permissions
@@ -736,9 +746,8 @@ class ComposeRPMView(StrictQueryParamMixin, viewsets.GenericViewSet):
         """
         data = request.data
         errors = {}
-        for key in ('release_id', 'composeinfo', 'rpm_manifest'):
-            if key not in data:
-                errors[key] = ["This field is required"]
+        fields = ['release_id', 'composeinfo', 'rpm_manifest']
+        self._check_parameters(fields, data.keys(), errors)
         if errors:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=errors)
         compose_id, imported_rpms = lib.compose__import_rpms(request, data['release_id'], data['composeinfo'], data['rpm_manifest'])
@@ -787,7 +796,7 @@ class ComposeRPMView(StrictQueryParamMixin, viewsets.GenericViewSet):
         return Response(manifest.serialize({}))
 
 
-class ComposeFullImportViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
+class ComposeFullImportViewSet(StrictQueryParamMixin, CheckParametersMixin, viewsets.GenericViewSet):
     queryset = Compose.objects.none()    # Required for permissions.
 
     def create(self, request):
@@ -848,9 +857,8 @@ class ComposeFullImportViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
         """
         data = request.data
         errors = {}
-        for key in ('release_id', 'composeinfo', 'rpm_manifest', 'image_manifest', 'location', 'url', 'scheme'):
-            if key not in data:
-                errors[key] = ["This field is required"]
+        fields = ['release_id', 'composeinfo', 'rpm_manifest', 'image_manifest', 'location', 'url', 'scheme']
+        self._check_parameters(fields, data.keys(), errors)
         if errors:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=errors)
         compose_id, imported_rpms, imported_images, set_locations = lib.compose__full_import(request,
@@ -993,7 +1001,7 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
         return Response(changes)
 
 
-class ComposeImageView(StrictQueryParamMixin,
+class ComposeImageView(StrictQueryParamMixin, CheckParametersMixin,
                        viewsets.GenericViewSet):
     queryset = ComposeImage.objects.none()  # Required for permissions
     lookup_field = 'compose_id'
@@ -1035,9 +1043,8 @@ class ComposeImageView(StrictQueryParamMixin,
         """
         data = request.data
         errors = {}
-        for key in ('release_id', 'composeinfo', 'image_manifest'):
-            if key not in data:
-                errors[key] = ["This field is required"]
+        fields = ['release_id', 'composeinfo', 'image_manifest']
+        self._check_parameters(fields, data.keys(), errors)
         if errors:
             return Response(status=400, data=errors)
         compose_id, imported_images = lib.compose__import_images(request, data['release_id'], data['composeinfo'], data['image_manifest'])

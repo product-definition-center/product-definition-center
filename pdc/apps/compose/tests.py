@@ -780,6 +780,15 @@ class ComposeRPMViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data.get('compose'), 'TP-1.0-20150310.0')
         self.assertEqual(response.data.get('imported rpms'), 6)
 
+    def test_import_manifest_with_extra_param(self):
+        response = self.client.post(reverse('composerpm-list'),
+                                    {'rpm_manifest': self.manifest,
+                                     'release_id': 'tp-1.0',
+                                     'composeinfo': self.compose_info,
+                                     'fake_key': 'fake_value'},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class ComposeImageAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
     def setUp(self):
@@ -815,6 +824,15 @@ class ComposeImageAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data.get('compose'), 'TP-1.0-20150310.0')
         self.assertEqual(response.data.get('imported images'), 4)
+
+    def test_import_images_with_extra_param(self):
+        response = self.client.post(reverse('composeimage-list'),
+                                    {'image_manifest': self.manifest,
+                                     'release_id': 'tp-1.0',
+                                     'composeinfo': self.compose_info,
+                                     'fake_key': 'fake_value'},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_import_inconsistent_data(self):
         self.manifest['payload']['compose']['id'] = 'TP-1.0-20150315.0'
@@ -903,6 +921,19 @@ class ComposeFullImportViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data.get('imported images'), 4)
         response = self.client.get(reverse('composetreelocations-list'), {})
         self.assertEqual(response.data['count'], 5)
+
+    def test_import_manifest_with_extra_param(self):
+        response = self.client.post(reverse('composefullimport-list'),
+                                    {'rpm_manifest': self.rpm_manifest,
+                                     'image_manifest': self.image_manifest,
+                                     'release_id': 'tp-1.0',
+                                     'composeinfo': self.compose_info,
+                                     'location': 'NAY',
+                                     'scheme': 'http',
+                                     'url': 'abc.com',
+                                     'fake_key': 'fake_value'},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_import_if_rpm_manifest_inconsistent(self):
         self.rpm_manifest['payload']['compose']['id'] = 'TP-1.0-20150315.0'
@@ -2156,6 +2187,13 @@ class ComposeTreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
                 'url': 'nfs://nay.lab.la/', 'scheme': 'nfs', 'synced_content': ['debug']}
         response = self.client.post(url, data, format='json')
         self.assertEquals(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_create_composetree_with_extra_param(self):
+        url = reverse('composetreelocations-list')
+        data = {'compose': 'compose-1', 'variant': 'Server', 'arch': 'x86_64', 'location': 'BRQ',
+                'url': 'nfs://nay.lab.la/', 'scheme': 'nfs', 'synced_content': ['debug'], 'fake_key': 'fake_value'}
+        response = self.client.post(url, data, format='json')
+        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_composetree_default_syncedcontent(self):
         url = reverse('composetreelocations-list')
