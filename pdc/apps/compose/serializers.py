@@ -110,6 +110,7 @@ class OverrideRPMSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 
 
 class ComposeTreeVariantField(serializers.Field):
+    doc_format = "Variant.variant_uid"
 
     def to_internal_value(self, data):
         request_data = self.context.get("request").data
