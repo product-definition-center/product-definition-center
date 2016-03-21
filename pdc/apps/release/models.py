@@ -67,6 +67,9 @@ class Product(models.Model):
     short = models.CharField(max_length=200, unique=True, validators=[
         RegexValidator(regex=r"^[a-z\-]+$", message='Only accept lowercase letter or -')])
 
+    class Meta:
+        ordering = ("short", )
+
     def __unicode__(self):
         return self.short
 
@@ -107,6 +110,7 @@ class ProductVersion(models.Model):
 
     class Meta:
         unique_together = (("short", "version"))
+        ordering = ("product_version_id", )
 
     def __unicode__(self):
         return self.product_version_id

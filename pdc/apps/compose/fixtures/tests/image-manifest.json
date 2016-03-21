@@ -28,7 +28,8 @@
                         "path": "Client/source/iso/TP-1.0-20150310.0-Client-source-dvd1.iso",
                         "size": 4696397824,
                         "type": "dvd",
-                        "volume_id": "TP-1.0 Client.src"
+                        "volume_id": "TP-1.0 Client.src",
+                        "subvariant": "Client"
                     }
                 ]
             },
@@ -50,7 +51,8 @@
                         "path": "Server/ppc64/iso/TP-1.0-20150310.0-Server-ppc64-boot.iso",
                         "size": 397934592,
                         "type": "boot",
-                        "volume_id": "TP_1_0_ppc64"
+                        "volume_id": "TP_1_0_ppc64",
+                        "subvariant": "Server"
                     }
                 ],
                 "s390x": [
@@ -70,7 +72,8 @@
                         "path": "Server/s390x/iso/TP-1.0-20150310.0-Server-s390x-dvd1.iso",
                         "size": 2560704512,
                         "type": "dvd",
-                        "volume_id": "TP-1.0 Server.s390x"
+                        "volume_id": "TP-1.0 Server.s390x",
+                        "subvariant": "Server"
                     }
                 ]
             },
@@ -92,7 +95,8 @@
                         "path": "Server-SAP/source/iso/SAP-1.0-TP-1-20150310.0-Server-source-dvd1.iso",
                         "size": 2156544,
                         "type": "dvd",
-                        "volume_id": "SAP-1.0 TP-1 Server.src"
+                        "volume_id": "SAP-1.0 TP-1 Server.src",
+                        "subvariant": "Server-SAP"
                     }
                 ]
             }

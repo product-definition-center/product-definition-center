@@ -2,7 +2,11 @@
 {% load i18n %}
 
 {% block content %}
-<h2 class="page-header">{% trans 'Compose' %} #{{ compose.id }}: {{ compose.compose_id }}</h2>
+    {% if compose.deleted %}
+        <h2 class="page-header"><del>{% trans 'Compose' %} #{{ compose.id }}: {{ compose.compose_id }}</del> <b>(Deleted)</b></h2>
+    {% else %}
+        <h2 class="page-header">{% trans 'Compose' %} #{{ compose.id }}: {{ compose.compose_id }}</h2>
+    {% endif %}
 
 <div class="row">
   <div class="col-md-6">

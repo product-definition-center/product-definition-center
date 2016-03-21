@@ -36,6 +36,7 @@ from pdc.apps.common.viewsets import (ChangeSetCreateModelMixin,
                                       MultiLookupFieldMixin,
                                       ChangeSetUpdateModelMixin)
 from pdc.apps.release.models import Release
+from pdc.apps.utils.utils import generate_warning_header_dict
 from .models import (Compose, VariantArch, Variant, ComposeRPM, OverrideRPM,
                      ComposeImage, ComposeRPMMapping, ComposeAcceptanceTestingState,
                      ComposeTree)
@@ -492,6 +493,10 @@ class ComposeViewSet(StrictQueryParamMixin,
 
         self.context = {'compose_id_to_key_id_cache': compose_id_to_key_id_cache}
 
+    def _add_messaging_info(self, request, info):
+        if hasattr(request._request, '_messagings'):
+            request._request._messagings.append(('.compose', info))
+
     def retrieve(self, *args, **kwargs):
         """
         __Method__: GET
@@ -593,13 +598,10 @@ class ComposeViewSet(StrictQueryParamMixin,
                                   json.dumps({'linked_releases': old_data['linked_releases']}),
                                   json.dumps({'linked_releases': response.data['linked_releases']}))
             # Add message
-            if hasattr(request._request, '_messagings'):
-                request._request._messagings.append(
-                    ('.compose',
-                     json.dumps({'action': 'update',
-                                 'compose_id': self.object.compose_id,
-                                 'from': old_data,
-                                 'to': response.data})))
+            self._add_messaging_info(request, json.dumps({'action': 'update',
+                                                          'compose_id': self.object.compose_id,
+                                                          'from': old_data,
+                                                          'to': response.data}))
         return response
 
     def perform_update(self, serializer):
@@ -646,6 +648,39 @@ class ComposeViewSet(StrictQueryParamMixin,
         """
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        It will mark the compose as 'deleted'.
+
+        __Method__:
+        DELETE
+
+        __URL__: $LINK:compose-detail:compose_id$
+
+        __Response__:
+
+            STATUS: 204 NO CONTENT
+
+        __Example__:
+
+            curl -X DELETE -H "Content-Type: application/json" $URL:compose-detail:1$
+        """
+        instance = self.get_object()
+        if instance.deleted:
+            return Response(status=status.HTTP_204_NO_CONTENT,
+                            headers=generate_warning_header_dict(
+                                "No change. This compose was marked as deleted already."))
+        else:
+            instance.deleted = True
+            instance.save()
+            request.changeset.add('Compose', instance.pk,
+                                  json.dumps({'deleted': False}),
+                                  json.dumps({'deleted': True}))
+            self._add_messaging_info(request, json.dumps({'action': 'delete',
+                                                          'compose_id': instance.compose_id}))
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ComposeRPMView(StrictQueryParamMixin, viewsets.GenericViewSet):
@@ -750,6 +785,85 @@ class ComposeRPMView(StrictQueryParamMixin, viewsets.GenericViewSet):
             )
 
         return Response(manifest.serialize({}))
+
+
+class ComposeFullImportViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
+    queryset = Compose.objects.none()    # Required for permissions.
+
+    def create(self, request):
+        """
+        Import RPMs, images and set compose tree location.
+
+        __Method__: POST
+
+        __URL__: $LINK:composefullimport-list$
+
+        __Data__:
+
+            {
+                "release_id": string,
+                "composeinfo": composeinfo,
+                "rpm_manifest": rpm_manifest,
+                "image_manifest": image_manifest,
+                "location": string,
+                "url": string,
+                "scheme": string
+            }
+
+        __Response__:
+            {
+                "compose_id": string,
+                "imported rpms": int,
+                "imported images": int,
+                "set_locations": int
+            }
+
+        The `composeinfo`, `rpm_manifest` and `image_manifest`values should be actual JSON
+        representation of composeinfo, rpm manifest and image manifest, as stored in
+        `composeinfo.json`, `rpm-manifest.json` and `image-manifest.json` files.
+        `location`, `url`, `scheme` are used to set compose tree location.
+
+        __Example__:
+
+            $ curl -H 'Content-Type: application/json' -X POST \\
+                -d "{\\"composeinfo\\": $(cat /path/to/composeinfo.json), \\
+                     \\"rpm_manifest\\": $(cat /path/to/rpm-manifest.json), \\
+                     \\"image_manifest\\": $(cat /path/to/image_manifest.json), \\
+                     \\"release_id\\": \\"release-1.0\\", \\"location\\": \\"BOS\\", \\
+                     \\"scheme\\": \\"http\\", \\"url\\": \\"abc.com\\" }" \\
+                $URL:composefullimport-list$
+
+        Note that RPM manifests tend to be too large to supply the data via
+        command line argument and using a temporary file becomes necessary.
+
+            $ { echo -n '{"composeinfo": '; cat /path/to/composeinfo.json
+            > echo -n ', "rpm_manifest": '; cat /path/to/rpm-manifest.json
+            > echo -n ', "image_manifest": '; cat /path/to/image_manifest.json
+            > echo -n ', "release_id": "release-1.0", \"location\": \"BOS\", \"scheme\": \"http\", \"url\": \"abc.com\" }' ; } >post_data.json
+            $ curl -H 'Content-Type: application/json' -X POST -d @post_data.json \\
+                $URL:composefullimport-list$
+
+        You could skip the file and send the data directly to `curl`. In such a
+        case use `-d @-`.
+        """
+        data = request.data
+        errors = {}
+        for key in ('release_id', 'composeinfo', 'rpm_manifest', 'image_manifest', 'location', 'url', 'scheme'):
+            if key not in data:
+                errors[key] = ["This field is required"]
+        if errors:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=errors)
+        compose_id, imported_rpms, imported_images, set_locations = lib.compose__full_import(request,
+                                                                                             data['release_id'],
+                                                                                             data['composeinfo'],
+                                                                                             data['rpm_manifest'],
+                                                                                             data['image_manifest'],
+                                                                                             data['location'],
+                                                                                             data['url'],
+                                                                                             data['scheme'])
+        return Response(data={'compose': compose_id, 'imported rpms': imported_rpms,
+                              'imported images': imported_images, 'set_locations': set_locations},
+                        status=status.HTTP_201_CREATED)
 
 
 class ComposeRPMMappingView(StrictQueryParamMixin,
@@ -961,6 +1075,7 @@ class ComposeImageView(StrictQueryParamMixin,
             im.disc_number = cimage.image.disc_number
             im.disc_count = cimage.image.disc_count
             im.checksums = {'sha256': cimage.image.sha256}
+            im.subvariant = cimage.image.subvariant
             if cimage.image.md5:
                 im.checksums['md5'] = cimage.image.md5
             if cimage.image.sha1:

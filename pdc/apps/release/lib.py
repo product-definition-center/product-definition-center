@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 import json
 
+import productmd
+
 from pdc.apps.common import hacks as common_hacks
 from pdc.apps.common import models as common_models
 from . import models
@@ -83,7 +85,8 @@ def release__import_from_composeinfo(request, composeinfo_json):
     """
     Import release including variants and architectures from composeinfo json.
     """
-    ci = common_hacks.deserialize_composeinfo(composeinfo_json)
+    ci = productmd.composeinfo.ComposeInfo()
+    common_hacks.deserialize_wrapper(ci.deserialize, composeinfo_json)
 
     if ci.release.is_layered:
         base_product_obj, _ = _logged_get_or_create(
@@ -128,7 +131,7 @@ def release__import_from_composeinfo(request, composeinfo_json):
     # variants that may not be present.
     add_to_changelog = []
 
-    for variant in ci.get_variants(recursive=True):
+    for variant in ci.variants.get_variants(recursive=True):
         variant_type = models.VariantType.objects.get(name=variant.type)
         release = variant.release
         integrated_variant = None

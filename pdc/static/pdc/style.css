@@ -75,3 +75,18 @@ ul.pagination.pull-right {
 .popover-content {
     font-size: 12px;
 }
+tbody tr.deleted td {
+    position:relative;
+    color: #999;  /* fade out the crossed text */
+}
+tbody tr.deleted a {
+    color: #8dc0d3;  /* fade out links */
+}
+tbody tr.deleted td:before {  /* this adds the line to cross out the row */
+    content: " ";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    border-bottom: 1px solid #999;
+    width: 100%;
+}
