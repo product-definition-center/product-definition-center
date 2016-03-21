@@ -112,7 +112,7 @@ class ProductViewSet(ChangeSetCreateModelMixin,
     lookup_field = 'short'
     filter_class = filters.ProductFilter
 
-    def create(self, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         """
         __Method__: POST
 
@@ -126,7 +126,12 @@ class ProductViewSet(ChangeSetCreateModelMixin,
 
         %(SERIALIZER)s
         """
-        return super(ProductViewSet, self).create(*args, **kwargs)
+        response = super(ProductViewSet, self).create(request, *args, **kwargs)
+        if response.status_code == status.HTTP_201_CREATED:
+            signals.product_post_update.send(sender=self.object.__class__,
+                                             product=self.object,
+                                             request=request)
+        return response
 
     def retrieve(self, *args, **kwargs):
         """
@@ -156,7 +161,7 @@ class ProductViewSet(ChangeSetCreateModelMixin,
         """
         return super(ProductViewSet, self).list(*args, **kwargs)
 
-    def update(self, *args, **kwargs):
+    def update(self, request, *args, **kwargs):
         """
         __Method__: PUT, PATCH
 
@@ -174,7 +179,12 @@ class ProductViewSet(ChangeSetCreateModelMixin,
 
         %(SERIALIZER)s
         """
-        return super(ProductViewSet, self).update(*args, **kwargs)
+        obj = self.get_object()
+        signals.product_pre_update.send(sender=obj.__class__, product=obj, request=request)
+        response = super(ProductViewSet, self).update(request, *args, **kwargs)
+        if response.status_code == status.HTTP_200_OK:
+            signals.product_post_update.send(sender=obj.__class__, product=self.object, request=request)
+        return response
 
 
 class ProductVersionViewSet(ChangeSetCreateModelMixin,
