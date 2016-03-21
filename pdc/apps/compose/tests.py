@@ -2125,6 +2125,17 @@ class ComposeTreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertNumChanges([1])
 
+    def test_create_composetree_with_diff_scheme(self):
+        url = reverse('composetreelocations-list')
+        data = {'compose': 'compose-1', 'variant': 'Server', 'arch': 'x86_64', 'location': 'BRQ',
+                'url': 'nfs://nay.lab.la/', 'scheme': 'nfs', 'synced_content': ['debug']}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        data = {'compose': 'compose-1', 'variant': 'Server', 'arch': 'x86_64', 'location': 'BRQ',
+                'url': 'nfs://nay.lab.la/', 'scheme': 'http', 'synced_content': ['debug']}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
     def test_create_composetree_without_compose(self):
         url = reverse('composetreelocations-list')
         data = {'variant': 'Server', 'arch': 'x86_64', 'location': 'BRQ',

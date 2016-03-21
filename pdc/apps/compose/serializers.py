@@ -145,7 +145,6 @@ class ComposeTreeSerializer(StrictSerializerMixin,
         compose = attrs.get('compose', None)
         variant = attrs.get('variant', None)
         arch = attrs.get('arch', None)
-
         if compose == variant.compose and arch in variant.arches:
             return attrs
         elif compose == variant.compose and arch not in variant.arches:

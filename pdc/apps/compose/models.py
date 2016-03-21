@@ -570,7 +570,7 @@ class ComposeTree(models.Model):
 
     class Meta:
         unique_together = (
-            ("compose", "variant", "arch", "location"),
+            ("compose", "variant", "arch", "location", "scheme"),
         )
 
     def __unicode__(self):
