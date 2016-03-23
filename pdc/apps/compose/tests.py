@@ -730,6 +730,98 @@ class OverridesRPMAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(models.OverrideRPM.objects.count(), 0)
 
 
+class OverridesRPMCloneAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
+    fixtures = [
+        'pdc/apps/release/fixtures/tests/release.json',
+        'pdc/apps/compose/fixtures/tests/compose_overriderpm.json',
+    ]
+
+    def setUp(self):
+        self.release = release_models.Release.objects.get(release_id='release-1.0')
+        self.override_rpm = {'id': 1, 'release': 'release-1.0', 'variant': 'Server', 'arch': 'x86_64',
+                             'srpm_name': 'bash', 'rpm_name': 'bash-doc', 'rpm_arch': 'x86_64',
+                             'include': False, 'comment': '', 'do_not_delete': False}
+
+    def test_clone_overridesRPM(self):
+        args = {"name": "Supplementary", "short": "supp", "version": "1.1",
+                "release_type": "ga"}
+        target_response = self.client.post(reverse('release-list'), args)
+        self.assertEqual(target_response.status_code, status.HTTP_201_CREATED)
+        target_release_id = target_response.data['release_id']
+        response = self.client.post(reverse('overridesrpmclone-list'),
+                                    {'source_release_id': 'release-1.0',
+                                     'target_release_id': target_release_id},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_clone__overridesRPM_with_filter_rpm_name(self):
+        args = {"name": "Supplementary", "short": "supp", "version": "1.1",
+                "release_type": "ga"}
+        target_response = self.client.post(reverse('release-list'), args)
+        target_release_id = target_response.data['release_id']
+        self.override_rpm["rpm_name"] = "bash-debuginfo"
+        del self.override_rpm["id"]
+        response1 = self.client.post(reverse('overridesrpm-list'), self.override_rpm)
+        self.assertEqual(response1.status_code, status.HTTP_201_CREATED)
+        response = self.client.post(reverse('overridesrpmclone-list'),
+                                    {'source_release_id': 'release-1.0',
+                                     'target_release_id': target_release_id,
+                                     'rpm_name': "bash-debuginfo"},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_clone_overridesRPM_with_error_target_release(self):
+        response = self.client.post(reverse('overridesrpmclone-list'),
+                                    {'source_release_id': 'release-1.0',
+                                     'target_release_id': 'release-2.0'},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_clone_overridesRPM_without_target_release(self):
+        response = self.client.post(reverse('overridesrpmclone-list'),
+                                    {'source_release_id': 'release-1.0'},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_clone_overridesRPM_with_error_source_release(self):
+        response = self.client.post(reverse('overridesrpmclone-list'),
+                                    {'source_release_id': 'release-2.0',
+                                     'target_release_id': 'release-1.0'},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_clone_overridesRPM_without_source_release(self):
+        response = self.client.post(reverse('overridesrpmclone-list'),
+                                    {'target_release_id': 'release-1.0'},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_clone_when_source_release_has_no_overridesrpm(self):
+        args = {"name": "Supplementary", "short": "supp", "version": "1.1",
+                "release_type": "ga"}
+        target_response = self.client.post(reverse('release-list'), args)
+        self.assertEqual(target_response.status_code, status.HTTP_201_CREATED)
+        target_release_id = target_response.data['release_id']
+        response = self.client.post(reverse('overridesrpmclone-list'),
+                                    {'source_release_id': target_release_id,
+                                     'target_release_id': 'release-1.0'},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_clone_overridesrpm_with_error_keys(self):
+        args = {"name": "Supplementary", "short": "supp", "version": "1.1",
+                "release_type": "ga"}
+        target_response = self.client.post(reverse('release-list'), args)
+        self.assertEqual(target_response.status_code, status.HTTP_201_CREATED)
+        target_release_id = target_response.data['release_id']
+        response = self.client.post(reverse('overridesrpmclone-list'),
+                                    {'source_release_id': 'release-1.0',
+                                     'target_release_id': target_release_id,
+                                     'error_key': 'error_info'},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
 class ComposeRPMViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
         "pdc/apps/common/fixtures/test/sigkey.json",

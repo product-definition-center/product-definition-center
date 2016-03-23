@@ -35,6 +35,7 @@ from pdc.apps.common.viewsets import (ChangeSetCreateModelMixin,
                                       ChangeSetModelMixin,
                                       MultiLookupFieldMixin,
                                       ChangeSetUpdateModelMixin)
+
 from pdc.apps.release.models import Release
 from pdc.apps.utils.utils import generate_warning_header_dict
 from .models import (Compose, VariantArch, Variant, ComposeRPM, OverrideRPM,
@@ -1292,6 +1293,110 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
             result.append(serializer.data)
         queryset.delete()
         return result
+
+
+class OverridesRPMCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
+    queryset = OverrideRPM.objects.none()
+
+    def create(self, request):
+        """
+        Clone overrides-rpm from source-release to target-release, both them have to be existed.
+
+        With optional arguments, each optional argument specifies which type of overrides get copied.
+
+        And if overrides-rpm have exited in target-release, they don't get copied.
+
+        __Method__: POST
+
+        __URL__: $LINK:overridesrpmclone-list$
+
+        __DATA__:
+
+            {
+                "source_release_id":        string
+                "target_release_id":        string
+                "rpm_name":                 string      #optional
+                "srpm_name":                string      #optional
+                "variant":                  string      #optional
+                "arch":                     string      #optional
+            }
+
+        __Response__:
+
+            [
+                {
+                    "arch":                                     "string",
+                    "comment (optional, default=\"\")":         "string",
+                    "do_not_delete (optional, default=false)":  "boolean",
+                    "id (read-only)":                           "int",
+                    "include":                                  "boolean",
+                    "release":                                  "Release.release_id",
+                    "rpm_arch":                                 "string",
+                    "rpm_name":                                 "string",
+                    "srpm_name":                                "string",
+                    "variant":                                  "string"
+                }
+            ]
+        """
+        data = request.data
+        keys = set(['source_release_id', 'target_release_id'])
+        arg_filter_map = ['variant', 'arch', 'srpm_name', 'rpm_name', 'rpm_arch']
+        allowed_keys = list(keys) + arg_filter_map
+        extra_keys = set(data.keys()) - set(allowed_keys)
+        if extra_keys:
+            return Response({'detail': '%s keys are not allowed' % list(extra_keys)},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if 'source_release_id' not in data:
+            return Response({'detail': 'Missing source_release_id'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        source_release_id = data.pop('source_release_id')
+        if 'target_release_id' not in data:
+            return Response({'detail': 'Missing target_release_id'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        target_release_id = data.pop('target_release_id')
+        try:
+            source_release = get_object_or_404(Release, release_id=source_release_id)
+        except Http404:
+            return Response({'detail': 'Source_release %s is not existed' % source_release_id},
+                            status=status.HTTP_404_NOT_FOUND)
+        try:
+            target_release = get_object_or_404(Release, release_id=target_release_id)
+        except Http404:
+            return Response({'detail': 'Target_release %s is not existed' % target_release_id},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        kwargs = {'release__release_id': source_release.release_id}
+        for arg in arg_filter_map:
+            arg_data = request.data.get(arg)
+            if arg_data:
+                kwargs[arg] = arg_data
+
+        overrides_rpm = OverrideRPM.objects.filter(**kwargs)
+        if not overrides_rpm:
+            return Response({'detail': 'there is no overrides-rpm with source release'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        results = []
+        for rpm in overrides_rpm:
+            orpm, created = OverrideRPM.objects.get_or_create(release=target_release,
+                                                              rpm_name=rpm.rpm_name,
+                                                              rpm_arch=rpm.rpm_arch,
+                                                              variant=rpm.variant,
+                                                              arch=rpm.arch,
+                                                              srpm_name=rpm.srpm_name,
+                                                              comment=rpm.comment
+                                                              )
+            if created:
+                results.append(orpm.export())
+                request.changeset.add('OverridesRPM', orpm.pk,
+                                      'null', json.dumps(orpm.export()))
+            else:
+                continue
+        if results:
+            return Response(status=status.HTTP_201_CREATED, data=results)
+        else:
+            return Response({'detail': 'Both releases contain the same overrides-rpm'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class FilterBugzillaProductsAndComponents(StrictQueryParamMixin,

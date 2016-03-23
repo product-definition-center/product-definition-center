@@ -19,6 +19,8 @@ router.register(r'compose-images', views.ComposeImageView)
 router.register('overrides/rpm',
                 views.ReleaseOverridesRPMViewSet,
                 base_name='overridesrpm')
+router.register(r'rpc/overrides-rpm/clone', views.OverridesRPMCloneViewSet,
+                base_name='overridesrpmclone')
 router.register(r'rpc/where-to-file-bugs', views.FilterBugzillaProductsAndComponents,
                 base_name='bugzilla')
 router.register('rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)',
