@@ -948,9 +948,23 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
             if i['action'].lower().strip() == "create" and "include" not in i:
                 return Response(data={"detail": "No field 'include' when 'action' is create"},
                                 status=status.HTTP_400_BAD_REQUEST)
+            if i['action'].lower().strip() == "delete" and "include" in i:
+                return Response(data={"detail": "Field 'include' is only for 'action' being 'create'"},
+                                status=status.HTTP_400_BAD_REQUEST)
         compose = get_object_or_404(Compose, compose_id=kwargs['compose_id'])
         _apply_changes(request, compose.release, request.data)
-        return Response(status=204)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def _update_parameters_acceptable(self, in_data, layer):
+        result = False
+        if layer == 1:
+            result = isinstance(in_data, list)
+        elif layer > 1:
+            if not isinstance(in_data, dict) and len(in_data) != 1:
+                result = False
+            else:
+                result = self._update_parameters_acceptable((in_data.values()[0]), layer - 1)
+        return result
 
     def update(self, request, **kwargs):
         """
@@ -993,6 +1007,10 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
         in database as well as returned.
         """
         compose = get_object_or_404(Compose, compose_id=kwargs['compose_id'])
+        if not self._update_parameters_acceptable(request.data, 4):
+            return Response(
+                data={"detail": "The parameters' format for updating is wrong. Please read API documentation"},
+                status=status.HTTP_400_BAD_REQUEST)
         mapping, _ = compose.get_rpm_mapping(kwargs['package'])
         new_mapping = ComposeRPMMapping(data=request.data)
         changes = mapping.compute_changes(new_mapping)

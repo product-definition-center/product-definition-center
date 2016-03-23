@@ -1099,6 +1099,22 @@ class RPMMappingAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, {"detail": "action should only be 'create' or 'delete'"})
 
+    def test_partial_update_with_action_not_create_and_with_include_field(self):
+        self.client.force_authenticate(create_user("user", perms=[]))
+        response = self.client.patch(self.url, [{"action": "delete", "srpm_name": "bash", "rpm_name": "bash-magic",
+                                                 "rpm_arch": "src", "variant": "Client", "arch": "x86_64",
+                                                 "do_not_delete": False, "comment": "", "include": True}],
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_partial_update_with_action_delete_and_with_no_include_parameter(self):
+        self.client.force_authenticate(create_user("user", perms=[]))
+        response = self.client.patch(self.url, [{"action": "delete", "srpm_name": "bash", "rpm_name": "bash-magic",
+                                                 "rpm_arch": "src", "variant": "Client", "arch": "x86_64",
+                                                 "do_not_delete": False, "comment": ""}],
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
     def test_partial_update_without_enough_inputs(self):
         self.client.force_authenticate(create_user("user", perms=[]))
         response = self.client.patch(self.url, [{"action": "create", "rpm_name": "bash-magic",
@@ -1144,6 +1160,14 @@ class RPMMappingAPITestCase(APITestCase):
                                           'rpm_arch': 'i386', 'variant': 'Server', 'arch': 'x86_64',
                                           'include': True, 'release_id': 'release-1.0'}])
         self.assertEqual(0, models.OverrideRPM.objects.filter(rpm_arch='i386').count())
+
+    def test_update_with_wrong_data_format(self):
+        self.client.force_authenticate(create_user("user", perms=[]))
+        new_mapping = {"action": "delete", "srpm_name": "bash", "rpm_name": "bash-magic",
+                       "rpm_arch": "src", "variant": "Client", "arch": "x86_64",
+                       "do_not_delete": False, "comment": ""}
+        response = self.client.put(self.url, new_mapping, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_with_perform(self):
         self.client.force_authenticate(create_user("user", perms=[]))

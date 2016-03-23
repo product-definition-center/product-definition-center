@@ -502,7 +502,7 @@ class OverrideRPM(models.Model):
             else:
                 orpm.do_not_delete = True
                 orpm.comment = data.get('comment', '')
-                orpm.include = not data['include']
+                orpm.include = not orpm.include
                 orpm.save()
                 new_val = orpm.export()
         else:
