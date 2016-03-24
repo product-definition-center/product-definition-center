@@ -3,14 +3,20 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+import logging
 import re
+import sys
 
 from django.db import models, connection, transaction
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 from django.forms.models import model_to_dict
+from django.dispatch import receiver
+from django.db.backends.signals import connection_created
+from django.db.models.signals import post_migrate
 
 from kobo.rpmlib import parse_nvra
+from productmd import images
 
 from pdc.apps.common.models import get_cached_id
 from pdc.apps.common.validators import validate_md5, validate_sha1, validate_sha256
@@ -18,6 +24,7 @@ from pdc.apps.common.hacks import add_returning, parse_epoch_version
 from pdc.apps.common.constants import ARCH_SRC
 from pdc.apps.release.models import Release
 from pdc.apps.compose.models import ComposeAcceptanceTestingState
+from pdc.apps.package.apps import PackageConfig
 
 
 class RPM(models.Model):
@@ -344,3 +351,29 @@ class BuildImage(models.Model):
                     result[field].append(obj.export())
 
         return result
+
+
+def sync_image_formats_and_types():
+    logger = logging.getLogger(__name__)
+    missing_image_formats = set(images.SUPPORTED_IMAGE_FORMATS) - set([obj.name for obj in ImageFormat.objects.all()])
+    missing_image_types = set(images.SUPPORTED_IMAGE_TYPES) - set([obj.name for obj in ImageType.objects.all()])
+
+    for image_format in missing_image_formats:
+        ImageFormat.objects.create(name=image_format)
+        logger.info("Created image format %s" % image_format)
+    for image_type in missing_image_types:
+        ImageType.objects.create(name=image_type)
+        logger.info("Created image type %s" % image_type)
+
+
+@receiver(connection_created)
+def sync_image_formats_and_types_when_connection_created(sender, **kwargs):
+    if 'test' in sys.argv or 'migrate' in sys.argv:
+        return
+    sync_image_formats_and_types()
+
+
+@receiver(post_migrate)
+def sync_image_formats_and_types_when_post_migrate(sender, **kwargs):
+    if isinstance(sender, PackageConfig):
+        sync_image_formats_and_types()
