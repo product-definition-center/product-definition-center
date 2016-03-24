@@ -128,13 +128,13 @@
 <text text-anchor="start" x="767" y="-122.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_compose_models_Compose&#45;&gt;pdc_apps_compose_models_ComposeType -->
-<g id="edge3" class="edge"><title>pdc_apps_compose_models_Compose&#45;&gt;pdc_apps_compose_models_ComposeType</title>
+<g id="edge5" class="edge"><title>pdc_apps_compose_models_Compose&#45;&gt;pdc_apps_compose_models_ComposeType</title>
 <path fill="none" stroke="black" d="M605.6,-107.35C603.51,-103.66 601.63,-99.87 600,-96 594.64,-83.253 600.73,-73.101 611.65,-65.168"/>
 <ellipse fill="black" stroke="black" cx="607.78" cy="-110.933" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="646.5" y="-88.8" font-family="Helvetica,sans-Serif" font-size="8.00">compose_type (compose)</text>
 </g>
 <!-- pdc_apps_compose_models_Compose&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState -->
-<g id="edge5" class="edge"><title>pdc_apps_compose_models_Compose&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState</title>
+<g id="edge3" class="edge"><title>pdc_apps_compose_models_Compose&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState</title>
 <path fill="none" stroke="black" d="M570.96,-153.25C474.01,-126.45 340.71,-89.587 253.73,-65.534"/>
 <ellipse fill="black" stroke="black" cx="574.905" cy="-154.342" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="405.5" y="-88.8" font-family="Helvetica,sans-Serif" font-size="8.00">acceptance_testing (compose)</text>
@@ -366,22 +366,8 @@
 <ellipse fill="black" stroke="black" cx="392.139" cy="-648.481" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="372.5" y="-598.8" font-family="Helvetica,sans-Serif" font-size="8.00">path (composerpm)</text>
 </g>
-<!-- pdc_apps_package_models_RPM -->
-<g id="node35" class="node"><title>pdc_apps_package_models_RPM</title>
-<polygon fill="palegoldenrod" stroke="palegoldenrod" points="919.5,-512.5 919.5,-529.5 958.5,-529.5 958.5,-512.5 919.5,-512.5"/>
-<polygon fill="#698b22" stroke="#698b22" points="920,-512 920,-529 959,-529 959,-512 920,-512"/>
-<text text-anchor="start" x="925" y="-518.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
-<text text-anchor="start" x="930" y="-518.633" font-family="Helvetica Bold" font-size="8.00" fill="white">RPM</text>
-<text text-anchor="start" x="949" y="-518.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
-</g>
-<!-- pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_package_models_RPM -->
-<g id="edge39" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_package_models_RPM</title>
-<path fill="none" stroke="black" d="M573.51,-644.11C587.35,-636.09 602.17,-628.87 617,-624 671.6,-606.05 823.12,-630.73 875,-606 903.18,-592.57 922.05,-559.83 931.61,-539.12"/>
-<ellipse fill="black" stroke="black" cx="569.805" cy="-646.32" rx="4.00002" ry="4.00002"/>
-<text text-anchor="middle" x="926" y="-598.8" font-family="Helvetica,sans-Serif" font-size="8.00">rpm (composerpm)</text>
-</g>
 <!-- pdc_apps_repository_models_ContentCategory -->
-<g id="node37" class="node"><title>pdc_apps_repository_models_ContentCategory</title>
+<g id="node35" class="node"><title>pdc_apps_repository_models_ContentCategory</title>
 <polygon fill="palegoldenrod" stroke="palegoldenrod" points="977.5,-354.5 977.5,-371.5 1066.5,-371.5 1066.5,-354.5 977.5,-354.5"/>
 <polygon fill="#698b22" stroke="#698b22" points="978,-354 978,-371 1067,-371 1067,-354 978,-354"/>
 <text text-anchor="start" x="983" y="-360.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
@@ -389,24 +375,38 @@
 <text text-anchor="start" x="1057" y="-360.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_repository_models_ContentCategory -->
-<g id="edge41" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_repository_models_ContentCategory</title>
+<g id="edge39" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_repository_models_ContentCategory</title>
 <path fill="none" stroke="black" d="M572.86,-644.06C586.86,-635.95 601.91,-628.72 617,-624 664.02,-609.3 1025.9,-641.53 1060,-606 1120.3,-543.17 1060.4,-426.17 1033.5,-381.23"/>
 <ellipse fill="black" stroke="black" cx="569.075" cy="-646.32" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="1143.5" y="-519.8" font-family="Helvetica,sans-Serif" font-size="8.00">content_category (composerpm)</text>
 </g>
 <!-- pdc_apps_common_models_SigKey -->
-<g id="node39" class="node"><title>pdc_apps_common_models_SigKey</title>
-<polygon fill="palegoldenrod" stroke="palegoldenrod" points="991.5,-512.5 991.5,-529.5 1038.5,-529.5 1038.5,-512.5 991.5,-512.5"/>
-<polygon fill="#698b22" stroke="#698b22" points="992,-512 992,-529 1039,-529 1039,-512 992,-512"/>
-<text text-anchor="start" x="996.5" y="-518.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
-<text text-anchor="start" x="1001.5" y="-518.633" font-family="Helvetica Bold" font-size="8.00" fill="white">SigKey</text>
-<text text-anchor="start" x="1029.5" y="-518.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
+<g id="node37" class="node"><title>pdc_apps_common_models_SigKey</title>
+<polygon fill="palegoldenrod" stroke="palegoldenrod" points="919.5,-512.5 919.5,-529.5 966.5,-529.5 966.5,-512.5 919.5,-512.5"/>
+<polygon fill="#698b22" stroke="#698b22" points="920,-512 920,-529 967,-529 967,-512 920,-512"/>
+<text text-anchor="start" x="924.5" y="-518.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
+<text text-anchor="start" x="929.5" y="-518.633" font-family="Helvetica Bold" font-size="8.00" fill="white">SigKey</text>
+<text text-anchor="start" x="957.5" y="-518.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_common_models_SigKey -->
-<g id="edge43" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_common_models_SigKey</title>
-<path fill="none" stroke="black" d="M573.17,-644.04C587.09,-635.98 602.03,-628.77 617,-624 690.78,-600.48 898.8,-646.17 965,-606 989.44,-591.17 1003.3,-559.52 1009.9,-539.3"/>
-<ellipse fill="black" stroke="black" cx="569.424" cy="-646.278" rx="4.00002" ry="4.00002"/>
-<text text-anchor="middle" x="1017.5" y="-598.8" font-family="Helvetica,sans-Serif" font-size="8.00">sigkey (composerpm)</text>
+<g id="edge41" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_common_models_SigKey</title>
+<path fill="none" stroke="black" d="M573.51,-644.11C587.35,-636.09 602.17,-628.87 617,-624 671.6,-606.05 823.12,-630.73 875,-606 903.83,-592.26 924.23,-559.62 934.77,-539.02"/>
+<ellipse fill="black" stroke="black" cx="569.805" cy="-646.32" rx="4.00002" ry="4.00002"/>
+<text text-anchor="middle" x="930.5" y="-598.8" font-family="Helvetica,sans-Serif" font-size="8.00">sigkey (composerpm)</text>
+</g>
+<!-- pdc_apps_package_models_RPM -->
+<g id="node39" class="node"><title>pdc_apps_package_models_RPM</title>
+<polygon fill="palegoldenrod" stroke="palegoldenrod" points="999.5,-512.5 999.5,-529.5 1038.5,-529.5 1038.5,-512.5 999.5,-512.5"/>
+<polygon fill="#698b22" stroke="#698b22" points="1000,-512 1000,-529 1039,-529 1039,-512 1000,-512"/>
+<text text-anchor="start" x="1005" y="-518.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
+<text text-anchor="start" x="1010" y="-518.633" font-family="Helvetica Bold" font-size="8.00" fill="white">RPM</text>
+<text text-anchor="start" x="1029" y="-518.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
+</g>
+<!-- pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_package_models_RPM -->
+<g id="edge43" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_package_models_RPM</title>
+<path fill="none" stroke="black" d="M573.17,-644.03C587.09,-635.97 602.03,-628.76 617,-624 654.74,-611.99 939.5,-627.13 973,-606 996.7,-591.05 1009.1,-559.44 1014.8,-539.26"/>
+<ellipse fill="black" stroke="black" cx="569.417" cy="-646.264" rx="4.00002" ry="4.00002"/>
+<text text-anchor="middle" x="1021" y="-598.8" font-family="Helvetica,sans-Serif" font-size="8.00">rpm (composerpm)</text>
 </g>
 <!-- pdc_apps_compose_models_OverrideRPM -->
 <g id="node16" class="node"><title>pdc_apps_compose_models_OverrideRPM</title>
@@ -519,13 +519,13 @@
 <text text-anchor="start" x="303" y="-662.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeImage&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState -->
-<g id="edge21" class="edge"><title>pdc_apps_compose_models_ComposeImage&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState</title>
+<g id="edge19" class="edge"><title>pdc_apps_compose_models_ComposeImage&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState</title>
 <path fill="none" stroke="black" d="M126.68,-650.17C79.736,-620.71 34,-577.51 34,-521 34,-521 34,-521 34,-187 34,-133.53 83.271,-90.735 121.38,-65.628"/>
 <ellipse fill="black" stroke="black" cx="130.198" cy="-652.322" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="90" y="-361.8" font-family="Helvetica,sans-Serif" font-size="8.00">rtt_test_result (composeimage)</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeImage&#45;&gt;pdc_apps_compose_models_VariantArch -->
-<g id="edge19" class="edge"><title>pdc_apps_compose_models_ComposeImage&#45;&gt;pdc_apps_compose_models_VariantArch</title>
+<g id="edge21" class="edge"><title>pdc_apps_compose_models_ComposeImage&#45;&gt;pdc_apps_compose_models_VariantArch</title>
 <path fill="none" stroke="black" d="M247.13,-646.8C255.52,-629.13 266.3,-609.76 279,-594 287.71,-583.19 298.27,-572.91 309.04,-563.65"/>
 <ellipse fill="black" stroke="black" cx="245.359" cy="-650.629" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="332.5" y="-598.8" font-family="Helvetica,sans-Serif" font-size="8.00">variant_arch (composeimage)</text>
@@ -644,13 +644,13 @@
 <text text-anchor="start" x="717" y="-474.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_compose_models_Compose -->
-<g id="edge27" class="edge"><title>pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_compose_models_Compose</title>
+<g id="edge23" class="edge"><title>pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_compose_models_Compose</title>
 <path fill="none" stroke="black" d="M722.9,-458.89C724.48,-455.3 725.87,-451.66 727,-448 746.16,-386.13 733.68,-312.75 718.72,-259.58"/>
 <ellipse fill="black" stroke="black" cx="721.133" cy="-462.565" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="781" y="-361.8" font-family="Helvetica,sans-Serif" font-size="8.00">compose (composetree)</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_compose_models_Variant -->
-<g id="edge23" class="edge"><title>pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_compose_models_Variant</title>
+<g id="edge27" class="edge"><title>pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_compose_models_Variant</title>
 <path fill="none" stroke="black" d="M579.11,-491.61C521.53,-473.06 447.9,-447.14 385,-418 382.11,-416.66 379.18,-415.28 376.23,-413.87"/>
 <ellipse fill="black" stroke="black" cx="582.96" cy="-492.841" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="495.5" y="-440.8" font-family="Helvetica,sans-Serif" font-size="8.00">variant (composetree)</text>
@@ -668,13 +668,13 @@
 <text text-anchor="middle" x="596.5" y="-440.8" font-family="Helvetica,sans-Serif" font-size="8.00">scheme (composetree)</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_common_models_Arch -->
-<g id="edge51" class="edge"><title>pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_common_models_Arch</title>
+<g id="edge49" class="edge"><title>pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_common_models_Arch</title>
 <path fill="none" stroke="black" d="M774.15,-463.03C781.63,-458.07 788.99,-453.03 796,-448 812.92,-435.86 818.45,-433.82 832,-418 841.63,-406.75 850.16,-392.35 856.14,-381.1"/>
 <ellipse fill="black" stroke="black" cx="770.596" cy="-465.358" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="847.5" y="-440.8" font-family="Helvetica,sans-Serif" font-size="8.00">arch (composetree)</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_repository_models_ContentCategory -->
-<g id="edge49" class="edge"><title>pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_repository_models_ContentCategory</title>
+<g id="edge51" class="edge"><title>pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_repository_models_ContentCategory</title>
 <path fill="none" stroke="black" d="M775.05,-464.78C822.06,-450.23 840.62,-465.35 887,-448 926.53,-433.21 966.83,-405.91 992.98,-386.24"/>
 <ellipse fill="black" stroke="black" cx="771.045" cy="-466.115" rx="4.00001" ry="4.00001"/>
 <ellipse fill="black" stroke="black" cx="996.46" cy="-383.586" rx="4.00002" ry="4.00002"/>
