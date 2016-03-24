@@ -753,6 +753,24 @@ class OverridesRPMCloneAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
                                      'target_release_id': target_release_id},
                                     format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNumChanges([1, 1])
+
+    def test_clone_overridesRPM_with_orpm_existed_in_target_release(self):
+        args = {"name": "Supplementary", "short": "supp", "version": "1.1",
+                "release_type": "ga"}
+        target_response = self.client.post(reverse('release-list'), args)
+        self.assertEqual(target_response.status_code, status.HTTP_201_CREATED)
+        target_release_id = target_response.data['release_id']
+        response1 = self.client.post(reverse('overridesrpmclone-list'),
+                                     {'source_release_id': 'release-1.0',
+                                      'target_release_id': target_release_id},
+                                     format='json')
+        self.assertEqual(response1.status_code, status.HTTP_201_CREATED)
+        response = self.client.post(reverse('overridesrpmclone-list'),
+                                    {'source_release_id': 'release-1.0',
+                                     'target_release_id': target_release_id},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_clone__overridesRPM_with_filter_rpm_name(self):
         args = {"name": "Supplementary", "short": "supp", "version": "1.1",

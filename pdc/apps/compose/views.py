@@ -1347,14 +1347,13 @@ class OverridesRPMCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
             return Response({'detail': '%s keys are not allowed' % list(extra_keys)},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        if 'source_release_id' not in data:
-            return Response({'detail': 'Missing source_release_id'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        for key in keys:
+            if key not in data:
+                return Response({'detail': 'Missing %s' % key},
+                                status=status.HTTP_400_BAD_REQUEST)
         source_release_id = data.pop('source_release_id')
-        if 'target_release_id' not in data:
-            return Response({'detail': 'Missing target_release_id'},
-                            status=status.HTTP_400_BAD_REQUEST)
         target_release_id = data.pop('target_release_id')
+
         try:
             source_release = get_object_or_404(Release, release_id=source_release_id)
         except Http404:
@@ -1390,13 +1389,11 @@ class OverridesRPMCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
                 results.append(orpm.export())
                 request.changeset.add('OverridesRPM', orpm.pk,
                                       'null', json.dumps(orpm.export()))
-            else:
-                continue
         if results:
             return Response(status=status.HTTP_201_CREATED, data=results)
         else:
-            return Response({'detail': 'Both releases contain the same overrides-rpm'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'overridesRPMs have existed in target release'},
+                            status=status.HTTP_200_OK)
 
 
 class FilterBugzillaProductsAndComponents(StrictQueryParamMixin,
