@@ -1346,26 +1346,19 @@ class OverridesRPMCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
         if extra_keys:
             return Response({'detail': '%s keys are not allowed' % list(extra_keys)},
                             status=status.HTTP_400_BAD_REQUEST)
-
         for key in keys:
             if key not in data:
                 return Response({'detail': 'Missing %s' % key},
                                 status=status.HTTP_400_BAD_REQUEST)
-        source_release_id = data.pop('source_release_id')
-        target_release_id = data.pop('target_release_id')
+        tmp_release = {}
+        for key in keys:
+            try:
+                tmp_release[key] = Release.objects.get(release_id=data.pop(key))
+            except Release.DoesNotExist:
+                return Response({'detail': '%s does not exist' % key},
+                                status=status.HTTP_404_NOT_FOUND)
 
-        try:
-            source_release = get_object_or_404(Release, release_id=source_release_id)
-        except Http404:
-            return Response({'detail': 'Source_release %s is not existed' % source_release_id},
-                            status=status.HTTP_404_NOT_FOUND)
-        try:
-            target_release = get_object_or_404(Release, release_id=target_release_id)
-        except Http404:
-            return Response({'detail': 'Target_release %s is not existed' % target_release_id},
-                            status=status.HTTP_404_NOT_FOUND)
-
-        kwargs = {'release__release_id': source_release.release_id}
+        kwargs = {'release__release_id': tmp_release['source_release_id'].release_id}
         for arg in arg_filter_map:
             arg_data = request.data.get(arg)
             if arg_data:
@@ -1373,11 +1366,11 @@ class OverridesRPMCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
 
         overrides_rpm = OverrideRPM.objects.filter(**kwargs)
         if not overrides_rpm:
-            return Response({'detail': 'there is no overrides-rpm with source release'},
+            return Response({'detail': 'there is no overrides-rpm in source release'},
                             status=status.HTTP_400_BAD_REQUEST)
         results = []
         for rpm in overrides_rpm:
-            orpm, created = OverrideRPM.objects.get_or_create(release=target_release,
+            orpm, created = OverrideRPM.objects.get_or_create(release=tmp_release['target_release_id'],
                                                               rpm_name=rpm.rpm_name,
                                                               rpm_arch=rpm.rpm_arch,
                                                               variant=rpm.variant,
