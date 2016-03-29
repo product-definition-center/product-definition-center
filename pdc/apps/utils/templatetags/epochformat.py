@@ -8,7 +8,10 @@ from datetime import datetime
 
 
 def epochformat(value):
-    dt = datetime.utcfromtimestamp(value)
+    if isinstance(value, (float, int)):
+        dt = datetime.utcfromtimestamp(value)
+    else:
+        dt = value
     return dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
