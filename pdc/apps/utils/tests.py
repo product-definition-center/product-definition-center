@@ -19,7 +19,9 @@ class EpochFormatTest(TestCase):
     def test_for_selected_values(self):
         data = [
             (1412695330, "2014-10-07 15:22:10"),
+            (datetime(2014, 10, 7, 15, 22, 10), "2014-10-07 15:22:10"),
             (1388534400, "2014-01-01 00:00:00"),
+            (datetime(2014, 1, 1), "2014-01-01 00:00:00"),
         ]
         for ts, expected in data:
             self.assertEqual(expected, epochformat(ts))
