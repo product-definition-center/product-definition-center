@@ -5,7 +5,7 @@
 # http://opensource.org/licenses/MIT
 #
 
-from django.contrib.auth.models import PermissionsMixin, UserManager, AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin, UserManager, AbstractBaseUser, _user_get_all_permissions
 from django.db import models
 from django.core import validators
 from django.utils.translation import ugettext_lazy as _
@@ -82,3 +82,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         Sends an email to this User.
         """
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
+    def get_all_permissions(self, obj=None):
+        tmp_permission = _user_get_all_permissions(self, obj)
+        return sorted(tmp_permission)
