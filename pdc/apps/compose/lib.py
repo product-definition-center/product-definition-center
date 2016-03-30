@@ -88,6 +88,23 @@ def _add_compose_create_msg(request, compose_obj):
     request._request._messagings.append(('.compose', json.dumps(msg)))
 
 
+def _add_import_msg(request, compose_obj, attribute, count):
+    """
+    Add import message to request._messagings.
+
+    - `attribute` should be something like 'images' or 'rpms'.
+    - `count` should indicate the number of those entities which were imported.
+    """
+    msg = {'attribute': attribute,
+           'count': count,
+           'action': 'import',
+           'compose_id': compose_obj.compose_id,
+           'compose_date': compose_obj.compose_date.isoformat(),
+           'compose_type': compose_obj.compose_type.name,
+           'compose_respin': compose_obj.compose_respin}
+    request._request._messagings.append(('.' + attribute, json.dumps(msg)))
+
+
 def _store_relative_path_for_compose(compose_obj, variants_info, variant, variant_obj, add_to_changelog):
     vp = productmd.composeinfo.VariantPaths(variant)
     common_hacks.deserialize_wrapper(vp.deserialize, variants_info.get(variant.name, {}).get('paths', {}))
@@ -197,6 +214,9 @@ def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
                               'num_linked_rpms': imported_rpms,
                           }))
 
+    if hasattr(request._request, '_messagings'):
+        _add_import_msg(request, compose_obj, 'rpms', imported_rpms)
+
     return compose_obj.compose_id, imported_rpms
 
 
@@ -287,6 +307,9 @@ def compose__import_images(request, release_id, composeinfo, image_manifest):
                               'compose': compose_obj.compose_id,
                               'num_linked_images': imported_images,
                           }))
+
+    if hasattr(request._request, '_messagings'):
+        _add_import_msg(request, compose_obj, 'images', imported_images)
 
     return compose_obj.compose_id, imported_images
 
