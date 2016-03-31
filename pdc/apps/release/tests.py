@@ -23,7 +23,7 @@ class BaseProductRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     ]
 
     def test_create(self):
-        args = {"name": "Our Awesome Product", "short": "product", "version": "1"}
+        args = {"name": "Our Awesome Product", "short": "product", "version": "1", "release_type": "ga"}
         response = self.client.post(reverse('baseproduct-list'), args)
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         args.update({'base_product_id': 'product-1'})
@@ -32,19 +32,19 @@ class BaseProductRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([1])
 
     def test_create_with_invalid_short(self):
-        args = {"name": "Fedora", "short": "F", "version": "1"}
+        args = {"name": "Fedora", "short": "F", "version": "1", "release_type": "ga"}
         response = self.client.post(reverse('baseproduct-list'), args)
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
-        self.assertIn('Only accept lowercase letter or -', response.data['short'])
+        self.assertIn('Only accept lowercase letters, numbers or -', response.data['short'])
 
     def test_create_with_extra_fields(self):
-        args = {"name": "Fedora", "short": "f", "version": "1", "foo": "bar"}
+        args = {"name": "Fedora", "short": "f", "version": "1", "release_type": "ga", "foo": "bar"}
         response = self.client.post(reverse('baseproduct-list'), args)
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
         self.assertEqual(response.data.get('detail'), 'Unknown fields: "foo".')
 
     def test_create_duplicate(self):
-        args = {"name": "Our Awesome Product", "short": "product", "version": "1"}
+        args = {"name": "Our Awesome Product", "short": "product", "version": "1", "release_type": "ga"}
         response = self.client.post(reverse('baseproduct-list'), args)
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
@@ -52,7 +52,7 @@ class BaseProductRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     def test_put_as_create_disabled(self):
-        args = {"name": "Our Awesome Product", "short": "product", "version": "1"}
+        args = {"name": "Our Awesome Product", "short": "product", "version": "1", "release_type": "ga"}
         response = self.client.put(reverse('baseproduct-detail', args=['product']), args)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertNumChanges([])
@@ -61,7 +61,7 @@ class BaseProductRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.test_create()
         response = self.client.put(reverse('baseproduct-detail', args=['product-1']),
                                    {'short': 'product', 'name': 'OUR AWESOME PRODUCT',
-                                    'version': '1'},
+                                    'version': '1', 'release_type': 'ga'},
                                    format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(models.BaseProduct.objects.get(base_product_id='product-1').name,
@@ -124,7 +124,7 @@ class ProductRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args = {'name': 'Fedora', 'short': 'F'}
         response = self.client.post(reverse('product-list'), args)
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
-        self.assertIn('Only accept lowercase letter or -', response.data['short'])
+        self.assertIn('Only accept lowercase letters, numbers or -', response.data['short'])
 
     def test_create_with_extra_field(self):
         args = {'name': 'Fedora', 'short': 'f', 'foo': 'bar'}
@@ -271,7 +271,7 @@ class ProductVersionRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
         self.assertEqual(0, models.ProductVersion.objects.filter(product_version_id='product-2').count())
         self.assertNumChanges([])
-        self.assertIn('Only accept lowercase letter or -', response.data['short'])
+        self.assertIn('Only accept lowercase letters, numbers or -', response.data['short'])
 
     def test_create_with_extra_field(self):
         args = {"name": "Our Awesome Product", "short": "product",
@@ -590,7 +590,7 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args = {"name": "Fedora", "short": "F", "version": '20', "release_type": "ga"}
         response = self.client.post(reverse('release-list'), args)
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
-        self.assertIn('Only accept lowercase letter or -', response.data['short'])
+        self.assertIn('Only accept lowercase letters, numbers or -', response.data['short'])
 
     def test_create_with_extra_fields(self):
         args = {"name": "Fedora", "short": "f", "version": '20', "release_type": "ga", "foo": "bar"}
@@ -627,7 +627,7 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         args.update({'base_product': 'product-1',
                      'active': True, 'compose_set': [], 'dist_git': None,
-                     'release_id': 'supp-1.1-product-1', 'product_version': None,
+                     'release_id': 'supp-1.1@product-1', 'product_version': None,
                      'bugzilla': None, 'integrated_with': None})
         self.assertEqual(args, dict(response.data))
         self.assertNumChanges([1])
@@ -1007,10 +1007,12 @@ class ReleaseUpdateRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
             version=1,
             name='Product Version'
         )
+        release_type = models.ReleaseType.objects.get(short="ga")
         self.release.base_product = models.BaseProduct.objects.create(
             name='Base Product',
             short='bp',
-            version='1'
+            version='1',
+            release_type=release_type,
         )
         self.release.save()
 
@@ -1043,14 +1045,16 @@ class ReleaseUpdateRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([1])
 
     def test_update_can_reset_base_product(self):
+        release_type = models.ReleaseType.objects.get(short="ga")
         self.release.base_product = models.BaseProduct.objects.create(
             name='Base Product',
             short='bp',
-            version='1'
+            version='1',
+            release_type=release_type,
         )
         self.release.save()
 
-        response = self.client.patch(reverse('release-detail', args=['release-1.0-bp-1']),
+        response = self.client.patch(reverse('release-detail', args=['release-1.0@bp-1']),
                                      {'base_product': None}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # The dist-git mapping mentioned in changelog because release_id changes.
@@ -1357,23 +1361,23 @@ class ReleaseImportTestCase(TestCaseWithChangeSetMixin, APITestCase):
                               ['Client.x86_64', 'Server.x86_64', 'Server.s390x',
                                'Server.ppc64', 'Server-SAP.x86_64'])
         self.assertEqual(release.variant_set.get(variant_uid='Server-SAP').integrated_from.release_id,
-                         'sap-1.0-tp-1')
+                         'sap-1.0@tp-1')
 
         response = self.client.get(reverse('product-detail', args=['sap']))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('product_versions'), ['sap-1'])
         response = self.client.get(reverse('productversion-detail', args=['sap-1']))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get('releases'), ['sap-1.0-tp-1'])
-        response = self.client.get(reverse('release-detail', args=['sap-1.0-tp-1']))
+        self.assertEqual(response.data.get('releases'), ['sap-1.0@tp-1'])
+        response = self.client.get(reverse('release-detail', args=['sap-1.0@tp-1']))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(dict(response.data),
-                             {'short': 'sap', 'release_id': 'sap-1.0-tp-1', 'version': '1.0',
+                             {'short': 'sap', 'release_id': 'sap-1.0@tp-1', 'version': '1.0',
                               'name': 'SAP', 'product_version': 'sap-1',
                               'base_product': 'tp-1', 'compose_set': [],
                               'integrated_with': 'tp-1.0', 'bugzilla': None,
                               'active': True, 'release_type': 'ga', 'dist_git': None})
-        release = models.Release.objects.get(release_id='sap-1.0-tp-1')
+        release = models.Release.objects.get(release_id='sap-1.0@tp-1')
         self.assertItemsEqual(release.trees, ['Server-SAP.x86_64'])
         self.assertEqual(release.variant_set.get(variant_uid='Server-SAP').integrated_to.release_id,
                          'tp-1.0')
@@ -1406,7 +1410,7 @@ class ReleaseImportTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(reverse('releaseimportcomposeinfo-list'), data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('version mismatch', response.content)
-        self.assertIn('sap-1.0-tp-1', response.content)
+        self.assertIn('sap-1.0@tp-1', response.content)
 
 
 class ReleaseTypeTestCase(TestCaseWithChangeSetMixin, APITestCase):

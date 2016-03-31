@@ -5,7 +5,6 @@
 #
 from rest_framework import serializers
 from django.core.exceptions import FieldError
-from django.core.validators import RegexValidator
 
 from pdc.apps.common.fields import ChoiceSlugField
 from pdc.apps.common import models as common_models
@@ -34,8 +33,6 @@ class ProductVersionSerializer(StrictSerializerMixin, serializers.ModelSerialize
     releases = serializers.SerializerMethodField()
     product = serializers.SlugRelatedField(slug_field='short',
                                            queryset=Product.objects.all())
-    short = serializers.CharField(required=False, validators=[
-        RegexValidator(regex=r"^[a-z\-]+$", message='Only accept lowercase letter or -')])
 
     class Meta:
         model = ProductVersion
@@ -110,10 +107,11 @@ class ReleaseSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 
 class BaseProductSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     base_product_id = serializers.CharField(read_only=True)
+    release_type = ChoiceSlugField(slug_field='short', queryset=ReleaseType.objects.all())
 
     class Meta:
         model = BaseProduct
-        fields = ('base_product_id', 'short', 'version', 'name')
+        fields = ('base_product_id', 'short', 'version', 'name', 'release_type')
 
 
 class ReleaseTypeSerializer(StrictSerializerMixin, serializers.ModelSerializer):

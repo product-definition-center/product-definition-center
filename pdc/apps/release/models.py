@@ -13,6 +13,9 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 
+from productmd.common import RELEASE_SHORT_RE, RELEASE_VERSION_RE
+from productmd.common import create_release_id
+
 from pdc.apps.common.hacks import as_list
 from . import signals
 
@@ -30,23 +33,23 @@ class BaseProduct(models.Model):
     # base_product_id is populated by populate_base_product_id() pre_save hook
     base_product_id     = models.CharField(max_length=200, blank=False, unique=True)
     short = models.CharField(max_length=200, validators=[
-        RegexValidator(regex=r"^[a-z\-]+$", message='Only accept lowercase letter or -')])
+        RegexValidator(regex=RELEASE_SHORT_RE.pattern, message='Only accept lowercase letters, numbers or -')])
     version             = models.CharField(max_length=200)
     name                = models.CharField(max_length=255)
+    release_type        = models.ForeignKey(ReleaseType, blank=False, db_index=True)
 
     class Meta:
         unique_together = (
-            ("short", "version"),
-            ("name", "version"),
+            ("short", "version", "release_type"),
+            ("name", "version", "release_type"),
         )
         ordering = ("base_product_id", )
 
     def __unicode__(self):
-        return u"%s-%s" % (self.short, self.version)
+        return unicode(self.base_product_id)
 
     def get_base_product_id(self):
-        result = u"%s-%s" % (self.short.lower(), self.version)
-        return result
+        return create_release_id(self.short.lower(), self.version, self.release_type.short)
 
     def export(self):
         return {
@@ -54,6 +57,7 @@ class BaseProduct(models.Model):
             "short": self.short,
             "version": self.version,
             "name": self.name,
+            "release_type": self.release_type.short,
         }
 
 
@@ -65,7 +69,7 @@ def populate_base_product_id(sender, instance, **kwargs):
 class Product(models.Model):
     name    = models.CharField(max_length=200)
     short = models.CharField(max_length=200, unique=True, validators=[
-        RegexValidator(regex=r"^[a-z\-]+$", message='Only accept lowercase letter or -')])
+        RegexValidator(regex=RELEASE_SHORT_RE.pattern, message='Only accept lowercase letters, numbers or -')])
 
     class Meta:
         ordering = ("short", )
@@ -103,8 +107,9 @@ class Product(models.Model):
 class ProductVersion(models.Model):
     name                = models.CharField(max_length=200)
     short = models.CharField(max_length=200, validators=[
-        RegexValidator(regex=r"^[a-z\-]+$", message='Only accept lowercase letter or -')])
-    version             = models.CharField(max_length=200)
+        RegexValidator(regex=RELEASE_SHORT_RE.pattern, message='Only accept lowercase letters, numbers or -')])
+    version             = models.CharField(max_length=200, validators=[
+        RegexValidator(regex=RELEASE_VERSION_RE.pattern, message='Only accept comma separated numbers or any text')])
     product             = models.ForeignKey(Product)
     product_version_id  = models.CharField(max_length=200)
 
@@ -149,8 +154,9 @@ class Release(models.Model):
     # release_id is populated by populate_release_id() pre_save hook
     release_id          = models.CharField(max_length=200, blank=False, unique=True)
     short = models.CharField(max_length=200, blank=False, validators=[
-        RegexValidator(regex=r"^[a-z\-]+$", message='Only accept lowercase letter or -')])
-    version             = models.CharField(max_length=200, blank=False)
+        RegexValidator(regex=RELEASE_SHORT_RE.pattern, message='Only accept lowercase letters, numbers or -')])
+    version             = models.CharField(max_length=200, blank=False, validators=[
+        RegexValidator(regex=RELEASE_VERSION_RE.pattern, message='Only accept comma separated numbers or any text')])
     name                = models.CharField(max_length=255, blank=False)
     release_type        = models.ForeignKey(ReleaseType, blank=False, db_index=True)
     base_product        = models.ForeignKey(BaseProduct, null=True, blank=True)
@@ -174,11 +180,14 @@ class Release(models.Model):
         return self.active is True
 
     def get_release_id(self):
-        result = u"%s-%s" % (self.short.lower(), self.version)
+        bp_dict = {}
         if self.base_product:
-            result += u"-%s" % self.base_product.get_base_product_id()
-        result += u"%s" % self.release_type.suffix
-        return result
+            bp_dict = {
+                "bp_short": self.base_product.short.lower(),
+                "bp_version": self.base_product.version,
+                "bp_type": self.base_product.release_type.short,
+            }
+        return create_release_id(self.short.lower(), self.version, self.release_type.short, **bp_dict)
 
     def export(self):
         result = {

@@ -6,6 +6,7 @@
     <th>{% trans "Name" %}</th>
     <th>{% trans "Short Name" %}</th>
     <th>{% trans "Version" %}</th>
+    <th>{% trans "Type" %}</th>
   </tr>
   </thead>
   <tbody>
@@ -15,6 +16,7 @@
     <td>{{ base_product.name }}</td>
     <td>{{ base_product.short }}</td>
     <td>{{ base_product.version }}</td>
+    <td>{{ base_product.release_type }}</td>
   </tr>
 {% endfor %}
   </tbody>
