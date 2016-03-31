@@ -2255,19 +2255,19 @@ class ComposeTreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_detail(self):
         response = self.client.get(reverse('composetreelocations-detail',
-                                           args=['compose-1/Server/x86_64/NAY']))
+                                           args=['compose-1/Server/x86_64/NAY/nfs']))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['location'], 'NAY')
         self.assertEqual(response.data['synced_content'], ['binary'])
 
     def test_can_not_perform_full_update(self):
         response = self.client.put(reverse('composetreelocations-detail',
-                                           args=['compose-1/Server/x86_64/NAY']), {})
+                                           args=['compose-1/Server/x86_64/NAY/nfs']), {})
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_can_update_scheme(self):
         response = self.client.patch(reverse('composetreelocations-detail',
-                                             args=['compose-1/Server/x86_64/NAY']),
+                                             args=['compose-1/Server/x86_64/NAY/nfs']),
                                      {'scheme': 'http'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('scheme'), 'http')
@@ -2275,7 +2275,7 @@ class ComposeTreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_can_update_url(self):
         response = self.client.patch(reverse('composetreelocations-detail',
-                                             args=['compose-1/Server/x86_64/NAY']),
+                                             args=['compose-1/Server/x86_64/NAY/nfs']),
                                      {'url': 'http://example.com'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('url'), 'http://example.com')
@@ -2283,7 +2283,7 @@ class ComposeTreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_can_update_syncedcontent(self):
         response = self.client.patch(reverse('composetreelocations-detail',
-                                             args=['compose-1/Server/x86_64/NAY']),
+                                             args=['compose-1/Server/x86_64/NAY/nfs']),
                                      {'synced_content': ['binary', 'debug', 'source']})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('synced_content'), ['binary', 'debug', 'source'])
@@ -2291,7 +2291,7 @@ class ComposeTreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_can_update_syncedcontent_duplicate(self):
         response = self.client.patch(reverse('composetreelocations-detail',
-                                             args=['compose-1/Server/x86_64/NAY']),
+                                             args=['compose-1/Server/x86_64/NAY/nfs']),
                                      {'synced_content': ['binary', 'debug', 'source', 'binary']})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('synced_content'), ['binary', 'debug', 'source'])
@@ -2299,30 +2299,30 @@ class ComposeTreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_can_bulk_update_syncedcontent(self):
         url = reverse('composetreelocations-list')
-        data = {'compose-1/Server/x86_64/NAY': {'scheme': 'http', 'url': 'http://example.com', 'synced_content': ['binary', 'debug', 'source']},
-                'compose-1/Server2/x86_64/BRQ': {'scheme': 'http', 'url': 'http://example.com', 'synced_content': ['binary', 'debug', 'source']}}
+        data = {'compose-1/Server/x86_64/NAY/nfs': {'scheme': 'http', 'url': 'http://example.com', 'synced_content': ['binary', 'debug', 'source']},
+                'compose-1/Server2/x86_64/BRQ/nfs': {'scheme': 'http', 'url': 'http://example.com', 'synced_content': ['binary', 'debug', 'source']}}
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['compose-1/Server2/x86_64/BRQ'].get('synced_content'),
+        self.assertEqual(response.data['compose-1/Server2/x86_64/BRQ/nfs'].get('synced_content'),
                          ['binary', 'debug', 'source'])
         self.assertNumChanges([2])
 
     def test_delete_existing(self):
         response = self.client.delete(reverse('composetreelocations-detail',
-                                              args=['compose-1/Server/x86_64/NAY']))
+                                              args=['compose-1/Server/x86_64/NAY/nfs']))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(models.ComposeTree.objects.count(), 1)
         self.assertNumChanges([1])
 
     def test_delete_non_existing(self):
         response = self.client.delete(reverse('composetreelocations-detail',
-                                              args=['compose-2/Server/x86_64/NAY']))
+                                              args=['compose-2/Server/x86_64/NAY/nfs']))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(models.ComposeTree.objects.count(), 2)
         self.assertNumChanges([])
 
     def test_bulk_delete(self):
-        data = ['compose-1/Server/x86_64/NAY', 'compose-1/Server2/x86_64/BRQ']
+        data = ['compose-1/Server/x86_64/NAY/nfs', 'compose-1/Server2/x86_64/BRQ/nfs']
         response = self.client.delete(reverse('composetreelocations-list'), data, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(models.ComposeTree.objects.count(), 0)

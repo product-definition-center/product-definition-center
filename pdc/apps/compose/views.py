@@ -1727,6 +1727,7 @@ class ComposeTreeViewSet(ChangeSetModelMixin,
         ('variant__variant_uid', r'[^/]+'),
         ('arch__name', r'[^/]+'),
         ('location__short', r'[^/]+'),
+        ('scheme__name', r'[^/]+'),
     )
 
     def list(self, *args, **kwargs):
@@ -1785,7 +1786,7 @@ class ComposeTreeViewSet(ChangeSetModelMixin,
         """
         __Method__: GET
 
-        __URL__: $LINK:composetreelocations-detail:compose_id}/{variant_uid}/{arch}/{location$
+        __URL__: $LINK:composetreelocations-detail:compose_id}/{variant_uid}/{arch}/{location}/{scheme$
 
         __Response__:
 
@@ -1851,7 +1852,7 @@ class ComposeTreeViewSet(ChangeSetModelMixin,
         __Method__:
         DELETE
 
-        __URL__: $LINK:composetreelocations-detail:compose_id}/{variant_uid}/{arch}/{location$
+        __URL__: $LINK:composetreelocations-detail:compose_id}/{variant_uid}/{arch}/{location}/{scheme$
 
         __Response__:
 
