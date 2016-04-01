@@ -1,0 +1,70 @@
+[
+  {
+    "model": "release.Release",
+    "pk": 2,
+    "fields": {
+      "release_type": 1,
+      "release_id": "release-3.0",
+      "short": "release",
+      "name": "Test Release",
+      "version": "3.0",
+      "base_product": null,
+      "active": true
+    }
+  },
+  {
+    "model": "compose.Compose",
+    "pk": 2,
+    "fields": {
+      "release": 2,
+      "compose_id": "compose-2",
+      "compose_date": "2016-09-03",
+      "compose_type": 1,
+      "compose_respin": 1,
+      "compose_label": null,
+      "dt_imported": "2016-09-03T11:45:00+00:00",
+      "deleted": false,
+      "acceptance_testing": 1
+    }
+  },
+  {
+    "pk": 3,
+    "model": "compose.Variant",
+    "fields": {
+      "compose": 2,
+      "variant_id": "Server",
+      "variant_uid": "Server",
+      "variant_name": "Server",
+      "deleted": false,
+      "variant_type": 1
+    }
+  },
+  {
+    "model": "compose.ComposeTree",
+    "pk": 3,
+    "fields": {
+      "compose": 2,
+      "variant": 1,
+      "arch": 47,
+      "location": 2,
+      "scheme": 2,
+      "url": "nfs://nay.lab.la/",
+      "synced_content": [2]
+    }
+  },
+  {
+    "model": "compose.Scheme",
+    "pk": 2,
+    "fields": {
+      "name": "http"
+    }
+  },
+  {
+    "model": "compose.Location",
+    "pk": 2,
+    "fields": {
+      "name": "Beijing",
+      "short": "NAY"
+    }
+  }
+]

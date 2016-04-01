@@ -732,8 +732,17 @@ class OverridesRPMAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
 
 class OverridesRPMCloneAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
-        'pdc/apps/release/fixtures/tests/release.json',
-        'pdc/apps/compose/fixtures/tests/compose_overriderpm.json',
+        "pdc/apps/common/fixtures/test/sigkey.json",
+        "pdc/apps/package/fixtures/test/rpm.json",
+        "pdc/apps/release/fixtures/tests/release.json",
+        "pdc/apps/compose/fixtures/tests/variant.json",
+        "pdc/apps/compose/fixtures/tests/variant_arch.json",
+        "pdc/apps/release/fixtures/tests/variant.json",
+        "pdc/apps/release/fixtures/tests/variant_arch.json",
+        "pdc/apps/compose/fixtures/tests/compose_overriderpm.json",
+        "pdc/apps/compose/fixtures/tests/compose.json",
+        "pdc/apps/compose/fixtures/tests/more_release_mapping.json",
+        "pdc/apps/compose/fixtures/tests/compose_composerpm.json",
     ]
 
     def setUp(self):
@@ -838,6 +847,29 @@ class OverridesRPMCloneAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
                                      'error_key': 'error_info'},
                                     format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_clone_and_verify_release_rpm_mapping(self):
+        # Source release can pass with release_mapping method work
+        response = self.client.get(reverse('releaserpmmapping-detail',
+                                           args=['release-1.0', 'bash']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Before clone, target release can't work with release_mapping method
+        target_response = self.client.get(reverse('release-list'), release_id='release-3.0')
+        self.assertEqual(target_response.status_code, status.HTTP_200_OK)
+        target_release_id = target_response.data['results'][1]['release_id']
+
+        response = self.client.get(reverse('releaserpmmapping-detail',
+                                           args=[target_release_id, 'bash']))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        response = self.client.post(reverse('overridesrpmclone-list'),
+                                    {'source_release_id': 'release-1.0',
+                                     'target_release_id': target_release_id},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # After clone, target release can work with release_mapping method
+        response = self.client.get(reverse('releaserpmmapping-detail',
+                                           args=[target_release_id, 'bash']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class ComposeRPMViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
