@@ -15,7 +15,7 @@ a custom authentication for performance reasons.
 
 The expected workflow is as follows:
 
-1. Obtain an authorization token from the API ``/rest_api/v1/token/obtain/``.
+1. Obtain an authorization token from the API ``/rest_api/v1/auth/token/obtain/``.
    This is one of end-points that actually use the same authentication system
    as the web UI.
 
@@ -26,7 +26,7 @@ The expected workflow is as follows:
 The token you receive from the API is tied to your user account. Currently, the
 token is valid indefinitely. However, if you leak it somewhere, you can
 manually request a new token, which will invalidate the old one. To do this,
-use the ``/rest_api/v1/token/refresh/`` API.
+use the ``/rest_api/v1/auth/token/refresh/`` API.
 
 If you access the API through one of PDC client, the authentication can be
 handled transparently for you.
