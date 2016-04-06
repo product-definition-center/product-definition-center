@@ -53,13 +53,6 @@ class RepositorySerializerTestCase(APITestCase):
         obj = serializer.save()
         self.assertFalse(obj.shadow)
 
-    def test_deserialize_invalid_from_custom_validator(self):
-        self.data['content_category'] = 'debug'
-        serializer = serializers.RepoSerializer(data=self.data)
-        self.assertFalse(serializer.is_valid())
-        self.assertEqual(serializer.errors,
-                         {'detail': ["Missing 'debug' in repo name 'test_repo_2'"]})
-
     def test_deserialize_invalid_shadow(self):
         self.data['shadow'] = 'very shadow'
         serializer = serializers.RepoSerializer(data=self.data)
@@ -193,13 +186,6 @@ class RepositoryRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.existing['variant_uid'] = 'Client'
         self.assertDictEqual(dict(response.data), self.existing)
         self.assertNumChanges([1])
-
-    def test_update_partial_bad_name(self):
-        response = self.client.patch(reverse('contentdeliveryrepos-detail', args=[1]),
-                                     {'name': 'repo-debug-isos'},
-                                     format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertNumChanges([])
 
     def test_update_partial_bad_variant(self):
         response = self.client.patch(reverse('contentdeliveryrepos-detail', args=[1]),

@@ -6,7 +6,6 @@
 #
 
 
-from django.core.exceptions import ValidationError
 from django.db import models
 
 from pdc.apps.common.models import get_cached_id
@@ -92,39 +91,6 @@ class Repo(models.Model):
 
     def __unicode__(self):
         return u"%s" % self.name
-
-    def clean(self):
-        content_category = self.content_category.name
-        if content_category == "debug" and "debug" not in self.name:
-            raise ValidationError("Missing 'debug' in repo name '%s'" % self.name)
-        if content_category != "debug" and "debug" in self.name:
-            raise ValidationError("Found 'debug' in repo name '%s', but content category is '%s'"
-                                  % (self.name, content_category))
-
-        release_type = self.variant_arch.variant.release.release_type.short
-        if release_type == "fast" and "-fast" not in self.name:
-            raise ValidationError("Missing '-fast' in repo name '%s'" % self.name)
-        if release_type != "fast" and "-fast" in self.name:
-            raise ValidationError("Found '-fast' in repo name '%s', but release type is '%s'"
-                                  % (self.name, release_type))
-
-        if release_type == "eus" and ".z" not in self.name:
-            raise ValidationError("Missing '.z' in repo name '%s'" % self.name)
-        if release_type != "eus" and ".z" in self.name:
-            raise ValidationError("Found '.z' in repo name '%s', but release type is '%s'"
-                                  % (self.name, release_type))
-
-        if release_type == "aus" and (".aus" not in self.name and ".ll" not in self.name):
-            raise ValidationError("Missing '.aus' or '.ll' in repo name '%s'" % self.name)
-        if release_type != "aus" and (".aus" in self.name or ".ll" in self.name):
-            raise ValidationError("Found '.aus' or '.ll' in repo name '%s', but release type is '%s'"
-                                  % (self.name, release_type))
-
-        if release_type == "els" and "els" not in self.name:
-            raise ValidationError("Missing 'els' in repo name '%s'" % self.name)
-        if release_type != "els" and "els" in self.name:
-            raise ValidationError("Found 'els' in repo name '%s', but release type is '%s'"
-                                  % (self.name, release_type))
 
     def export(self):
         return {
