@@ -1923,7 +1923,7 @@ class ComposeTreeViewSet(ChangeSetModelMixin,
 
         __Method__: PATCH
 
-        __URL__: $LINK:composetreelocations-detail:compose_id}/{variant_uid}/{arch}/{location$
+        __URL__: $LINK:composetreelocations-detail:compose_id}/{variant_uid}/{arch}/{location}/{scheme$
 
         __Data__:
 
