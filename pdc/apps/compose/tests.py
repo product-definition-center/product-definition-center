@@ -351,6 +351,10 @@ class ComposeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 1)
 
+    def test_query_compose_deleted_with_illegal_param(self):
+        response = self.client.get(reverse('compose-list'), {"deleted": "abcd"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_query_compose_rpmnvr_nonexisting(self):
         response = self.client.get(reverse('compose-list'), {"rpm_nvr": "does-not-exist"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)

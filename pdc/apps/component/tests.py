@@ -509,8 +509,7 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def test_filter_release_component_by_wrong_active(self):
         url = reverse('releasecomponent-list')
         response = self.client.get(url + '?active=abc', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_filter_release_component_by_release_dist_git_branch(self):
         url = reverse('releasecomponent-list')

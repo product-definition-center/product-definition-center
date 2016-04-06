@@ -247,6 +247,10 @@ class RepositoryRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(reverse('contentdeliveryrepos-list'), {'variant_arch': 'whatever'})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_query_shadow_invalid_filter(self):
+        response = self.client.get(reverse('contentdeliveryrepos-list'), {'shadow': 'abcde'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_query_non_existing(self):
         response = self.client.get(reverse('contentdeliveryrepos-list'), {"release_id": "release-1.1"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)

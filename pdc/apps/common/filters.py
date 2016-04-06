@@ -262,9 +262,14 @@ class CaseInsensitiveBooleanFilter(django_filters.CharFilter):
     TRUE_STRINGS = ('true', 't', '1')
     FALSE_STRINGS = ('false', 'f', '0')
 
+    def _validate_boolean(self, value):
+        if value.lower() not in self.TRUE_STRINGS + self.FALSE_STRINGS:
+            raise ValueError('%s is not a valid boolean value' % value)
+
     def filter(self, qs, value):
         if not value:
             return qs
+        self._validate_boolean(value)
         if value.lower() in self.TRUE_STRINGS:
             qs = qs.filter(**{self.name: True})
         elif value.lower() in self.FALSE_STRINGS:

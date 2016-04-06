@@ -177,6 +177,10 @@ class ProductRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                                          "active": False,
                                          "product_versions": []})
 
+    def test_query_with_illegal_active(self):
+        response = self.client.get(reverse('product-list'), {"active": "abcd"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class ProductUpdateTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
@@ -350,6 +354,10 @@ class ProductVersionRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
             ['product-1.8', 'product-1.9', 'product-1.10', 'product-1.11']
         )
 
+    def test_query_with_illegal_active(self):
+        response = self.client.get(reverse('productversion-list'), {"active": "abcd"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class ProductVersionUpdateRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
@@ -510,9 +518,7 @@ class ActiveFilterTestCase(APITestCase):
 
     def test_filter_product_versions_with_invalid_value(self):
         response = self.client.get(reverse('productversion-list') + '?active=foo')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(set(x['product_version_id'] for x in response.data['results']),
-                         set(['x-1', 'y-1', 'y-2', 'y-3', 'z-1']))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_filter_active_products(self):
         response = self.client.get(reverse('product-list') + '?active=True')
@@ -528,9 +534,7 @@ class ActiveFilterTestCase(APITestCase):
 
     def test__filter_products_with_invalid_value(self):
         response = self.client.get(reverse('product-list') + '?active=foo')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(set(x['short'] for x in response.data['results']),
-                         set(['x', 'y', 'z']))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
@@ -682,6 +686,10 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(reverse('release-list'), {'foo': 'bar'})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual('Unknown query params: foo.', response.data.get('detail'))
+
+    def test_query_illegal_active_filter(self):
+        response = self.client.get(reverse('release-list'), {'active': 'abcd'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_list_ordered(self):
         release_type = models.ReleaseType.objects.get(short='ga')

@@ -9,7 +9,7 @@ import django_filters
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 
-from pdc.apps.common.filters import value_is_not_empty, MultiValueFilter
+from pdc.apps.common.filters import value_is_not_empty, MultiValueFilter, CaseInsensitiveBooleanFilter
 from .models import Compose, OverrideRPM, ComposeTree, ComposeImage
 
 
@@ -35,6 +35,7 @@ class ComposeFilter(django_filters.FilterSet):
                                                     distinct=True)
     rpm_nvr             = django_filters.MethodFilter(action="filter_nvr")
     rpm_nvra            = django_filters.MethodFilter(action="filter_nvra")
+    deleted             = CaseInsensitiveBooleanFilter()
     # TODO: return only latest compose
 
     @value_is_not_empty

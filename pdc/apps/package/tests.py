@@ -1082,6 +1082,10 @@ class ImageRESTTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 1)
 
+    def test_query_bootable_with_illegal_boolean_value(self):
+        response = self.client.get(reverse('image-list'), {'bootable': 'wrong_value'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_negative_bootable(self):
         response = self.client.get(reverse('image-list'), {'bootable': 'false'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)

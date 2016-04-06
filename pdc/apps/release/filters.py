@@ -9,7 +9,7 @@ from pdc.apps.common import filters
 from .models import Release, ProductVersion, Product, ReleaseType, Variant
 
 
-class ActiveReleasesFilter(django_filters.BooleanFilter):
+class ActiveReleasesFilter(filters.CaseInsensitiveBooleanFilter):
     """
     Filter objects depending on whether their releases are active or not. If
     active=True, it will only keep objects with at least one active release.
@@ -18,8 +18,11 @@ class ActiveReleasesFilter(django_filters.BooleanFilter):
     the object.
     """
     def filter(self, qs, value):
+        if not value:
+            return qs
+        self._validate_boolean(value)
         name = self.name + '__active'
-        if value:
+        if value.lower() in self.TRUE_STRINGS:
             return qs.filter(**{name: True}).distinct()
         else:
             return qs.exclude(**{name: True}).distinct()
@@ -31,6 +34,7 @@ class ReleaseFilter(django_filters.FilterSet):
     release_type = django_filters.CharFilter(name='release_type__short')
     product_version = django_filters.CharFilter(name='product_version__product_version_id')
     integrated_with = filters.NullableCharFilter(name='integrated_with__release_id')
+    active = filters.CaseInsensitiveBooleanFilter()
 
     class Meta:
         model = Release

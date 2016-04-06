@@ -5,7 +5,7 @@
 #
 import django_filters as filters
 
-from pdc.apps.common.filters import MultiValueFilter, MultiIntFilter
+from pdc.apps.common.filters import MultiValueFilter, MultiIntFilter, CaseInsensitiveBooleanFilter
 from . import models
 
 
@@ -17,7 +17,7 @@ class RepoFilter(filters.FilterSet):
     variant_uid = MultiValueFilter(name='variant_arch__variant__variant_uid')
     repo_family = MultiValueFilter(name='repo_family__name')
     service = MultiValueFilter(name='service__name')
-    shadow = filters.BooleanFilter()
+    shadow = CaseInsensitiveBooleanFilter()
     product_id = MultiIntFilter()
 
     class Meta:
