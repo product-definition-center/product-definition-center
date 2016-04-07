@@ -586,3 +586,35 @@ class ComposeTree(models.Model):
             "url": self.url,
             "synced_content": [item.name for item in self.synced_content.all()]
         }
+
+
+class PathType(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __unicode__(self):
+        return self.name
+
+    def export(self):
+        return {
+            "name": self.name,
+        }
+
+
+class ComposeRelPath(models.Model):
+    path                = models.CharField(max_length=2000)
+    compose             = models.ForeignKey("Compose")
+    variant             = models.ForeignKey("Variant")
+    arch                = models.ForeignKey("common.Arch")
+    type                = models.ForeignKey("PathType")
+
+    def __unicode__(self):
+        return u"%s-%s-%s-%s-%s" % (self.compose, self.variant, self.arch, self.type.name, self.path)
+
+    def export(self):
+        return {
+            "compose": self.compose.compose_id,
+            "variant": self.variant.variant_uid,
+            "arch": self.arch.name,
+            "type": self.type.name,
+            "path": self.path
+        }

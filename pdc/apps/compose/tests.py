@@ -902,6 +902,7 @@ class ComposeRPMViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_import_and_retrieve_manifest(self):
+        self.assertEqual(models.ComposeRelPath.objects.count(), 0)
         response = self.client.post(reverse('composerpm-list'),
                                     {'rpm_manifest': self.manifest,
                                      'release_id': 'tp-1.0',
@@ -910,8 +911,9 @@ class ComposeRPMViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data.get('compose'), 'TP-1.0-20150310.0')
         self.assertEqual(response.data.get('imported rpms'), 6)
-        self.assertNumChanges([11, 5])
+        self.assertNumChanges([11, 70])
         self.assertEqual(models.ComposeRPM.objects.count(), 6)
+        self.assertGreater(models.ComposeRelPath.objects.count(), 0)
         response = self.client.get(reverse('composerpm-detail', args=['TP-1.0-20150310.0']))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(dict(response.data),
@@ -948,6 +950,7 @@ class ComposeImageAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         models.Path.CACHE = {}
 
     def test_import_images(self):
+        self.assertEqual(models.ComposeRelPath.objects.count(), 0)
         response = self.client.post(reverse('composeimage-list'),
                                     {'image_manifest': self.manifest,
                                      'release_id': 'tp-1.0',
@@ -956,11 +959,12 @@ class ComposeImageAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data.get('compose'), 'TP-1.0-20150310.0')
         self.assertEqual(response.data.get('imported images'), 4)
-        self.assertNumChanges([11, 5])
+        self.assertNumChanges([11, 70])
         self.assertEqual(models.ComposeImage.objects.count(), 4)
         response = self.client.get(reverse('image-list'), {'compose': 'TP-1.0-20150310.0'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 4)
+        self.assertGreater(models.ComposeRelPath.objects.count(), 0)
 
         response = self.client.post(reverse('composeimage-list'),
                                     {'image_manifest': self.manifest,
@@ -1033,7 +1037,7 @@ class ComposeFullImportViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data.get('compose'), 'TP-1.0-20150310.0')
         self.assertEqual(response.data.get('imported rpms'), 6)
         self.assertEqual(response.data.get('imported images'), 4)
-        self.assertNumChanges([11, 7])
+        self.assertNumChanges([11, 72])
         self.assertEqual(models.ComposeRPM.objects.count(), 6)
         self.assertEqual(models.ComposeImage.objects.count(), 4)
 

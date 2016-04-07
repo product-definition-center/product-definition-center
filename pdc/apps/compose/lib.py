@@ -88,6 +88,24 @@ def _add_compose_create_msg(request, compose_obj):
     request._request._messagings.append(('.compose', json.dumps(msg)))
 
 
+def _store_relative_path_for_compose(compose_obj, variants_info, variant, variant_obj, add_to_changelog):
+    vp = productmd.composeinfo.VariantPaths(variant)
+    common_hacks.deserialize_wrapper(vp.deserialize, variants_info.get(variant.name, {}).get('paths', {}))
+    for path_type in vp._fields:
+        path_type_obj, created = models.PathType.objects.get_or_create(name=path_type)
+        if created:
+            add_to_changelog.append(path_type_obj)
+        for arch in variant.arches:
+            field_value = getattr(vp, path_type)
+            if field_value and field_value.get(arch, None):
+                arch_obj = common_models.Arch.objects.get(name=arch)
+                crp_obj, created = models.ComposeRelPath.objects.get_or_create(arch=arch_obj, variant=variant_obj,
+                                                                               compose=compose_obj, type=path_type_obj,
+                                                                               path=field_value[arch])
+                if created:
+                    add_to_changelog.append(crp_obj)
+
+
 @transaction.atomic(savepoint=False)
 def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
     release_obj = release_models.Release.objects.get(release_id=release_id)
@@ -126,6 +144,7 @@ def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
     cursor = connection.cursor()
     add_to_changelog = []
     imported_rpms = 0
+    variants_info = composeinfo['payload']['variants']
 
     for variant in ci.get_variants(recursive=True):
         _link_compose_to_integrated_product(request, compose_obj, variant)
@@ -139,6 +158,9 @@ def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
         )
         if created:
             add_to_changelog.append(variant_obj)
+
+        _store_relative_path_for_compose(compose_obj, variants_info, variant, variant_obj, add_to_changelog)
+
         for arch in variant.arches:
             arch_obj = common_models.Arch.objects.get(name=arch)
             var_arch_obj, _ = models.VariantArch.objects.get_or_create(arch=arch_obj,
@@ -208,6 +230,7 @@ def compose__import_images(request, release_id, composeinfo, image_manifest):
     add_to_changelog = []
     imported_images = 0
 
+    variants_info = composeinfo['payload']['variants']
     for variant in ci.get_variants(recursive=True):
         _link_compose_to_integrated_product(request, compose_obj, variant)
         variant_type = release_models.VariantType.objects.get(name=variant.type)
@@ -220,6 +243,9 @@ def compose__import_images(request, release_id, composeinfo, image_manifest):
         )
         if created:
             add_to_changelog.append(variant_obj)
+
+        _store_relative_path_for_compose(compose_obj, variants_info, variant, variant_obj, add_to_changelog)
+
         for arch in variant.arches:
             arch_obj = common_models.Arch.objects.get(name=arch)
             var_arch_obj, created = models.VariantArch.objects.get_or_create(arch=arch_obj, variant=variant_obj)
