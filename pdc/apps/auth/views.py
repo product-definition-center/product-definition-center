@@ -128,7 +128,7 @@ class TokenViewSet(StrictQueryParamMixin, viewsets.ViewSet):
 
         for curl, it should be:
 
-            curl -H 'Authorization: Token 00bf04e8187f6e6d54f510515e8bde88e5bb790' %(HOST_NAME)s/%(API_PATH)s/
+            curl -H 'Authorization: Token 00bf04e8187f6e6d54f510515e8bde88e5bb790' $URL:home$%(API_PATH)s/
 
     * in case you want refresh your token, you can do it with:
 
