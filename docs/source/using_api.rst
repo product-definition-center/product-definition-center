@@ -5,6 +5,37 @@ Using API
 
 This page contains details about using PDC from the API user view-point.
 
+PDC API Stability Promise
+-------------------------
+
+Product Definition Center promises API stability and forwards-compatibility of
+APIv1 from version 0.9.0. In a nutshell, this means that code you develop
+against PDC  will continue to work with future releases. You might be required
+to make changes to your usage of the API when changing to a different version of
+the API or when you want to make use of new features.
+
+
+What *stable* means?
+~~~~~~~~~~~~~~~~~~~~
+
+In this context, stable means:
+ * The documented APIs will not be removed or renamed
+ * Arguments for APIs will not be removed or renamed
+ * Keys in returned JSON dictionaries will not be removed or renamed
+ * If new features are added to these APIs – which is quite possible – they will not break or change the meaning of existing methods. In other words, “stable” does not (necessarily) mean *complete*
+ * If, for some reason, an API declared stable must be removed or replaced, it will be declared deprecated in given version of the API and removed/replaced in future version of API
+ * We’ll only break backwards compatibility of these APIs if a bug or security hole makes it completely unavoidable.
+
+To make use of this stability your client code has to accept unknown keys and
+values in responses and ignore them if they are not recognized.
+
+Exceptions
+~~~~~~~~~~
+There are a few exceptions to the above stability promise. Specifically:
+ * APIs marked as *experimental* are not part of promise. This enables us to
+   add new APIs and test them properly before marking them as stable
+ * If a security or other high-impact bug is encountered we might break stability
+   promise. This would be used as last resort. 
 
 Authentication
 --------------
