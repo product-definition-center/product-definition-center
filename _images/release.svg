@@ -244,25 +244,25 @@
 <text text-anchor="start" x="202" y="-292.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ReleaseType -->
-<g id="edge13" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ReleaseType</title>
+<g id="edge9" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ReleaseType</title>
 <path fill="none" stroke="black" d="M65.725,-277.61C56.459,-264.62 48.411,-250.6 43,-236 27.861,-195.16 26.818,-178.44 43,-138 50.27,-119.83 63.479,-103.34 77.149,-89.815"/>
 <ellipse fill="black" stroke="black" cx="68.2981" cy="-281.093" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="83.5" y="-185.8" font-family="Helvetica,sans-Serif" font-size="8.00">release_type (release)</text>
 </g>
 <!-- pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_BaseProduct -->
-<g id="edge11" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_BaseProduct</title>
+<g id="edge13" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_BaseProduct</title>
 <path fill="none" stroke="black" d="M187.93,-277.02C195.18,-262.85 202.54,-248.48 209.17,-235.52"/>
 <ellipse fill="black" stroke="black" cx="185.972" cy="-280.849" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="240" y="-258.8" font-family="Helvetica,sans-Serif" font-size="8.00">base_product (release)</text>
 </g>
 <!-- pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ProductVersion -->
-<g id="edge9" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ProductVersion</title>
+<g id="edge7" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ProductVersion</title>
 <path fill="none" stroke="black" d="M258.64,-295.98C294.96,-276.12 334.75,-254.37 369.17,-235.55"/>
 <ellipse fill="black" stroke="black" cx="254.931" cy="-298.004" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="376" y="-258.8" font-family="Helvetica,sans-Serif" font-size="8.00">product_version (release)</text>
 </g>
 <!-- pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_Release -->
-<g id="edge7" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_Release</title>
+<g id="edge11" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_Release</title>
 <path fill="none" stroke="black" d="M258.92,-369.16C265.24,-366.22 269,-362.16 269,-357 269,-349.97 262.02,-345 251.13,-342.09"/>
 <ellipse fill="black" stroke="black" cx="254.902" cy="-370.578" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="336" y="-355.8" font-family="Helvetica,sans-Serif" font-size="8.00">integrated_with (integrated_releases)</text>
