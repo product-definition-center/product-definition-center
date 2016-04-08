@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>1. Using API &mdash; PDC 0.9.rc-3.44.g3306d76 documentation</title>
+    <title>1. Using API &mdash; PDC 0.9.rc-3.46.g53af32c documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9.rc-3.44.g3306d76',
+        VERSION:     '0.9.rc-3.46.g53af32c',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PDC 0.9.rc-3.44.g3306d76 documentation" href="index.html" />
+    <link rel="top" title="PDC 0.9.rc-3.46.g53af32c documentation" href="index.html" />
     <link rel="next" title="2. Bulk operations" href="bulk_operations.html" />
     <link rel="prev" title="Welcome to PDC’s documentation!" href="index.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="index.html" title="Welcome to PDC’s documentation!"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.9.rc-3.44.g3306d76 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.9.rc-3.46.g53af32c documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -52,8 +52,46 @@
   <div class="section" id="using-api">
 <span id="id1"></span><h1>1. Using API<a class="headerlink" href="#using-api" title="Permalink to this headline">¶</a></h1>
 <p>This page contains details about using PDC from the API user view-point.</p>
+<div class="section" id="pdc-api-stability-promise">
+<h2>1.1. PDC API Stability Promise<a class="headerlink" href="#pdc-api-stability-promise" title="Permalink to this headline">¶</a></h2>
+<p>Product Definition Center promises API stability and forwards-compatibility of
+APIv1 from version 0.9.0. In a nutshell, this means that code you develop
+against PDC  will continue to work with future releases. You might be required
+to make changes to your usage of the API when changing to a different version of
+the API or when you want to make use of new features.</p>
+<div class="section" id="what-stable-means">
+<h3>1.1.1. What <em>stable</em> means?<a class="headerlink" href="#what-stable-means" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>In this context, stable means:</dt>
+<dd><ul class="first last simple">
+<li>The documented APIs will not be removed or renamed</li>
+<li>Arguments for APIs will not be removed or renamed</li>
+<li>Keys in returned JSON dictionaries will not be removed or renamed</li>
+<li>If new features are added to these APIs – which is quite possible – they will not break or change the meaning of existing methods. In other words, “stable” does not (necessarily) mean <em>complete</em></li>
+<li>If, for some reason, an API declared stable must be removed or replaced, it will be declared deprecated in given version of the API and removed/replaced in future version of API</li>
+<li>We’ll only break backwards compatibility of these APIs if a bug or security hole makes it completely unavoidable.</li>
+</ul>
+</dd>
+</dl>
+<p>To make use of this stability your client code has to accept unknown keys and
+values in responses and ignore them if they are not recognized.</p>
+</div>
+<div class="section" id="exceptions">
+<h3>1.1.2. Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>There are a few exceptions to the above stability promise. Specifically:</dt>
+<dd><ul class="first last simple">
+<li>APIs marked as <em>experimental</em> are not part of promise. This enables us to
+add new APIs and test them properly before marking them as stable</li>
+<li>If a security or other high-impact bug is encountered we might break stability
+promise. This would be used as last resort.</li>
+</ul>
+</dd>
+</dl>
+</div>
+</div>
 <div class="section" id="authentication">
-<h2>1.1. Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h2>
+<h2>1.2. Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h2>
 <p>By default, all the API calls require authentication. While the web UI is
 authenticated using an external system such as Kerberos or SAML2, the API uses
 a custom authentication for performance reasons.</p>
@@ -74,7 +112,7 @@ use the <code class="docutils literal"><span class="pre">/rest_api/v1/auth/token
 handled transparently for you.</p>
 </div>
 <div class="section" id="paging">
-<h2>1.2. Paging<a class="headerlink" href="#paging" title="Permalink to this headline">¶</a></h2>
+<h2>1.3. Paging<a class="headerlink" href="#paging" title="Permalink to this headline">¶</a></h2>
 <p>The lists returned from the API can be quite long. They are paginated by
 default with pages containing 20 items.</p>
 <p>The structure of paginated reply is JSON object with following keys:</p>
@@ -101,7 +139,7 @@ hundreds or thousands of results, consider getting the data page by page
 instead.</p>
 </div>
 <div class="section" id="change-monitoring">
-<h2>1.3. Change monitoring<a class="headerlink" href="#change-monitoring" title="Permalink to this headline">¶</a></h2>
+<h2>1.4. Change monitoring<a class="headerlink" href="#change-monitoring" title="Permalink to this headline">¶</a></h2>
 <p>Whenever a change is performed through the API, a log is created so that it is
 possible to find out what, when, why and by who was changed.</p>
 <p>The changes can be viewed from the API under the <code class="docutils literal"><span class="pre">/rest_api/v1/changesets/</span></code>
@@ -121,9 +159,14 @@ whose value is an arbitrary string that will be stored with the change.</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">1. Using API</a><ul>
-<li><a class="reference internal" href="#authentication">1.1. Authentication</a></li>
-<li><a class="reference internal" href="#paging">1.2. Paging</a></li>
-<li><a class="reference internal" href="#change-monitoring">1.3. Change monitoring</a></li>
+<li><a class="reference internal" href="#pdc-api-stability-promise">1.1. PDC API Stability Promise</a><ul>
+<li><a class="reference internal" href="#what-stable-means">1.1.1. What <em>stable</em> means?</a></li>
+<li><a class="reference internal" href="#exceptions">1.1.2. Exceptions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#authentication">1.2. Authentication</a></li>
+<li><a class="reference internal" href="#paging">1.3. Paging</a></li>
+<li><a class="reference internal" href="#change-monitoring">1.4. Change monitoring</a></li>
 </ul>
 </li>
 </ul>
@@ -167,7 +210,7 @@ whose value is an arbitrary string that will be stored with the change.</p>
         <li class="right" >
           <a href="index.html" title="Welcome to PDC’s documentation!"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.9.rc-3.44.g3306d76 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 0.9.rc-3.46.g53af32c documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
