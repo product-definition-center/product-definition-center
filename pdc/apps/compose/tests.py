@@ -1473,6 +1473,7 @@ class OverrideManagementTestCase(TestCase):
         "pdc/apps/compose/fixtures/tests/variant_arch.json",
         "pdc/apps/compose/fixtures/tests/compose_overriderpm.json",
         "pdc/apps/compose/fixtures/tests/compose.json",
+        "pdc/apps/compose/fixtures/tests/more_releases.json",
         "pdc/apps/compose/fixtures/tests/compose_composerpm.json",
     ]
 
@@ -1509,6 +1510,11 @@ class OverrideManagementTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         # There is one package in fixtures
         self.assertEqual(len(response.context['forms']), 1)
+
+    def test_release_without_compose(self):
+        client = Client()
+        response = client.get('/override/manage/release-1.0-updates/?package=')
+        self.assertEqual(response.status_code, 200)
 
     def test_submit_no_changes(self):
         client = Client()
