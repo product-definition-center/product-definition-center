@@ -882,10 +882,12 @@ class ComposeRPMViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
     ]
 
     def setUp(self):
-        with open('pdc/apps/release/fixtures/tests/composeinfo.json', 'r') as f:
+        with open('pdc/apps/release/fixtures/tests/composeinfo-0.3.json', 'r') as f:
             self.compose_info = json.loads(f.read())
-        with open('pdc/apps/compose/fixtures/tests/rpm-manifest.json', 'r') as f:
-            self.manifest = json.loads(f.read())
+        with open('pdc/apps/compose/fixtures/tests/rpms-1.0.json', 'r') as f:
+            self.manifest10 = json.loads(f.read())
+        with open('pdc/apps/compose/fixtures/tests/rpms-1.1.json', 'r') as f:
+            self.manifest11 = json.loads(f.read())
         self.client.post(reverse('releaseimportcomposeinfo-list'),
                          self.compose_info, format='json')
         # Caching ids makes it faster, but the cache needs to be cleared for each test.
@@ -893,18 +895,18 @@ class ComposeRPMViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         common_models.SigKey.CACHE = {}
 
     def test_import_inconsistent_data(self):
-        self.manifest['payload']['compose']['id'] = 'TP-1.0-20150315.0'
+        self.manifest10['payload']['compose']['id'] = 'TP-1.0-20150315.0'
         response = self.client.post(reverse('composerpm-list'),
-                                    {'rpm_manifest': self.manifest,
+                                    {'rpm_manifest': self.manifest10,
                                      'release_id': 'tp-1.0',
                                      'composeinfo': self.compose_info},
                                     format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_import_and_retrieve_manifest(self):
+    def test_import_and_retrieve_manifest_1_0(self):
         self.assertEqual(models.ComposeRelPath.objects.count(), 0)
         response = self.client.post(reverse('composerpm-list'),
-                                    {'rpm_manifest': self.manifest,
+                                    {'rpm_manifest': self.manifest10,
                                      'release_id': 'tp-1.0',
                                      'composeinfo': self.compose_info},
                                     format='json')
@@ -917,10 +919,37 @@ class ComposeRPMViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(reverse('composerpm-detail', args=['TP-1.0-20150310.0']))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(dict(response.data),
-                             self.manifest)
+                             self.manifest11)
 
         response = self.client.post(reverse('composerpm-list'),
-                                    {'rpm_manifest': self.manifest,
+                                    {'rpm_manifest': self.manifest10,
+                                     'release_id': 'tp-1.0',
+                                     'composeinfo': self.compose_info},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.get('compose'), 'TP-1.0-20150310.0')
+        self.assertEqual(response.data.get('imported rpms'), 6)
+
+    def test_import_and_retrieve_manifest_1_1(self):
+        self.assertEqual(models.ComposeRelPath.objects.count(), 0)
+        response = self.client.post(reverse('composerpm-list'),
+                                    {'rpm_manifest': self.manifest11,
+                                     'release_id': 'tp-1.0',
+                                     'composeinfo': self.compose_info},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.get('compose'), 'TP-1.0-20150310.0')
+        self.assertEqual(response.data.get('imported rpms'), 6)
+        self.assertNumChanges([11, 70])
+        self.assertEqual(models.ComposeRPM.objects.count(), 6)
+        self.assertGreater(models.ComposeRelPath.objects.count(), 0)
+        response = self.client.get(reverse('composerpm-detail', args=['TP-1.0-20150310.0']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(dict(response.data),
+                             self.manifest11)
+
+        response = self.client.post(reverse('composerpm-list'),
+                                    {'rpm_manifest': self.manifest11,
                                      'release_id': 'tp-1.0',
                                      'composeinfo': self.compose_info},
                                     format='json')
@@ -930,7 +959,7 @@ class ComposeRPMViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_import_manifest_with_extra_param(self):
         response = self.client.post(reverse('composerpm-list'),
-                                    {'rpm_manifest': self.manifest,
+                                    {'rpm_manifest': self.manifest10,
                                      'release_id': 'tp-1.0',
                                      'composeinfo': self.compose_info,
                                      'fake_key': 'fake_value'},
@@ -940,19 +969,21 @@ class ComposeRPMViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
 
 class ComposeImageAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
     def setUp(self):
-        with open('pdc/apps/release/fixtures/tests/composeinfo.json', 'r') as f:
+        with open('pdc/apps/release/fixtures/tests/composeinfo-0.3.json', 'r') as f:
             self.compose_info = json.loads(f.read())
-        with open('pdc/apps/compose/fixtures/tests/image-manifest.json', 'r') as f:
-            self.manifest = json.loads(f.read())
+        with open('pdc/apps/compose/fixtures/tests/images-1.0.json', 'r') as f:
+            self.manifest10 = json.loads(f.read())
+        with open('pdc/apps/compose/fixtures/tests/images-1.1.json', 'r') as f:
+            self.manifest11 = json.loads(f.read())
         self.client.post(reverse('releaseimportcomposeinfo-list'),
                          self.compose_info, format='json')
         # Caching ids makes it faster, but the cache needs to be cleared for each test.
         models.Path.CACHE = {}
 
-    def test_import_images(self):
+    def test_import_images_1_0(self):
         self.assertEqual(models.ComposeRelPath.objects.count(), 0)
         response = self.client.post(reverse('composeimage-list'),
-                                    {'image_manifest': self.manifest,
+                                    {'image_manifest': self.manifest10,
                                      'release_id': 'tp-1.0',
                                      'composeinfo': self.compose_info},
                                     format='json')
@@ -967,7 +998,7 @@ class ComposeImageAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertGreater(models.ComposeRelPath.objects.count(), 0)
 
         response = self.client.post(reverse('composeimage-list'),
-                                    {'image_manifest': self.manifest,
+                                    {'image_manifest': self.manifest10,
                                      'release_id': 'tp-1.0',
                                      'composeinfo': self.compose_info},
                                     format='json')
@@ -977,7 +1008,7 @@ class ComposeImageAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_import_images_with_extra_param(self):
         response = self.client.post(reverse('composeimage-list'),
-                                    {'image_manifest': self.manifest,
+                                    {'image_manifest': self.manifest10,
                                      'release_id': 'tp-1.0',
                                      'composeinfo': self.compose_info,
                                      'fake_key': 'fake_value'},
@@ -985,24 +1016,35 @@ class ComposeImageAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_import_inconsistent_data(self):
-        self.manifest['payload']['compose']['id'] = 'TP-1.0-20150315.0'
+        self.manifest10['payload']['compose']['id'] = 'TP-1.0-20150315.0'
         response = self.client.post(reverse('composeimage-list'),
-                                    {'image_manifest': self.manifest,
+                                    {'image_manifest': self.manifest10,
                                      'release_id': 'tp-1.0',
                                      'composeinfo': self.compose_info},
                                     format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_import_and_retrieve_images(self):
+    def test_import_and_retrieve_images_1_0(self):
         response = self.client.post(reverse('composeimage-list'),
-                                    {'image_manifest': self.manifest,
+                                    {'image_manifest': self.manifest10,
                                      'release_id': 'tp-1.0',
                                      'composeinfo': self.compose_info},
                                     format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         response = self.client.get(reverse('composeimage-detail', args=['TP-1.0-20150310.0']))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertDictEqual(dict(response.data), self.manifest)
+        self.assertDictEqual(dict(response.data), self.manifest11)
+
+    def test_import_and_retrieve_images_1_1(self):
+        response = self.client.post(reverse('composeimage-list'),
+                                    {'image_manifest': self.manifest11,
+                                     'release_id': 'tp-1.0',
+                                     'composeinfo': self.compose_info},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.client.get(reverse('composeimage-detail', args=['TP-1.0-20150310.0']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(dict(response.data), self.manifest11)
 
 
 class ComposeFullImportViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
@@ -1012,18 +1054,23 @@ class ComposeFullImportViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
     ]
 
     def setUp(self):
-        with open('pdc/apps/release/fixtures/tests/composeinfo.json', 'r') as f:
+        with open('pdc/apps/release/fixtures/tests/composeinfo-0.3.json', 'r') as f:
             self.compose_info = json.loads(f.read())
-        with open('pdc/apps/compose/fixtures/tests/rpm-manifest.json', 'r') as f:
+        with open('pdc/apps/compose/fixtures/tests/rpms-1.0.json', 'r') as f:
             self.rpm_manifest = json.loads(f.read())
-        with open('pdc/apps/compose/fixtures/tests/image-manifest.json', 'r') as f:
+        with open('pdc/apps/compose/fixtures/tests/rpms-1.1.json', 'r') as f:
+            self.rpms11 = json.loads(f.read())
+        with open('pdc/apps/compose/fixtures/tests/images-1.0.json', 'r') as f:
             self.image_manifest = json.loads(f.read())
+        with open('pdc/apps/compose/fixtures/tests/images-1.1.json', 'r') as f:
+            self.images11 = json.loads(f.read())
         self.client.post(reverse('releaseimportcomposeinfo-list'),
                          self.compose_info, format='json')
         # Caching ids makes it faster, but the cache needs to be cleared for each test.
         models.Path.CACHE = {}
+        common_models.SigKey.CACHE = {}
 
-    def test_import_and_retrieve_manifest(self):
+    def test_import_and_retrieve_manifest_1_0(self):
         response = self.client.post(reverse('composefullimport-list'),
                                     {'rpm_manifest': self.rpm_manifest,
                                      'image_manifest': self.image_manifest,
@@ -1044,12 +1091,62 @@ class ComposeFullImportViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(reverse('composerpm-detail', args=['TP-1.0-20150310.0']))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(dict(response.data),
-                             self.rpm_manifest)
+                             self.rpms11)
 
         response = self.client.get(reverse('composeimage-detail', args=['TP-1.0-20150310.0']))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(dict(response.data),
-                             self.image_manifest)
+                             self.images11)
+
+        response = self.client.get(reverse('composetreelocations-list'), {})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 5)
+
+        # test if data already there
+        response = self.client.post(reverse('composefullimport-list'),
+                                    {'rpm_manifest': self.rpm_manifest,
+                                     'image_manifest': self.image_manifest,
+                                     'release_id': 'tp-1.0',
+                                     'composeinfo': self.compose_info,
+                                     'location': 'NAY',
+                                     'scheme': 'http',
+                                     'url': 'abc.com'},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.get('compose'), 'TP-1.0-20150310.0')
+        self.assertEqual(response.data.get('imported rpms'), 6)
+        self.assertEqual(response.data.get('imported images'), 4)
+        response = self.client.get(reverse('composetreelocations-list'), {})
+        self.assertEqual(response.data['count'], 5)
+
+    def test_import_and_retrieve_manifest_1_1(self):
+        response = self.client.post(reverse('composefullimport-list'),
+                                    {'rpm_manifest': self.rpms11,
+                                     'image_manifest': self.images11,
+                                     'release_id': 'tp-1.0',
+                                     'composeinfo': self.compose_info,
+                                     'location': 'NAY',
+                                     'scheme': 'http',
+                                     'url': 'abc.com'},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.get('compose'), 'TP-1.0-20150310.0')
+        self.assertEqual(response.data.get('imported rpms'), 6)
+        self.assertEqual(response.data.get('imported images'), 4)
+        self.assertNumChanges([11, 72])
+        self.assertEqual(models.ComposeRPM.objects.count(), 6)
+        self.assertEqual(models.ComposeImage.objects.count(), 4)
+
+        response = self.client.get(reverse('composerpm-detail', args=['TP-1.0-20150310.0']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.maxDiff = None
+        self.assertDictEqual(dict(response.data),
+                             self.rpms11)
+
+        response = self.client.get(reverse('composeimage-detail', args=['TP-1.0-20150310.0']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(dict(response.data),
+                             self.images11)
 
         response = self.client.get(reverse('composetreelocations-list'), {})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -1074,8 +1171,8 @@ class ComposeFullImportViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_import_manifest_with_extra_param(self):
         response = self.client.post(reverse('composefullimport-list'),
-                                    {'rpm_manifest': self.rpm_manifest,
-                                     'image_manifest': self.image_manifest,
+                                    {'rpm_manifest': self.rpms11,
+                                     'image_manifest': self.images11,
                                      'release_id': 'tp-1.0',
                                      'composeinfo': self.compose_info,
                                      'location': 'NAY',
@@ -1086,10 +1183,10 @@ class ComposeFullImportViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_import_if_rpm_manifest_inconsistent(self):
-        self.rpm_manifest['payload']['compose']['id'] = 'TP-1.0-20150315.0'
+        self.rpms11['payload']['compose']['id'] = 'TP-1.0-20150315.0'
         response = self.client.post(reverse('composefullimport-list'),
-                                    {'rpm_manifest': self.rpm_manifest,
-                                     'image_manifest': self.image_manifest,
+                                    {'rpm_manifest': self.rpms11,
+                                     'image_manifest': self.images11,
                                      'release_id': 'tp-1.0',
                                      'composeinfo': self.compose_info,
                                      'location': 'NAY',
@@ -1111,10 +1208,10 @@ class ComposeFullImportViewAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data['count'], 0)
 
     def test_import_if_image_manifest_inconsistent(self):
-        self.image_manifest['payload']['compose']['id'] = 'TP-1.0-20150315.0'
+        self.images11['payload']['compose']['id'] = 'TP-1.0-20150315.0'
         response = self.client.post(reverse('composefullimport-list'),
-                                    {'rpm_manifest': self.rpm_manifest,
-                                     'image_manifest': self.image_manifest,
+                                    {'rpm_manifest': self.rpms11,
+                                     'image_manifest': self.images11,
                                      'release_id': 'tp-1.0',
                                      'composeinfo': self.compose_info,
                                      'location': 'NAY',

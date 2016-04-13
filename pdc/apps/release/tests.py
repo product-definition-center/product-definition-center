@@ -1337,7 +1337,7 @@ class ReleaseComposeLinkingTestCase(APITestCase):
 
 class ReleaseImportTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def test_import_correct_data(self):
-        with open('pdc/apps/release/fixtures/tests/composeinfo.json', 'r') as f:
+        with open('pdc/apps/release/fixtures/tests/composeinfo-0.3.json', 'r') as f:
             data = json.loads(f.read())
         response = self.client.post(reverse('releaseimportcomposeinfo-list'), data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -1405,7 +1405,7 @@ class ReleaseImportTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_import_incorrect_layered_product_version_mismatch(self):
-        with open('pdc/apps/release/fixtures/tests/composeinfo.json', 'r') as f:
+        with open('pdc/apps/release/fixtures/tests/composeinfo-0.3.json', 'r') as f:
             data = json.loads(f.read())
         # Import version 1.0
         response = self.client.post(reverse('releaseimportcomposeinfo-list'), data, format='json')
