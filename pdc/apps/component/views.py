@@ -18,6 +18,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from pdc.apps.common import viewsets
+from pdc.apps.common.constants import PUT_OPTIONAL_PARAM_WARNING
 from pdc.apps.common.models import Label
 from pdc.apps.common.serializers import LabelSerializer, StrictSerializerMixin
 from pdc.apps.utils.utils import generate_warning_header_dict
@@ -448,6 +449,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
     serializer_class = ReleaseComponentSerializer
     filter_class = ReleaseComponentFilter
     extra_query_params = ('include_inactive_release', )
+    docstring_macros = PUT_OPTIONAL_PARAM_WARNING
 
     def get_queryset(self):
         qs = self.model.objects.all()
@@ -551,6 +553,8 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
 
     def update(self, request, *args, **kwargs):
         """
+        %(PUT_OPTIONAL_PARAM_WARNING)s
+
         __Method__:
 
         PUT:
