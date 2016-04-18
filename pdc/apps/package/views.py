@@ -7,6 +7,7 @@ from rest_framework import viewsets, mixins
 
 from contrib.bulk_operations import bulk_operations
 from pdc.apps.common import viewsets as pdc_viewsets
+from pdc.apps.common.constants import PUT_OPTIONAL_PARAM_WARNING
 from . import models
 from . import serializers
 from . import filters
@@ -24,6 +25,7 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
     queryset = models.RPM.objects.all().order_by("id")
     serializer_class = serializers.RPMSerializer
     filter_class = filters.RPMFilter
+    docstring_macros = PUT_OPTIONAL_PARAM_WARNING
 
     def list(self, *args, **kwargs):
         """
@@ -103,6 +105,8 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
 
     def update(self, request, *args, **kwargs):
         """
+        %(PUT_OPTIONAL_PARAM_WARNING)s
+
         __Method__: `PUT`, `PATCH`
 
         __URL__: $LINK:rpms-detail:instance_pk$

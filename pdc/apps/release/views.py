@@ -22,6 +22,7 @@ from .serializers import (ProductSerializer, ProductVersionSerializer,
                           ReleaseTypeSerializer, ReleaseVariantSerializer,
                           VariantTypeSerializer)
 from pdc.apps.repository import models as repo_models
+from pdc.apps.common.constants import PUT_OPTIONAL_PARAM_WARNING
 from pdc.apps.common.viewsets import (ChangeSetModelMixin,
                                       ChangeSetCreateModelMixin,
                                       ChangeSetUpdateModelMixin,
@@ -305,6 +306,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
     lookup_field = 'release_id'
     lookup_value_regex = '[^/]+'
     filter_class = filters.ReleaseFilter
+    docstring_macros = PUT_OPTIONAL_PARAM_WARNING
 
     def filter_queryset(self, qs):
         """
@@ -387,8 +389,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
         """
         This end-point allows updating a release.
 
-        When using the `PUT` method, if an optional field is not specified in
-        the input, it will be erased.
+        %(PUT_OPTIONAL_PARAM_WARNING)s
 
         This applies also to Bugzilla and DistGit mapping: if it is not specified,
         it will be cleared.
