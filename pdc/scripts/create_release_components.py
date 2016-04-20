@@ -34,16 +34,9 @@ def _find_src_rpm_names_for_compose(compose_id):
 
 
 def _bulk_insert_resource(resource_name, data_list):
-    data_list_len = len(data_list)
-    current_index = 0
-    while data_list_len > current_index + BATCH_NUM:
-        inserting_data = data_list[current_index: current_index + BATCH_NUM]
-        client[resource_name]._(inserting_data)
-        current_index += BATCH_NUM
-
-    if current_index < data_list_len:
-        inserting_data = data_list[current_index:]
-        client[resource_name]._(inserting_data)
+    for i in xrange(0, len(data_list), BATCH_NUM):
+        batch = data_list[i:(i + BATCH_NUM)]
+        client[resource_name]._(batch)
 
 
 def _generate_global_components(name_set):
