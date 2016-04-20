@@ -59,11 +59,12 @@ class RPMSerializer(StrictSerializerMixin,
                     serializers.ModelSerializer):
     filename = serializers.CharField(default=DefaultFilenameGenerator())
     linked_releases = serializers.SlugRelatedField(many=True, slug_field='release_id',
-                                                   queryset=models.Release.objects.all(), required=False)
+                                                   queryset=models.Release.objects.all(), required=False, default=[])
     linked_composes = serializers.SlugRelatedField(read_only=True, slug_field='compose_id', many=True)
     built_for_release = serializers.SlugRelatedField(slug_field='release_id', queryset=models.Release.objects.all(),
                                                      default=None, allow_null=True)
     dependencies = DependencySerializer(required=False, default={})
+    srpm_nevra = serializers.CharField(required=False, default=None)
 
     class Meta:
         model = models.RPM

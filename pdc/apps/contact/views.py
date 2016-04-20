@@ -5,6 +5,7 @@
 #
 
 from pdc.apps.common import viewsets
+from pdc.apps.common.constants import PUT_OPTIONAL_PARAM_WARNING
 from .models import (Person, Maillist, ContactRole,
                      GlobalComponentContact, ReleaseComponentContact)
 from .serializers import (PersonSerializer, MaillistSerializer, ContactRoleSerializer,
@@ -325,6 +326,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
     -d _data_ (a json string). or GUI plugins for
     browsers, such as ``RESTClient``, ``RESTConsole``.
     """
+    docstring_macros = PUT_OPTIONAL_PARAM_WARNING
 
     def create(self, request, *args, **kwargs):
         """
@@ -431,6 +433,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
     def update(self, request, *args, **kwargs):
         """
         ### UPDATE
+        %(PUT_OPTIONAL_PARAM_WARNING)s
 
         __Method__: `PUT`, `PATCH`
 

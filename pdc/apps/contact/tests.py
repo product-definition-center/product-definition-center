@@ -124,6 +124,13 @@ class ContactRoleRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                       response.data.get('count_limit')[0])
         self.assertNumChanges([])
 
+    def test_update_missing_optional_fields_are_erased(self):
+        response = self.client.put(reverse('contactrole-detail', args=['allow_3_role']),
+                                   {'name': 'new_name'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count_limit'], 1)
+        self.assertNumChanges([1])
+
 
 class PersonRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = ['pdc/apps/component/fixtures/tests/global_component.json',

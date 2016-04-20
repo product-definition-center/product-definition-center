@@ -38,7 +38,7 @@ class LimitField(serializers.IntegerField):
 class ContactRoleSerializer(StrictSerializerMixin,
                             serializers.HyperlinkedModelSerializer):
     name = serializers.SlugField()
-    count_limit = LimitField(required=False, unlimited_value=ContactRole.UNLIMITED)
+    count_limit = LimitField(required=False, unlimited_value=ContactRole.UNLIMITED, default=1)
 
     class Meta:
         model = ContactRole

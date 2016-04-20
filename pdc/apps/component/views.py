@@ -567,7 +567,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
 
         ``brew_package``: brew package name, **OPTIONAL**
 
-        ``"active"``: status of release component, **OPTIONAL**
+        ``"active"``: status of release component, defalut=true,**OPTIONAL**
 
         ``"srpm"``:
             {
@@ -989,6 +989,7 @@ class GroupTypeViewSet(viewsets.PDCModelViewSet):
     serializer_class = GroupTypeSerializer
     queryset = GroupType.objects.all().order_by('id')
     filter_class = GroupTypeFilter
+    docstring_macros = PUT_OPTIONAL_PARAM_WARNING
 
     def create(self, request, *args, **kwargs):
         """
@@ -1036,6 +1037,8 @@ class GroupTypeViewSet(viewsets.PDCModelViewSet):
 
     def update(self, request, *args, **kwargs):
         """
+        %(PUT_OPTIONAL_PARAM_WARNING)s
+
         __Method__: PUT, PATCH
 
         __URL__: $LINK:componentgrouptype-detail:instance_pk$

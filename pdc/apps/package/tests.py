@@ -994,6 +994,25 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         count = response.data['count']
         self.assertEqual(count, 1)
 
+    def test_update_missing_optional_fields_are_erased(self):
+        url = reverse('rpms-list')
+        data = {"name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1", "arch": "x86_64",
+                "srpm_name": "bash", "filename": "bash-1.2.3-4.b1.x86_64.rpm", "linked_releases": ['release-1.0'],
+                "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src", "built_for_release": 'release-2.0'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        data = {"name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1", "arch": "x86_64",
+                "srpm_name": "bash", "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src"}
+        url = reverse('rpms-detail', args=[4])
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['linked_releases'], [])
+        self.assertEqual(response.data['built_for_release'], None)
+        self.assertEqual(response.data['dependencies'], {"recommends": [], "suggests": [], "obsoletes": [],
+                                                         "provides": [], "conflicts": [], "requires": []})
+        self.assertEqual(response.data['filename'], 'fake_bash-1.2.3-4.b1.x86_64.rpm')
+        self.assertNumChanges([1, 1])
+
 
 class ImageRESTTestCase(APITestCase):
     fixtures = [

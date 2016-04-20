@@ -157,12 +157,12 @@ class RepositoryRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_update_without_product_id(self):
         """The repo has product_id, update tries to change name with product_id unspecified in request."""
-        pid = self.existing.pop('product_id')
+        self.existing.pop('product_id')
         self.existing['name'] = 'new_name'
         id = self.existing.pop('id')
         response = self.client.put(reverse('contentdeliveryrepos-detail', args=[1]), self.existing, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.existing['product_id'] = pid
+        self.existing['product_id'] = 0
         self.existing['id'] = id
         self.assertDictEqual(dict(response.data), self.existing)
         self.assertNumChanges([1])
@@ -207,6 +207,39 @@ class RepositoryRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                                      format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertNumChanges([])
+
+    def test_update_missing_optional_fields_are_erased(self):
+        variant = release_models.Variant.objects.create(
+            release=release_models.Release.objects.get(release_id='release-1.0'),
+            variant_type=release_models.VariantType.objects.get(name='variant'),
+            variant_uid='Client', variant_name='Client', variant_id='Client'
+        )
+        release_models.VariantArch.objects.create(
+            variant=variant,
+            arch_id=47  # x86_64
+        )
+        data = {
+            'release_id': 'release-1.0', 'variant_uid': 'Client', 'arch': 'x86_64',
+            'service': 'rhn', 'repo_family': 'dist', 'content_format': 'rpm',
+            'content_category': 'debug', 'name': 'test_repo-debug', 'shadow': True
+        }
+        response = self.client.put(reverse('contentdeliveryrepos-detail', args=[1]),
+                                   data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['shadow'], True)
+        self.assertEqual(response.data['product_id'], 0)
+
+        data = {
+            'release_id': 'release-1.0', 'variant_uid': 'Client', 'arch': 'x86_64',
+            'service': 'rhn', 'repo_family': 'dist', 'content_format': 'rpm',
+            'content_category': 'debug', 'name': 'test_repo-debug', 'product_id': 33
+        }
+        response = self.client.put(reverse('contentdeliveryrepos-detail', args=[1]),
+                                   data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['product_id'], 33)
+        self.assertEqual(response.data['shadow'], False)
 
     def test_create_duplicit(self):
         response = self.client.post(reverse('contentdeliveryrepos-list'), self.existing)
@@ -598,7 +631,7 @@ class RepoBulkTestCase(TestCaseWithChangeSetMixin, APITestCase):
                  'content_format': 'rpm',
                  'content_category': 'binary',
                  'name': 'repo-1.0-htb-rpms',
-                 'product_id': None,
+                 'product_id': 0,
                  'shadow': False},
                 {'release_id': 'release-1.0',
                  'variant_uid': 'Server',
@@ -608,7 +641,7 @@ class RepoBulkTestCase(TestCaseWithChangeSetMixin, APITestCase):
                  'content_format': 'rpm',
                  'content_category': 'binary',
                  'name': 'repo-1.0-beta-rpms',
-                 'product_id': None,
+                 'product_id': 0,
                  'shadow': False}]
         response = self.client.post(reverse('contentdeliveryrepos-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

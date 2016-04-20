@@ -223,7 +223,7 @@ class ReleaseComponentSerializer(DynamicFieldsSerializerMixin,
 
 
 class GroupTypeSerializer(StrictSerializerMixin, serializers.ModelSerializer):
-    description = serializers.CharField(required=False)
+    description = serializers.CharField(required=False, default='')
 
     class Meta:
         model = GroupType

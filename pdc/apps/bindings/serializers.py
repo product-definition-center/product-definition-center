@@ -138,12 +138,14 @@ def extend_release_serializer(release_serializer):
               'bugzilla',
               ReleaseBugzillaMappingNestedSerializer(source='releasebugzillamapping',
                                                      required=False,
-                                                     allow_null=True))
+                                                     allow_null=True,
+                                                     default=None))
     add_field(release_serializer,
               'dist_git',
               ReleaseDistGitMappingNestedSerializer(source='releasedistgitmapping',
                                                     required=False,
-                                                    allow_null=True))
+                                                    allow_null=True,
+                                                    default=None))
 
 
 def extend_release_component_serializer(release_component_serializer):

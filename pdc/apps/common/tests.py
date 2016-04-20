@@ -393,6 +393,20 @@ class SigKeyRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.patch(url, format='json', data={})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_update_missing_optional_fields_are_erased(self):
+        url = reverse('sigkey-detail', kwargs={'key_id': '1234adbf'})
+        response = self.client.put(url, format='json',
+                                   data={'key_id': '1234adbf', 'name': "TEST"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], 'TEST')
+        self.assertEqual(response.data['description'], '')
+        response = self.client.put(url, format='json',
+                                   data={'key_id': '1234adbf', 'description': "TEST"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], '')
+        self.assertEqual(response.data['description'], 'TEST')
+        self.assertNumChanges([1, 1])
+
     def test_delete_sigkey(self):
         url = reverse('sigkey-detail', kwargs={'key_id': '1234adbf'})
         response = self.client.delete(url, format='json')

@@ -1528,6 +1528,14 @@ class GroupTypeRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNumChanges([1])
 
+    def test_update_missing_optional_fields_are_erased(self):
+        url = reverse('componentgrouptype-detail', kwargs={'pk': 1})
+        data = {'name': 'type1'}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['description'], '')
+        self.assertNumChanges([1])
+
     def test_delete_group_type(self):
         url = reverse('componentgrouptype-detail', kwargs={'pk': 1})
         response = self.client.delete(url, format='json')
