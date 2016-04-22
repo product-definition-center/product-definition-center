@@ -403,7 +403,7 @@ class SigKeyRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.put(url, format='json',
                                    data={'key_id': '1234adbf', 'description': "TEST"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], '')
+        self.assertEqual(response.data['name'], None)
         self.assertEqual(response.data['description'], 'TEST')
         self.assertNumChanges([1, 1])
 
