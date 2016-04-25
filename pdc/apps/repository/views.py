@@ -50,20 +50,6 @@ class RepoViewSet(ChangeSetCreateModelMixin,
          * *repo_family*: $LINK:contentdeliveryrepofamily-list$
          * *service*: $LINK:contentdeliveryservice-list$
 
-        There are additional validations for the content delivery repository name for specific
-        content category. If and only if the content category is `debug`, the
-        name must contain `debug` substring.
-
-        The name must also match type of associated release by having a
-        specific substring.
-
-            release type  | name substring
-            --------------+---------------
-            fast          | -fast
-            eus           | .z
-            aus           | .aus or .ll
-            els           | els
-
         __Response__: Same as input data.
         """
         return super(RepoViewSet, self).create(*args, **kwargs)
