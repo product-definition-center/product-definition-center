@@ -26,7 +26,7 @@ class RepoSerializer(StrictSerializerMixin, serializers.ModelSerializer):
                                        queryset=models.ContentCategory.objects.all())
     name             = serializers.CharField()
     shadow           = serializers.BooleanField(required=False, default=False)
-    product_id       = serializers.IntegerField(required=False, default=0)
+    product_id       = serializers.IntegerField(required=False, default=None, allow_null=True)
 
     class Meta:
         model = models.Repo

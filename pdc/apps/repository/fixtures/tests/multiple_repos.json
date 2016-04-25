@@ -99,5 +99,19 @@
       "shadow": true,
       "product_id": 12
     }
+  },
+    {
+    "pk": 3,
+    "model": "repository.Repo",
+    "fields": {
+      "name": "test_repo_3-debug",
+      "variant_arch": 2,
+      "service": 2,
+      "repo_family": 2,
+      "content_format": 2,
+      "content_category": 2,
+      "shadow": true,
+      "product_id": null
+    }
   }
 ]

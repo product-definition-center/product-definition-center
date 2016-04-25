@@ -155,7 +155,7 @@ class RepositoryRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         id = self.existing.pop('id')
         response = self.client.put(reverse('contentdeliveryrepos-detail', args=[1]), self.existing, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.existing['product_id'] = 0
+        self.existing['product_id'] = None
         self.existing['id'] = id
         self.assertDictEqual(dict(response.data), self.existing)
         self.assertNumChanges([1])
@@ -214,7 +214,7 @@ class RepositoryRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['shadow'], True)
-        self.assertEqual(response.data['product_id'], 0)
+        self.assertEqual(response.data['product_id'], None)
 
         data = {
             'release_id': 'release-1.0', 'variant_uid': 'Client', 'arch': 'x86_64',
@@ -411,7 +411,7 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
             del repo['id']
         self.assertItemsEqual(response.data, [self.repo1, self.repo2])
         repos = models.Repo.objects.filter(variant_arch__variant__release__release_id='release-1.1')
-        self.assertEqual(len(repos), 2)
+        self.assertEqual(len(repos), 3)
         self.assertNumChanges([2])
 
     def test_clone_with_explicit_includes(self):
@@ -426,7 +426,7 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertItemsEqual(response.data, [self.repo1, self.repo2])
         repos = models.Repo.objects.filter(variant_arch__variant__release__release_id='release-1.1')
-        self.assertEqual(len(repos), 2)
+        self.assertEqual(len(repos), 3)
         self.assertNumChanges([2])
 
     def test_skipping_non_existing_variants(self):
@@ -435,7 +435,7 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(reverse('repoclone-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         repos = models.Repo.objects.filter(variant_arch__variant__release__release_id='release-1.1')
-        self.assertEqual(len(repos), 1)
+        self.assertEqual(len(repos), 2)
         self.assertNumChanges([1])
 
     def test_skip_on_include_service(self):
@@ -498,6 +498,14 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertItemsEqual(response.data, [self.repo2])
         self.assertNumChanges([1])
 
+    def test_with_product_id_value_null(self):
+        args = {'release_id_from': 'release-1.1', 'release_id_to': 'release-1.0',
+                'include_product_id': None}
+        response = self.client.post(reverse('repoclone-list'), args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['product_id'], None)
+        self.assertNumChanges([1])
+
     def test_fail_on_bad_include_shadow(self):
         args = {'release_id_from': 'release-1.0', 'release_id_to': 'release-1.1',
                 'include_shadow': 'yes please'}
@@ -513,7 +521,7 @@ class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([1])
         self.assertEqual(
             models.Repo.objects.filter(variant_arch__variant__release__release_id='release-1.1').count(),
-            1
+            2
         )
 
     def test_clone_bad_argument(self):
