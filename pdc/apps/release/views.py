@@ -29,6 +29,7 @@ from pdc.apps.common.viewsets import (ChangeSetModelMixin,
                                       ChangeSetUpdateModelMixin,
                                       MultiLookupFieldMixin,
                                       StrictQueryParamMixin)
+from pdc.apps.auth.permissions import APIPermission
 from . import lib
 
 
@@ -113,6 +114,7 @@ class ProductViewSet(ChangeSetCreateModelMixin,
     serializer_class = ProductSerializer
     lookup_field = 'short'
     filter_class = filters.ProductFilter
+    permission_classes = (APIPermission,)
 
     def create(self, request, *args, **kwargs):
         """
@@ -207,6 +209,7 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
     lookup_field = 'product_version_id'
     lookup_value_regex = '[^/]+'
     filter_class = filters.ProductVersionFilter
+    permission_classes = (APIPermission,)
 
     def create(self, *args, **kwargs):
         """
@@ -307,6 +310,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
     lookup_field = 'release_id'
     lookup_value_regex = '[^/]+'
     filter_class = filters.ReleaseFilter
+    permission_classes = (APIPermission,)
     docstring_macros = PUT_OPTIONAL_PARAM_WARNING
 
     def filter_queryset(self, qs):
@@ -423,6 +427,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
 
 class ReleaseImportView(StrictQueryParamMixin, viewsets.GenericViewSet):
     queryset = models.Release.objects.none()   # Required for permissions
+    permission_classes = (APIPermission,)
 
     def create(self, request):
         """
@@ -477,6 +482,7 @@ class BaseProductViewSet(ChangeSetCreateModelMixin,
     """
     queryset = models.BaseProduct.objects.all()
     serializer_class = BaseProductSerializer
+    permission_classes = (APIPermission,)
     lookup_field = 'base_product_id'
     lookup_value_regex = '[^/]+'
     filter_class = filters.BaseProductFilter
@@ -563,6 +569,7 @@ def product_pages(request):
 
 
 class ReleaseCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
+    permission_classes = (APIPermission,)
     queryset = models.Release.objects.none()   # Required for permissions
 
     def create(self, request):
@@ -652,6 +659,7 @@ class ReleaseCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
 
 
 class ReleaseComponentCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
+    permission_classes = (APIPermission,)
     queryset = models.Release.objects.none()
 
     def create(self, request):
@@ -729,6 +737,7 @@ class ReleaseComponentCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSe
 class ReleaseRPMMappingView(StrictQueryParamMixin, viewsets.GenericViewSet):
     lookup_field = 'package'
     queryset = models.Release.objects.none()   # Required for permissions
+    permission_classes = (APIPermission,)
     extra_query_params = ['disable_overrides']
 
     def retrieve(self, request, **kwargs):
@@ -853,6 +862,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
     queryset = models.Variant.objects.all()
     serializer_class = ReleaseVariantSerializer
     filter_class = filters.ReleaseVariantFilter
+    permission_classes = (APIPermission,)
     lookup_fields = (('release__release_id', r'[^/]+'), ('variant_uid', r'[^/]+'))
 
     def create(self, *args, **kwargs):

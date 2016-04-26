@@ -8,6 +8,7 @@ from django.contrib.auth import models
 import django_filters
 
 from pdc.apps.common.filters import MultiValueFilter
+from .models import GroupResourcePermission, ResourcePermission
 
 
 class PermissionFilter(django_filters.FilterSet):
@@ -35,3 +36,22 @@ class GroupFilter(django_filters.FilterSet):
         model = models.Group
         fields = ('name', 'permission_codename',
                   'permission_app_label', 'permission_model')
+
+
+class GroupResourcePermissionFilter(django_filters.FilterSet):
+    group = MultiValueFilter(name='group__name')
+    permission = MultiValueFilter(name='resource_permission__permission__name')
+    resource = MultiValueFilter(name='resource_permission__resource__name')
+
+    class Meta:
+        model = GroupResourcePermission
+        fields = ('group', 'resource', 'permission')
+
+
+class ResourcePermissionFilter(django_filters.FilterSet):
+    permission = MultiValueFilter(name='permission__name')
+    resource = MultiValueFilter(name='resource__name')
+
+    class Meta:
+        model = ResourcePermission
+        fields = ('resource', 'permission')

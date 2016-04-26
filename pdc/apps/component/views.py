@@ -23,6 +23,8 @@ from pdc.apps.common.models import Label
 from pdc.apps.common.serializers import LabelSerializer, StrictSerializerMixin
 from pdc.apps.utils.utils import generate_warning_header_dict
 from pdc.apps.common.filters import LabelFilter
+from pdc.apps.auth.permissions import APIPermission
+
 from .models import (GlobalComponent,
                      ReleaseComponent,
                      BugzillaComponent,
@@ -406,6 +408,7 @@ class ReleaseComponentTypeViewSet(viewsets.StrictQueryParamMixin,
     """
     serializer_class = ReleaseComponentTypeSerializer
     queryset = ReleaseComponentType.objects.all().order_by('id')
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """
@@ -1179,6 +1182,7 @@ class ReleaseComponentRelationshipTypeViewSet(viewsets.StrictQueryParamMixin,
     """
     serializer_class = RCRelationshipTypeSerializer
     queryset = ReleaseComponentRelationshipType.objects.all().order_by('id')
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """

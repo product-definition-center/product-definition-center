@@ -15,3 +15,5 @@ router.register(r'auth/permissions', views.PermissionViewSet)
 router.register(r'auth/current-user',
                 views.CurrentUserViewSet,
                 base_name='currentuser')
+router.register(r'auth/resource-permissions', views.ResourcePermissionViewSet, base_name='resourcepermissions')
+router.register(r'auth/group-resource-permissions', views.GroupResourcePermissionViewSet, base_name='groupresourcepermissions')

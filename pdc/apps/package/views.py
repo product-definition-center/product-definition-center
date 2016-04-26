@@ -8,6 +8,7 @@ from rest_framework import viewsets, mixins
 from contrib.bulk_operations import bulk_operations
 from pdc.apps.common import viewsets as pdc_viewsets
 from pdc.apps.common.constants import PUT_OPTIONAL_PARAM_WARNING
+from pdc.apps.auth.permissions import APIPermission
 from . import models
 from . import serializers
 from . import filters
@@ -25,6 +26,7 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
     queryset = models.RPM.objects.all().order_by("id")
     serializer_class = serializers.RPMSerializer
     filter_class = filters.RPMFilter
+    permission_classes = (APIPermission,)
     docstring_macros = PUT_OPTIONAL_PARAM_WARNING
 
     def list(self, *args, **kwargs):
@@ -431,6 +433,7 @@ class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
     queryset = models.BuildImage.objects.all().order_by('id')
     serializer_class = serializers.BuildImageRTTTestsSerializer
     filter_class = filters.BuildImageRTTTestsFilter
+    permission_classes = (APIPermission,)
     lookup_fields = (('image_id', r'[^/]+'),
                      ('image_format__name', r'[^/]+'))
 

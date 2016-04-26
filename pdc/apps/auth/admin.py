@@ -12,4 +12,7 @@ from . import models
 class UserAdmin(admin.ModelAdmin):
     list_display = ('username', 'last_connected')
 
+
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Resource)
+admin.site.register(models.ResourcePermission)

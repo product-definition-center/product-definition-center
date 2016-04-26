@@ -38,6 +38,7 @@ from pdc.apps.common.viewsets import (ChangeSetCreateModelMixin,
 
 from pdc.apps.release.models import Release
 from pdc.apps.utils.utils import generate_warning_header_dict
+from pdc.apps.auth.permissions import APIPermission
 from .models import (Compose, VariantArch, Variant, ComposeRPM, OverrideRPM,
                      ComposeImage, ComposeRPMMapping, ComposeAcceptanceTestingState,
                      ComposeTree)
@@ -441,6 +442,7 @@ class ComposeViewSet(StrictQueryParamMixin,
     queryset = Compose.objects.all().order_by('id')
     serializer_class = ComposeSerializer
     filter_class = ComposeFilter
+    permission_classes = (APIPermission,)
     lookup_field = 'compose_id'
     lookup_value_regex = '[^/]+'
     context = {}
@@ -699,6 +701,7 @@ class CheckParametersMixin(object):
 
 
 class ComposeRPMView(StrictQueryParamMixin, CheckParametersMixin, viewsets.GenericViewSet):
+    permission_classes = (APIPermission,)
     lookup_field = 'compose_id'
     lookup_value_regex = '[^/]+'
     queryset = ComposeRPM.objects.none()    # Required for permissions
@@ -802,6 +805,7 @@ class ComposeRPMView(StrictQueryParamMixin, CheckParametersMixin, viewsets.Gener
 
 
 class ComposeFullImportViewSet(StrictQueryParamMixin, CheckParametersMixin, viewsets.GenericViewSet):
+    permission_classes = (APIPermission,)
     queryset = Compose.objects.none()    # Required for permissions.
 
     def create(self, request):
@@ -886,6 +890,7 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
     overrides applied in this view (if not suppressed) come from the release
     the compose was built for.
     """
+    permission_classes = (APIPermission,)
     lookup_field = 'package'
     queryset = ComposeRPM.objects.none()    # Required for permissions
     extra_query_params = ('disable_overrides', 'perform')
@@ -1026,6 +1031,7 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
 
 class ComposeImageView(StrictQueryParamMixin, CheckParametersMixin,
                        viewsets.GenericViewSet):
+    permission_classes = (APIPermission,)
     queryset = ComposeImage.objects.none()  # Required for permissions
     lookup_field = 'compose_id'
     lookup_value_regex = '[^/]+'
@@ -1129,6 +1135,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
     serializer_class = OverrideRPMSerializer
     queryset = OverrideRPM.objects.all().order_by('id')
     filter_class = OverrideRPMFilter
+    permission_classes = (APIPermission,)
 
     def create(self, *args, **kwargs):
         """
@@ -1300,6 +1307,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
 
 
 class OverridesRPMCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
+    permission_classes = (APIPermission,)
     queryset = OverrideRPM.objects.none()
 
     def create(self, request):
@@ -1550,6 +1558,7 @@ class FindComposeByReleaseRPMViewSet(StrictQueryParamMixin, FindComposeMixin, vi
     """
     queryset = ComposeRPM.objects.none()    # Required for permissions
     extra_query_params = ('included_compose_type', 'excluded_compose_type', 'latest', 'to_dict')
+    permission_classes = (APIPermission,)
 
     def list(self, request, **kwargs):
         """
@@ -1605,6 +1614,7 @@ class FindOlderComposeByComposeRPMViewSet(StrictQueryParamMixin, FindComposeMixi
     """
     queryset = ComposeRPM.objects.none()    # Required for permissions
     extra_query_params = ('included_compose_type', 'excluded_compose_type', 'to_dict')
+    permission_classes = (APIPermission,)
 
     def list(self, request, **kwargs):
         """
@@ -1657,6 +1667,7 @@ class FindComposeByProductVersionRPMViewSet(StrictQueryParamMixin, FindComposeMi
     """
     queryset = ComposeRPM.objects.none()    # Required for permissions
     extra_query_params = ('included_compose_type', 'excluded_compose_type', 'latest', 'to_dict')
+    permission_classes = (APIPermission,)
 
     def list(self, request, **kwargs):
         """
@@ -1723,6 +1734,7 @@ class ComposeImageRTTTestViewSet(ChangeSetUpdateModelMixin,
     queryset = ComposeImage.objects.select_related('variant_arch', 'image').all()
     serializer_class = ComposeImageRTTTestSerializer
     filter_class = ComposeImageRTTTestFilter
+
     lookup_fields = (
         ('variant_arch__variant__compose__compose_id', r'[^/]+'),
         ('variant_arch__variant__variant_uid', r'[^/]+'),
@@ -1821,6 +1833,7 @@ class ComposeTreeViewSet(ChangeSetModelMixin,
     queryset = ComposeTree.objects.select_related('compose', 'variant', 'arch').all()
     serializer_class = ComposeTreeSerializer
     filter_class = ComposeTreeFilter
+    permission_classes = (APIPermission,)
     lookup_fields = (
         ('compose__compose_id', r'[^/]+'),
         ('variant__variant_uid', r'[^/]+'),

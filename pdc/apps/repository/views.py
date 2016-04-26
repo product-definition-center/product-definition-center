@@ -12,6 +12,7 @@ from django.shortcuts import get_object_or_404
 from . import models
 from . import serializers
 from . import filters
+from pdc.apps.auth.permissions import APIPermission
 from pdc.apps.common.constants import PUT_OPTIONAL_PARAM_WARNING
 from pdc.apps.common.viewsets import (ChangeSetCreateModelMixin, StrictQueryParamMixin,
                                       ChangeSetUpdateModelMixin, ChangeSetDestroyModelMixin)
@@ -33,6 +34,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
     queryset = models.Repo.objects.all().select_related().order_by('id')
     serializer_class = serializers.RepoSerializer
     filter_class = filters.RepoFilter
+    permission_classes = (APIPermission,)
     docstring_macros = PUT_OPTIONAL_PARAM_WARNING
 
     def create(self, *args, **kwargs):
@@ -115,6 +117,7 @@ class RepoCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
     Endpoint $LINK:repoclone-list$ is deprecated.
     """
     queryset = models.Repo.objects.none()   # Required for permissions
+    permission_classes = (APIPermission,)
 
     def create(self, request):
         """
