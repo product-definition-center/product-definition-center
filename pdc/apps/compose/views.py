@@ -1956,3 +1956,45 @@ class ComposeTreeViewSet(ChangeSetModelMixin,
             STATUS: 204 NO CONTENT
         """
         return super(ComposeTreeViewSet, self).destroy(request, *args, **kwargs)
+
+
+class ComposeLocationViewSet(viewsets.GenericViewSet):
+    """
+    API endpoint that allows querying compose-variant-arch relevant to location.
+
+    ##Test tools##
+
+    You can use ``curl`` in terminal, with -X GET,
+    or GUI plugins for browsers, such as ``RESTClient``, ``RESTConsole``.
+    """
+    queryset = ComposeTree.objects.all()
+
+    def list(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:composelocations-list:compose_id:location_id:schema$
+
+        __Response__:
+            {
+                "compose_location": string,
+            }
+
+        """
+        compose_trees = ComposeTree.objects.filter(compose__compose_id=kwargs['compose_id'],
+                                                   location__short=kwargs['location_id'],
+                                                   scheme__name=kwargs['schema'])
+        if not compose_trees:
+            result = Response(status=status.HTTP_404_NOT_FOUND,
+                              data={
+                                  'detail': "Can't find compose tree with compose id '%s', location '%s', schema '%s'" %
+                                            (kwargs['compose_id'], kwargs['location_id'], kwargs['schema'])})
+        else:
+            url_set = set(map(lambda obj: obj.url, compose_trees))
+            kwargs = {'data': {'compose_location': url_set.pop()}}
+            if url_set:
+                kwargs.update({'headers': generate_warning_header_dict(
+                    'Compose location is not consistent in compose tree locations.')})
+            result = Response(**kwargs)
+
+        return result

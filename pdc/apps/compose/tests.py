@@ -17,7 +17,7 @@ from rest_framework import status
 from pdc.apps.bindings import models as binding_models
 from pdc.apps.common.test_utils import create_user, TestCaseWithChangeSetMixin
 from pdc.apps.common.constants import PDC_WARNING_HEADER_NAME
-from pdc.apps.release.models import Release, ProductVersion
+from pdc.apps.release.models import Release, ProductVersion, VariantType
 from pdc.apps.component.models import (ReleaseComponent,
                                        BugzillaComponent)
 import pdc.apps.release.models as release_models
@@ -2580,6 +2580,72 @@ class ComposeTreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(models.ComposeTree.objects.count(), 0)
         self.assertNumChanges([2])
+
+
+class ComposeLocationAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
+    fixtures = [
+        "pdc/apps/release/fixtures/tests/release.json",
+        "pdc/apps/compose/fixtures/tests/variant.json",
+        "pdc/apps/compose/fixtures/tests/variant_arch.json",
+        "pdc/apps/compose/fixtures/tests/location.json",
+        "pdc/apps/compose/fixtures/tests/scheme.json",
+        "pdc/apps/compose/fixtures/tests/compose.json",
+        "pdc/apps/compose/fixtures/tests/more_composes_variants.json",
+        "pdc/apps/compose/fixtures/tests/composetree.json",
+    ]
+
+    def test_list_with_one_compose_tree_item(self):
+        response = self.client.get(reverse('composelocations-list', kwargs={'compose_id': 'compose-1',
+                                                                            'location_id': 'NAY',
+                                                                            'schema': 'nfs'}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'compose_location': u'nfs://nay.lab.la/'})
+
+    def test_list_with_multiple_compose_tree_items(self):
+        variant = models.Variant.objects.create(compose=models.Compose.objects.get(id=1),
+                                                variant_id='Server3',
+                                                variant_uid='Server3',
+                                                variant_name='Server3',
+                                                variant_type=VariantType.objects.get(id=1))
+        models.VariantArch.objects.create(variant=variant, arch=common_models.Arch.objects.get(id=47))
+        url = reverse('composetreelocations-list')
+        data = {'compose': 'compose-1', 'variant': 'Server3', 'arch': 'x86_64', 'location': 'NAY',
+                'url': 'nfs://nay.lab.la/', 'scheme': 'nfs'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        response = self.client.get(reverse('composelocations-list', kwargs={'compose_id': 'compose-1',
+                                                                            'location_id': 'NAY',
+                                                                            'schema': 'nfs'}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'compose_location': u'nfs://nay.lab.la/'})
+
+    def test_list_with_non_existing_compose_tree_items(self):
+        response = self.client.get(reverse('composelocations-list', kwargs={'compose_id': 'compose-1',
+                                                                            'location_id': 'NAY',
+                                                                            'schema': 'http'}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_list_with_inconsistent_url_in_compose_location_tree_items(self):
+        variant = models.Variant.objects.create(compose=models.Compose.objects.get(id=1),
+                                                variant_id='Server3',
+                                                variant_uid='Server3',
+                                                variant_name='Server3',
+                                                variant_type=VariantType.objects.get(id=1))
+        models.VariantArch.objects.create(variant=variant, arch=common_models.Arch.objects.get(id=47))
+        url = reverse('composetreelocations-list')
+        data = {'compose': 'compose-1', 'variant': 'Server3', 'arch': 'x86_64', 'location': 'NAY',
+                'url': 'nfs://ABCDE/', 'scheme': 'nfs'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.client.get(reverse('composelocations-list', kwargs={'compose_id': 'compose-1',
+                                                                            'location_id': 'NAY',
+                                                                            'schema': 'nfs'}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(response.data, ({'compose_location': u'nfs://nay.lab.la/'},
+                                      {'compose_location': u'nfs://ABCDE/'}))
+        self.assertEqual(response._headers[PDC_WARNING_HEADER_NAME.lower()],
+                         (PDC_WARNING_HEADER_NAME, 'Compose location is not consistent in compose tree locations.'))
 
 
 class ComposeImageRTTTestAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
