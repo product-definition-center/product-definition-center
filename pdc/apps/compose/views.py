@@ -1960,7 +1960,7 @@ class ComposeTreeViewSet(ChangeSetModelMixin,
 
 class ComposeLocationViewSet(viewsets.GenericViewSet):
     """
-    API endpoint that allows querying compose-variant-arch relevant to location.
+    API endpoint that allows finding compose location according to compose id, location id and schema
 
     ##Test tools##
 
@@ -1990,7 +1990,7 @@ class ComposeLocationViewSet(viewsets.GenericViewSet):
                                   'detail': "Can't find compose tree with compose id '%s', location '%s', schema '%s'" %
                                             (kwargs['compose_id'], kwargs['location_id'], kwargs['schema'])})
         else:
-            url_set = set(map(lambda obj: obj.url, compose_trees))
+            url_set = set([obj.url for obj in compose_trees])
             kwargs = {'data': {'compose_location': url_set.pop()}}
             if url_set:
                 kwargs.update({'headers': generate_warning_header_dict(
