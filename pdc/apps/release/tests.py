@@ -106,6 +106,15 @@ class BaseProductRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(reverse('baseproduct-detail', args=['product-2']))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_query_with_multi_values(self):
+        args = {"name": "Our Awesome Product1", "short": "product", "version": "1", "release_type": "ga"}
+        self.client.post(reverse('baseproduct-list'), args)
+        args = {"name": "Our Awesome Product2", "short": "product", "version": "2", "release_type": "ga"}
+        self.client.post(reverse('baseproduct-list'), args)
+        url = reverse('baseproduct-list')
+        response = self.client.get(url + '?version=1&version=2')
+        self.assertEqual(2, response.data['count'])
+
 
 class ProductRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
@@ -180,6 +189,11 @@ class ProductRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def test_query_with_illegal_active(self):
         response = self.client.get(reverse('product-list'), {"active": "abcd"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_query_multi_values(self):
+        response = self.client.get(reverse('product-list') + '?short=product&short=dummy')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
 
 
 class ProductUpdateTestCase(TestCaseWithChangeSetMixin, APITestCase):
@@ -357,6 +371,12 @@ class ProductVersionRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def test_query_with_illegal_active(self):
         response = self.client.get(reverse('productversion-list'), {"active": "abcd"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_query_multi_values(self):
+        response = self.client.get(reverse('productversion-list') +
+                                   '?product_version_id=product-1&product_version_id=product-0')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
 
 
 class ProductVersionUpdateRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
@@ -696,6 +716,14 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def test_query_illegal_active_filter(self):
         response = self.client.get(reverse('release-list'), {'active': 'abcd'})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_query_with_multi_value_filter(self):
+        args = {"name": "Fedora", "short": "f", "version": '20', "release_type": "ga",
+                "dist_git": {"branch": "dist_git_branch"}}
+        self.client.post(reverse('release-list'), args, format='json')
+        url = reverse('release-list')
+        response = self.client.get(url + '?release_id=release-1.0&release_id=f-20')
+        self.assertEqual(response.data['count'], 2)
 
     def test_list_ordered(self):
         release_type = models.ReleaseType.objects.get(short='ga')
@@ -1444,6 +1472,11 @@ class ReleaseTypeTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(reverse("releasetype-list"), data={"short": "ga"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 1)
+
+    def test_filter_multi_value(self):
+        response = self.client.get(reverse("releasetype-list") + '?short=ga&short=updates')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
 
 
 class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):

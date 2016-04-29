@@ -408,6 +408,86 @@ class ComposeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
                          (PDC_WARNING_HEADER_NAME, 'No change. This compose was marked as deleted already.'))
 
 
+class ComposeMultipleFilterTestCase(APITestCase):
+    fixtures = [
+        "pdc/apps/common/fixtures/test/sigkey.json",
+        "pdc/apps/package/fixtures/test/rpm.json",
+        "pdc/apps/release/fixtures/tests/product.json",
+        "pdc/apps/release/fixtures/tests/product_version.json",
+        "pdc/apps/release/fixtures/tests/release.json",
+        "pdc/apps/compose/fixtures/tests/variant.json",
+        "pdc/apps/compose/fixtures/tests/variant_arch.json",
+        "pdc/apps/compose/fixtures/tests/compose_overriderpm.json",
+        "pdc/apps/compose/fixtures/tests/compose.json",
+        "pdc/apps/compose/fixtures/tests/compose_composerpm.json",
+        "pdc/apps/compose/fixtures/tests/more_composes.json",
+    ]
+
+    def test_query_multiple_acceptance_testing(self):
+        response = self.client.patch(reverse('compose-detail', args=['compose-2']),
+                                     {'acceptance_testing': 'passed'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('acceptance_testing'), 'passed')
+        response = self.client.get(reverse('compose-list') + '?acceptance_testing=untested&acceptance_testing=passed')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+
+    def test_query_multiple_compose_date(self):
+        response = self.client.get(reverse('compose-list') + '?compose_date=2014-09-03&compose_date=2014-09-08')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+
+    def test_query_multiple_compose_id(self):
+        response = self.client.get(reverse('compose-list') + '?compose_id=COMPose-1&compose_id=compose-2')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+
+    def test_query_multiple_compose_label(self):
+        response = self.client.get(reverse('compose-list') + '?compose_label=compose-2 label&compose_label=compose-3 label')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+
+    def test_query_multiple_compose_respin(self):
+        response = self.client.get(reverse('compose-list') + '?compose_respin=1&compose_respin=2')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+
+    def test_query_multiple_compose_type(self):
+        response = self.client.get(reverse('compose-list') + '?compose_type=production&compose_type=nightly')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+
+    def test_query_multiple_release(self):
+        response = self.client.get(reverse('compose-list') + '?release=Release-1.0&release=nonexist')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+
+    def test_query_multiple_rpm_arch(self):
+        response = self.client.get(reverse('compose-list') + '?rpm_arch=X86_64&rpm_arch=nonexist')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+
+    def test_query_multiple_rpm_name(self):
+        response = self.client.get(reverse('compose-list') + '?rpm_name=BaSH&rpm_name=bash1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+
+    def test_query_multiple_rpm_release(self):
+        response = self.client.get(reverse('compose-list') + '?rpm_release=4.b1&rpm_release=8')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+
+    def test_query_multiple_rpm_version(self):
+        response = self.client.get(reverse('compose-list') + '?rpm_version=1.2.3&rpm_version=5.6.7')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+
+    def test_query_multiple_srpm_name(self):
+        response = self.client.get(reverse('compose-list') + '?srpm_name=bash1&srpm_name=BASH')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+
+
 class ComposeApiOrderingTestCase(APITestCase):
     fixtures = [
         "pdc/apps/common/fixtures/test/sigkey.json",
@@ -621,6 +701,7 @@ class ComposeUpdateTestCase(TestCaseWithChangeSetMixin, APITestCase):
 class OverridesRPMAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
         'pdc/apps/release/fixtures/tests/release.json',
+        'pdc/apps/release/fixtures/tests/new_release.json',
         'pdc/apps/compose/fixtures/tests/compose_overriderpm.json',
     ]
 
@@ -643,6 +724,20 @@ class OverridesRPMAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(reverse('overridesrpm-list'), {'release': 'release-1.1'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 0)
+
+    def test_query_multi_values_and_case_insensitive(self):
+        self.override_rpm["rpm_name"] = "bash-debuginfo"
+        self.override_rpm["release"] = "release-2.0"
+        del self.override_rpm["id"]
+        response = self.client.post(reverse('overridesrpm-list'), self.override_rpm)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(models.OverrideRPM.objects.count(), 2)
+        response = self.client.get(reverse('overridesrpm-list') + "?rpm_name=bash-doc&rpm_name=bash-debuginfo")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+        response = self.client.get(reverse('overridesrpm-list') + "?release=Release-1.0&release=rElease-2.0")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
 
     def test_delete_existing(self):
         response = self.client.delete(reverse('overridesrpm-detail', args=[1]))
@@ -2424,6 +2519,14 @@ class ComposeTreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(reverse('composetreelocations-list'), {"scheme": "does-not-exist"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 0)
+
+    def test_query_multi_values_and_case_insensitive(self):
+        response = self.client.get(reverse('composetreelocations-list') + "?location=NAY&location=BRQ")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+        response = self.client.get(reverse('composetreelocations-list') + "?variant=SERver&variant=serVer2")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
 
     def test_create_composetree(self):
         url = reverse('composetreelocations-list')

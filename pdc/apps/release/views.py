@@ -478,7 +478,7 @@ class BaseProductViewSet(ChangeSetCreateModelMixin,
     serializer_class = BaseProductSerializer
     lookup_field = 'base_product_id'
     lookup_value_regex = '[^/]+'
-    filter_fields = ('base_product_id', 'name', 'short', 'version')
+    filter_class = filters.BaseProductFilter
 
     def create(self, *args, **kwargs):
         """

@@ -332,6 +332,11 @@ class SigKeyRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data['count'], 1)
         self.assertEqual(response.data['results'][0]['key_id'], 'd343aaaa')
 
+    def test_query_multi_value(self):
+        response = self.client.get(reverse('sigkey-list') + '?key_id=1234adbf&key_id=f2134bca')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+
     def test_retrieve_sigkey(self):
         url = reverse('sigkey-detail', kwargs={'key_id': '1234adbf'})
         response = self.client.get(url, format='json')

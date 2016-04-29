@@ -333,6 +333,11 @@ class RepositoryMultipleFilterTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 2 * 27)
 
+    def test_multiple_names(self):
+        response = self.client.get(reverse('contentdeliveryrepos-list') + '?name=repo-pulp-beta-rpm-debug&name=repo-ftp-htb-iso-source')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+
     def test_multiple_combination(self):
         query = ('?service=pulp&service=ftp' +
                  '&repo_family=beta&repo_family=htb' +
@@ -341,6 +346,23 @@ class RepositoryMultipleFilterTestCase(APITestCase):
         response = self.client.get(reverse('contentdeliveryrepos-list') + query)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 16)
+
+    def test_multiple_product_id(self):
+        response = self.client.patch(reverse('contentdeliveryrepos-detail', args=[1]),
+                                     {'product_id': 32},
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['product_id'], 32)
+
+        response = self.client.patch(reverse('contentdeliveryrepos-detail', args=[2]),
+                                     {'product_id': 31},
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['product_id'], 31)
+
+        response = self.client.get(reverse('contentdeliveryrepos-list') + '?product_id=32&product_id=31')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
 
 
 class RepositoryCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):

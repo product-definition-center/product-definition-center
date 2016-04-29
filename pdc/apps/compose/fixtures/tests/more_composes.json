@@ -8,7 +8,7 @@
       "compose_date": "2014-09-08",
       "compose_type": 1,
       "compose_respin": 1,
-      "compose_label": null,
+      "compose_label": "compose-2 label",
       "dt_imported": "2014-09-03T11:45:00+00:00",
       "deleted": false,
       "acceptance_testing": 1
@@ -41,8 +41,8 @@
       "compose_id": "compose-3",
       "compose_date": "2014-09-09",
       "compose_type": 2,
-      "compose_respin": 1,
-      "compose_label": null,
+      "compose_respin": 2,
+      "compose_label": "compose-3 label",
       "dt_imported": "2014-09-03T11:45:00+00:00",
       "deleted": false,
       "acceptance_testing": 1
@@ -107,14 +107,14 @@
     "model": "package.RPM",
     "pk": 3,
     "fields": {
-      "name": "bash",
+      "name": "bash1",
       "epoch": 0,
       "version": "1.2.3",
       "release": "4.b1",
       "arch": "src",
-      "srpm_name": "bash",
+      "srpm_name": "bash1",
       "srpm_nevra": null,
-      "filename": "bash-1.2.3-4.b1.src.rpm"
+      "filename": "bash1-1.2.3-4.b1.src.rpm"
     }
   },
   {

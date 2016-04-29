@@ -54,6 +54,25 @@ class MultiValueFilter(django_filters.MethodFilter):
         return qs
 
 
+class MultiValueCaseInsensitiveFilter(MultiValueFilter):
+    """
+    Filter that allows multiple case insensitive terms to be present and treats them as
+    alternatives, i.e. it performs OR search.
+    """
+    @value_is_not_empty
+    def filter(self, qs, value):
+        if value:
+            condition_list = []
+            for val in value:
+                condition_list.append(Q(**{self.name + '__iexact': val}))
+            qs = qs.filter(reduce(operator.or_, condition_list))
+            if self.distinct:
+                qs = qs.distinct()
+        else:
+            qs = qs.model.objects.none()
+        return qs
+
+
 class MultiValueRegexFilter(MultiValueFilter):
     """
     Filter that allows multiple terms to be present and treats them as
@@ -230,8 +249,8 @@ class LabelFilter(FilterSet):
 
 
 class SigKeyFilter(FilterSet):
-    name = django_filters.CharFilter()
-    key_id = django_filters.CharFilter()
+    name = MultiValueFilter()
+    key_id = MultiValueFilter()
     description = django_filters.CharFilter(lookup_type="icontains")
 
     class Meta:

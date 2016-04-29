@@ -9,33 +9,32 @@ import django_filters
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 
-from pdc.apps.common.filters import value_is_not_empty, MultiValueFilter, CaseInsensitiveBooleanFilter
+from pdc.apps.common.filters import value_is_not_empty, MultiValueFilter, CaseInsensitiveBooleanFilter, \
+    MultiValueCaseInsensitiveFilter
 from .models import Compose, OverrideRPM, ComposeTree, ComposeImage
 
 
 class ComposeFilter(django_filters.FilterSet):
-    release             = django_filters.CharFilter(name='release__release_id', lookup_type='iexact')
-    compose_id          = django_filters.CharFilter(name='compose_id', lookup_type='iexact')
-    compose_type        = django_filters.CharFilter(name='compose_type__name', lookup_type='iexact')
-    acceptance_testing  = django_filters.CharFilter(name='acceptance_testing__name')
-    srpm_name           = django_filters.CharFilter(name='variant__variantarch__composerpm__rpm__srpm_name',
-                                                    lookup_type='iexact',
-                                                    distinct=True)
-    rpm_name            = django_filters.CharFilter(name='variant__variantarch__composerpm__rpm__name',
-                                                    lookup_type='iexact',
-                                                    distinct=True)
-    rpm_version         = django_filters.CharFilter(name='variant__variantarch__composerpm__rpm__version',
-                                                    lookup_type='iexact',
-                                                    distinct=True)
-    rpm_release         = django_filters.CharFilter(name='variant__variantarch__composerpm__rpm__release',
-                                                    lookup_type='iexact',
-                                                    distinct=True)
-    rpm_arch            = django_filters.CharFilter(name='variant__variantarch__composerpm__rpm__arch',
-                                                    lookup_type='iexact',
-                                                    distinct=True)
+    release             = MultiValueCaseInsensitiveFilter(name='release__release_id')
+    compose_id          = MultiValueCaseInsensitiveFilter(name='compose_id')
+    compose_type        = MultiValueCaseInsensitiveFilter(name='compose_type__name')
+    acceptance_testing  = MultiValueFilter(name='acceptance_testing__name')
+    srpm_name           = MultiValueCaseInsensitiveFilter(name='variant__variantarch__composerpm__rpm__srpm_name',
+                                                          distinct=True)
+    rpm_name            = MultiValueCaseInsensitiveFilter(name='variant__variantarch__composerpm__rpm__name',
+                                                          distinct=True)
+    rpm_version         = MultiValueCaseInsensitiveFilter(name='variant__variantarch__composerpm__rpm__version',
+                                                          distinct=True)
+    rpm_release         = MultiValueCaseInsensitiveFilter(name='variant__variantarch__composerpm__rpm__release',
+                                                          distinct=True)
+    rpm_arch            = MultiValueCaseInsensitiveFilter(name='variant__variantarch__composerpm__rpm__arch',
+                                                          distinct=True)
     rpm_nvr             = django_filters.MethodFilter(action="filter_nvr")
     rpm_nvra            = django_filters.MethodFilter(action="filter_nvra")
     deleted             = CaseInsensitiveBooleanFilter()
+    compose_date        = MultiValueFilter(name='compose_date')
+    compose_respin      = MultiValueFilter(name='compose_respin')
+    compose_label       = MultiValueFilter(name='compose_label')
     # TODO: return only latest compose
 
     @value_is_not_empty
@@ -72,8 +71,13 @@ class ComposeFilter(django_filters.FilterSet):
 
 
 class OverrideRPMFilter(django_filters.FilterSet):
-    release = django_filters.CharFilter(name='release__release_id', lookup_type='iexact')
-    comment = django_filters.CharFilter(lookup_type='icontains')
+    release     = MultiValueCaseInsensitiveFilter(name='release__release_id')
+    comment     = django_filters.CharFilter(lookup_type='icontains')
+    arch        = MultiValueFilter(name='arch')
+    variant     = MultiValueFilter(name='variant')
+    srpm_name   = MultiValueFilter(name='srpm_name')
+    rpm_name    = MultiValueFilter(name='rpm_name')
+    rpm_arch    = MultiValueFilter(name='rpm_arch')
 
     class Meta:
         model = OverrideRPM
@@ -81,11 +85,11 @@ class OverrideRPMFilter(django_filters.FilterSet):
 
 
 class ComposeTreeFilter(django_filters.FilterSet):
-    compose         = django_filters.CharFilter(name='compose__compose_id', lookup_type='iexact')
-    variant         = django_filters.CharFilter(name='variant__variant_uid', lookup_type='iexact')
-    arch            = django_filters.CharFilter(name='arch__name', lookup_type='iexact')
-    location        = django_filters.CharFilter(name='location__short', lookup_type='iexact')
-    scheme          = django_filters.CharFilter(name='scheme__name', lookup_type='iexact')
+    compose         = MultiValueCaseInsensitiveFilter(name='compose__compose_id')
+    variant         = MultiValueCaseInsensitiveFilter(name='variant__variant_uid')
+    arch            = MultiValueCaseInsensitiveFilter(name='arch__name')
+    location        = MultiValueCaseInsensitiveFilter(name='location__short')
+    scheme          = MultiValueCaseInsensitiveFilter(name='scheme__name')
 
     class Meta:
         model = ComposeTree

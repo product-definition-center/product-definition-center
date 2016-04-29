@@ -19,6 +19,7 @@ class RepoFilter(filters.FilterSet):
     service = MultiValueFilter(name='service__name')
     shadow = CaseInsensitiveBooleanFilter()
     product_id = MultiIntFilter()
+    name = MultiValueFilter(name='name')
 
     class Meta:
         model = models.Repo
