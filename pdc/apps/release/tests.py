@@ -638,6 +638,12 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(reverse('release-list') + '?base_product=product-1')
         self.assertEqual(1, response.data['count'])
 
+    def test_create_with_null_integrated_with(self):
+        args = {"name": "Fedora", "short": "f", "version": "20", "release_type": "ga", "integrated_with": None}
+        response = self.client.post(reverse('release-list'), args, format='json')
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertNumChanges([1])
+
     def test_update_with_patch_null_dist_git_mapping(self):
         args = {"name": "Fedora", "short": "f", "version": '20', "release_type": "ga"}
         response = self.client.post(reverse('release-list'), args)

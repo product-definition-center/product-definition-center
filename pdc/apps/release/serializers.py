@@ -67,6 +67,7 @@ class ReleaseSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     integrated_with = serializers.SlugRelatedField(slug_field='release_id',
                                                    queryset=Release.objects.all(),
                                                    required=False,
+                                                   allow_null=True,
                                                    default=None)
 
     class Meta:
