@@ -139,7 +139,7 @@ class Compose(models.Model):
         if not disable_overrides:
             useless_overrides = mapping.apply_overrides(overrides)
 
-        return (mapping, useless_overrides)
+        return mapping, useless_overrides
 
     def get_rpms(self, rpm_name):
         """
@@ -325,6 +325,13 @@ class ComposeRPMMapping(object):
             useless_overrides.append(override)
         else:
             to_be_deleted.append(override)
+
+    def get_rpm_mapping_only_with_overrides(self, package, disable_overrides, release):
+        useless_overrides = []
+        overrides = OverrideRPM.objects.filter(release=release).filter(srpm_name=package)
+        if not disable_overrides:
+            useless_overrides = self.apply_overrides(overrides)
+        return self, useless_overrides
 
     def apply_overrides(self, overrides, do_delete=True):
         tbd = []

@@ -976,6 +976,23 @@ class ReleaseRPMMappingViewSetTestCase(APITestCase):
                                    args=['product-1.0', 'bash']))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_get_for_no_compose_without_include(self):
+        compose_models.Compose.objects.filter(release__release_id='release-1.0').delete()
+        response = self.client.get(reverse('releaserpmmapping-detail',
+                                   args=['release-1.0', 'bash']))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_for_no_compose_with_include(self):
+        override = compose_models.OverrideRPM.objects.get(id=1)
+        override.include = True
+        override.save()
+
+        compose_models.Compose.objects.filter(release__release_id='release-1.0').delete()
+        response = self.client.get(reverse('releaserpmmapping-detail',
+                                   args=['release-1.0', 'bash']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"compose": None, "mapping": {"Server": {"x86_64": {"bash-doc": ["x86_64"]}}}})
+
     def test_get_for_nonexisting_release(self):
         response = self.client.get(reverse('releaserpmmapping-detail',
                                    args=['product-1.1', 'bash']))

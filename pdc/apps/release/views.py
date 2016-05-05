@@ -21,6 +21,7 @@ from .serializers import (ProductSerializer, ProductVersionSerializer,
                           ReleaseSerializer, BaseProductSerializer,
                           ReleaseTypeSerializer, ReleaseVariantSerializer,
                           VariantTypeSerializer)
+from pdc.apps.compose import models as compose_models
 from pdc.apps.repository import models as repo_models
 from pdc.apps.common.constants import PUT_OPTIONAL_PARAM_WARNING
 from pdc.apps.common.viewsets import (ChangeSetModelMixin,
@@ -741,7 +742,8 @@ class ReleaseRPMMappingView(StrictQueryParamMixin, viewsets.GenericViewSet):
 
         The latest compose is chosen from the list of composes built for the
         release or linked to it. The RPM mapping of that compose is filtered to
-        only include variants and architectures listed for the release.
+        only include variants and architectures listed for the release. If the
+        release has no compose then take an empty dict as compose RPM mapping.
 
         The used overrides come from the release specified in the URL, not the
         one for which the compose was originally built for.
@@ -749,7 +751,6 @@ class ReleaseRPMMappingView(StrictQueryParamMixin, viewsets.GenericViewSet):
         Following cases result in response of `404 NOT FOUND`:
 
          * no release with given id
-         * release exists, but has no composes
          * release and compose exists, but there are no RPMs for the package
 
         __Response__:
@@ -760,22 +761,30 @@ class ReleaseRPMMappingView(StrictQueryParamMixin, viewsets.GenericViewSet):
             }
 
         The `compose` key contains compose id of the compose used to populate
-        the mapping.
+        the mapping. If the release has no compose, 'compose' is null.
         """
         release = get_object_or_404(models.Release, release_id=kwargs['release_id'])
         compose = release.get_latest_compose()
-        if not compose:
-            return Response(status=status.HTTP_404_NOT_FOUND,
-                            data={'detail': 'Release %s has no composes' % kwargs['release_id']})
-        mapping, _ = compose.get_rpm_mapping(kwargs['package'],
-                                             bool(request.query_params.get('disable_overrides', False)),
-                                             release=release)
-        result = mapping.get_pure_dict()
-        if not result:
-            return Response(status=status.HTTP_404_NOT_FOUND,
-                            data={'detail': 'Package %s not present in release %s'
-                                  % (kwargs['package'], kwargs['release_id'])})
-        return Response(data={'compose': compose.compose_id, 'mapping': result})
+        if compose:
+            mapping, _ = compose.get_rpm_mapping(kwargs['package'],
+                                                 bool(request.query_params.get('disable_overrides', False)),
+                                                 release=release)
+            result = mapping.get_pure_dict()
+            if result:
+                return Response(data={'compose': compose.compose_id, 'mapping': result})
+        else:
+            mapping = compose_models.ComposeRPMMapping()
+            mapping.get_rpm_mapping_only_with_overrides(kwargs['package'],
+                                                        bool(request.query_params.get('disable_overrides', False)),
+                                                        release=release)
+            result = mapping.get_pure_dict()
+            if result:
+                return Response(data={'compose': None, 'mapping': result})
+
+        # no result
+        return Response(status=status.HTTP_404_NOT_FOUND,
+                        data={'detail': 'Package %s not present in release %s'
+                                        % (kwargs['package'], kwargs['release_id'])})
 
 
 class ReleaseTypeViewSet(StrictQueryParamMixin,
