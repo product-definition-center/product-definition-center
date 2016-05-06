@@ -10,7 +10,9 @@
     {% include "help_button.html" %}
 </h1>
 
-<p>Based on <strong>{{ compose.compose_id }}</strong></p>
+{% if compose %}
+    <p>Based on <strong>{{ compose.compose_id }}</strong></p>
+{% endif %}
 
 {% if has_errors %}
 <div class="alert alert-danger" role="alert">

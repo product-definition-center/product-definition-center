@@ -169,8 +169,10 @@ class RPMOverrideFormView(View):
         if self.compose:
             mapping, useless = self.compose.get_rpm_mapping(self.request.GET['package'], release=release)
         else:
-            mapping = {}
-            useless = []
+            mapping = ComposeRPMMapping()
+            mapping, useless = mapping.get_rpm_mapping_only_with_overrides(self.request.GET['package'], False,
+                                                                           release=release)
+
         checkboxes = []
         overs = set()
         for variant, arch, rpm_name, rpm_data in mapping:
