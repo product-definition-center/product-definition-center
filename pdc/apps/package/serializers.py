@@ -103,7 +103,7 @@ class ImageSerializer(StrictSerializerMixin, serializers.ModelSerializer):
         fields = ('file_name', 'image_format', 'image_type', 'disc_number',
                   'disc_count', 'arch', 'mtime', 'size', 'bootable',
                   'implant_md5', 'volume_id', 'md5', 'sha1', 'sha256',
-                  'composes')
+                  'composes', 'subvariant')
 
 
 class RPMRelatedField(serializers.RelatedField):

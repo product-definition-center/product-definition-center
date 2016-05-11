@@ -1038,6 +1038,23 @@ class ImageRESTTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 2)
 
+    def test_query_subvariant(self):
+        response = self.client.get(reverse('image-list'), {'subvariant': 'subvariant_1'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+        response = self.client.get(reverse('image-list'), {'subvariant': ['subvariant_1', 'subvariant_2']})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+
+        response = self.client.get(reverse('image-list'), {'subvariant': 'subvariant_not_exist'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 0)
+
+    def test_output_include_subvariant(self):
+        response = self.client.get(reverse('image-list'), {'subvariant': 'subvariant_1'})
+        self.assertTrue('subvariant' in response.data['results'][0])
+
     def test_query_image_format(self):
         response = self.client.get(reverse('image-list'), {'image_format': 'iso'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
