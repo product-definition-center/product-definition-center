@@ -3,8 +3,8 @@
 %define srcname pdc
 
 Name:           python-%{srcname}
-Version:        0.9.rc
-Release:        3%{?dist}
+Version:        1.0.0
+Release:        1%{?dist}
 Summary:        Product Definition Center
 Group:          Development/Libraries
 License:        MIT
@@ -22,7 +22,7 @@ Requires:       kobo-django
 Requires:       kobo-rpmlib
 Requires:       koji
 Requires:       patternfly1
-Requires:       productmd
+Requires:       productmd >= 1.1
 Requires:       python-django-filter >= 0.9.2
 Requires:       python-ldap
 Requires:       python-markdown
@@ -79,6 +79,78 @@ fi
 
 
 %changelog
+* Wed May 11 2016 Cheng Yu <ycheng@redhat.com> 1.0.0-1
+- Change version in code. (ycheng@redhat.com)
+- Handle release has no compose in web UI (ycheng@redhat.com)
+- Get rpm-mapping when release has no compose. (ycheng@redhat.com)
+- Enable query with multi values. (chuzhang@redhat.com)
+- Make Release.integrated_with accept null as input. (chuzhang@redhat.com)
+- Allow to clone repositories with None product_id (bliu@redhat.com)
+- Remove create-plugin.py from server repo (bliu@redhat.com)
+- Update the doc in Repo API (bliu@redhat.com)
+- Set unique Charfield's default value to None insteadof empty string.
+  (chuzhang@redhat.com)
+- Disable_eus/aus_repo_checks (bliu@redhat.com)
+- Make all update api following rule 'Update missing optional fields are
+  erased'. (chuzhang@redhat.com)
+- Simplify _bulk_insert_resource func in scripts/create_release_components.py
+  (tmlcoch@redhat.com)
+- Add doc to note the user when PUT optional parameter. (chuzhang@redhat.com)
+- Update tests to work with new productmd (lsedlar@redhat.com)
+- Fix the bug about "Manage Overrides" on release without compose
+  (bliu@redhat.com)
+- Publish two new message topics. (rbean@redhat.com)
+- Store relative paths to variant/$arch/$content_category_name dir
+  (ycheng@redhat.com)
+- Update the view of auth/token api (bliu@redhat.com)
+- Return warning when query in boolean field with illegal value.
+  (ycheng@redhat.com)
+- Add API stability to doc (sochotnicky@redhat.com)
+- Correct a documentation's url. (ycheng@redhat.com)
+- Create rpc/overridesrpm/clone (bliu@redhat.com)
+- Create rpc/overrides-rpm/clone (bliu@redhat.com)
+- To create rpc/overrides-rpm/clone API (bliu@redhat.com)
+- To create Rpc/Overrides-rpm/clone new API. (bliu@redhat.com)
+- Rewrite the get_all_permissions function (bliu@redhat.com)
+- Sorte permission list with same api name (bliu@redhat.com)
+- Correct the using api doc (bliu@redhat.com)
+- Change compose tree location end point url. (ycheng@redhat.com)
+- Initial image formats and types from productmd. (ycheng@redhat.com)
+- To show Arch names on compose page which get truncated (bliu@redhat.com)
+- Check compose rpm mapping parameters strictly and fix bug.
+  (ycheng@redhat.com)
+- Visible for Arch names on compose page (bliu@redhat.com)
+- Compose import images/rpms and full import APIs extra parameter not allowed.
+  (ycheng@redhat.com)
+- Send signal when product is created or updated. (ycheng@redhat.com)
+- Compose-tree-locations be unique over scheme (bliu@redhat.com)
+- Update the doc in compose-tree-location (bliu@redhat.com)
+- Visible for Arch names on compose page (bliu@redhat.com)
+- Remove useless header informations for some APIs (bliu@redhat.com)
+- Remove the client test in server repo (bliu@redhat.com)
+- Sync Release and BaseProduct models with productmd. (dmach@redhat.com)
+- Modify release 'short' and 'version' field validation to use regular
+  expressions from productmd. (dmach@redhat.com)
+- Remove useless header informations for some APIs (bliu@redhat.com)
+- Change corp name to the correct one. (ycheng@redhat.com)
+- Avoid double-encoding the fedmsg json payload. (rbean@redhat.com)
+- Strip any extra dots from the fedmsg topic. (rbean@redhat.com)
+- Fix tests (lsedlar@redhat.com)
+- Add subvariant field to images (lsedlar@redhat.com)
+- Add set compose tree location function to compose full import
+  (ycheng@redhat.com)
+- Indicate a compose is deleted in its detail page. (ycheng@redhat.com)
+- Remove redundant changelog. (ycheng@redhat.com)
+- Fix the full compose import API web page footer error. (ycheng@redhat.com)
+- Display deleted compose with special style in web UI. (ycheng@redhat.com)
+- Ability to import compose-rpms, compose-images at once (atomicity).
+  (ycheng@redhat.com)
+- Allow marking composes as deleted (ycheng@redhat.com)
+- Modify epochformat to work with both timestamps and datetime.
+  (dmach@redhat.com)
+- Improve ordering releases, product versions and products. (dmach@redhat.com)
+- Remove productmd hacks, deserialize data directly. (dmach@redhat.com)
+
 * Fri Feb 26 2016 Cheng Yu <ycheng@redhat.com> 0.9.rc-3
 - Change version and organization name. (ycheng@redhat.com)
 - Automatic commit of package [python-pdc] minor release [0.9.rc-2].
