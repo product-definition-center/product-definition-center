@@ -9,7 +9,9 @@ from django.core.exceptions import FieldError
 from pdc.apps.common.fields import ChoiceSlugField
 from pdc.apps.common import models as common_models
 from pdc.apps.common.serializers import StrictSerializerMixin
-from .models import Product, ProductVersion, Release, BaseProduct, ReleaseType, Variant, VariantArch, VariantType
+from .models import (Product, ProductVersion, Release,
+                     BaseProduct, ReleaseType, Variant,
+                     VariantArch, VariantType, ReleaseGroup, ReleaseGroupType)
 from . import signals
 
 
@@ -205,3 +207,27 @@ class VariantTypeSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = VariantType
         fields = ('name',)
+
+
+class ReleaseGroupSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+    description         = serializers.CharField(required=True)
+    type                = serializers.SlugRelatedField(slug_field='name',
+                                                       queryset=ReleaseGroupType.objects.all())
+    releases            = ChoiceSlugField(slug_field='release_id',
+                                          many=True, queryset=Release.objects.all(),
+                                          allow_null=True, required=False)
+    active              = serializers.BooleanField(default=True)
+
+    class Meta:
+        model = ReleaseGroup
+        fields = ('name', 'description', 'type', 'releases', 'active')
+
+    def to_internal_value(self, data):
+        releases = data.get('releases', [])
+        for release in releases:
+            try:
+                Release.objects.get(release_id=release)
+            except Release.DoesNotExist:
+                raise serializers.ValidationError({'detail': 'release %s does not exist' % release})
+
+        return super(ReleaseGroupSerializer, self).to_internal_value(data)

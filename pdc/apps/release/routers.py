@@ -14,6 +14,7 @@ router.register(r'product-versions', views.ProductVersionViewSet)
 router.register(r'releases', views.ReleaseViewSet)
 router.register(r'base-products', views.BaseProductViewSet)
 router.register(r'release-types', views.ReleaseTypeViewSet, base_name='releasetype')
+router.register(r'release-groups', views.ReleaseGroupsViewSet, base_name='releasegroups')
 router.register('releases/(?P<release_id>[^/]+)/rpm-mapping',
                 views.ReleaseRPMMappingView,
                 base_name='releaserpmmapping')

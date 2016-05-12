@@ -1,0 +1,25 @@
+[
+  {
+    "model": "release.ReleaseGroup",
+    "pk": 1,
+    "fields": {
+      "name": "rhel_test",
+      "description": "good",
+      "type": 1,
+      "releases": [1],
+      "active": true
+    }
+  },
+    {
+    "model": "release.ReleaseGroup",
+    "pk": 2,
+    "fields": {
+      "name": "rhel_test1",
+      "description": "test",
+      "type": 2,
+      "releases": [1],
+      "active": true
+    }
+  }
+
+]

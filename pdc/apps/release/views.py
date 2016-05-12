@@ -20,7 +20,7 @@ from .forms import (ReleaseSearchForm, BaseProductSearchForm,
 from .serializers import (ProductSerializer, ProductVersionSerializer,
                           ReleaseSerializer, BaseProductSerializer,
                           ReleaseTypeSerializer, ReleaseVariantSerializer,
-                          VariantTypeSerializer)
+                          VariantTypeSerializer, ReleaseGroupSerializer)
 from pdc.apps.compose import models as compose_models
 from pdc.apps.repository import models as repo_models
 from pdc.apps.common.constants import PUT_OPTIONAL_PARAM_WARNING
@@ -1013,3 +1013,91 @@ class ReleaseVariantTypeViewSet(StrictQueryParamMixin,
         %(SERIALIZER)s
         """
         return super(ReleaseVariantTypeViewSet, self).list(request, *args, **kwargs)
+
+
+class ReleaseGroupsViewSet(ChangeSetModelMixin,
+                           StrictQueryParamMixin,
+                           viewsets.GenericViewSet):
+    """
+    API endpoint that allows release_group_types to be viewed or edited.
+    This API endpoint is experimental.
+    """
+
+    queryset = models.ReleaseGroup.objects.all()
+    serializer_class = ReleaseGroupSerializer
+    lookup_field = 'name'
+    lookup_value_regex = '[^/]+'
+    filter_class = filters.ReleaseGroupFilter
+
+    def create(self, request, *args, **kwargs):
+        """
+        __Method__: POST
+
+        __URL__: $LINK:releasegroups-list$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+
+        return super(ReleaseGroupsViewSet, self).create(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:releasegroups-detail:name$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ReleaseGroupsViewSet, self).retrieve(request, *args, **kwargs)
+
+    def list(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:releasegroups-list$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+        __Response__: a paged list of following objects
+
+        %(SERIALIZER)s
+        """
+        return super(ReleaseGroupsViewSet, self).list(*args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__: PUT, PATCH
+
+        __URL__: $LINK:releasegroups-detail:name$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ReleaseGroupsViewSet, self).update(request, *args, **kwargs)
+
+    def destroy(self, *args, **kwargs):
+        """
+        __Method__: `DELETE`
+
+        __URL__: $LINK:releasegroups-detail:name$
+
+        __Response__:
+
+        On success, HTTP status code is 204 and the response has no content.
+        """
+        return super(ReleaseGroupsViewSet, self).destroy(*args, **kwargs)
