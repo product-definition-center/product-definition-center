@@ -39,8 +39,8 @@ LABEL Vendor = "Red Hat"
 LABEL Version = "0.5"
 
 # patternfly1
-RUN curl https://copr.fedoraproject.org/coprs/patternfly/patternfly1/repo/fedora-21/patternfly-patternfly1-fedora-21.repo > /etc/yum.repos.d/patternfly-patternfly1-fedora-21.repo
-RUN curl http://www.graphviz.org/graphviz-rhel.repo > /etc/yum.repos.d/graphviz-rhel.repo
+RUN curl -L https://copr.fedoraproject.org/coprs/patternfly/patternfly1/repo/fedora-21/patternfly-patternfly1-fedora-21.repo > /etc/yum.repos.d/patternfly-patternfly1-fedora-21.repo
+RUN curl -L http://www.graphviz.org/graphviz-rhel.repo > /etc/yum.repos.d/graphviz-rhel.repo
 
 # solve dependencies
 RUN yum -y upgrade && yum install -y \
