@@ -4,7 +4,7 @@
 
 Name:           python-%{srcname}
 Version:        1.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Product Definition Center
 Group:          Development/Libraries
 License:        MIT
@@ -79,6 +79,9 @@ fi
 
 
 %changelog
+* Tue May 17 2016 Cheng Yu <ycheng@redhat.com> 1.0.0-2
+- Pass empty string to productmd instead of None. (chuzhang@redhat.com)
+
 * Wed May 11 2016 Cheng Yu <ycheng@redhat.com> 1.0.0-1
 - Change version in code. (ycheng@redhat.com)
 - Handle release has no compose in web UI (ycheng@redhat.com)
