@@ -4,6 +4,7 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+import inspect
 import json
 
 from django.shortcuts import render, redirect
@@ -28,7 +29,8 @@ from . import models
 from pdc.apps.auth.permissions import APIPermission
 from pdc.apps.common.viewsets import StrictQueryParamMixin, ChangeSetUpdateModelMixin
 from pdc.apps.common import viewsets as common_viewsets
-from pdc.apps.utils.utils import group_obj_export
+from pdc.apps.utils.SortedRouter import router
+from pdc.apps.utils.utils import group_obj_export, convert_method_to_action
 
 
 def remoteuserlogin(request):
@@ -73,8 +75,58 @@ def logout(request):
     return HttpResponseRedirect(redirect_to)
 
 
+def get_resource_permission_set(user):
+    resource_permission_set = set([])
+    if user.is_superuser:
+        resource_permission_set = set([obj for obj in models.ResourcePermission.objects.all()])
+    else:
+        group_id_list = [group.id for group in user.groups.all()]
+        queryset = models.GroupResourcePermission.objects.filter(group__id__in=group_id_list)
+
+        for group_resource_permission in queryset:
+            resource_permission_set.add(group_resource_permission.resource_permission)
+    return resource_permission_set
+
+
+def _change_row(row, value, d=[]):
+    http_method = ['create', 'read', 'update', 'delete']
+    for v in d:
+        try:
+            index = http_method.index(v.lower())
+            row[index + 1] = value
+        except ValueError:
+            raise Exception("The action %s is not valid" % v)
+    return row
+
+
+def _get_resource_permissions_matrix(user):
+    dict_resource_perm_map = {}
+    result = []
+
+    resource_permission_set = get_resource_permission_set(user)
+    for resource_permission in resource_permission_set:
+        resource_name = resource_permission.resource.name
+        permission_name = resource_permission.permission.name
+        dict_resource_perm_map.setdefault(resource_name, []).append(permission_name)
+
+    ori_action_dict = {}
+    for resource_name, view_set, _ in router.registry:
+        for name, _ in inspect.getmembers(view_set, predicate=inspect.ismethod):
+            if name.lower() in ['update', 'create', 'destroy', 'list', 'partial_update', 'retrieve']:
+                ori_action_dict.setdefault(resource_name, []).append(convert_method_to_action(name.lower()))
+
+    for key in dict_resource_perm_map:
+        row = [key, 'N/A', 'N/A', 'N/A', 'N/A']
+        row = _change_row(row, 'No', ori_action_dict.get(key, []))
+        row = _change_row(row, 'Yes', dict_resource_perm_map.get(key, []))
+        result.append(row)
+
+    return sorted(result)
+
+
 def user_profile(request):
-    context = {'has_ldap': hasattr(settings, "LDAP_URI")}
+    context = {'has_ldap': hasattr(settings, "LDAP_URI"),
+               'resource_permissions_matrix': _get_resource_permissions_matrix(request.user)}
     return render(request, 'user_profile.html', context)
 
 
@@ -499,16 +551,7 @@ class CurrentUserViewSet(mixins.ListModelMixin,
     queryset = get_user_model().objects.none()
 
     def _get_resource_permissions(self, user):
-        resource_permission_set = set([])
-        if user.is_superuser:
-            resource_permission_set = set([obj for obj in models.ResourcePermission.objects.all()])
-        else:
-            group_id_list = [group.id for group in user.groups.all()]
-            queryset = models.GroupResourcePermission.objects.filter(group__id__in=group_id_list)
-
-            for group_resource_permission in queryset:
-                resource_permission_set.add(group_resource_permission.resource_permission)
-        serializer = serializers.ResourcePermissionSerializer(resource_permission_set, many=True)
+        serializer = serializers.ResourcePermissionSerializer(get_resource_permission_set(user), many=True)
         return serializer.data
 
     def list(self, request):

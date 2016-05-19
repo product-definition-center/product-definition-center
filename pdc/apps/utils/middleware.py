@@ -12,6 +12,7 @@ from django.http import HttpResponseRedirect
 
 from . import messenger
 from pdc.apps.utils.SortedRouter import router
+from pdc.apps.utils.utils import convert_method_to_action
 from pdc.apps.auth.models import ResourcePermission, ActionPermission, Resource
 
 logger = logging.getLogger(__name__)
@@ -56,21 +57,13 @@ class ResourceCollectingMiddleware(object):
                 logger.info("Created resource %s" % prefix)
             for name, method in inspect.getmembers(view_set, predicate=inspect.ismethod):
                 if name.lower() in ['update', 'create', 'destroy', 'list', 'partial_update', 'retrieve']:
-                    action_permission = action_to_obj_dict[self._convert_method_to_action(name.lower())]
+                    action_permission = action_to_obj_dict[convert_method_to_action(name.lower())]
                     _, created = ResourcePermission.objects.get_or_create(resource=resource_obj,
                                                                           permission=action_permission)
                     if created:
                         logger.info("Created resource permission item with resource '%s' and action '%s" %
                                     (prefix, action_permission.name))
         raise django.core.exceptions.MiddlewareNotUsed
-
-    def _convert_method_to_action(self, method):
-        return {'update': 'update',
-                'partial_update': 'update',
-                'list': 'read',
-                'retrieve': 'read',
-                'create': 'create',
-                'destroy': 'delete'}.get(method)
 
 
 class RestrictAdminMiddleware(object):

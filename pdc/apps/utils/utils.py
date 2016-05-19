@@ -40,3 +40,12 @@ def is_valid_regexp(in_str):
     except re.error:
         result = False
     return result
+
+
+def convert_method_to_action(method):
+    return {'update': 'update',
+            'partial_update': 'update',
+            'list': 'read',
+            'retrieve': 'read',
+            'create': 'create',
+            'destroy': 'delete'}.get(method)
