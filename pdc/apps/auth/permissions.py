@@ -12,7 +12,8 @@ class APIPermissionComponent(BasePermissionComponent):
     """
 
     def has_permission(self, permission, request, view):
-        if request.user.is_superuser:
+        if request.user.is_superuser or (hasattr(settings, 'DISABLE_RESOURCE_PERMISSION_CHECK') and
+                                         settings.DISABLE_RESOURCE_PERMISSION_CHECK):
             return True
         api_name = request.path.replace("%s%s/" % (settings.REST_API_URL, settings.REST_API_VERSION), '').strip('/')
         internal_permission = self._convert_permission(request.method)

@@ -334,6 +334,9 @@ class GroupResourcePermissionsTestCase(APITestCase):
         if hasattr(settings, 'ALLOW_ALL_USER_READ'):
             self.ALLOW_ALL_USER_READ = settings.ALLOW_ALL_USER_READ
             settings.ALLOW_ALL_USER_READ = False
+        if hasattr(settings, 'DISABLE_RESOURCE_PERMISSION_CHECK'):
+            self.DISABLE_RESOURCE_PERMISSION_CHECK = settings.DISABLE_RESOURCE_PERMISSION_CHECK
+            settings.ALLOW_ALL_USER_READ = False
 
         for permission in Permission.objects.all():
             self.user.user_permissions.add(permission)
@@ -359,6 +362,8 @@ class GroupResourcePermissionsTestCase(APITestCase):
     def tearDown(self):
         if hasattr(settings, 'ALLOW_ALL_USER_READ'):
             settings.ALLOW_ALL_USER_READ = self.ALLOW_ALL_USER_READ
+        if hasattr(settings, 'DISABLE_RESOURCE_PERMISSION_CHECK'):
+            settings.DISABLE_RESOURCE_PERMISSION_CHECK = self.DISABLE_RESOURCE_PERMISSION_CHECK
 
     def test_control_read_permission(self):
         url = reverse('releasecomponent-list')
@@ -506,7 +511,7 @@ class GroupResourcePermissionsTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_work_with_regexp_resource_name(self):
-        url = url = reverse('findcomposebyrr-list', kwargs={'rpm_name': 'bash', 'release_id': 'release-1.0'})
+        url = reverse('findcomposebyrr-list', kwargs={'rpm_name': 'bash', 'release_id': 'release-1.0'})
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data, {u'detail': u'You do not have permission to perform this action.'})
@@ -531,6 +536,14 @@ class GroupResourcePermissionsTestCase(APITestCase):
         self.group.user_set.remove(self.user)
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_enable_all_permissions_flag(self):
+        if hasattr(settings, 'DISABLE_RESOURCE_PERMISSION_CHECK'):
+            settings.DISABLE_RESOURCE_PERMISSION_CHECK = True
+            # automatically have permission
+            url = reverse('findcomposebyrr-list', kwargs={'rpm_name': 'bash', 'release_id': 'release-1.0'})
+            response = self.client.get(url, format='json')
+            self.assertNotEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_delete_group_permission(self):
         # grant user's group read permission

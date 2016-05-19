@@ -121,6 +121,9 @@ class ResourcePermission(models.Model):
 
     class Meta:
         ordering = ("resource__name", "permission__name")
+        unique_together = [
+            ('resource', 'permission')
+        ]
 
     def __unicode__(self):
         return u"%s %s" % (self.resource, self.permission)
@@ -138,6 +141,9 @@ class GroupResourcePermission(models.Model):
 
     class Meta:
         ordering = ("group__name", "resource_permission__resource__name", "resource_permission__permission__name")
+        unique_together = [
+            ('resource_permission', 'group')
+        ]
 
     def __unicode__(self):
         return u"(%s) %s" % (self.resource_permission, self.group)

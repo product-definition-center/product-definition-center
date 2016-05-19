@@ -35,8 +35,11 @@ ALLOWED_HOSTS = []
 
 ITEMS_PER_PAGE = 50
 
+# ======== resource permissions configuration =========
 # allow read permission for all users
 ALLOW_ALL_USER_READ = True
+# enable all resource permissions
+DISABLE_RESOURCE_PERMISSION_CHECK = False
 
 # Application definition
 
