@@ -211,11 +211,11 @@ class VariantTypeSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 
 class ReleaseGroupSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     description         = serializers.CharField(required=True)
-    type                = serializers.SlugRelatedField(slug_field='name',
-                                                       queryset=ReleaseGroupType.objects.all())
+    type                = ChoiceSlugField(slug_field='name',
+                                          queryset=ReleaseGroupType.objects.all())
     releases            = ChoiceSlugField(slug_field='release_id',
                                           many=True, queryset=Release.objects.all(),
-                                          allow_null=True, required=False)
+                                          allow_null=True, required=False, default=[])
     active              = serializers.BooleanField(default=True)
 
     class Meta:
