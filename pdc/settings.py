@@ -41,6 +41,10 @@ ALLOW_ALL_USER_READ = True
 # enable all resource permissions
 DISABLE_RESOURCE_PERMISSION_CHECK = False
 
+
+# send email to admin if one changeset's change is equal or greater than CHANGESET_SIZE_ANNOUNCE
+CHANGESET_SIZE_ANNOUNCE = 1000
+
 # Application definition
 
 INSTALLED_APPS = (

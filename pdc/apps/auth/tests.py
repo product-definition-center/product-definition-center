@@ -336,7 +336,7 @@ class GroupResourcePermissionsTestCase(APITestCase):
             settings.ALLOW_ALL_USER_READ = False
         if hasattr(settings, 'DISABLE_RESOURCE_PERMISSION_CHECK'):
             self.DISABLE_RESOURCE_PERMISSION_CHECK = settings.DISABLE_RESOURCE_PERMISSION_CHECK
-            settings.ALLOW_ALL_USER_READ = False
+            settings.DISABLE_RESOURCE_PERMISSION_CHECK = False
 
         for permission in Permission.objects.all():
             self.user.user_permissions.add(permission)

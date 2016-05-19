@@ -32,7 +32,8 @@ class ChangesetMiddlewareTestCase(TestCase):
             self.assertTrue(func.called)
             self.assertEqual(ret, 123)
             self.assertEqual(func.call_args, call(self.request, 1, 2, 3, arg='val'))
-            self.assertEqual(changeset.mock_calls, [call(author=None, comment=None), call().commit()])
+            self.assertEqual(changeset.mock_calls[0], call(author=None, comment=None))
+            self.assertEqual(changeset.mock_calls[1], call().commit())
 
     def test_no_commit_with_exception(self):
         self.request.user.is_authenticated = lambda: False
