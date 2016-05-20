@@ -129,6 +129,7 @@ if 'test' in sys.argv:
 AUTHENTICATION_BACKENDS = (
     'pdc.apps.auth.backends.KerberosUserBackend',
     #'pdc.apps.auth.backends.AuthMellonUserBackend',
+    #'pdc.apps.auth.backends.AuthOIDCUserBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 

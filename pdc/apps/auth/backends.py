@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2015 Red Hat
+# Copyright (c) 2015-2016 Red Hat
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
@@ -85,6 +85,19 @@ def update_user_from_auth_mellon(user, request):
     user.save()
 
 
+def update_user_from_auth_oidc(user, request):
+    user.full_name = request.META['OIDC_CLAIM_name']
+    user.email = request.META['OIDC_CLAIM_email']
+
+    group_ids = set()
+    for group_name in request.META['OIDC_CLAIM_groups'].split(','):
+        group, _ = Group.objects.get_or_create(name=group_name)
+        group_ids.add(group.id)
+    user.groups = group_ids
+
+    user.save()
+
+
 class KerberosUserBackend(RemoteUserBackend):
     # TODO:
     # * handle inactive users (mark inactive, remove groups)
@@ -114,4 +127,15 @@ class AuthMellonUserBackend(RemoteUserBackend):
         user = super(AuthMellonUserBackend, self).authenticate(remote_user)
         if user:
             update_user_from_auth_mellon(user, request)
+        return user
+
+
+class AuthOIDCUserBackend(RemoteUserBackend):
+    save_login = False
+    logout_url = '/oidc_redirect?logout='
+
+    def authenticate(self, remote_user, request, **kwargs):
+        user = super(AuthOIDCUserBackend, self).authenticate(remote_user)
+        if user:
+            update_user_from_auth_oidc(user, request)
         return user
