@@ -118,12 +118,10 @@ MIDDLEWARE_CLASSES = [
     'pdc.apps.usage.middleware.UsageMiddleware',
     'pdc.apps.changeset.middleware.ChangesetMiddleware',
     'pdc.apps.utils.middleware.MessagingMiddleware',
-    'pdc.apps.utils.middleware.ResourceCollectingMiddleware',
     'pdc.apps.utils.middleware.RestrictAdminMiddleware'
 ]
 
 if 'test' in sys.argv:
-    MIDDLEWARE_CLASSES.remove('pdc.apps.utils.middleware.ResourceCollectingMiddleware')
     MIDDLEWARE_CLASSES.remove('pdc.apps.utils.middleware.RestrictAdminMiddleware')
 
 AUTHENTICATION_BACKENDS = (

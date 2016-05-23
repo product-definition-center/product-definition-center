@@ -4,16 +4,12 @@
 # http://opensource.org/licenses/MIT
 #
 import logging
-import django
-import inspect
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
 from . import messenger
-from pdc.apps.utils.SortedRouter import router
-from pdc.apps.utils.utils import convert_method_to_action
-from pdc.apps.auth.models import ResourcePermission, ActionPermission, Resource
+
 
 logger = logging.getLogger(__name__)
 
@@ -35,35 +31,6 @@ class MessagingMiddleware(object):
                     messenger.send_message(topic=topic, msg=msg)
         request._messagings = None
         return response
-
-
-class ResourceCollectingMiddleware(object):
-    API_WITH_NO_PERMISSION_CONTROL = set(['changesets', 'rpc/where-to-file-bugs', 'images', 'release-types',
-                                          'variant-types', 'release-variant-types', 'content-delivery-repo-families',
-                                          'content-delivery-content-categories', 'content-delivery-content-formats',
-                                          'content-delivery-services', 'auth/permissions', 'auth/current-user'])
-
-    def __init__(self):
-        action_to_obj_dict = {}
-
-        for action in ('update', 'create', 'delete', 'read'):
-            action_to_obj_dict[action] = ActionPermission.objects.get(name=action)
-
-        for prefix, view_set, basename in router.registry:
-            if prefix in self.API_WITH_NO_PERMISSION_CONTROL:
-                continue
-            resource_obj, created = Resource.objects.get_or_create(name=prefix, view=str(view_set))
-            if created:
-                logger.info("Created resource %s" % prefix)
-            for name, method in inspect.getmembers(view_set, predicate=inspect.ismethod):
-                if name.lower() in ['update', 'create', 'destroy', 'list', 'partial_update', 'retrieve']:
-                    action_permission = action_to_obj_dict[convert_method_to_action(name.lower())]
-                    _, created = ResourcePermission.objects.get_or_create(resource=resource_obj,
-                                                                          permission=action_permission)
-                    if created:
-                        logger.info("Created resource permission item with resource '%s' and action '%s" %
-                                    (prefix, action_permission.name))
-        raise django.core.exceptions.MiddlewareNotUsed
 
 
 class RestrictAdminMiddleware(object):

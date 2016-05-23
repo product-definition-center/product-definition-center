@@ -26,6 +26,7 @@ from . import backends
 from . import filters
 from . import serializers
 from . import models
+from pdc.apps.auth.models import ResourcePermission, ActionPermission, Resource
 from pdc.apps.auth.permissions import APIPermission
 from pdc.apps.common.viewsets import StrictQueryParamMixin, ChangeSetUpdateModelMixin
 from pdc.apps.common import viewsets as common_viewsets
@@ -602,6 +603,26 @@ class ResourcePermissionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.ResourcePermissionSerializer
     permission_classes = (APIPermission,)
     filter_class = filters.ResourcePermissionFilter
+    API_WITH_NO_PERMISSION_CONTROL = set(['changesets', 'rpc/where-to-file-bugs', 'images', 'release-types',
+                                          'variant-types', 'release-variant-types', 'content-delivery-repo-families',
+                                          'content-delivery-content-categories', 'content-delivery-content-formats',
+                                          'content-delivery-services', 'auth/permissions', 'auth/current-user'])
+
+    def _collect_resource_permissions(self):
+        action_to_obj_dict = {}
+
+        for action in ('update', 'create', 'delete', 'read'):
+            action_to_obj_dict[action] = ActionPermission.objects.get(name=action)
+
+        for prefix, view_set, basename in router.registry:
+            if prefix in self.API_WITH_NO_PERMISSION_CONTROL:
+                continue
+            resource_obj, created = Resource.objects.get_or_create(name=prefix, view=str(view_set))
+            for name, method in inspect.getmembers(view_set, predicate=inspect.ismethod):
+                if name.lower() in ['update', 'create', 'destroy', 'list', 'partial_update', 'retrieve']:
+                    action_permission = action_to_obj_dict[convert_method_to_action(name.lower())]
+                    _, created = ResourcePermission.objects.get_or_create(resource=resource_obj,
+                                                                          permission=action_permission)
 
     def list(self, request, *args, **kwargs):
         """
@@ -610,6 +631,12 @@ class ResourcePermissionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         __Method__: `GET`
 
         __URL__: $LINK:resourcepermissions-list$
+
+        __Query params__:
+
+        `create` is a special parameter. Set it to `true` will generate resource permissions.
+
+        %(FILTERS)s
 
         __Response__:
 
@@ -628,6 +655,8 @@ class ResourcePermissionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             }
 
         """
+        if request.GET.get('create') and request.GET.get('create').lower() in ('true', 't'):
+            self._collect_resource_permissions()
         return super(ResourcePermissionViewSet, self).list(request, *args, **kwargs)
 
 
