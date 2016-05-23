@@ -50,7 +50,7 @@ class ChangesetMiddleware(object):
         <p><b>Author</b>:        %(author)s </p>
         <p><b>Author Email</b>:  %(author_email)s </p>
         <p><b>Change Number</b>: %(change_number)s </p>
-        <p><b>Change Link</b>:   <a href="url">%(url)s</a>
+        <p><b>Change Link</b>:   <a href="%(url)s">%(url)s</a>
         </html>
         """ % params_dict
         mail_admins(mail_title, None, html_message=mail_body)
