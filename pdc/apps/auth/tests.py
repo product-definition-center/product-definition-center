@@ -619,6 +619,25 @@ class GroupResourcePermissionsTestCase(APITestCase):
         response = self.client.get(url, data, format='json')
         self.assertEqual(response.data['count'], 1)
 
+    def test_retrieve(self):
+        data = {'group': self.group.name,
+                "resource_permission":
+                    {
+                        "permission": "read",
+                        "resource": "rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)"
+                    }
+                }
+        url = reverse('groupresourcepermissions-list')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        obj_id = response.data['id']
+        url = reverse('groupresourcepermissions-detail', args=[obj_id])
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data.update({'id': obj_id})
+        self.assertEqual(data, response.data)
+
 
 class ResourcePermissionsAPITestCase(APITestCase):
     fixtures = [

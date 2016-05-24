@@ -755,7 +755,7 @@ class GroupResourcePermissionViewSet(common_viewsets.PDCModelViewSet):
                     }
             }
         """
-        return super(GroupViewSet, self).retrieve(request, *args, **kwargs)
+        return super(GroupResourcePermissionViewSet, self).retrieve(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         """
