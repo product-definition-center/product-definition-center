@@ -139,6 +139,7 @@ class ImageViewSet(pdc_viewsets.StrictQueryParamMixin,
     queryset = models.Image.objects.all().order_by('id')
     serializer_class = serializers.ImageSerializer
     filter_class = filters.ImageFilter
+    permission_classes = (APIPermission,)
 
     def list(self, request):
         """

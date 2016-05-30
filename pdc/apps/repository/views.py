@@ -247,6 +247,7 @@ class RepoFamilyViewSet(StrictQueryParamMixin,
     queryset = models.RepoFamily.objects.all().order_by('id')
     serializer_class = serializers.RepoFamilySerializer
     filter_class = filters.RepoFamilyFilter
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """
@@ -296,6 +297,7 @@ class ContentCategoryViewSet(StrictQueryParamMixin,
     """
     serializer_class = serializers.ContentCategorySerializer
     queryset = models.ContentCategory.objects.all().order_by('id')
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """
@@ -318,6 +320,7 @@ class ContentFormatViewSet(StrictQueryParamMixin,
     """
     serializer_class = serializers.ContentFormatSerializer
     queryset = models.ContentFormat.objects.all().order_by('id')
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """
@@ -340,6 +343,7 @@ class ServiceViewSet(StrictQueryParamMixin,
     """
     serializer_class = serializers.ServiceSerializer
     queryset = models.Service.objects.all().order_by('id')
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """

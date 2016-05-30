@@ -1408,6 +1408,7 @@ class FilterBugzillaProductsAndComponents(StrictQueryParamMixin,
     """
     queryset = ComposeRPM.objects.none()    # Required for permissions
     extra_query_params = ('nvr', )
+    permission_classes = (APIPermission,)
 
     def list(self, request):
         """
@@ -1734,6 +1735,7 @@ class ComposeImageRTTTestViewSet(ChangeSetUpdateModelMixin,
     queryset = ComposeImage.objects.select_related('variant_arch', 'image').all()
     serializer_class = ComposeImageRTTTestSerializer
     filter_class = ComposeImageRTTTestFilter
+    permission_classes = (APIPermission,)
 
     lookup_fields = (
         ('variant_arch__variant__compose__compose_id', r'[^/]+'),

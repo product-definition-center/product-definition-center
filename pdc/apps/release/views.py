@@ -814,6 +814,7 @@ class ReleaseTypeViewSet(StrictQueryParamMixin,
     queryset = models.ReleaseType.objects.all()
     serializer_class = ReleaseTypeSerializer
     filter_class = filters.ReleaseTypeFilter
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """
@@ -995,6 +996,7 @@ class VariantTypeViewSet(StrictQueryParamMixin,
     # TODO: remove this class after next release
     serializer_class = VariantTypeSerializer
     queryset = models.VariantType.objects.all().order_by('id')
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """
@@ -1011,6 +1013,7 @@ class ReleaseVariantTypeViewSet(StrictQueryParamMixin,
     """
     serializer_class = VariantTypeSerializer
     queryset = models.VariantType.objects.all()
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """
@@ -1038,6 +1041,7 @@ class ReleaseGroupsViewSet(ChangeSetModelMixin,
     lookup_field = 'name'
     lookup_value_regex = '[^/]+'
     filter_class = filters.ReleaseGroupFilter
+    permission_classes = (APIPermission,)
 
     def create(self, request, *args, **kwargs):
         """

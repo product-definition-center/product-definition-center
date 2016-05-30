@@ -318,6 +318,35 @@ class CurrentUserTestCase(APITestCase):
         self.assertTrue({'resource': 'rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)',
                          'permission': 'create'} in response.data['resource_permissions'])
 
+    def test_resource_permission_all_read_permissions_on(self):
+        temp = False
+        if hasattr(settings, 'ALLOW_ALL_USER_READ'):
+            temp = settings.ALLOW_ALL_USER_READ
+
+        self.client.force_authenticate(user=self.user)
+        for permission in Permission.objects.all():
+            self.user.user_permissions.add(permission)
+
+        for name, view in (("group-resource-permissions",
+                            "<class 'pdc.apps.auth.views.GroupResourcePermissionViewSet'>"),
+                           ("release-components", "<class 'pdc.apps.component.views.ReleaseComponentViewSet'>"),
+                           ("rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)",
+                            "<class 'pdc.apps.compose.views.FindComposeByReleaseRPMViewSet'>")):
+            Resource.objects.create(name=name, view=view)
+        for resource in Resource.objects.all():
+            for permission in ActionPermission.objects.all():
+                ResourcePermission.objects.create(resource=resource, permission=permission)
+
+        settings.ALLOW_ALL_USER_READ = False
+        response = self.client.get(reverse('currentuser-list'), format='json')
+        self.assertEqual(len(response.data['resource_permissions']), 0)
+
+        settings.ALLOW_ALL_USER_READ = True
+        response = self.client.get(reverse('currentuser-list'), format='json')
+        self.assertEqual(len(response.data['resource_permissions']), 3)
+
+        settings.ALLOW_ALL_USER_READ = temp
+
 
 class GroupResourcePermissionsTestCase(APITestCase):
     fixtures = [

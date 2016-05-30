@@ -31,7 +31,7 @@ from pdc.apps.auth.permissions import APIPermission
 from pdc.apps.common.viewsets import StrictQueryParamMixin, ChangeSetUpdateModelMixin
 from pdc.apps.common import viewsets as common_viewsets
 from pdc.apps.utils.SortedRouter import router
-from pdc.apps.utils.utils import group_obj_export, convert_method_to_action
+from pdc.apps.utils.utils import group_obj_export, convert_method_to_action, read_permission_for_all
 
 
 def remoteuserlogin(request):
@@ -81,6 +81,9 @@ def get_resource_permission_set(user):
     if user.is_superuser:
         resource_permission_set = set([obj for obj in models.ResourcePermission.objects.all()])
     else:
+        if read_permission_for_all():
+            resource_permission_set = set([obj for obj in models.ResourcePermission.objects.filter(
+                permission__name__iexact='read')])
         group_id_list = [group.id for group in user.groups.all()]
         queryset = models.GroupResourcePermission.objects.filter(group__id__in=group_id_list)
 
@@ -278,6 +281,7 @@ class PermissionViewSet(StrictQueryParamMixin,
     following for more details.
 
     """
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """
@@ -603,10 +607,7 @@ class ResourcePermissionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.ResourcePermissionSerializer
     permission_classes = (APIPermission,)
     filter_class = filters.ResourcePermissionFilter
-    API_WITH_NO_PERMISSION_CONTROL = set(['changesets', 'rpc/where-to-file-bugs', 'images', 'release-types',
-                                          'variant-types', 'release-variant-types', 'content-delivery-repo-families',
-                                          'content-delivery-content-categories', 'content-delivery-content-formats',
-                                          'content-delivery-services', 'auth/permissions', 'auth/current-user'])
+    API_WITH_NO_PERMISSION_CONTROL = set(['auth/token', 'auth/current-user'])
 
     def _collect_resource_permissions(self):
         action_to_obj_dict = {}

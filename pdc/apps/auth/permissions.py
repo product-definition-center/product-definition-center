@@ -4,6 +4,7 @@ from restfw_composed_permissions.generic.components import AllowAll
 from django.conf import settings
 
 from pdc.apps.auth.models import Resource, GroupResourcePermission
+from pdc.apps.utils.utils import read_permission_for_all
 
 
 class APIPermissionComponent(BasePermissionComponent):
@@ -17,8 +18,7 @@ class APIPermissionComponent(BasePermissionComponent):
             return True
         api_name = request.path.replace("%s%s/" % (settings.REST_API_URL, settings.REST_API_VERSION), '').strip('/')
         internal_permission = self._convert_permission(request.method)
-        if not internal_permission or (hasattr(settings, 'ALLOW_ALL_USER_READ') and
-                                       settings.ALLOW_ALL_USER_READ and internal_permission == 'read'):
+        if not internal_permission or (read_permission_for_all() and internal_permission == 'read'):
             return True
         return self._has_permission(internal_permission, request.user, str(view.__class__), api_name)
 

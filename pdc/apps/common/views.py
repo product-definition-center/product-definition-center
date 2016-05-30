@@ -9,6 +9,7 @@ from django.shortcuts import render
 from django.views import defaults
 from django.http import HttpResponse
 
+from pdc.apps.auth.permissions import APIPermission
 from pdc.apps.common.constants import PUT_OPTIONAL_PARAM_WARNING
 
 from rest_framework import viewsets, mixins, status
@@ -211,6 +212,7 @@ class ArchViewSet(pdc_viewsets.ChangeSetCreateModelMixin,
     serializer_class = ArchSerializer
     queryset = Arch.objects.all().order_by('id')
     lookup_field = 'name'
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """
@@ -295,6 +297,7 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
     filter_class = SigKeyFilter
     lookup_field = 'key_id'
     docstring_macros = PUT_OPTIONAL_PARAM_WARNING
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """

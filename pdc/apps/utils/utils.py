@@ -7,6 +7,7 @@ import re
 
 from pdc.apps.common.hacks import validate_model
 from pdc.apps.common.constants import PDC_WARNING_HEADER_NAME
+from django.conf import settings
 from django.db.models.signals import pre_save
 from django.forms.models import model_to_dict
 
@@ -49,3 +50,7 @@ def convert_method_to_action(method):
             'retrieve': 'read',
             'create': 'create',
             'destroy': 'delete'}.get(method)
+
+
+def read_permission_for_all():
+    return hasattr(settings, 'ALLOW_ALL_USER_READ') and settings.ALLOW_ALL_USER_READ
