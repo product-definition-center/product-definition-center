@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 
 from pdc.apps.common.filters import value_is_not_empty, MultiValueFilter, CaseInsensitiveBooleanFilter, \
     MultiValueCaseInsensitiveFilter
-from .models import Compose, OverrideRPM, ComposeTree, ComposeImage
+from .models import Compose, OverrideRPM, ComposeTree, ComposeImage, VariantArch
 
 
 class ComposeFilter(django_filters.FilterSet):
@@ -94,6 +94,17 @@ class ComposeTreeFilter(django_filters.FilterSet):
     class Meta:
         model = ComposeTree
         fields = ('compose', 'variant', 'arch', 'location', 'scheme')
+
+
+class ComposeTreeRTTTestFilter(django_filters.FilterSet):
+    compose         = MultiValueFilter(name='variant__compose__compose_id')
+    variant         = MultiValueFilter(name='variant__variant_uid')
+    arch            = MultiValueFilter(name='arch__name')
+    test_result     = MultiValueFilter(name='rtt_testing_status__name')
+
+    class Meta:
+        model = VariantArch
+        fields = ('compose', 'variant', 'arch', 'test_result')
 
 
 class ComposeImageRTTTestFilter(django_filters.FilterSet):

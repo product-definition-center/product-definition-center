@@ -219,6 +219,14 @@ class VariantArch(models.Model):
     def __unicode__(self):
         return u"%s.%s" % (self.variant, self.arch)
 
+    def export(self):
+        return {
+            "compose": self.variant.compose.compose_id,
+            "variant": self.variant.variant_uid,
+            "arch": self.arch.name,
+            "rtt_testing_status": self.rtt_testing_status.name
+        }
+
 
 class Path(models.Model):
     """

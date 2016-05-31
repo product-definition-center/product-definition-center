@@ -45,8 +45,9 @@ from .models import (Compose, VariantArch, Variant, ComposeRPM, OverrideRPM,
 from .forms import (ComposeSearchForm, ComposeRPMSearchForm, ComposeImageSearchForm,
                     ComposeRPMDisableForm, OverrideRPMForm, VariantArchForm, OverrideRPMActionForm)
 from .serializers import (ComposeSerializer, OverrideRPMSerializer, ComposeTreeSerializer,
-                          ComposeImageRTTTestSerializer)
-from .filters import ComposeFilter, OverrideRPMFilter, ComposeTreeFilter, ComposeImageRTTTestFilter
+                          ComposeImageRTTTestSerializer, ComposeTreeRTTTestSerializer)
+from .filters import (ComposeFilter, OverrideRPMFilter, ComposeTreeFilter, ComposeImageRTTTestFilter,
+                      ComposeTreeRTTTestFilter)
 from . import lib
 
 
@@ -645,7 +646,9 @@ class ComposeViewSet(StrictQueryParamMixin,
         If the same release is specified in `linked_release` multiple times, it
         will be saved only once.
 
-        The `rtt_tested_architectures` should be a mapping in the form of
+        __Note__: if you want to just update the `rtt_tested_architectures`,
+        it's easy to update with $LINK:composetreertttests-list$ API.
+        In this API , the `rtt_tested_architectures` should be a mapping in the form of
         `{variant: {arch: status}}`. Whatever is specified will be saved in
         database, trees not mentioned will not be modified. Specifying variant
         or architecture that does not exist will result in error.
@@ -1981,3 +1984,69 @@ class ComposeTreeViewSet(ChangeSetModelMixin,
             STATUS: 204 NO CONTENT
         """
         return super(ComposeTreeViewSet, self).destroy(request, *args, **kwargs)
+
+
+class ComposeTreeRTTTestVewSet(ChangeSetUpdateModelMixin,
+                               mixins.ListModelMixin,
+                               mixins.RetrieveModelMixin,
+                               StrictQueryParamMixin,
+                               MultiLookupFieldMixin,
+                               viewsets.GenericViewSet):
+    """
+    This API is prepared for updating the `rtt_tested_architectures` key
+    in $LINK:compose-list$ API.
+    """
+    queryset = VariantArch.objects.all()
+    serializer_class = ComposeTreeRTTTestSerializer
+    filter_class = ComposeTreeRTTTestFilter
+    permission_classes = (APIPermission,)
+
+    lookup_fields = (
+        ('variant__compose__compose_id', r'[^/]+'),
+        ('variant__variant_uid', r'[^/]+'),
+        ('arch__name', r'[^/]+'),
+    )
+
+    def list(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:composetreertttests-list$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+        __Response__: a paged list of following objects
+
+        %(SERIALIZER)s
+        """
+        return super(ComposeTreeRTTTestVewSet, self).list(*args, **kwargs)
+
+    def retrieve(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:composetreertttests-detail:compose_id}/{variant_uid}/{arch$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ComposeTreeRTTTestVewSet, self).retrieve(*args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__: PUT, PATCH
+
+        __URL__: $LINK:composetreertttests-detail:compose_id}/{variant_uid}/{arch$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ComposeTreeRTTTestVewSet, self).update(request, *args, **kwargs)

@@ -37,5 +37,7 @@ router.register('rpc/compose-full-import',
                 base_name='composefullimport')
 router.register(r'compose-tree-locations', views.ComposeTreeViewSet,
                 base_name='composetreelocations')
+router.register(r'compose-tree-rtt-tests', views.ComposeTreeRTTTestVewSet,
+                base_name='composetreertttests')
 router.register(r'compose-image-rtt-tests', views.ComposeImageRTTTestViewSet,
                 base_name='composeimagertttests')

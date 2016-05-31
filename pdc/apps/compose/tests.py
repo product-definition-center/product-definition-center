@@ -2689,6 +2689,112 @@ class ComposeTreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([2])
 
 
+class ComposeTreeRTTTestAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
+    fixtures = [
+        "pdc/apps/release/fixtures/tests/release.json",
+        "pdc/apps/compose/fixtures/tests/variant.json",
+        "pdc/apps/compose/fixtures/tests/variant_arch.json",
+        "pdc/apps/compose/fixtures/tests/location.json",
+        "pdc/apps/compose/fixtures/tests/scheme.json",
+        "pdc/apps/compose/fixtures/tests/compose.json",
+        "pdc/apps/compose/fixtures/tests/more_composes_variants.json",
+        "pdc/apps/compose/fixtures/tests/composetree.json",
+    ]
+
+    def test_composetreertttest_list(self):
+        response = self.client.get(reverse('composetreertttests-list'), {})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(response.data['count'], 2)
+
+    def test_composetreertttest_query_composeid(self):
+        response = self.client.get(reverse('composetreertttests-list'), {"compose": "compose-1"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+
+    def test_composetreertttest_query_composeid_nonexisting(self):
+        response = self.client.get(reverse('composetreertttests-list'), {"compose": "does-not-exist"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
+    def test_composetreertttest_query_variant(self):
+        response = self.client.get(reverse('composetreertttests-list'), {"variant": "Server"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+
+    def test_composetreertttest_query_variant_nonexisting(self):
+        response = self.client.get(reverse('composetreertttests-list'), {"variant": "does-not-exist"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
+    def test_composetreertttest_query_arch(self):
+        response = self.client.get(reverse('composetreertttests-list'), {"arch": "x86_64"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+
+    def test_composetreertttest_query_arch_nonexisting(self):
+        response = self.client.get(reverse('composetreertttests-list'), {"arch": "does-not-exist"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
+    def test_composetreertttest_query_test_result(self):
+        response = self.client.get(reverse('composetreertttests-list'), {"test_result": "untested"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+
+    def test_composetreertttest_query_test_result_nonexisting(self):
+        response = self.client.get(reverse('composetreertttests-list'), {"test_result": "does-not-exist"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
+    def test_composetreertttest_detail(self):
+        response = self.client.get(reverse('composetreertttests-detail',
+                                           args=['compose-1/Server/x86_64']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['test_result'], 'untested')
+
+    def test_composetreertttest_can_not_perform_full_update(self):
+        response = self.client.put(reverse('composetreertttests-detail',
+                                           args=['compose-1/Server/x86_64']), {})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_composetreertttest_can_not_update_other_fields(self):
+        response = self.client.patch(reverse('composetreertttests-detail',
+                                             args=['compose-1/Server/x86_64']),
+                                     {'arch': 'i386'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNumChanges([])
+
+    def test_composetreertttest_can_update_test_result(self):
+        response = self.client.patch(reverse('composetreertttests-detail',
+                                             args=['compose-1/Server/x86_64']),
+                                     {'test_result': 'passed'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('test_result'), 'passed')
+        self.assertNumChanges([1])
+
+    def test_composetreertttest_update_unknown_test_result_status(self):
+        response = self.client.patch(reverse('composetreertttests-detail',
+                                             args=['compose-1/Server/x86_64']),
+                                     {'test_result': 'unknown'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data.get('test_result'),
+                         ["'unknown' is not allowed value. Use one of 'untested', 'passed', 'failed'."])
+        self.assertNumChanges([])
+
+    def test_composetreertttest_can_bulk_update_test_result(self):
+        url = reverse('composetreertttests-list')
+        data = {'compose-1/Server/x86_64': {'test_result': 'passed'},
+                'compose-1/Server2/x86_64': {'test_result': 'passed'}}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['compose-1/Server/x86_64'].get('test_result'),
+                         'passed')
+        self.assertEqual(response.data['compose-1/Server2/x86_64'].get('test_result'),
+                         'passed')
+        self.assertNumChanges([2])
+
+
 class ComposeImageRTTTestAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
         "pdc/apps/release/fixtures/tests/release.json",
