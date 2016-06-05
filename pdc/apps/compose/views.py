@@ -1028,6 +1028,14 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
             _apply_changes(request, compose.release, changes)
         return Response(changes)
 
+    def bulk_update(self, *args, **kwargs):
+        """
+        It is possible to perform bulk update on compose rpm mapping with `PUT` or `PATCH`
+        method. The input must be a JSON object with `package`as
+        keys. Values for these keys should be in the same format as `update`.
+        """
+        return bulk_operations.bulk_update_impl(self, *args, **kwargs)
+
 
 class ComposeImageView(StrictQueryParamMixin, CheckParametersMixin,
                        viewsets.GenericViewSet):
