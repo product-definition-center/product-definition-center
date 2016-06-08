@@ -1986,12 +1986,12 @@ class ComposeTreeViewSet(ChangeSetModelMixin,
         return super(ComposeTreeViewSet, self).destroy(request, *args, **kwargs)
 
 
-class ComposeTreeRTTTestVewSet(ChangeSetUpdateModelMixin,
-                               mixins.ListModelMixin,
-                               mixins.RetrieveModelMixin,
-                               StrictQueryParamMixin,
-                               MultiLookupFieldMixin,
-                               viewsets.GenericViewSet):
+class ComposeTreeRTTTestViewSet(ChangeSetUpdateModelMixin,
+                                mixins.ListModelMixin,
+                                mixins.RetrieveModelMixin,
+                                StrictQueryParamMixin,
+                                MultiLookupFieldMixin,
+                                viewsets.GenericViewSet):
     """
     This API is prepared for updating the `rtt_tested_architectures` key
     in $LINK:compose-list$ API.
@@ -2021,7 +2021,7 @@ class ComposeTreeRTTTestVewSet(ChangeSetUpdateModelMixin,
 
         %(SERIALIZER)s
         """
-        return super(ComposeTreeRTTTestVewSet, self).list(*args, **kwargs)
+        return super(ComposeTreeRTTTestViewSet, self).list(*args, **kwargs)
 
     def retrieve(self, *args, **kwargs):
         """
@@ -2033,7 +2033,7 @@ class ComposeTreeRTTTestVewSet(ChangeSetUpdateModelMixin,
 
         %(SERIALIZER)s
         """
-        return super(ComposeTreeRTTTestVewSet, self).retrieve(*args, **kwargs)
+        return super(ComposeTreeRTTTestViewSet, self).retrieve(*args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         """
@@ -2049,4 +2049,4 @@ class ComposeTreeRTTTestVewSet(ChangeSetUpdateModelMixin,
 
         %(SERIALIZER)s
         """
-        return super(ComposeTreeRTTTestVewSet, self).update(request, *args, **kwargs)
+        return super(ComposeTreeRTTTestViewSet, self).update(request, *args, **kwargs)
