@@ -1215,7 +1215,7 @@ class ImageRESTTestCase(APITestCase):
         self.assertEqual(response.data, {"detail": [u'Value [%s] of %s is not an integer' % (value, key)]})
 
     def test_subvariant_default_empty_string(self):
-        image = models.Image.objects.get(file_name='image-1')
+        image = models.Image.objects.get(file_name='image-3')
         self.assertEqual(image.subvariant, '')
 
 
