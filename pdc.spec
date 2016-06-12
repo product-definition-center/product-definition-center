@@ -29,6 +29,7 @@ Requires:       python-markdown
 Requires:       python-mock
 Requires:       python-psycopg2
 Requires:       python-django-cors-headers
+Requires:       python-django-rest-framework-composed-permissions
 
 %description
 The Product Definition Center, at its core, is a database that defines every Red Hat products, and their relationships with several important entities.

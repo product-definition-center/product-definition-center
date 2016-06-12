@@ -1808,3 +1808,160 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                          {'detail': 'Partial update with no changes does not make much sense.',
                           'id_of_invalid_data': 'release-1.0/Server-UID'})
         self.assertNumChanges([])
+
+
+class ReleaseGroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
+
+    fixtures = [
+        "pdc/apps/release/fixtures/tests/release_group_types.json",
+        "pdc/apps/release/fixtures/tests/release_groups.json",
+        "pdc/apps/release/fixtures/tests/release.json"
+    ]
+
+    def test_list(self):
+        url = reverse("releasegroups-list")
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+
+    def test_retrieve_with_name(self):
+        response = self.client.get(reverse("releasegroups-detail", args=["rhel_test"]))
+        expect_result = {'active': True, 'type': u'Async',
+                         'name': u'rhel_test', 'releases': [u'release-1.0'],
+                         'description': u'good'}
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expect_result)
+
+    def test_retrieve_with_description_para(self):
+        response = self.client.get(reverse("releasegroups-detail", args=["rhel_test"]),
+                                   args={'description': 'good'}, format='json')
+        expect_result = {'active': True, 'type': u'Async',
+                         'name': u'rhel_test', 'releases': [u'release-1.0'],
+                         'description': u'good'}
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expect_result)
+
+    def test_create(self):
+        args = {'type': 'Zstream', 'name': 'test', 'description': 'test_create',
+                'releases': [u'release-1.0']}
+        url = reverse("releasegroups-list")
+        response = self.client.post(url, args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNumChanges([1])
+
+    def test_create_without_name(self):
+        args = {'type': 'Zstream', 'description': 'test_create',
+                'releases': [u'release-1.0']}
+        url = reverse("releasegroups-list")
+        response = self.client.post(url, args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_with_duplicate_name(self):
+        args = {'type': 'Zstream', 'name': 'test', 'description': 'test_create',
+                'releases': [u'release-1.0']}
+        url = reverse("releasegroups-list")
+        response = self.client.post(url, args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        args = {'type': 'QuarterlyUpdate', 'name': 'test', 'description': 'test',
+                'releases': [u'release-1.0']}
+        url = reverse("releasegroups-list")
+        response = self.client.post(url, args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_with_error_type(self):
+        args = {'type': 'stream', 'name': 'test', 'description': 'test_create',
+                'releases': ['release-1.0']}
+        url = reverse("releasegroups-list")
+        response = self.client.post(url, args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_without_type(self):
+        args = {'name': 'test', 'description': 'test_create',
+                'releases': [u'release-1.0']}
+        url = reverse("releasegroups-list")
+        response = self.client.post(url, args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_without_description(self):
+        args = {'type': 'Zstream', 'name': 'test', 'releases': [u'release-1.0']}
+        url = reverse("releasegroups-list")
+        response = self.client.post(url, args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_with_error_key(self):
+        args = {'Error_key': 'test', 'type': 'Zstream', 'name': 'test', 'description': 'test_create',
+                'releases': [u'release-1.0']}
+        url = reverse("releasegroups-list")
+        response = self.client.post(url, args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_bulk_create(self):
+        args1 = {'type': 'Zstream', 'name': 'test_bulk1', 'description': 'test1',
+                 'releases': [u'release-1.0']}
+        args2 = {'type': 'Zstream', 'name': 'test_bulk2', 'description': 'test2',
+                 'releases': [u'release-1.0']}
+        args = [args1, args2]
+        url = reverse("releasegroups-list")
+        response = self.client.post(url, args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNumChanges([2])
+
+    def test_update(self):
+        args = {'type': 'QuarterlyUpdate', 'name': 'test_update', 'description': 'test',
+                'releases': [u'release-1.0']}
+        response = self.client.put(reverse("releasegroups-detail", args=['rhel_test']),
+                                   args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNumChanges([1])
+
+    def test_bulk_update(self):
+        args1 = {'type': 'Zstream', 'name': 'test_update1', 'description': 'test1'}
+        args2 = {'type': 'Zstream', 'name': 'test_update2', 'description': 'test2'}
+        data = {'rhel_test': args1, 'rhel_test1': args2}
+        response = self.client.put(reverse("releasegroups-list"), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNumChanges([2])
+
+    def test_update_without_type(self):
+        self.test_create()
+        args = {'name': 'test_update', 'description': 'test',
+                'releases': [u'release-1.0']}
+        response = self.client.put(reverse("releasegroups-detail", args=['test']),
+                                   args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_without_name(self):
+        self.test_create()
+        args = {'type': 'QuarterlyUpdate', 'description': 'test',
+                'releases': [u'release-1.0']}
+        response = self.client.put(reverse("releasegroups-detail", args=['test']),
+                                   args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_without_description(self):
+        self.test_create()
+        args = {'type': 'QuarterlyUpdate', 'name': 'test_update',
+                'releases': [u'release-1.0']}
+        response = self.client.put(reverse("releasegroups-detail", args=['test']),
+                                   args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_with_error_release(self):
+        args = {'type': 'QuarterlyUpdate', 'name': 'test_update', 'description': 'test',
+                'releases': [u'release']}
+        response = self.client.put(reverse("releasegroups-detail", args=['rhel_test']),
+                                   args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_delete(self):
+        response = self.client.delete(reverse('releasegroups-detail', args=['rhel_test']))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(models.ReleaseGroup.objects.count(), 1)
+        self.assertNumChanges([1])
+
+    def test_bulk_delete(self):
+        response = self.client.delete(reverse('releasegroups-list'),
+                                      ['rhel_test', 'rhel_test1'], format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(models.ReleaseGroup.objects.count(), 0)
+        self.assertNumChanges([2])

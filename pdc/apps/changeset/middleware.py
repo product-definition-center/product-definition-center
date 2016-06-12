@@ -12,6 +12,9 @@ from . import models
 
 # trap wrong HTTP methods
 from django.http import HttpResponse
+from django.conf import settings
+from django.core.mail import mail_admins
+from django.core.urlresolvers import reverse
 from rest_framework import status
 import json
 
@@ -24,6 +27,33 @@ class ChangesetMiddleware(object):
     `request.changeset`. If the view function ends sucessfully, the changeset
     is commited if there are any changes associated with it.
     """
+
+    def _may_announce_big_change(self, changeset, request):
+        if (not hasattr(settings, 'CHANGESET_SIZE_ANNOUNCE') or
+                not isinstance(settings.CHANGESET_SIZE_ANNOUNCE, int) or
+                len(changeset.tmp_changes) < settings.CHANGESET_SIZE_ANNOUNCE):
+            return
+
+        end_point = request.path.replace("%s%s/" % (settings.REST_API_URL, settings.REST_API_VERSION), '').strip('/')
+        params_dict = {
+            'author': str(changeset.author),
+            'author_email': changeset.author.email if changeset.author else '',
+            'end_point': end_point,
+            'url': request.build_absolute_uri(reverse('changeset/detail', kwargs={'id': changeset.id})),
+            'change_number': len(changeset.tmp_changes),
+            'domain': request.build_absolute_uri('/')[:-1]
+        }
+        print params_dict
+        mail_title = """Big change happened in PDC (%(domain)s) DB""" % params_dict
+        mail_body = """
+        <html>
+        <p><b>Author</b>:        %(author)s </p>
+        <p><b>Author Email</b>:  %(author_email)s </p>
+        <p><b>Change Number</b>: %(change_number)s </p>
+        <p><b>Change Link</b>:   <a href="%(url)s">%(url)s</a>
+        </html>
+        """ % params_dict
+        mail_admins(mail_title, None, html_message=mail_body)
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         user = None
@@ -63,6 +93,7 @@ class ChangesetMiddleware(object):
                         transaction.set_rollback(True)
                     else:
                         request.changeset.commit()
+                        self._may_announce_big_change(request.changeset, request)
             except:
                 # NOTE: catch all errors that were raised by view.
                 # And log the trace back to the file.

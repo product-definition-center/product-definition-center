@@ -12,6 +12,7 @@ from django.shortcuts import get_object_or_404
 from . import models
 from . import serializers
 from . import filters
+from pdc.apps.auth.permissions import APIPermission
 from pdc.apps.common.constants import PUT_OPTIONAL_PARAM_WARNING
 from pdc.apps.common.viewsets import (ChangeSetCreateModelMixin, StrictQueryParamMixin,
                                       ChangeSetUpdateModelMixin, ChangeSetDestroyModelMixin)
@@ -33,6 +34,7 @@ class RepoViewSet(ChangeSetCreateModelMixin,
     queryset = models.Repo.objects.all().select_related().order_by('id')
     serializer_class = serializers.RepoSerializer
     filter_class = filters.RepoFilter
+    permission_classes = (APIPermission,)
     docstring_macros = PUT_OPTIONAL_PARAM_WARNING
 
     def create(self, *args, **kwargs):
@@ -115,6 +117,7 @@ class RepoCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
     Endpoint $LINK:repoclone-list$ is deprecated.
     """
     queryset = models.Repo.objects.none()   # Required for permissions
+    permission_classes = (APIPermission,)
 
     def create(self, request):
         """
@@ -244,6 +247,7 @@ class RepoFamilyViewSet(StrictQueryParamMixin,
     queryset = models.RepoFamily.objects.all().order_by('id')
     serializer_class = serializers.RepoFamilySerializer
     filter_class = filters.RepoFamilyFilter
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """
@@ -293,6 +297,7 @@ class ContentCategoryViewSet(StrictQueryParamMixin,
     """
     serializer_class = serializers.ContentCategorySerializer
     queryset = models.ContentCategory.objects.all().order_by('id')
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """
@@ -315,6 +320,7 @@ class ContentFormatViewSet(StrictQueryParamMixin,
     """
     serializer_class = serializers.ContentFormatSerializer
     queryset = models.ContentFormat.objects.all().order_by('id')
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """
@@ -337,6 +343,7 @@ class ServiceViewSet(StrictQueryParamMixin,
     """
     serializer_class = serializers.ServiceSerializer
     queryset = models.Service.objects.all().order_by('id')
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """

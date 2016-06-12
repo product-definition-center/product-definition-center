@@ -20,7 +20,7 @@ from .forms import (ReleaseSearchForm, BaseProductSearchForm,
 from .serializers import (ProductSerializer, ProductVersionSerializer,
                           ReleaseSerializer, BaseProductSerializer,
                           ReleaseTypeSerializer, ReleaseVariantSerializer,
-                          VariantTypeSerializer)
+                          VariantTypeSerializer, ReleaseGroupSerializer)
 from pdc.apps.compose import models as compose_models
 from pdc.apps.repository import models as repo_models
 from pdc.apps.common.constants import PUT_OPTIONAL_PARAM_WARNING
@@ -29,6 +29,7 @@ from pdc.apps.common.viewsets import (ChangeSetModelMixin,
                                       ChangeSetUpdateModelMixin,
                                       MultiLookupFieldMixin,
                                       StrictQueryParamMixin)
+from pdc.apps.auth.permissions import APIPermission
 from . import lib
 
 
@@ -113,6 +114,7 @@ class ProductViewSet(ChangeSetCreateModelMixin,
     serializer_class = ProductSerializer
     lookup_field = 'short'
     filter_class = filters.ProductFilter
+    permission_classes = (APIPermission,)
 
     def create(self, request, *args, **kwargs):
         """
@@ -207,6 +209,7 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
     lookup_field = 'product_version_id'
     lookup_value_regex = '[^/]+'
     filter_class = filters.ProductVersionFilter
+    permission_classes = (APIPermission,)
 
     def create(self, *args, **kwargs):
         """
@@ -307,6 +310,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
     lookup_field = 'release_id'
     lookup_value_regex = '[^/]+'
     filter_class = filters.ReleaseFilter
+    permission_classes = (APIPermission,)
     docstring_macros = PUT_OPTIONAL_PARAM_WARNING
 
     def filter_queryset(self, qs):
@@ -423,6 +427,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
 
 class ReleaseImportView(StrictQueryParamMixin, viewsets.GenericViewSet):
     queryset = models.Release.objects.none()   # Required for permissions
+    permission_classes = (APIPermission,)
 
     def create(self, request):
         """
@@ -477,6 +482,7 @@ class BaseProductViewSet(ChangeSetCreateModelMixin,
     """
     queryset = models.BaseProduct.objects.all()
     serializer_class = BaseProductSerializer
+    permission_classes = (APIPermission,)
     lookup_field = 'base_product_id'
     lookup_value_regex = '[^/]+'
     filter_class = filters.BaseProductFilter
@@ -563,6 +569,7 @@ def product_pages(request):
 
 
 class ReleaseCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
+    permission_classes = (APIPermission,)
     queryset = models.Release.objects.none()   # Required for permissions
 
     def create(self, request):
@@ -652,6 +659,7 @@ class ReleaseCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
 
 
 class ReleaseComponentCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
+    permission_classes = (APIPermission,)
     queryset = models.Release.objects.none()
 
     def create(self, request):
@@ -729,6 +737,7 @@ class ReleaseComponentCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSe
 class ReleaseRPMMappingView(StrictQueryParamMixin, viewsets.GenericViewSet):
     lookup_field = 'package'
     queryset = models.Release.objects.none()   # Required for permissions
+    permission_classes = (APIPermission,)
     extra_query_params = ['disable_overrides']
 
     def retrieve(self, request, **kwargs):
@@ -805,6 +814,7 @@ class ReleaseTypeViewSet(StrictQueryParamMixin,
     queryset = models.ReleaseType.objects.all()
     serializer_class = ReleaseTypeSerializer
     filter_class = filters.ReleaseTypeFilter
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """
@@ -853,6 +863,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
     queryset = models.Variant.objects.all()
     serializer_class = ReleaseVariantSerializer
     filter_class = filters.ReleaseVariantFilter
+    permission_classes = (APIPermission,)
     lookup_fields = (('release__release_id', r'[^/]+'), ('variant_uid', r'[^/]+'))
 
     def create(self, *args, **kwargs):
@@ -985,6 +996,7 @@ class VariantTypeViewSet(StrictQueryParamMixin,
     # TODO: remove this class after next release
     serializer_class = VariantTypeSerializer
     queryset = models.VariantType.objects.all().order_by('id')
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """
@@ -1001,6 +1013,7 @@ class ReleaseVariantTypeViewSet(StrictQueryParamMixin,
     """
     serializer_class = VariantTypeSerializer
     queryset = models.VariantType.objects.all()
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """
@@ -1013,3 +1026,92 @@ class ReleaseVariantTypeViewSet(StrictQueryParamMixin,
         %(SERIALIZER)s
         """
         return super(ReleaseVariantTypeViewSet, self).list(request, *args, **kwargs)
+
+
+class ReleaseGroupsViewSet(ChangeSetModelMixin,
+                           StrictQueryParamMixin,
+                           viewsets.GenericViewSet):
+    """
+    API endpoint that allows release_group_types to be viewed or edited.
+    This API endpoint is experimental.
+    """
+
+    queryset = models.ReleaseGroup.objects.all()
+    serializer_class = ReleaseGroupSerializer
+    lookup_field = 'name'
+    lookup_value_regex = '[^/]+'
+    filter_class = filters.ReleaseGroupFilter
+    permission_classes = (APIPermission,)
+
+    def create(self, request, *args, **kwargs):
+        """
+        __Method__: POST
+
+        __URL__: $LINK:releasegroups-list$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+
+        return super(ReleaseGroupsViewSet, self).create(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:releasegroups-detail:name$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ReleaseGroupsViewSet, self).retrieve(request, *args, **kwargs)
+
+    def list(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:releasegroups-list$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+        __Response__: a paged list of following objects
+
+        %(SERIALIZER)s
+        """
+        return super(ReleaseGroupsViewSet, self).list(*args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__: PUT, PATCH
+
+        __URL__: $LINK:releasegroups-detail:name$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ReleaseGroupsViewSet, self).update(request, *args, **kwargs)
+
+    def destroy(self, *args, **kwargs):
+        """
+        __Method__: `DELETE`
+
+        __URL__: $LINK:releasegroups-detail:name$
+
+        __Response__:
+
+        On success, HTTP status code is 204 and the response has no content.
+        """
+        return super(ReleaseGroupsViewSet, self).destroy(*args, **kwargs)

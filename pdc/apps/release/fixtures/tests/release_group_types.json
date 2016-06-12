@@ -1,0 +1,23 @@
+[
+  {
+    "model": "release.ReleaseGroupType",
+    "pk": 1,
+    "fields": {
+      "name": "Async"
+    }
+  },
+  {
+    "model": "release.ReleaseGroupType",
+    "pk": 2,
+    "fields": {
+      "name": "QuarterlyUpdate"
+    }
+  },
+  {
+    "model": "release.ReleaseGroupType",
+    "pk": 3,
+    "fields": {
+      "name": "Zstream"
+    }
+  }
+]

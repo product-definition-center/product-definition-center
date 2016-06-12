@@ -6,8 +6,9 @@
 #
 import mock
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
@@ -16,6 +17,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
 from . import backends
+from .models import Resource, ResourcePermission, GroupResourcePermission, ActionPermission
 from pdc.apps.common.test_utils import TestCaseWithChangeSetMixin
 
 
@@ -290,3 +292,435 @@ class CurrentUserTestCase(APITestCase):
         response = self.client.get(reverse('currentuser-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['permissions'], sorted(response.data['permissions']))
+
+    def test_resource_permissions(self):
+        self.client.force_authenticate(user=self.user)
+        for permission in Permission.objects.all():
+            self.user.user_permissions.add(permission)
+
+        for name, view in (("group-resource-permissions",
+                            "<class 'pdc.apps.auth.views.GroupResourcePermissionViewSet'>"),
+                           ("release-components", "<class 'pdc.apps.component.views.ReleaseComponentViewSet'>"),
+                           ("rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)",
+                            "<class 'pdc.apps.compose.views.FindComposeByReleaseRPMViewSet'>")):
+            Resource.objects.create(name=name, view=view)
+        for resource in Resource.objects.all():
+            for permission in ActionPermission.objects.all():
+                ResourcePermission.objects.create(resource=resource, permission=permission)
+
+        group = Group.objects.get(pk=1)
+        for per in ResourcePermission.objects.all():
+                GroupResourcePermission.objects.create(group=group, resource_permission=per)
+
+        self.group = group.user_set.add(self.user)
+        response = self.client.get(reverse('currentuser-list'), format='json')
+        self.assertEqual(len(response.data['resource_permissions']), 3 * 4)
+        self.assertTrue({'resource': 'rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)',
+                         'permission': 'create'} in response.data['resource_permissions'])
+
+    def test_resource_permission_all_read_permissions_on(self):
+        temp = False
+        if hasattr(settings, 'ALLOW_ALL_USER_READ'):
+            temp = settings.ALLOW_ALL_USER_READ
+
+        self.client.force_authenticate(user=self.user)
+        for permission in Permission.objects.all():
+            self.user.user_permissions.add(permission)
+
+        for name, view in (("group-resource-permissions",
+                            "<class 'pdc.apps.auth.views.GroupResourcePermissionViewSet'>"),
+                           ("release-components", "<class 'pdc.apps.component.views.ReleaseComponentViewSet'>"),
+                           ("rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)",
+                            "<class 'pdc.apps.compose.views.FindComposeByReleaseRPMViewSet'>")):
+            Resource.objects.create(name=name, view=view)
+        for resource in Resource.objects.all():
+            for permission in ActionPermission.objects.all():
+                ResourcePermission.objects.create(resource=resource, permission=permission)
+
+        settings.ALLOW_ALL_USER_READ = False
+        response = self.client.get(reverse('currentuser-list'), format='json')
+        self.assertEqual(len(response.data['resource_permissions']), 0)
+
+        settings.ALLOW_ALL_USER_READ = True
+        response = self.client.get(reverse('currentuser-list'), format='json')
+        self.assertEqual(len(response.data['resource_permissions']), 3)
+
+        settings.ALLOW_ALL_USER_READ = temp
+
+
+class GroupResourcePermissionsTestCase(APITestCase):
+    fixtures = [
+        'pdc/apps/auth/fixtures/tests/groups.json',
+    ]
+
+    def setUp(self):
+        self.user = get_user_model().objects.create(username='test', email='test@test.com', password='test')
+        self.user.save()
+        self.token = Token.objects.create(user=self.user)
+        self.token.save()
+        self.client.force_authenticate(user=self.user)
+        self.group = Group.objects.all().first()
+        if hasattr(settings, 'ALLOW_ALL_USER_READ'):
+            self.ALLOW_ALL_USER_READ = settings.ALLOW_ALL_USER_READ
+            settings.ALLOW_ALL_USER_READ = False
+        if hasattr(settings, 'DISABLE_RESOURCE_PERMISSION_CHECK'):
+            self.DISABLE_RESOURCE_PERMISSION_CHECK = settings.DISABLE_RESOURCE_PERMISSION_CHECK
+            settings.DISABLE_RESOURCE_PERMISSION_CHECK = False
+
+        for permission in Permission.objects.all():
+            self.user.user_permissions.add(permission)
+
+        for name, view in (("group-resource-permissions",
+                            "<class 'pdc.apps.auth.views.GroupResourcePermissionViewSet'>"),
+                           ("release-components", "<class 'pdc.apps.component.views.ReleaseComponentViewSet'>"),
+                           ("rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)",
+                            "<class 'pdc.apps.compose.views.FindComposeByReleaseRPMViewSet'>")):
+            Resource.objects.create(name=name, view=view)
+        for resource in Resource.objects.all():
+            for permission in ActionPermission.objects.all():
+                ResourcePermission.objects.create(resource=resource, permission=permission)
+
+        permissions = ('create', 'read', 'update', 'delete')
+        group_resource_permissions = [ResourcePermission.objects.get(resource__name='group-resource-permissions',
+                                                                     permission__name=per) for per in permissions]
+        for group in Group.objects.all():
+            for per in group_resource_permissions:
+                GroupResourcePermission.objects.create(group=group, resource_permission=per)
+        self.group.user_set.add(self.user)
+
+    def tearDown(self):
+        if hasattr(settings, 'ALLOW_ALL_USER_READ'):
+            settings.ALLOW_ALL_USER_READ = self.ALLOW_ALL_USER_READ
+        if hasattr(settings, 'DISABLE_RESOURCE_PERMISSION_CHECK'):
+            settings.DISABLE_RESOURCE_PERMISSION_CHECK = self.DISABLE_RESOURCE_PERMISSION_CHECK
+
+    def test_control_read_permission(self):
+        url = reverse('releasecomponent-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, {u'detail': u'You do not have permission to perform this action.'})
+        url = reverse('releasecomponent-detail', kwargs={'pk': 1})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, {u'detail': u'You do not have permission to perform this action.'})
+
+        # grant user's group read permission
+        url = reverse('groupresourcepermissions-list')
+        data = {'group': self.group.name,
+                "resource_permission": {"permission": "read", "resource": "release-components"}}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        url = reverse('releasecomponent-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        url = reverse('releasecomponent-detail', kwargs={'pk': 1})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # remove from the group and retest
+        self.group.user_set.remove(self.user)
+        url = reverse('releasecomponent-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_control_delete_permission(self):
+        url = reverse('releasecomponent-detail', kwargs={'pk': 1})
+        response = self.client.delete(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, {u'detail': u'You do not have permission to perform this action.'})
+
+        # grant user's group delete permission
+        url = reverse('groupresourcepermissions-list')
+        data = {'group': self.group.name,
+                "resource_permission": {"permission": "delete", "resource": "release-components"}}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        url = reverse('releasecomponent-detail', kwargs={'pk': 1})
+        response = self.client.delete(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # remove from the group and retest
+        self.group.user_set.remove(self.user)
+        response = self.client.delete(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_control_update_permission(self):
+        url = reverse('releasecomponent-detail', kwargs={'pk': 1})
+        patch_data = {'name': 'fake_name'}
+        response = self.client.patch(url, patch_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, {u'detail': u'You do not have permission to perform this action.'})
+
+        put_data = {'release': 'release-1.0', 'global_component': 'python', 'name': 'python34',
+                    'brew_package': 'python-pdc', 'active': 'True'}
+        response = self.client.put(url, put_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, {u'detail': u'You do not have permission to perform this action.'})
+
+        # grant user's group update permission
+        url = reverse('groupresourcepermissions-list')
+        data = {'group': self.group.name,
+                "resource_permission": {"permission": "update", "resource": "release-components"}}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        url = reverse('releasecomponent-detail', kwargs={'pk': 1})
+        response = self.client.patch(url, patch_data, format='json')
+        self.assertNotEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        response = self.client.put(url, put_data, format='json')
+        self.assertNotEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # remove from the group and retest
+        self.group.user_set.remove(self.user)
+        response = self.client.patch(url, patch_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        response = self.client.put(url, put_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_control_create_permission(self):
+        url = reverse('releasecomponent-list')
+        data = {'release': 'release-1.0', 'global_component': 'python', 'name': 'python34',
+                'brew_package': 'python-pdc', 'active': 'True'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, {u'detail': u'You do not have permission to perform this action.'})
+
+        # grant user's group create permission
+        url = reverse('groupresourcepermissions-list')
+        data = {'group': self.group.name,
+                "resource_permission": {"permission": "create", "resource": "release-components"}}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        url = reverse('releasecomponent-list')
+        response = self.client.post(url, data, format='json')
+        self.assertNotEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # remove from the group and retest
+        self.group.user_set.remove(self.user)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_permission_change_after_update_permission(self):
+        # grant user's group read permission
+        url = reverse('groupresourcepermissions-list')
+        data = {'group': self.group.name,
+                "resource_permission": {"permission": "read", "resource": "release-components"}}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_id = response.data['id']
+
+        url = reverse('releasecomponent-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # change read to create
+        url = reverse('groupresourcepermissions-detail', args=[created_id])
+        data = {'group': self.group.name,
+                "resource_permission": {"permission": "create", "resource": "release-components"}}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        url = reverse('releasecomponent-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # change back
+        url = reverse('groupresourcepermissions-detail', args=[created_id])
+        data = {'group': self.group.name,
+                "resource_permission": {"permission": "read", "resource": "release-components"}}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        url = reverse('releasecomponent-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_work_with_regexp_resource_name(self):
+        url = reverse('findcomposebyrr-list', kwargs={'rpm_name': 'bash', 'release_id': 'release-1.0'})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, {u'detail': u'You do not have permission to perform this action.'})
+
+        # grant user's group update permission
+        url = reverse('groupresourcepermissions-list')
+        data = {'group': self.group.name,
+                "resource_permission":
+                    {
+                        "permission": "read",
+                        "resource": "rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)"
+                    }
+                }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        url = reverse('findcomposebyrr-list', kwargs={'rpm_name': 'bash', 'release_id': 'release-1.0'})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # remove from the group and retest
+        self.group.user_set.remove(self.user)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_enable_all_permissions_flag(self):
+        if hasattr(settings, 'DISABLE_RESOURCE_PERMISSION_CHECK'):
+            settings.DISABLE_RESOURCE_PERMISSION_CHECK = True
+            # automatically have permission
+            url = reverse('findcomposebyrr-list', kwargs={'rpm_name': 'bash', 'release_id': 'release-1.0'})
+            response = self.client.get(url, format='json')
+            self.assertNotEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_delete_group_permission(self):
+        # grant user's group read permission
+        permission_url = reverse('groupresourcepermissions-list')
+        data = {'group': self.group.name,
+                "resource_permission": {"permission": "read", "resource": "release-components"}}
+        response = self.client.post(permission_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_id = response.data['id']
+
+        rc_url = reverse('releasecomponent-list')
+        response = self.client.get(rc_url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        url = reverse('groupresourcepermissions-detail', kwargs={'pk': created_id})
+        self.client.delete(url, format='json')
+
+        response = self.client.get(rc_url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_filter_with_group_name(self):
+        data = {'group': self.group.name}
+        url = reverse('groupresourcepermissions-list')
+
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 4)
+
+        data = {'group': 'fake_group'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 0)
+
+    def test_filter_with_permission(self):
+        data = {'permission': 'create'}
+        url = reverse('groupresourcepermissions-list')
+
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 3)
+
+        data = {'permission': 'read'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 3)
+
+        data = {'permission': 'fake_permission'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 0)
+
+    def test_filter_with_resource(self):
+        data = {'resource': 'group-resource-permissions'}
+        url = reverse('groupresourcepermissions-list')
+
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 12)
+
+        data = {'resource': 'fake_resource'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 0)
+
+        data = {'resource': 'rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 0)
+
+        data = {'group': self.group.name,
+                "resource_permission":
+                    {
+                        "permission": "read",
+                        "resource": "rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)"
+                    }
+                }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = {'resource': 'rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.data['count'], 1)
+
+    def test_retrieve(self):
+        data = {'group': self.group.name,
+                "resource_permission":
+                    {
+                        "permission": "read",
+                        "resource": "rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)"
+                    }
+                }
+        url = reverse('groupresourcepermissions-list')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        obj_id = response.data['id']
+        url = reverse('groupresourcepermissions-detail', args=[obj_id])
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data.update({'id': obj_id})
+        self.assertEqual(data, response.data)
+
+
+class ResourcePermissionsAPITestCase(APITestCase):
+    fixtures = [
+        'pdc/apps/auth/fixtures/tests/groups.json',
+    ]
+
+    def setUp(self):
+        self.user = get_user_model().objects.create(username='test', email='test@test.com', password='test')
+        self.user.save()
+        self.token = Token.objects.create(user=self.user)
+        self.token.save()
+        self.client.force_authenticate(user=self.user)
+        self.url = reverse('resourcepermissions-list')
+
+        for permission in Permission.objects.all():
+            self.user.user_permissions.add(permission)
+
+        for name, view in (("group-resource-permissions",
+                            "<class 'pdc.apps.auth.views.GroupResourcePermissionViewSet'>"),
+                           ("release-components", "<class 'pdc.apps.component.views.ReleaseComponentViewSet'>"),
+                           ("rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)",
+                            "<class 'pdc.apps.compose.views.FindComposeByReleaseRPMViewSet'>")):
+            Resource.objects.create(name=name, view=view)
+        for resource in Resource.objects.all():
+            for permission in ActionPermission.objects.all():
+                ResourcePermission.objects.create(resource=resource, permission=permission)
+
+    def test_filter_with_permission(self):
+        data = {'permission': 'create'}
+        response = self.client.get(self.url, data, format='json')
+        self.assertEqual(response.data['count'], 3)
+
+        data = {'permission': 'read'}
+        response = self.client.get(self.url, data, format='json')
+        self.assertEqual(response.data['count'], 3)
+
+        data = {'permission': 'fake_permission'}
+        response = self.client.get(self.url, data, format='json')
+        self.assertEqual(response.data['count'], 0)
+
+    def test_filter_with_resource(self):
+        data = {'resource': 'group-resource-permissions'}
+
+        response = self.client.get(self.url, data, format='json')
+        self.assertEqual(response.data['count'], 4)
+
+        data = {'resource': 'fake_resource'}
+        response = self.client.get(self.url, data, format='json')
+        self.assertEqual(response.data['count'], 0)
+
+    def test_list(self):
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.data['count'], 12)
+
+        data = {'permission': 'create', 'resource': 'group-resource-permissions'}
+        response = self.client.get(self.url, data, format='json')
+        self.assertEqual(response.data['count'], 1)

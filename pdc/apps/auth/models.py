@@ -4,13 +4,13 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
-
 from django.contrib.auth.models import PermissionsMixin, UserManager, AbstractBaseUser
 from django.db import models
 from django.core import validators
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.core.mail import send_mail
+from django.contrib.auth.models import Group
 
 
 MAX_LENGTH = 255
@@ -85,3 +85,71 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_all_permissions(self, obj=None):
         return sorted(super(User, self).get_all_permissions(obj))
+
+
+class Resource(models.Model):
+    """
+    Resource permissions
+    """
+    name = models.CharField(max_length=500, unique=True)
+    view = models.CharField(max_length=1000)
+
+    def __unicode__(self):
+        return u'%s %s' % (self.name, self.view)
+
+    def export(self, fields=None):
+        return {'name': self.name,
+                'view': self.view}
+
+
+class ActionPermission(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        ordering = ("name", )
+
+    def __unicode__(self):
+        return u'%s' % self.name
+
+    def export(self, fields=None):
+        return {'name': self.name}
+
+
+class ResourcePermission(models.Model):
+    resource = models.ForeignKey(Resource)
+    permission = models.ForeignKey(ActionPermission)
+
+    class Meta:
+        ordering = ("resource__name", "permission__name")
+        unique_together = [
+            ('resource', 'permission')
+        ]
+
+    def __unicode__(self):
+        return u"%s %s" % (self.resource, self.permission)
+
+    def export(self):
+        return {
+            "resource": self.resource,
+            "permission": self.permission,
+        }
+
+
+class GroupResourcePermission(models.Model):
+    resource_permission = models.ForeignKey(ResourcePermission)
+    group = models.ForeignKey(Group)
+
+    class Meta:
+        ordering = ("group__name", "resource_permission__resource__name", "resource_permission__permission__name")
+        unique_together = [
+            ('resource_permission', 'group')
+        ]
+
+    def __unicode__(self):
+        return u"(%s) %s" % (self.resource_permission, self.group)
+
+    def export(self):
+        return {
+            "resource_permission": str(self.resource_permission),
+            "group": self.group.name,
+        }

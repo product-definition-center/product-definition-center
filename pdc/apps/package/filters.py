@@ -105,6 +105,7 @@ class ImageFilter(django_filters.FilterSet):
     md5                 = MultiValueFilter()
     sha1                = MultiValueFilter()
     sha256              = MultiValueFilter()
+    subvariant          = MultiValueFilter()
     compose             = MultiValueFilter(name='composeimage__variant_arch__variant__compose__compose_id',
                                            distinct=True)
     bootable            = CaseInsensitiveBooleanFilter()
@@ -113,7 +114,7 @@ class ImageFilter(django_filters.FilterSet):
         model = models.Image
         fields = ('file_name', 'image_format', 'image_type', 'disc_number',
                   'disc_count', 'arch', 'mtime', 'size', 'bootable',
-                  'implant_md5', 'volume_id', 'md5', 'sha1', 'sha256')
+                  'implant_md5', 'volume_id', 'md5', 'sha1', 'sha256', 'subvariant')
 
 
 class BuildImageFilter(django_filters.FilterSet):

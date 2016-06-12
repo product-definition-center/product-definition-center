@@ -8,6 +8,7 @@ from django.contrib.auth import models
 from rest_framework import serializers
 
 from pdc.apps.common.serializers import StrictSerializerMixin
+from pdc.apps.auth.models import ResourcePermission, GroupResourcePermission
 
 
 class PermissionSerializer(StrictSerializerMixin, serializers.ModelSerializer):
@@ -47,3 +48,39 @@ class GroupSerializer(StrictSerializerMixin, serializers.HyperlinkedModelSeriali
     class Meta:
         model = models.Group
         fields = ('url', 'name', 'permissions')
+
+
+class ResourcePermissionSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+    resource = serializers.CharField(source='resource.name')
+    permission = serializers.CharField(source='permission.name')
+
+    class Meta:
+        model = ResourcePermission
+        fields = ('resource', 'permission')
+
+
+class ResourcePermissionReleatedField(serializers.RelatedField):
+    def to_representation(self, instance):
+        serializer = ResourcePermissionSerializer(instance)
+        return serializer.data
+
+    def to_internal_value(self, value):
+        missed_set = set(['resource', 'permission']) - set(value.keys())
+        if missed_set:
+            raise serializers.ValidationError("Missed fields %s." % str(missed_set))
+
+        try:
+            instance = ResourcePermission.objects.get(resource__name=value['resource'],
+                                                      permission__name=value['permission'])
+        except ResourcePermission.DoesNotExist:
+            raise serializers.ValidationError("Can't find corresponding resource permission.")
+        return instance
+
+
+class GroupResourcePermissionSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+    group = serializers.SlugRelatedField(slug_field='name', read_only=False, queryset=models.Group.objects.all())
+    resource_permission = ResourcePermissionReleatedField(queryset=ResourcePermission.objects.all())
+
+    class Meta:
+        model = GroupResourcePermission
+        fields = ("id", 'resource_permission', 'group')

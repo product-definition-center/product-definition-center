@@ -7,6 +7,7 @@ from rest_framework import mixins
 from rest_framework import viewsets
 
 from pdc.apps.common import viewsets as common_viewsets
+from pdc.apps.auth.permissions import APIPermission
 from . import filters
 from . import models
 from . import serializers
@@ -37,6 +38,7 @@ class OSBSViewSet(common_viewsets.StrictQueryParamMixin,
     queryset = models.OSBSRecord.objects.filter(component__type__has_osbs=True).order_by('component__id')
     serializer_class = serializers.OSBSSerializer
     filter_class = filters.OSBSFilter
+    permission_classes = (APIPermission,)
     lookup_fields = (('component__release__release_id', r'[^/]+'),
                      ('component__name', r'[^/]+'))
 

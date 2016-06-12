@@ -17,6 +17,7 @@ from contrib import drf_introspection
 from rest_framework import mixins, status, viewsets
 from rest_framework.response import Response
 
+from pdc.apps.auth.permissions import APIPermission
 from pdc.apps.utils.utils import generate_warning_header_dict
 
 
@@ -166,8 +167,13 @@ class StrictQueryParamMixin(object):
             raise FieldError('Unknown query params: %s.' % ', '.join(sorted(extra_keys)))
 
 
+class PermissionMixin(object):
+    permission_classes = (APIPermission,)
+
+
 class PDCModelViewSet(StrictQueryParamMixin,
                       ChangeSetModelMixin,
+                      PermissionMixin,
                       viewsets.GenericViewSet):
     """
     PDC common ModelViewSet.

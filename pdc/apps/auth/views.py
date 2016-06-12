@@ -4,6 +4,7 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+import inspect
 import json
 
 from django.shortcuts import render, redirect
@@ -24,8 +25,13 @@ from rest_framework import mixins, viewsets
 from . import backends
 from . import filters
 from . import serializers
+from . import models
+from pdc.apps.auth.models import ResourcePermission, ActionPermission, Resource
+from pdc.apps.auth.permissions import APIPermission
 from pdc.apps.common.viewsets import StrictQueryParamMixin, ChangeSetUpdateModelMixin
-from pdc.apps.utils.utils import group_obj_export
+from pdc.apps.common import viewsets as common_viewsets
+from pdc.apps.utils.SortedRouter import router
+from pdc.apps.utils.utils import group_obj_export, convert_method_to_action, read_permission_for_all
 
 
 def remoteuserlogin(request):
@@ -70,8 +76,61 @@ def logout(request):
     return HttpResponseRedirect(redirect_to)
 
 
+def get_resource_permission_set(user):
+    resource_permission_set = set([])
+    if user.is_superuser:
+        resource_permission_set = set([obj for obj in models.ResourcePermission.objects.all()])
+    else:
+        if read_permission_for_all():
+            resource_permission_set = set([obj for obj in models.ResourcePermission.objects.filter(
+                permission__name__iexact='read')])
+        group_id_list = [group.id for group in user.groups.all()]
+        queryset = models.GroupResourcePermission.objects.filter(group__id__in=group_id_list)
+
+        for group_resource_permission in queryset:
+            resource_permission_set.add(group_resource_permission.resource_permission)
+    return resource_permission_set
+
+
+def _change_row(row, value, d=[]):
+    http_method = ['create', 'read', 'update', 'delete']
+    for v in d:
+        try:
+            index = http_method.index(v.lower())
+            row[index + 1] = value
+        except ValueError:
+            raise Exception("The action %s is not valid" % v)
+    return row
+
+
+def _get_resource_permissions_matrix(user):
+    dict_resource_perm_map = {}
+    result = []
+
+    resource_permission_set = get_resource_permission_set(user)
+    for resource_permission in resource_permission_set:
+        resource_name = resource_permission.resource.name
+        permission_name = resource_permission.permission.name
+        dict_resource_perm_map.setdefault(resource_name, []).append(permission_name)
+
+    ori_action_dict = {}
+    for resource_name, view_set, _ in router.registry:
+        for name, _ in inspect.getmembers(view_set, predicate=inspect.ismethod):
+            if name.lower() in ['update', 'create', 'destroy', 'list', 'partial_update', 'retrieve']:
+                ori_action_dict.setdefault(resource_name, []).append(convert_method_to_action(name.lower()))
+
+    for key in dict_resource_perm_map:
+        row = [key, 'N/A', 'N/A', 'N/A', 'N/A']
+        row = _change_row(row, 'No', ori_action_dict.get(key, []))
+        row = _change_row(row, 'Yes', dict_resource_perm_map.get(key, []))
+        result.append(row)
+
+    return sorted(result)
+
+
 def user_profile(request):
-    context = {'has_ldap': hasattr(settings, "LDAP_URI")}
+    context = {'has_ldap': hasattr(settings, "LDAP_URI"),
+               'resource_permissions_matrix': _get_resource_permissions_matrix(request.user)}
     return render(request, 'user_profile.html', context)
 
 
@@ -222,6 +281,7 @@ class PermissionViewSet(StrictQueryParamMixin,
     following for more details.
 
     """
+    permission_classes = (APIPermission,)
 
     def list(self, request, *args, **kwargs):
         """
@@ -483,6 +543,7 @@ class GroupViewSet(ChangeSetUpdateModelMixin,
     queryset = Group.objects.all().order_by('id')
     serializer_class = serializers.GroupSerializer
     filter_class = filters.GroupFilter
+    permission_classes = (APIPermission,)
     Group.export = group_obj_export
 
 
@@ -493,6 +554,10 @@ class CurrentUserViewSet(mixins.ListModelMixin,
     user.
     """
     queryset = get_user_model().objects.none()
+
+    def _get_resource_permissions(self, user):
+        serializer = serializers.ResourcePermissionSerializer(get_resource_permission_set(user), many=True)
+        return serializer.data
 
     def list(self, request):
         """
@@ -511,7 +576,11 @@ class CurrentUserViewSet(mixins.ListModelMixin,
                 "is_superuser": bool,
                 "is_staff": bool,
                 "groups": [string],
-                "permissions": [string]
+                "permissions": [string],
+                "resource_permissions": [
+                    {"resource": string, "permission": string},
+                     ...
+                ]
             }
         """
         user = request.user
@@ -526,4 +595,208 @@ class CurrentUserViewSet(mixins.ListModelMixin,
             'is_staff': user.is_staff,
             'groups': [g.name for g in user.groups.all()],
             'permissions': sorted(list(user.get_all_permissions())),
+            'resource_permissions': self._get_resource_permissions(user)
         })
+
+
+class ResourcePermissionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    This end-point provides resource permissions information.
+    """
+    queryset = models.ResourcePermission.objects.all()
+    serializer_class = serializers.ResourcePermissionSerializer
+    permission_classes = (APIPermission,)
+    filter_class = filters.ResourcePermissionFilter
+    API_WITH_NO_PERMISSION_CONTROL = set(['auth/token', 'auth/current-user'])
+
+    def _collect_resource_permissions(self):
+        action_to_obj_dict = {}
+
+        for action in ('update', 'create', 'delete', 'read'):
+            action_to_obj_dict[action] = ActionPermission.objects.get(name=action)
+
+        for prefix, view_set, basename in router.registry:
+            if prefix in self.API_WITH_NO_PERMISSION_CONTROL:
+                continue
+            resource_obj, created = Resource.objects.get_or_create(name=prefix, view=str(view_set))
+            for name, method in inspect.getmembers(view_set, predicate=inspect.ismethod):
+                if name.lower() in ['update', 'create', 'destroy', 'list', 'partial_update', 'retrieve']:
+                    action_permission = action_to_obj_dict[convert_method_to_action(name.lower())]
+                    _, created = ResourcePermission.objects.get_or_create(resource=resource_obj,
+                                                                          permission=action_permission)
+
+    def list(self, request, *args, **kwargs):
+        """
+        Get information about resource permissions.
+
+        __Method__: `GET`
+
+        __URL__: $LINK:resourcepermissions-list$
+
+        __Query params__:
+
+        `create` is a special parameter. Set it to `true` will generate resource permissions.
+
+        %(FILTERS)s
+
+        __Response__:
+
+             # paged lists
+            {
+                "count": int,
+                "next": url,
+                "previous": url,
+                "results": [
+                    {
+                        "resource": string,
+                        "permission": string
+                    }
+                    ...
+                ]
+            }
+
+        """
+        if request.GET.get('create') and request.GET.get('create').lower() in ('true', 't'):
+            self._collect_resource_permissions()
+        return super(ResourcePermissionViewSet, self).list(request, *args, **kwargs)
+
+
+class GroupResourcePermissionViewSet(common_viewsets.PDCModelViewSet):
+    """
+    This end-point provides group resource permissions.
+    """
+    queryset = models.GroupResourcePermission.objects.all()
+    serializer_class = serializers.GroupResourcePermissionSerializer
+    filter_class = filters.GroupResourcePermissionFilter
+
+    def list(self, request, *args, **kwargs):
+        """
+        Get information about group resource permissions.
+
+        __Method__: `GET`
+
+        __URL__: $LINK:groupresourcepermissions-list$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+
+        __Response__:
+
+             # paged lists
+            {
+                "count": int,
+                "next": url,
+                "previous": url,
+                "results": [
+                    {
+                        "id": int,
+                        "group": string,
+                        "resource_permission":
+                            {
+                                "resource": string,
+                                "permission": string
+                            }
+                    },
+                    ...
+                ]
+            }
+
+
+        """
+        return super(GroupResourcePermissionViewSet, self).list(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        """
+        __Method__: POST
+
+        __URL__: $LINK:groupresourcepermissions-list$
+
+         __Data__:
+
+            {
+                "group": string,
+                "resource_permission":
+                    {
+                        "resource": string,
+                        "permission": string
+                    }
+            }
+
+        __Response__:
+
+            {
+                "id": int,
+                "group": string,
+                "resource_permission":
+                    {
+                        "resource": string,
+                        "permission": string
+                    }
+            }
+        """
+        return super(GroupResourcePermissionViewSet, self).create(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:groupresourcepermissions-detail:instance_pk$
+
+        __Response__:
+
+            {
+                "id": int,
+                "group": string,
+                "resource_permission":
+                    {
+                        "resource": string,
+                        "permission": string
+                    }
+            }
+        """
+        return super(GroupResourcePermissionViewSet, self).retrieve(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__: PUT, PATCH
+
+        __URL__: $LINK:groupresourcepermissions-detail:instance_pk$
+
+        __Data__:
+
+            {
+                "group": string,
+                "resource_permission":
+                    {
+                        "resource": string,
+                        "permission": string
+                    }
+            }
+
+        __Response__:
+
+            {
+                "id": int,
+                "group": string,
+                "resource_permission":
+                    {
+                        "resource": string,
+                        "permission": string
+                    }
+            }
+        """
+        return super(GroupResourcePermissionViewSet, self).update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        __Method__: DELETE
+
+        __URL__: $LINK:groupresourcepermissions-detail:instance_pk$
+
+        __Response__:
+
+        On success, HTTP status code is 204 and the response has no content.
+        """
+        return super(GroupResourcePermissionViewSet, self).destroy(request, *args, **kwargs)

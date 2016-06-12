@@ -1,0 +1,58 @@
+{
+    "header": {
+        "type": "productmd.rpms",
+        "version": "1.2"
+    },
+    "payload": {
+        "compose": {
+            "date": "20150310",
+            "id": "TP-1.0-20150310.0",
+            "respin": 0,
+            "type": "production"
+        },
+        "rpms": {
+            "Client": {
+                "x86_64": {
+                    "dummypython-0:1.2-3.el6.src": {
+                        "devassist09-0:1.2-3.el6.x86_64": {
+                            "category": "binary",
+                            "path": "Workstation/x86_64/os/Packages/dummypython-1.2-3.el6.x86_64.rpm",
+                            "sigkey": "abcdef00"
+                        },
+                        "dummypython-0:1.2-3.el6.src": {
+                            "category": "source",
+                            "path": "Workstation/source/tree/Packages/dummypython-1.2-3.el6.src.rpm",
+                            "sigkey": "abcdef00"
+                        },
+                        "dummypython-runtime-0:1.2-3.el6.x86_64": {
+                            "category": "binary",
+                            "path": "Workstation/x86_64/os/Packages/dummypython-runtime-1.2-3.el6.x86_64.rpm",
+                            "sigkey": "abcdef00"
+                        }
+                    }
+                }
+            },
+            "Server": {
+                "x86_64": {
+                    "dummypython-0:1.2-3.el6.src": {
+                        "dummypython-0:1.2-3.el6.src": {
+                            "category": "source",
+                            "path": "Server/source/tree/Packages/dummypython-1.2-3.el6.src.rpm",
+                            "sigkey": "abcdef00"
+                        },
+                        "dummypython-0:1.2-3.el6.x86_64": {
+                            "category": "binary",
+                            "path": "Server/x86_64/os/Packages/dummypython-1.2-3.el6.x86_64.rpm",
+                            "sigkey": "abcdef00"
+                        },
+                        "dummypython-runtime-0:1.2-3.el6.x86_64": {
+                            "category": "binary",
+                            "path": "Server/x86_64/os/Packages/dummypython-runtime-1.2-3.el6.x86_64.rpm",
+                            "sigkey": "abcdef00"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

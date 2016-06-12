@@ -53,3 +53,12 @@ Config apache
 -------------
 
 replace ``PDC_HOSTNAME`` with server's hostname in ``/etc/httpd/conf.d/pdc.conf``
+
+
+Running PDC behind reverse proxy
+-------------
+
+To make sure documentation links work correctly when PDC is running behind proxy,
+add ``USE_X_FORWARDED_HOST = True`` in `setting_local.py` file.
+
+The link to Django documentation: https://docs.djangoproject.com/en/1.9/ref/settings/#use-x-forwarded-host .

@@ -372,3 +372,39 @@ class VariantArch(models.Model):
 
     def __unicode__(self):
         return u"%s.%s" % (self.variant, self.arch)
+
+
+class ReleaseGroupType(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __unicode__(self):
+        return u"%s" % self.name
+
+
+class ReleaseGroup(models.Model):
+    name                = models.CharField(max_length=255, blank=False, unique=True)
+    description         = models.CharField(max_length=255, blank=False)
+    type                = models.ForeignKey(ReleaseGroupType)
+    releases            = models.ManyToManyField(Release, blank=True)
+    active              = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ("name", )
+
+    def __unicode__(self):
+        return u"%s" % self.name
+
+    def export(self, fields=None):
+        _fields = ['name', 'description', 'type', 'releases', 'active'] if fields is None else fields
+        result = dict()
+        for field in ('name', 'description', 'active'):
+            if field in _fields:
+                result[field] = getattr(self, field)
+        if 'releases' in _fields:
+            result['releases'] = []
+            releases = self.releases.all()
+            for obj in releases:
+                    result['releases'].append(obj.export())
+        if 'type' in _fields:
+            result['type'] = self.type.name
+        return result

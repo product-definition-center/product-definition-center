@@ -38,14 +38,16 @@ from pdc.apps.common.viewsets import (ChangeSetCreateModelMixin,
 
 from pdc.apps.release.models import Release
 from pdc.apps.utils.utils import generate_warning_header_dict
+from pdc.apps.auth.permissions import APIPermission
 from .models import (Compose, VariantArch, Variant, ComposeRPM, OverrideRPM,
                      ComposeImage, ComposeRPMMapping, ComposeAcceptanceTestingState,
                      ComposeTree)
 from .forms import (ComposeSearchForm, ComposeRPMSearchForm, ComposeImageSearchForm,
                     ComposeRPMDisableForm, OverrideRPMForm, VariantArchForm, OverrideRPMActionForm)
 from .serializers import (ComposeSerializer, OverrideRPMSerializer, ComposeTreeSerializer,
-                          ComposeImageRTTTestSerializer)
-from .filters import ComposeFilter, OverrideRPMFilter, ComposeTreeFilter, ComposeImageRTTTestFilter
+                          ComposeImageRTTTestSerializer, ComposeTreeRTTTestSerializer)
+from .filters import (ComposeFilter, OverrideRPMFilter, ComposeTreeFilter, ComposeImageRTTTestFilter,
+                      ComposeTreeRTTTestFilter)
 from . import lib
 
 
@@ -441,6 +443,7 @@ class ComposeViewSet(StrictQueryParamMixin,
     queryset = Compose.objects.all().order_by('id')
     serializer_class = ComposeSerializer
     filter_class = ComposeFilter
+    permission_classes = (APIPermission,)
     lookup_field = 'compose_id'
     lookup_value_regex = '[^/]+'
     context = {}
@@ -643,7 +646,9 @@ class ComposeViewSet(StrictQueryParamMixin,
         If the same release is specified in `linked_release` multiple times, it
         will be saved only once.
 
-        The `rtt_tested_architectures` should be a mapping in the form of
+        __Note__: if you want to just update the `rtt_tested_architectures`,
+        it's easy to update with $LINK:composetreertttests-list$ API.
+        In this API , the `rtt_tested_architectures` should be a mapping in the form of
         `{variant: {arch: status}}`. Whatever is specified will be saved in
         database, trees not mentioned will not be modified. Specifying variant
         or architecture that does not exist will result in error.
@@ -699,6 +704,7 @@ class CheckParametersMixin(object):
 
 
 class ComposeRPMView(StrictQueryParamMixin, CheckParametersMixin, viewsets.GenericViewSet):
+    permission_classes = (APIPermission,)
     lookup_field = 'compose_id'
     lookup_value_regex = '[^/]+'
     queryset = ComposeRPM.objects.none()    # Required for permissions
@@ -802,6 +808,7 @@ class ComposeRPMView(StrictQueryParamMixin, CheckParametersMixin, viewsets.Gener
 
 
 class ComposeFullImportViewSet(StrictQueryParamMixin, CheckParametersMixin, viewsets.GenericViewSet):
+    permission_classes = (APIPermission,)
     queryset = Compose.objects.none()    # Required for permissions.
 
     def create(self, request):
@@ -886,6 +893,7 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
     overrides applied in this view (if not suppressed) come from the release
     the compose was built for.
     """
+    permission_classes = (APIPermission,)
     lookup_field = 'package'
     queryset = ComposeRPM.objects.none()    # Required for permissions
     extra_query_params = ('disable_overrides', 'perform')
@@ -1023,9 +1031,18 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
             _apply_changes(request, compose.release, changes)
         return Response(changes)
 
+    def bulk_update(self, *args, **kwargs):
+        """
+        It is possible to perform bulk update on compose rpm mapping with `PUT` or `PATCH`
+        method. The input must be a JSON object with `package`as
+        keys. Values for these keys should be in the same format as `update`.
+        """
+        return bulk_operations.bulk_update_impl(self, *args, **kwargs)
+
 
 class ComposeImageView(StrictQueryParamMixin, CheckParametersMixin,
                        viewsets.GenericViewSet):
+    permission_classes = (APIPermission,)
     queryset = ComposeImage.objects.none()  # Required for permissions
     lookup_field = 'compose_id'
     lookup_value_regex = '[^/]+'
@@ -1129,6 +1146,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
     serializer_class = OverrideRPMSerializer
     queryset = OverrideRPM.objects.all().order_by('id')
     filter_class = OverrideRPMFilter
+    permission_classes = (APIPermission,)
 
     def create(self, *args, **kwargs):
         """
@@ -1300,6 +1318,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
 
 
 class OverridesRPMCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
+    permission_classes = (APIPermission,)
     queryset = OverrideRPM.objects.none()
 
     def create(self, request):
@@ -1400,6 +1419,7 @@ class FilterBugzillaProductsAndComponents(StrictQueryParamMixin,
     """
     queryset = ComposeRPM.objects.none()    # Required for permissions
     extra_query_params = ('nvr', )
+    permission_classes = (APIPermission,)
 
     def list(self, request):
         """
@@ -1550,6 +1570,7 @@ class FindComposeByReleaseRPMViewSet(StrictQueryParamMixin, FindComposeMixin, vi
     """
     queryset = ComposeRPM.objects.none()    # Required for permissions
     extra_query_params = ('included_compose_type', 'excluded_compose_type', 'latest', 'to_dict')
+    permission_classes = (APIPermission,)
 
     def list(self, request, **kwargs):
         """
@@ -1605,6 +1626,7 @@ class FindOlderComposeByComposeRPMViewSet(StrictQueryParamMixin, FindComposeMixi
     """
     queryset = ComposeRPM.objects.none()    # Required for permissions
     extra_query_params = ('included_compose_type', 'excluded_compose_type', 'to_dict')
+    permission_classes = (APIPermission,)
 
     def list(self, request, **kwargs):
         """
@@ -1657,6 +1679,7 @@ class FindComposeByProductVersionRPMViewSet(StrictQueryParamMixin, FindComposeMi
     """
     queryset = ComposeRPM.objects.none()    # Required for permissions
     extra_query_params = ('included_compose_type', 'excluded_compose_type', 'latest', 'to_dict')
+    permission_classes = (APIPermission,)
 
     def list(self, request, **kwargs):
         """
@@ -1723,6 +1746,8 @@ class ComposeImageRTTTestViewSet(ChangeSetUpdateModelMixin,
     queryset = ComposeImage.objects.select_related('variant_arch', 'image').all()
     serializer_class = ComposeImageRTTTestSerializer
     filter_class = ComposeImageRTTTestFilter
+    permission_classes = (APIPermission,)
+
     lookup_fields = (
         ('variant_arch__variant__compose__compose_id', r'[^/]+'),
         ('variant_arch__variant__variant_uid', r'[^/]+'),
@@ -1821,6 +1846,7 @@ class ComposeTreeViewSet(ChangeSetModelMixin,
     queryset = ComposeTree.objects.select_related('compose', 'variant', 'arch').all()
     serializer_class = ComposeTreeSerializer
     filter_class = ComposeTreeFilter
+    permission_classes = (APIPermission,)
     lookup_fields = (
         ('compose__compose_id', r'[^/]+'),
         ('variant__variant_uid', r'[^/]+'),
@@ -1958,3 +1984,69 @@ class ComposeTreeViewSet(ChangeSetModelMixin,
             STATUS: 204 NO CONTENT
         """
         return super(ComposeTreeViewSet, self).destroy(request, *args, **kwargs)
+
+
+class ComposeTreeRTTTestViewSet(ChangeSetUpdateModelMixin,
+                                mixins.ListModelMixin,
+                                mixins.RetrieveModelMixin,
+                                StrictQueryParamMixin,
+                                MultiLookupFieldMixin,
+                                viewsets.GenericViewSet):
+    """
+    This API is prepared for updating the `rtt_tested_architectures` key
+    in $LINK:compose-list$ API.
+    """
+    queryset = VariantArch.objects.all()
+    serializer_class = ComposeTreeRTTTestSerializer
+    filter_class = ComposeTreeRTTTestFilter
+    permission_classes = (APIPermission,)
+
+    lookup_fields = (
+        ('variant__compose__compose_id', r'[^/]+'),
+        ('variant__variant_uid', r'[^/]+'),
+        ('arch__name', r'[^/]+'),
+    )
+
+    def list(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:composetreertttests-list$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+        __Response__: a paged list of following objects
+
+        %(SERIALIZER)s
+        """
+        return super(ComposeTreeRTTTestViewSet, self).list(*args, **kwargs)
+
+    def retrieve(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:composetreertttests-detail:compose_id}/{variant_uid}/{arch$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ComposeTreeRTTTestViewSet, self).retrieve(*args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__: PUT, PATCH
+
+        __URL__: $LINK:composetreertttests-detail:compose_id}/{variant_uid}/{arch$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ComposeTreeRTTTestViewSet, self).update(request, *args, **kwargs)

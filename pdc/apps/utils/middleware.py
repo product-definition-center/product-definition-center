@@ -4,8 +4,12 @@
 # http://opensource.org/licenses/MIT
 #
 import logging
+from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 
 from . import messenger
+
 
 logger = logging.getLogger(__name__)
 
@@ -27,3 +31,13 @@ class MessagingMiddleware(object):
                     messenger.send_message(topic=topic, msg=msg)
         request._messagings = None
         return response
+
+
+class RestrictAdminMiddleware(object):
+    """
+    Restricts access to the admin page to only logged-in users with a certain user-level.
+    """
+    def process_request(self, request):
+        if request.user.is_authenticated() and request.path.startswith(reverse('admin:index')):
+            if not (request.user.is_active and request.user.is_superuser):
+                return HttpResponseRedirect("/%s%s/" % (settings.REST_API_URL, settings.REST_API_VERSION))

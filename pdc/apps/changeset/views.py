@@ -10,6 +10,7 @@ from django.views.generic import ListView, DetailView
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
+from pdc.apps.auth.permissions import APIPermission
 from pdc.apps.common.viewsets import StrictQueryParamMixin
 from . import models
 from .filters import ChangesetFilterSet
@@ -189,3 +190,4 @@ class ChangesetViewSet(StrictQueryParamMixin,
     serializer_class = ChangesetSerializer
     queryset = models.Changeset.objects.all().order_by('-committed_on')
     filter_class = ChangesetFilterSet
+    permission_classes = (APIPermission,)
