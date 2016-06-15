@@ -346,6 +346,20 @@ class ComposeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 0)
 
+    def test_query_compose_rpmnvras(self):
+        response = self.client.get(reverse('compose-list'), {"srpm_name": "bash", "rpm_arch": "x86_64",
+                                                             "rpm_release": "4.b1", "rpm_version": "1.2.3",
+                                                             "rpm_name": "bash"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+
+    def test_query_compose_rpmnvras_with_illegal_param(self):
+        response = self.client.get(reverse('compose-list'), {"srpm_name": "bash", "rpm_arch": "x86_64",
+                                                             "rpm_release": "4.b1", "rpm_version": "1.2.3",
+                                                             "rpm_name": "does-not-exist"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
     def test_query_compose_rpmnvr(self):
         response = self.client.get(reverse('compose-list'), {"rpm_nvr": "bash-1.2.3-4.b1"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -462,30 +476,19 @@ class ComposeMultipleFilterTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 3)
 
-    def test_query_multiple_rpm_arch(self):
-        response = self.client.get(reverse('compose-list') + '?rpm_arch=X86_64&rpm_arch=nonexist')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 3)
-
     def test_query_multiple_rpm_name(self):
-        response = self.client.get(reverse('compose-list') + '?rpm_name=BaSH&rpm_name=bash1')
+        response = self.client.get(reverse('compose-list') + '?rpm_name=bash1&rpm_name=BaSH')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 3)
 
-    def test_query_multiple_rpm_release(self):
-        response = self.client.get(reverse('compose-list') + '?rpm_release=4.b1&rpm_release=8')
+    def test_query_multiple_rpm_values(self):
+        response = self.client.get(reverse('compose-list') + '?rpm_name=does-not-exist&rpm_name=bash&' +
+                                                             'srpm_name=does-not-exist&srpm_name=bash&' +
+                                                             'rpm_version=does-not-exist&rpm_version=1.2.3&' +
+                                                             'rpm_release=does-not-exist&rpm_release=4.b1&' +
+                                                             'rpm_arch=does-not-exist&rpm_arch=x86_64')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 3)
-
-    def test_query_multiple_rpm_version(self):
-        response = self.client.get(reverse('compose-list') + '?rpm_version=1.2.3&rpm_version=5.6.7')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 3)
-
-    def test_query_multiple_srpm_name(self):
-        response = self.client.get(reverse('compose-list') + '?srpm_name=bash1&srpm_name=BASH')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 3)
+        self.assertEqual(response.data['count'], 2)
 
 
 class ComposeApiOrderingTestCase(APITestCase):

@@ -19,16 +19,6 @@ class ComposeFilter(django_filters.FilterSet):
     compose_id          = MultiValueCaseInsensitiveFilter(name='compose_id')
     compose_type        = MultiValueCaseInsensitiveFilter(name='compose_type__name')
     acceptance_testing  = MultiValueFilter(name='acceptance_testing__name')
-    srpm_name           = MultiValueCaseInsensitiveFilter(name='variant__variantarch__composerpm__rpm__srpm_name',
-                                                          distinct=True)
-    rpm_name            = MultiValueCaseInsensitiveFilter(name='variant__variantarch__composerpm__rpm__name',
-                                                          distinct=True)
-    rpm_version         = MultiValueCaseInsensitiveFilter(name='variant__variantarch__composerpm__rpm__version',
-                                                          distinct=True)
-    rpm_release         = MultiValueCaseInsensitiveFilter(name='variant__variantarch__composerpm__rpm__release',
-                                                          distinct=True)
-    rpm_arch            = MultiValueCaseInsensitiveFilter(name='variant__variantarch__composerpm__rpm__arch',
-                                                          distinct=True)
     rpm_nvr             = django_filters.MethodFilter(action="filter_nvr")
     rpm_nvra            = django_filters.MethodFilter(action="filter_nvra")
     deleted             = CaseInsensitiveBooleanFilter()

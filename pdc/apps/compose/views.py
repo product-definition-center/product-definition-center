@@ -443,6 +443,7 @@ class ComposeViewSet(StrictQueryParamMixin,
     queryset = Compose.objects.all().order_by('id')
     serializer_class = ComposeSerializer
     filter_class = ComposeFilter
+    filter_fields = ('srpm_name', 'rpm_name', 'rpm_arch', 'rpm_version', 'rpm_release')
     permission_classes = (APIPermission,)
     lookup_field = 'compose_id'
     lookup_value_regex = '[^/]+'
@@ -461,10 +462,26 @@ class ComposeViewSet(StrictQueryParamMixin,
         possible to sort unconditionally as get_object() will at some point
         call this method and fail unless it receives a QuerySet instance.)
         """
-        qs = super(ComposeViewSet, self).filter_queryset(qs)
+        qs = super(ComposeViewSet, self).filter_queryset(self._filter_nvras(qs))
         if getattr(self, 'order_queryset', False):
             return sorted(qs)
         return qs
+
+    def _filter_nvras(self, qs):
+        q = Q()
+        query_params = self.request.query_params
+        query_param_rpm_key_mapping = [('rpm_name', 'name'),
+                                       ('srpm_name', 'srpm_name'),
+                                       ('rpm_version', 'version'),
+                                       ('rpm_release', 'release'),
+                                       ('rpm_arch', 'arch')]
+        for query_param, rpm_key in query_param_rpm_key_mapping:
+            rpm_value = query_params.get(query_param, None)
+            s = 'variant__variantarch__composerpm__rpm__' + rpm_key
+            if rpm_value:
+                q &= Q(**{s + '__iexact': rpm_value})
+
+        return qs.filter(q).distinct()
 
     def _fill_in_cache(self, result_queryset):
         """
@@ -534,6 +551,9 @@ class ComposeViewSet(StrictQueryParamMixin,
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
+        Note: Query params 'rpm_name', 'srpm_name', 'rpm_version', 'rpm_release', 'rpm_arch'
+        can be used together which perform AND search. When input multi values for one of these
+        query params, the last one will take effect.
         """
         self.order_queryset = True
         queryset = self.filter_queryset(self.get_queryset())
