@@ -276,7 +276,7 @@ class Image(models.Model):
     md5                 = models.CharField(max_length=32, null=True, blank=True, validators=[validate_md5])
     sha1                = models.CharField(max_length=40, null=True, blank=True, validators=[validate_sha1])
     sha256              = models.CharField(max_length=64, validators=[validate_sha256])
-    subvariant          = models.CharField(max_length=4096, null=True, blank=True)
+    subvariant          = models.CharField(max_length=4096, blank=True, default='')
 
     class Meta:
         unique_together = (
