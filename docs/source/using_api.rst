@@ -23,6 +23,11 @@ In this context, stable means:
  * Arguments for APIs will not be removed or renamed
  * Keys in returned JSON dictionaries will not be removed or renamed
  * If new features are added to these APIs – which is quite possible – they will not break or change the meaning of existing methods. In other words, “stable” does not (necessarily) mean *complete*
+ * Default values of optional arguments will not change
+ * Order of returned results will not change for following results:
+    * releases in releases resource API
+    * composes inside compose_set in releases resource API
+    * composes in composes resource API
  * If, for some reason, an API declared stable must be removed or replaced, it will be declared deprecated in given version of the API and removed/replaced in future version of API
  * We’ll only break backwards compatibility of these APIs if a bug or security hole makes it completely unavoidable.
 
