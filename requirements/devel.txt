@@ -6,6 +6,7 @@ ipdb>=0.8
 coverage>=3.7.1
 mock>=1.0.1
 setuptools
+productmd==1.2
 # requires: libxml2-devel libxslt-devel
 lxml
 # model graph

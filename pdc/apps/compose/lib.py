@@ -10,6 +10,7 @@ import json
 
 import kobo
 import productmd
+from productmd.rpms import Rpms
 
 from django.db import transaction, connection
 from django.db.models import Q
@@ -129,8 +130,7 @@ def compose__import_rpms(request, release_id, composeinfo, rpm_manifest):
 
     ci = productmd.composeinfo.ComposeInfo()
     common_hacks.deserialize_wrapper(ci.deserialize, composeinfo)
-
-    rm = productmd.rpms.Rpms()
+    rm = Rpms()
     common_hacks.deserialize_wrapper(rm.deserialize, rpm_manifest)
 
     _maybe_raise_inconsistency_error(ci, rm, 'rpms')
