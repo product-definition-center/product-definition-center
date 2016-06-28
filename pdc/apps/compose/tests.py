@@ -700,6 +700,14 @@ class ComposeUpdateTestCase(TestCaseWithChangeSetMixin, APITestCase):
             self.assertEqual(response.data.get('detail', []), [err])
         self.assertNumChanges([])
 
+    def test_update_with_wrong_input(self):
+        response = self.client.patch(reverse('compose-detail', args=['compose-1']),
+                                     [{'rtt_tested_architectures': 'wronginput'}],
+                                     format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['detail'], 'The parameters\' format for updating is wrong. '
+                                                  'Please read API documentation')
+
 
 class OverridesRPMAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
@@ -1527,6 +1535,26 @@ class RPMMappingAPITestCase(APITestCase):
                                           'rpm_arch': 'i386', 'variant': 'Server', 'arch': 'x86_64',
                                           'include': True, 'release_id': 'release-1.0'}])
         self.assertEqual(1, models.OverrideRPM.objects.filter(rpm_arch='i386').count())
+
+    def test_update_with_wrong_input(self):
+        self.client.force_authenticate(create_user("user", perms=[]))
+        new_mapping = {'wronginput': '1'}
+        response = self.client.put(self.url, new_mapping, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['detail'], 'The parameters\' format for updating is wrong. '
+                                                  'Please read API documentation')
+
+        new_mapping = {'wronginput': {}}
+        response = self.client.put(self.url, new_mapping, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['detail'], 'The parameters\' format for updating is wrong. '
+                                                  'Please read API documentation')
+
+        new_mapping = {'wronginput': {'key1': 'value1', 'key2': 'value2'}}
+        response = self.client.put(self.url, new_mapping, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['detail'], 'The parameters\' format for updating is wrong. '
+                                                  'Please read API documentation')
 
 
 class FilterBugzillaProductsAndComponentsTestCase(APITestCase):

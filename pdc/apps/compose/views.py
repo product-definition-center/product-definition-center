@@ -606,6 +606,10 @@ class ComposeViewSet(StrictQueryParamMixin,
         if not request.data:
             return NoEmptyPatchMixin.make_response()
 
+        if not isinstance(request.data, dict):
+            return Response(data={"detail": ("The parameters' format for updating is wrong. "
+                                             "Please read API documentation")}, status=status.HTTP_400_BAD_REQUEST)
+
         updatable_keys = set(['acceptance_testing', 'linked_releases', 'rtt_tested_architectures'])
         if set(request.data.keys()) - updatable_keys:
             return Response(status=status.HTTP_400_BAD_REQUEST,
@@ -993,7 +997,7 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
         if layer == 1:
             result = isinstance(in_data, list)
         elif layer > 1:
-            if not isinstance(in_data, dict) and len(in_data) != 1:
+            if not isinstance(in_data, dict) or len(in_data) != 1:
                 result = False
             else:
                 result = self._update_parameters_acceptable((in_data.values()[0]), layer - 1)
