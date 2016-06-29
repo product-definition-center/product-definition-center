@@ -64,6 +64,7 @@ INSTALLED_APPS = (
     'pdc.apps.auth',
     'pdc.apps.common',
     'pdc.apps.compose',
+    'pdc.apps.tree',
     'pdc.apps.package',
     'pdc.apps.release',
     'pdc.apps.repository',
