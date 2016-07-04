@@ -33,6 +33,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = []
 
+# The default number of seconds to cache a page for the cache middleware
+CACHE_MIDDLEWARE_SECONDS = 300
+
 ITEMS_PER_PAGE = 50
 
 # ======== resource permissions configuration =========
@@ -105,6 +108,7 @@ REST_FRAMEWORK = {
 
 MIDDLEWARE_CLASSES = [
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -118,11 +122,13 @@ MIDDLEWARE_CLASSES = [
     'pdc.apps.usage.middleware.UsageMiddleware',
     'pdc.apps.changeset.middleware.ChangesetMiddleware',
     'pdc.apps.utils.middleware.MessagingMiddleware',
-    'pdc.apps.utils.middleware.RestrictAdminMiddleware'
+    'pdc.apps.utils.middleware.RestrictAdminMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 if 'test' in sys.argv:
     MIDDLEWARE_CLASSES.remove('pdc.apps.utils.middleware.RestrictAdminMiddleware')
+    CACHE_MIDDLEWARE_SECONDS = 0
 
 AUTHENTICATION_BACKENDS = (
     'pdc.apps.auth.backends.KerberosUserBackend',

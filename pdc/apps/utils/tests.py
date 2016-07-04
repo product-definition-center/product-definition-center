@@ -5,7 +5,9 @@
 #
 from datetime import datetime
 import random
+import time
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from rest_framework.test import APITestCase
@@ -52,3 +54,31 @@ class APIRootTestCase(APITestCase):
         self.assertIn(key, response.data)
         self.assertEqual(response.data[key],
                          'http://testserver/rest_api/v1/releases/{release_id}/rpm-mapping/{package}/')
+
+
+class TestCacheRESTTestCase(APITestCase):
+    fixtures = [
+        "pdc/apps/release/fixtures/tests/release.json",
+    ]
+
+    def test_cache(self):
+        tmp = settings.CACHE_MIDDLEWARE_SECONDS
+        settings.CACHE_MIDDLEWARE_SECONDS = 10
+
+        response = self.client.get(reverse('baseproduct-list'))
+        self.assertEqual(response.data['count'], 0)
+
+        args = {"name": "Our Awesome Product", "short": "product", "version": "1", "release_type": "ga"}
+        response = self.client.post(reverse('baseproduct-list'), args)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        response = self.client.get(reverse('baseproduct-list'))
+        self.assertEqual(response.data['count'], 0)
+        self.assertTrue(response.has_header('Cache-Control'))
+        self.assertTrue(response.has_header('Last-Modified'))
+
+        time.sleep(11)
+        response = self.client.get(reverse('baseproduct-list'))
+        self.assertEqual(response.data['count'], 1)
+
+        settings.CACHE_MIDDLEWARE_SECONDS = tmp
