@@ -6,7 +6,7 @@
 from django.db import models
 from jsonfield import JSONField
 
-class TreeVariant(models.Model): # Not the variant from compose ... which back references compose
+class UnreleasedVariant(models.Model): # Not the variant from compose ... which back references compose
     variant_id          = models.CharField(max_length=100, blank=False)
     variant_uid         = models.CharField(max_length=200, blank=False)
     variant_name        = models.CharField(max_length=300, blank=False)
@@ -39,7 +39,7 @@ class Tree(models.Model):
     tree_id             = models.CharField(max_length=200, unique=True)
     tree_date           = models.DateField()
     arch                = models.ForeignKey("common.Arch", related_name="+")
-    variant             = models.ForeignKey(TreeVariant)
+    variant             = models.ForeignKey(UnreleasedVariant)
     dt_imported         = models.DateTimeField(auto_now_add=True)
     deleted             = models.BooleanField(default=False)
     content             = JSONField()

@@ -15,14 +15,14 @@ rpms_json_path = os.path.join(os.path.dirname(__file__), "test_tree.json")
 rpms_json = open(rpms_json_path, "r").read()
 
 class TreeAPITestCase(APITestCase):
-    def test_create_treevariant(self):
-        url = reverse('treevariant-list')
+    def test_create_unreleasedvariant(self):
+        url = reverse('unreleasedvariant-list')
         data = { 'variant_id': "core", 'variant_uid': "Core", 'variant_name': "Core", 'variant_version': "0-1", 'variant_type': 'module'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_tree(self):
-        url = reverse('treevariant-list')
+        url = reverse('unreleasedvariant-list')
         data = { 'variant_id': "shells", 'variant_uid': "Shells", 'variant_name': "Shells", 'variant_version': "0-1", 'variant_type': 'module'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

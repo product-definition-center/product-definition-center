@@ -5,9 +5,9 @@
 #
 
 from pdc.apps.common import viewsets
-from .models import (Tree, TreeVariant,)
-from .serializers import (TreeSerializer, TreeVariantSerializer)
-from .filters import (TreeFilter, TreeVariantFilter)
+from .models import (Tree, UnreleasedVariant,)
+from .serializers import (TreeSerializer, UnreleasedVariantSerializer)
+from .filters import (TreeFilter, UnreleasedVariantFilter)
 
 
 class TreeViewSet(viewsets.PDCModelViewSet):
@@ -165,7 +165,7 @@ class TreeViewSet(viewsets.PDCModelViewSet):
         """
         return super(TreeViewSet, self).destroy(request, *args, **kwargs)
 
-class TreeVariantViewSet(viewsets.PDCModelViewSet):
+class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
     """
     ##Overview##
 
@@ -189,17 +189,17 @@ class TreeVariantViewSet(viewsets.PDCModelViewSet):
     __NOTE__: If both given, `exclude_fields` *rules* `fields`.
 
     """
-    model = TreeVariant
-    queryset = TreeVariant.objects.all().order_by('variant_uid')
-    serializer_class = TreeVariantSerializer
-    filter_class = TreeVariantFilter
+    model = UnreleasedVariant
+    queryset = UnreleasedVariant.objects.all().order_by('variant_uid')
+    serializer_class = UnreleasedVariantSerializer
+    filter_class = UnreleasedVariantFilter
 
     def list(self, request, *args, **kwargs):
         """
         __Method__:
         GET
 
-        __URL__: $LINK:treevariant-list$
+        __URL__: $LINK:unreleasedvariant-list$
 
         __Query Params__:
 
@@ -223,14 +223,14 @@ class TreeVariantViewSet(viewsets.PDCModelViewSet):
                     ...
             }
         """
-        return super(TreeVariantViewSet, self).list(request, *args, **kwargs)
+        return super(UnreleasedVariantViewSet, self).list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
         """
         __Method__:
         GET
 
-        __URL__: $LINK:treevariant-detail:tree_id$
+        __URL__: $LINK:unreleasedvariant-detail:tree_id$
 
         __Response__:
 
@@ -242,7 +242,7 @@ class TreeVariantViewSet(viewsets.PDCModelViewSet):
                 "variant_version": string,
             }
         """
-        return super(TreeVariantViewSet, self).retrieve(request, *args, **kwargs)
+        return super(UnreleasedVariantViewSet, self).retrieve(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         """
@@ -282,7 +282,7 @@ class TreeVariantViewSet(viewsets.PDCModelViewSet):
                 "variant_type": "module", # required
             }
         """
-        return super(TreeVariantViewSet, self).create(request, **kwargs)
+        return super(UnreleasedVariantViewSet, self).create(request, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         """
@@ -299,4 +299,4 @@ class TreeVariantViewSet(viewsets.PDCModelViewSet):
 
             curl -X DELETE -H "Content-Type: application/json" $URL:tree-detail:4181$
         """
-        return super(TreeVariantViewSet, self).destroy(request, **kwargs)
+        return super(UnreleasedVariantViewSet, self).destroy(request, **kwargs)

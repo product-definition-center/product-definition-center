@@ -8,19 +8,19 @@ from rest_framework import serializers
 from pdc.apps.common.models import Arch
 from pdc.apps.common.serializers import StrictSerializerMixin, DynamicFieldsSerializerMixin
 from pdc.apps.common.fields import ChoiceSlugField
-from .models import (Tree, TreeVariant)
+from .models import (Tree, UnreleasedVariant)
 
 #from pdc.apps.release.models import Release
 from pdc.apps.repository.models import ContentFormat
 
-class TreeVariantField(serializers.Field):
-    #doc_format = "TreeVariant.variant_uid"
+class UnreleasedVariantField(serializers.Field):
+    #doc_format = "UnreleasedVariant.variant_uid"
 
     def to_internal_value(self, data):
         try:
-            variant = TreeVariant.objects.get(variant_uid=data['variant_uid'], variant_version=data['variant_version'], variant_release=data['variant_release'])
-        except TreeVariant.DoesNotExist:
-            raise serializers.ValidationError("TreeVariant %s does not exist.")
+            variant = UnreleasedVariant.objects.get(variant_uid=data['variant_uid'], variant_version=data['variant_version'], variant_release=data['variant_release'])
+        except UnreleasedVariant.DoesNotExist:
+            raise serializers.ValidationError("UnreleasedVariant %s does not exist.")
         return variant
 
     def to_representation(self, value):
@@ -37,7 +37,7 @@ class TreeSerializer(StrictSerializerMixin,
 
     tree_id             = serializers.CharField()
     tree_date           = serializers.DateField()
-    variant             = TreeVariantField()
+    variant             = UnreleasedVariantField()
     arch                = serializers.SlugRelatedField(slug_field='name', queryset=Arch.objects.all())
     deleted             = serializers.BooleanField(default=False)
     content             = JSONSerializerField()
@@ -54,7 +54,7 @@ class TreeSerializer(StrictSerializerMixin,
         # TODO: validate
         return attrs
 
-class TreeVariantSerializer(StrictSerializerMixin,
+class UnreleasedVariantSerializer(StrictSerializerMixin,
                         DynamicFieldsSerializerMixin,
                         serializers.ModelSerializer):
     variant_id          = serializers.CharField(max_length=100)
@@ -66,7 +66,7 @@ class TreeVariantSerializer(StrictSerializerMixin,
     koji_tag            = serializers.CharField(max_length=300)
 
     class Meta:
-        model = TreeVariant
+        model = UnreleasedVariant
         fields = (
             'variant_id', 'variant_uid', 'variant_name', 'variant_type', 'variant_version', 'variant_release', 'koji_tag'
         )
