@@ -78,7 +78,7 @@ class TreeViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__: $LINK:tree-detail:tree_id$
+        __URL__: $LINK:tree-detail:instance_pk$
 
         __Response__:
 
@@ -101,7 +101,7 @@ class TreeViewSet(viewsets.PDCModelViewSet):
         __Method__:
         POST
 
-        __URL__: $LINK:tree$
+        __URL__: $LINK:tree-list$
 
         __Data__:
 
@@ -153,7 +153,7 @@ class TreeViewSet(viewsets.PDCModelViewSet):
         __Method__:
         DELETE
 
-        __URL__: $LINK:tree:tree_id$
+        __URL__: $LINK:tree-detail:instance_pk$
 
         __Response__:
 
@@ -230,7 +230,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__: $LINK:unreleasedvariant-detail:tree_id$
+        __URL__: $LINK:unreleasedvariant-detail:instance_pk$
 
         __Response__:
 
@@ -249,7 +249,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
         __Method__:
         POST
 
-        __URL__: $LINK:tree$
+        __URL__: $LINK:unreleasedvariant-list$
 
         __Data__:
 
@@ -289,7 +289,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
         __Method__:
         DELETE
 
-        __URL__: $LINK:tree:tree_id$
+        __URL__: $LINK:unreleasedvariant-detail:instance_pk$
 
         __Response__:
 
