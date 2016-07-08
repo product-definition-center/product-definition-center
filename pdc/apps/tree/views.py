@@ -38,6 +38,8 @@ class TreeViewSet(viewsets.PDCModelViewSet):
     queryset = Tree.objects.all().order_by('tree_id')
     serializer_class = TreeSerializer
     filter_class = TreeFilter
+    lookup_field = 'tree_id'
+    lookup_value_regex = '[^/]+'
 
     def list(self, request, *args, **kwargs):
         """
@@ -78,7 +80,7 @@ class TreeViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__: $LINK:tree-detail:instance_pk$
+        __URL__: $LINK:tree-detail:tree_id$
 
         __Response__:
 
@@ -153,7 +155,7 @@ class TreeViewSet(viewsets.PDCModelViewSet):
         __Method__:
         DELETE
 
-        __URL__: $LINK:tree-detail:instance_pk$
+        __URL__: $LINK:tree-detail:tree_id$
 
         __Response__:
 
@@ -193,6 +195,8 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
     queryset = UnreleasedVariant.objects.all().order_by('variant_uid')
     serializer_class = UnreleasedVariantSerializer
     filter_class = UnreleasedVariantFilter
+    lookup_field = 'variant_id'
+    lookup_regex = '[^/]+'
 
     def list(self, request, *args, **kwargs):
         """
@@ -230,7 +234,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__: $LINK:unreleasedvariant-detail:instance_pk$
+        __URL__: $LINK:unreleasedvariant-detail:variant_id$
 
         __Response__:
 
@@ -289,7 +293,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
         __Method__:
         DELETE
 
-        __URL__: $LINK:unreleasedvariant-detail:instance_pk$
+        __URL__: $LINK:unreleasedvariant-detail:variant_id$
 
         __Response__:
 
