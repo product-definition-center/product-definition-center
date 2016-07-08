@@ -14,8 +14,7 @@ class TreeFilter(django_filters.FilterSet):
     tree_id          = django_filters.CharFilter(name='tree_id', lookup_type='iexact')
     deleted             = CaseInsensitiveBooleanFilter()
     arch            = django_filters.CharFilter(name='arch__name', lookup_type='iexact')
-    variant_uid         = django_filters.CharFilter(name='variant__variant_uid', lookup_type='iexact')
-    variant_version    = django_filters.CharFilter(name='variant__variant_version', lookup_type='iexact')
+    variant_uid         = django_filters.CharFilter(name='unreleasedvariant__variant_uid', lookup_type='iexact')
     content_format = django_filters.CharFilter(name="content_format__name")
 
 
@@ -31,7 +30,9 @@ class UnreleasedVariantFilter(django_filters.FilterSet):
     variant_type        = django_filters.CharFilter(name='variant_type', lookup_type='iexact')
     variant_version     = django_filters.CharFilter(name='variant_version', lookup_type='iexact')
     variant_release     = django_filters.CharFilter(name='variant_release', lookup_type='iexact')
+    koji_tag            = django_filters.CharFilter(name='koji_tag', lookup_type='iexact')
 
     class Meta:
         model = UnreleasedVariant
-        fields = ('variant_id', 'variant_uid', 'variant_name', 'variant_type', 'variant_version', 'variant_release')
+        fields = ('variant_id', 'variant_uid', 'variant_name', 'variant_type',
+                  'variant_version', 'variant_release', 'koji_tag')
