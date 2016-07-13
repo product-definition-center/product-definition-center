@@ -8,7 +8,8 @@ from rest_framework import serializers
 from pdc.apps.common.models import Arch
 from pdc.apps.common.serializers import StrictSerializerMixin, DynamicFieldsSerializerMixin
 from pdc.apps.common.fields import ChoiceSlugField
-from .models import (Tree, UnreleasedVariant)
+from .models import (Tree, UnreleasedVariant, RuntimeDependency,
+                     BuildDependency)
 
 #from pdc.apps.release.models import Release
 from pdc.apps.repository.models import ContentFormat
@@ -54,6 +55,19 @@ class TreeSerializer(StrictSerializerMixin,
         # TODO: validate
         return attrs
 
+
+class RuntimeDepSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RuntimeDependency
+        fields = ("dependency",)
+
+
+class BuildDepSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BuildDependency
+        fields = ("dependency",)
+
+
 class UnreleasedVariantSerializer(StrictSerializerMixin,
                         DynamicFieldsSerializerMixin,
                         serializers.ModelSerializer):
@@ -64,14 +78,32 @@ class UnreleasedVariantSerializer(StrictSerializerMixin,
     variant_version     = serializers.CharField(max_length=100)
     variant_release     = serializers.CharField(max_length=100)
     koji_tag            = serializers.CharField(max_length=300)
+    runtime_deps        = RuntimeDepSerializer(many=True)
+    build_deps          = BuildDepSerializer(many=True)
 
     class Meta:
         model = UnreleasedVariant
         fields = (
-            'variant_id', 'variant_uid', 'variant_name', 'variant_type', 'variant_version', 'variant_release', 'koji_tag'
+            'variant_id', 'variant_uid', 'variant_name', 'variant_type',
+            'variant_version', 'variant_release', 'koji_tag',
+            'runtime_deps', 'build_deps',
         )
 
 
     def validate(self, attrs):
         # TODO: validate
         return attrs
+
+    def create(self, validated_data):
+        runtime_deps_data = validated_data.pop('runtime_deps', [])
+        build_deps_data = validated_data.pop('build_deps', [])
+
+        variant = UnreleasedVariant.objects.create(**validated_data)
+
+        for dep_data in runtime_deps_data:
+            RuntimeDependency.objects.create(variant=variant, **dep_data)
+
+        for dep_data in build_deps_data:
+            BuildDependency.objects.create(variant=variant, **dep_data)
+
+        return variant

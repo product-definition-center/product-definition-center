@@ -36,6 +36,27 @@ class UnreleasedVariant(models.Model): # Not the variant from compose ... which 
             'koji_tag': self.koji_tag
         }
 
+
+class VariantDependency(models.Model):
+
+    dependency = models.CharField(max_length=300)
+
+    class Meta:
+        abstract = True
+
+
+class RuntimeDependency(VariantDependency):
+
+    variant = models.ForeignKey("UnreleasedVariant",
+                                related_name="runtime_deps")
+
+
+class BuildDependency(VariantDependency):
+
+    variant = models.ForeignKey("UnreleasedVariant",
+                                related_name="build_deps")
+
+
 class Tree(models.Model):
     tree_id             = models.CharField(max_length=200, unique=True)
     tree_date           = models.DateField()
