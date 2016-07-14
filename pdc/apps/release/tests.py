@@ -5,6 +5,7 @@
 # http://opensource.org/licenses/MIT
 #
 import json
+import time
 
 from rest_framework.test import APITestCase
 from rest_framework import status
@@ -1965,3 +1966,71 @@ class ReleaseGroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(models.ReleaseGroup.objects.count(), 0)
         self.assertNumChanges([2])
+
+
+class ReleaseLastModifiedResponseTestCase(TestCaseWithChangeSetMixin, APITestCase):
+    fixtures = [
+        "pdc/apps/release/fixtures/tests/release.json",
+        "pdc/apps/release/fixtures/tests/product.json",
+        "pdc/apps/release/fixtures/tests/base_product.json",
+        "pdc/apps/release/fixtures/tests/product_version.json",
+        "pdc/apps/bindings/fixtures/tests/releasedistgitmapping.json"
+    ]
+
+    def _get_last_modified_epoch(self, response):
+        time_str = response.get('Last-Modified')
+        temp_time = time.strptime(time_str, "%a, %d %b %Y %H:%M:%S %Z")
+        return int(time.mktime(temp_time))
+
+    def test_after_create_last_modified_time_should_change(self):
+        response = self.client.get(reverse('release-list') + '?active=True')
+        before_time = self._get_last_modified_epoch(response)
+        time.sleep(2)
+
+        args = {"name": "Fedora", "short": "f", "version": '20', "release_type": "ga"}
+        response = self.client.post(reverse('release-list'), args)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        response = self.client.get(reverse('release-list') + '?active=True')
+        after_time = self._get_last_modified_epoch(response)
+        self.assertGreaterEqual(after_time - before_time, 2)
+
+        response = self.client.get(reverse('release-detail', args=['release-1.0']))
+        before_time = self._get_last_modified_epoch(response)
+        time.sleep(3)
+
+        args = {"name": "Fedora", "short": "f", "version": '21', "release_type": "ga"}
+        response = self.client.post(reverse('release-list'), args)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        response = self.client.get(reverse('release-detail', args=['release-1.0']))
+        after_time = self._get_last_modified_epoch(response)
+        self.assertGreaterEqual(after_time - before_time, 3)
+
+    def test_after_update_last_modified_time_should_change(self):
+        response = self.client.get(reverse('release-list') + '?active=True')
+        before_time = self._get_last_modified_epoch(response)
+        time.sleep(2)
+
+        args = {"dist_git": None}
+        response = self.client.patch(reverse('release-detail',
+                                             kwargs={'release_id': 'release-1.0'}), args, format='json')
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        url = reverse('release-list') + '?active=True'
+        response = self.client.get(url)
+        after_time = self._get_last_modified_epoch(response)
+        self.assertGreaterEqual(after_time - before_time, 2)
+
+        response = self.client.get(reverse('release-detail', args=['release-1.0']))
+        before_time = self._get_last_modified_epoch(response)
+        time.sleep(3)
+
+        args = {"dist_git": None}
+        response = self.client.patch(reverse('release-detail',
+                                             kwargs={'release_id': 'release-1.0'}), args, format='json')
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        response = self.client.get(reverse('release-detail', args=['release-1.0']))
+        after_time = self._get_last_modified_epoch(response)
+        self.assertGreaterEqual(after_time - before_time, 3)

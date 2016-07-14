@@ -64,7 +64,7 @@ class Changeset(models.Model):
 
 class Change(models.Model):
     changeset = models.ForeignKey(Changeset)
-    target_class = models.CharField(max_length=200)
+    target_class = models.CharField(max_length=200, db_index=True)
     target_id = models.PositiveIntegerField()
     old_value = models.TextField()
     new_value = models.TextField()

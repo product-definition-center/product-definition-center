@@ -194,6 +194,7 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
 
 
 class ArchViewSet(pdc_viewsets.ChangeSetCreateModelMixin,
+                  pdc_viewsets.ConditionalProcessingMixin,
                   pdc_viewsets.StrictQueryParamMixin,
                   mixins.ListModelMixin,
                   viewsets.GenericViewSet):

@@ -15,7 +15,7 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-sphinx
 Requires:       Django >= 1.8.1, Django < 1.9.0
 Requires:       django-rest-framework >= 3.1
-Requires:       django-rest-framework < 3.2
+Requires:       django-rest-framework < 3.3
 Requires:       django-mptt >= 0.7.1
 Requires:       kobo >= 0.4.2
 Requires:       kobo-django

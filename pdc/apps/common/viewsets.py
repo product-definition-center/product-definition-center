@@ -3,14 +3,15 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+import datetime
 import re
 import json
 
-from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import FieldError
 from django.http import Http404
 from django.conf import settings
+from django.views.decorators.http import condition
 
 from contrib import drf_introspection
 
@@ -18,7 +19,8 @@ from rest_framework import mixins, status, viewsets
 from rest_framework.response import Response
 
 from pdc.apps.auth.permissions import APIPermission
-from pdc.apps.utils.utils import generate_warning_header_dict
+from pdc.apps.utils.utils import generate_warning_header_dict, get_model_name_from_obj_or_cls
+from pdc.apps.changeset.models import Change
 
 
 class NoSetattrInPreSaveMixin(object):
@@ -41,7 +43,7 @@ class ChangeSetCreateModelMixin(mixins.CreateModelMixin):
         if not isinstance(obj, list):
             obj = [obj]
         for item in obj:
-            model_name = ContentType.objects.get_for_model(item).model
+            model_name = get_model_name_from_obj_or_cls(item)
             self.request.changeset.add(model_name,
                                        item.id,
                                        'null',
@@ -98,7 +100,7 @@ class ChangeSetUpdateModelMixin(NoSetattrInPreSaveMixin,
         obj = serializer.save()
         self.object = obj
 
-        model_name = ContentType.objects.get_for_model(obj).model
+        model_name = get_model_name_from_obj_or_cls(obj)
         self.request.changeset.add(model_name,
                                    obj.id,
                                    json.dumps(self.origin_obj),
@@ -111,7 +113,7 @@ class ChangeSetDestroyModelMixin(mixins.DestroyModelMixin):
     Wrapper around DestroyModelMixin that logs the change.
     """
     def perform_destroy(self, obj):
-        model_name = ContentType.objects.get_for_model(obj).model
+        model_name = get_model_name_from_obj_or_cls(obj)
         obj_id = obj.id
         obj_content = json.dumps(obj.export())
         super(ChangeSetDestroyModelMixin, self).perform_destroy(obj)
@@ -132,6 +134,30 @@ class ChangeSetModelMixin(ChangeSetCreateModelMixin,
     and `destroy()` actions.
     """
     pass
+
+
+class ConditionalProcessingMixin(object):
+    @staticmethod
+    def latest_change(request, *args, **kwargs):
+        view_class = request.resolver_match.func.cls
+        if hasattr(view_class, 'related_model_classes'):
+            related_model_list = [get_model_name_from_obj_or_cls(model_cls)
+                                  for model_cls in view_class.related_model_classes]
+        else:
+            # use serializer' model class
+            related_model_list = [view_class.serializer_class.Meta.model]
+
+        result = datetime.datetime(1970, 1, 1)
+        if Change.objects.filter(target_class__in=related_model_list).exists():
+            result = Change.objects.filter(
+                target_class__in=related_model_list).order_by('-id')[0].changeset.committed_on
+        return result
+
+    def dispatch(self, request, *args, **kwargs):
+        @condition(etag_func=None, last_modified_func=self.latest_change)
+        def _dispatch(request, *args, **kwargs):
+            return super(ConditionalProcessingMixin, self).dispatch(request, *args, **kwargs)
+        return _dispatch(request, *args, **kwargs)
 
 
 class StrictQueryParamMixin(object):

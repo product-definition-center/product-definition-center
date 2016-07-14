@@ -34,7 +34,7 @@ DEBUG = False
 ALLOWED_HOSTS = []
 
 # The default number of seconds to cache a page for the cache middleware
-CACHE_MIDDLEWARE_SECONDS = 300
+CACHE_MIDDLEWARE_SECONDS = 30
 
 ITEMS_PER_PAGE = 50
 

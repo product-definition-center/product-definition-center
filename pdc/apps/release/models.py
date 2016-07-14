@@ -371,7 +371,7 @@ class VariantArch(models.Model):
         ordering = ("variant", "arch")
 
     def __unicode__(self):
-        return u"%s.%s" % (self.variant, self.arch)
+        return u"%s.%s, deleted: %s" % (self.variant, self.arch, self.deleted)
 
 
 class ReleaseGroupType(models.Model):

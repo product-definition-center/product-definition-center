@@ -17,6 +17,7 @@ from . import signals
 from . import models
 from .forms import (ReleaseSearchForm, BaseProductSearchForm,
                     ProductSearchForm, ProductVersionSearchForm)
+from .models import ProductVersion, Release, BaseProduct, Variant
 from .serializers import (ProductSerializer, ProductVersionSerializer,
                           ReleaseSerializer, BaseProductSerializer,
                           ReleaseTypeSerializer, ReleaseVariantSerializer,
@@ -28,7 +29,8 @@ from pdc.apps.common.viewsets import (ChangeSetModelMixin,
                                       ChangeSetCreateModelMixin,
                                       ChangeSetUpdateModelMixin,
                                       MultiLookupFieldMixin,
-                                      StrictQueryParamMixin)
+                                      StrictQueryParamMixin,
+                                      ConditionalProcessingMixin)
 from pdc.apps.auth.permissions import APIPermission
 from . import lib
 
@@ -99,6 +101,7 @@ class ProductDetailView(DetailView):
 
 class ProductViewSet(ChangeSetCreateModelMixin,
                      ChangeSetUpdateModelMixin,
+                     ConditionalProcessingMixin,
                      StrictQueryParamMixin,
                      mixins.RetrieveModelMixin,
                      mixins.ListModelMixin,
@@ -287,6 +290,7 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
 
 class ReleaseViewSet(ChangeSetCreateModelMixin,
                      ChangeSetUpdateModelMixin,
+                     ConditionalProcessingMixin,
                      StrictQueryParamMixin,
                      mixins.ListModelMixin,
                      mixins.RetrieveModelMixin,
@@ -312,6 +316,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
     filter_class = filters.ReleaseFilter
     permission_classes = (APIPermission,)
     docstring_macros = PUT_OPTIONAL_PARAM_WARNING
+    related_model_classes = (Release, BaseProduct, ProductVersion)
 
     def filter_queryset(self, qs):
         """
@@ -851,6 +856,7 @@ class ReleaseTypeViewSet(StrictQueryParamMixin,
 
 
 class ReleaseVariantViewSet(ChangeSetModelMixin,
+                            ConditionalProcessingMixin,
                             StrictQueryParamMixin,
                             MultiLookupFieldMixin,
                             viewsets.GenericViewSet):
@@ -865,6 +871,7 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
     filter_class = filters.ReleaseVariantFilter
     permission_classes = (APIPermission,)
     lookup_fields = (('release__release_id', r'[^/]+'), ('variant_uid', r'[^/]+'))
+    related_model_classes = (Variant, Release)
 
     def create(self, *args, **kwargs):
         """
