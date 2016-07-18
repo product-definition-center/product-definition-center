@@ -17,7 +17,7 @@ from . import signals
 from . import models
 from .forms import (ReleaseSearchForm, BaseProductSearchForm,
                     ProductSearchForm, ProductVersionSearchForm)
-from .models import ProductVersion, Release, BaseProduct, Variant
+from .models import ProductVersion, Release, BaseProduct, Variant, Product
 from .serializers import (ProductSerializer, ProductVersionSerializer,
                           ReleaseSerializer, BaseProductSerializer,
                           ReleaseTypeSerializer, ReleaseVariantSerializer,
@@ -118,6 +118,7 @@ class ProductViewSet(ChangeSetCreateModelMixin,
     lookup_field = 'short'
     filter_class = filters.ProductFilter
     permission_classes = (APIPermission,)
+    related_model_classes = (Product, ProductVersion)
 
     def create(self, request, *args, **kwargs):
         """

@@ -145,9 +145,9 @@ class ConditionalProcessingMixin(object):
                                   for model_cls in view_class.related_model_classes]
         else:
             # use serializer' model class
-            related_model_list = [view_class.serializer_class.Meta.model]
+            related_model_list = [get_model_name_from_obj_or_cls(view_class.serializer_class.Meta.model)]
 
-        result = datetime.datetime(1970, 1, 1)
+        result = datetime.datetime(1970, 1, 2)
         if Change.objects.filter(target_class__in=related_model_list).exists():
             result = Change.objects.filter(
                 target_class__in=related_model_list).order_by('-id')[0].changeset.committed_on
