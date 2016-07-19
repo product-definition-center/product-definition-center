@@ -11,6 +11,7 @@ class UnreleasedVariant(models.Model): # Not the variant from compose ... which 
     variant_uid         = models.CharField(max_length=200, blank=False)
     variant_name        = models.CharField(max_length=300, blank=False)
     variant_type        = models.CharField(max_length=100, blank=False)
+    # variant_version/_release are _not_ distribution versions/releases
     variant_version     = models.CharField(max_length=100, blank=False)
     variant_release     = models.CharField(max_length=100, blank=False)
     koji_tag            = models.CharField(max_length=300, blank=False)
