@@ -772,7 +772,7 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_query_with_params(self):
         url = reverse('rpms-list')
-        response = self.client.get(url + '?name=bash', format='json')
+        response = self.client.get(url + '?name=^bash$', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 1)
         response = self.client.get(url + '?epoch=0', format='json')
@@ -806,9 +806,63 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
             ids.append(result['id'])
         self.assertTrue(1 in ids)
 
+    def test_query_name_with_regexp(self):
+        url = reverse('rpms-list')
+        response = self.client.get(url + '?name=bash', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 3)
+
+        response = self.client.get(url + '?name=bash.*', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 3)
+
+        response = self.client.get(url + '?name=bash-doc', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+        response = self.client.get(url + '?name=doc', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+        response = self.client.get(url + '?name=doc$', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+        response = self.client.get(url + '?name=bash&name=bash-other', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 3)
+
+        response = self.client.get(url + '?name=bash-doc&name=bash-other', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+
+        response = self.client.get(url + '?name=doc$&name=^other', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+        response = self.client.get(url + '?name=bash%2B', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 3)
+
+        response = self.client.get(url + '?name=bashh%2B&name=bash-', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+
+        response = self.client.get(url + '?name=bash.%2B', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+
+        response = self.client.get(url + '?name=bashh%2BB&name=nothatname', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 0)
+
+        response = self.client.get(url + '?name=bashh*&name=nothatname', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 3)
+
     def test_query_with_multi_value_against_same_key(self):
         url = reverse('rpms-list')
-        response = self.client.get(url + '?name=bash&name=bash-doc', format='json')
+        response = self.client.get(url + '?name=^bash$&name=^bash-doc$', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 2)
         response = self.client.get(url + '?srpm_nevra=bash-0:1.2.3-4.b1.src&srpm_nevra=bash-0:1.2.3-4.b2.src',
@@ -818,7 +872,7 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_query_with_different_key(self):
         url = reverse('rpms-list')
-        response = self.client.get(url + '?name=bash&version=1.2.3', format='json')
+        response = self.client.get(url + '?name=^bash$&version=1.2.3', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 1)
 

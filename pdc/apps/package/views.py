@@ -59,6 +59,8 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         Only single filter for each dependency type is allowed.
 
+        Multiple `name` regular expressions which will be OR-ed. Preferably use OR inside the regexp.
+
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s

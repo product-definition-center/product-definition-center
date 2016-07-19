@@ -182,6 +182,7 @@ FILTER_DEFS = {
     'CaseInsensitiveBooleanFilter': 'bool',
     'ActiveReleasesFilter': 'bool',
     'MultiIntFilter': 'int',
+    'MultiValueRegexFilter': 'regular expression'
 }
 LOOKUP_TYPES = {
     'icontains': 'case insensitive, substring match',

@@ -11,7 +11,7 @@ from django.core.exceptions import FieldError
 
 import django_filters
 
-from pdc.apps.common.filters import (MultiValueFilter, MultiIntFilter,
+from pdc.apps.common.filters import (MultiValueFilter, MultiIntFilter, MultiValueRegexFilter,
                                      NullableCharFilter, CaseInsensitiveBooleanFilter)
 from . import models
 
@@ -57,7 +57,7 @@ def dependency_filter(type, queryset, value):
 
 
 class RPMFilter(django_filters.FilterSet):
-    name        = MultiValueFilter()
+    name        = MultiValueRegexFilter()
     version     = MultiValueFilter()
     epoch       = MultiIntFilter()
     release     = MultiValueFilter()
