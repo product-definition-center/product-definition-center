@@ -762,6 +762,9 @@ class ComposeRPMView(StrictQueryParamMixin, CheckParametersMixin, viewsets.Gener
         representation of composeinfo and rpm manifest, as stored in
         `composeinfo.json` and `rpm-manifest.json` files.
 
+        Distill/Pungi are the expected tools to produce `composeinfo.json`
+        and `rpm-manifest.json`.
+
         __Example__:
 
             $ curl -H 'Content-Type: application/json' -X POST \\
@@ -1099,6 +1102,9 @@ class ComposeImageView(StrictQueryParamMixin, CheckParametersMixin,
         The `composeinfo` and `image_manifest` values should be actual JSON
         representation of composeinfo and image manifest, as stored in
         `composeinfo.json` and `image-manifest.json` files.
+
+        Distill/Pungi are the expected tools to produce `composeinfo.json`
+        and `image-manifest.json`.
 
         __Example__:
 
