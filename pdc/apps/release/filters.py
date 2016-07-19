@@ -104,6 +104,8 @@ class ReleaseVariantFilter(django_filters.FilterSet):
     uid     = filters.MultiValueFilter(name='variant_uid')
     name    = filters.MultiValueFilter(name='variant_name')
     type    = filters.MultiValueFilter(name='variant_type__name')
+    variant_version = filters.MultiValueFilter(name='variant_version')
+    variant_release = filters.MultiValueFilter(name='variant_release')
 
     class Meta:
         model = Variant

@@ -280,6 +280,12 @@ class Variant(models.Model):
     variant_name        = models.CharField(max_length=300, blank=False)
     variant_type        = models.ForeignKey(VariantType)
     deleted             = models.BooleanField(default=False)
+    # These are to optionally override variant_version/_release in
+    # tree.UnreleasedVariant. They are _not_ distribution versions/releases.
+    variant_version     = models.CharField(max_length=100, blank=True,
+                                           null=True)
+    variant_release     = models.CharField(max_length=100, blank=True,
+                                           null=True)
 
     class Meta:
         unique_together = (

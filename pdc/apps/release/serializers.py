@@ -153,6 +153,8 @@ class ReleaseVariantSerializer(StrictSerializerMixin, serializers.ModelSerialize
     name    = serializers.CharField(source='variant_name')
     arches  = VariantArchNestedSerializer(source='variantarch_set',
                                           many=True)
+    variant_version = serializers.CharField(allow_null=True)
+    variant_release = serializers.CharField(allow_null=True)
 
     key_combination_error = 'add_arches/remove_arches can not be combined with arches.'
 
@@ -160,7 +162,8 @@ class ReleaseVariantSerializer(StrictSerializerMixin, serializers.ModelSerialize
 
     class Meta:
         model = Variant
-        fields = ('release', 'id', 'uid', 'name', 'type', 'arches')
+        fields = ('release', 'id', 'uid', 'name', 'type', 'arches',
+                  'variant_version', 'variant_release')
 
     def to_internal_value(self, data):
         # Save value of attributes not directly corresponding to serializer
