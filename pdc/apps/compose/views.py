@@ -439,6 +439,9 @@ class ComposeViewSet(StrictQueryParamMixin,
     transformed into a URL for obtaining and modifying RPM mapping. The
     template contains a string `{{package}}` which should be replaced with the
     package name you are interested in.
+
+    There is no create api for compose, compose get created as a side-effect
+    by api $LINK:composefullimport-list$
     """
     queryset = Compose.objects.all().order_by('id')
     serializer_class = ComposeSerializer
