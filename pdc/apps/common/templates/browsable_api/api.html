@@ -61,6 +61,11 @@
 {% endfor %}
 </span>{{ content|urlize_quoted_links }}</pre>{% endautoescape %}
             </div>
+            {% if paginator %}
+                <nav style="float: right">
+                {% get_pagination_html paginator %}
+                </nav>
+            {% endif %}
         </div>
 
     </div>
