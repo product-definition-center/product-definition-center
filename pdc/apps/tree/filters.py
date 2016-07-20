@@ -35,4 +35,4 @@ class UnreleasedVariantFilter(django_filters.FilterSet):
     class Meta:
         model = UnreleasedVariant
         fields = ('variant_id', 'variant_uid', 'variant_name', 'variant_type',
-                  'variant_version', 'variant_release', 'koji_tag')
+                  'variant_version', 'variant_release', 'koji_tag', 'runtime_deps', 'build_deps')
