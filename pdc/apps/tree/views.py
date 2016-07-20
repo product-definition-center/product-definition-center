@@ -262,7 +262,8 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
                         "variant_uid": string,    # required
                         "variant_name": string,   # required
                         "variant_type": string,   # required
-                        "variant_version": string,# variant-version
+                        "variant_version": string,# version of this particular variant
+                        "variant_release": string,# release of this particular variant
             }
 
         __Response__:
