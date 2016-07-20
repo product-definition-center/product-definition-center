@@ -33,7 +33,9 @@ class UnreleasedVariant(models.Model): # Not the variant from compose ... which 
             'variant_type': self.variant_type,
             'variant_version': self.variant_version,
             'variant_release': self.variant_release,
-            'koji_tag': self.koji_tag
+            'koji_tag': self.koji_tag,
+            'runtime_deps': [ v.dependency for v in self.runtime_deps ],
+            'build_deps': [ v.dependency for v in self.build_deps ],
         }
 
 
