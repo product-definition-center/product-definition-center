@@ -78,8 +78,8 @@ class UnreleasedVariantSerializer(StrictSerializerMixin,
     variant_version     = serializers.CharField(max_length=100)
     variant_release     = serializers.CharField(max_length=100)
     koji_tag            = serializers.CharField(max_length=300)
-    runtime_deps        = RuntimeDepSerializer(many=True)
-    build_deps          = BuildDepSerializer(many=True)
+    runtime_deps        = RuntimeDepSerializer(many=True, required=False)
+    build_deps          = BuildDepSerializer(many=True, required=False)
 
     class Meta:
         model = UnreleasedVariant
