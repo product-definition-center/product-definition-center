@@ -153,8 +153,8 @@ class ReleaseVariantSerializer(StrictSerializerMixin, serializers.ModelSerialize
     name    = serializers.CharField(source='variant_name')
     arches  = VariantArchNestedSerializer(source='variantarch_set',
                                           many=True)
-    variant_version = serializers.CharField(allow_null=True)
-    variant_release = serializers.CharField(allow_null=True)
+    variant_version = serializers.CharField(allow_null=True, required=False)
+    variant_release = serializers.CharField(allow_null=True, required=False)
 
     key_combination_error = 'add_arches/remove_arches can not be combined with arches.'
 
