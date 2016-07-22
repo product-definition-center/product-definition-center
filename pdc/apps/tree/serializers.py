@@ -56,16 +56,11 @@ class TreeSerializer(StrictSerializerMixin,
         return attrs
 
 
-class RuntimeDepSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RuntimeDependency
-        fields = ("dependency",)
+class DepsField(serializers.ListField):
+    child = serializers.CharField()
 
-
-class BuildDepSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BuildDependency
-        fields = ("dependency",)
+    def to_representation(self, value):
+        return [ x.dependency for x in value.all() ]
 
 
 class UnreleasedVariantSerializer(StrictSerializerMixin,
@@ -78,8 +73,8 @@ class UnreleasedVariantSerializer(StrictSerializerMixin,
     variant_version     = serializers.CharField(max_length=100)
     variant_release     = serializers.CharField(max_length=100)
     koji_tag            = serializers.CharField(max_length=300)
-    runtime_deps        = RuntimeDepSerializer(many=True, required=False)
-    build_deps          = BuildDepSerializer(many=True, required=False)
+    runtime_deps        = DepsField()
+    build_deps          = DepsField()
 
     class Meta:
         model = UnreleasedVariant
@@ -101,9 +96,11 @@ class UnreleasedVariantSerializer(StrictSerializerMixin,
         variant = UnreleasedVariant.objects.create(**validated_data)
 
         for dep_data in runtime_deps_data:
-            RuntimeDependency.objects.create(variant=variant, **dep_data)
+            RuntimeDependency.objects.create(variant=variant,
+                                             dependency=dep_data)
 
         for dep_data in build_deps_data:
-            BuildDependency.objects.create(variant=variant, **dep_data)
+            BuildDependency.objects.create(variant=variant,
+                                           dependency=dep_data)
 
         return variant
