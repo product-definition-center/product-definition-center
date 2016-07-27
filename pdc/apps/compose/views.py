@@ -440,8 +440,11 @@ class ComposeViewSet(StrictQueryParamMixin,
     template contains a string `{{package}}` which should be replaced with the
     package name you are interested in.
 
-    There is no create api for compose, compose get created as a side-effect
-    by api $LINK:composefullimport-list$
+    There is no create API for compose. Composes get created as side-effect
+    of using several other APIs:
+    $LINK:composefullimport-list$
+    $LINK:composerpm-list$
+    $LINK:composeimage-list$
     """
     queryset = Compose.objects.all().order_by('id')
     serializer_class = ComposeSerializer
@@ -762,8 +765,8 @@ class ComposeRPMView(StrictQueryParamMixin, CheckParametersMixin, viewsets.Gener
         representation of composeinfo and rpm manifest, as stored in
         `composeinfo.json` and `rpm-manifest.json` files.
 
-        Distill/Pungi are the expected tools to produce `composeinfo.json`
-        and `rpm-manifest.json`.
+        You can use <a href="https://pagure.io/pungi">Pungi</a> to produce
+        `composeinfo.json` and `rpm-manifest.json`.
 
         __Example__:
 
@@ -1103,8 +1106,8 @@ class ComposeImageView(StrictQueryParamMixin, CheckParametersMixin,
         representation of composeinfo and image manifest, as stored in
         `composeinfo.json` and `image-manifest.json` files.
 
-        Distill/Pungi are the expected tools to produce `composeinfo.json`
-        and `image-manifest.json`.
+        You can use <a href="https://pagure.io/pungi">Pungi</a> to produce
+        `composeinfo.json` and `rpm-manifest.json`.
 
         __Example__:
 
