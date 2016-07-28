@@ -256,19 +256,19 @@
 <text text-anchor="start" x="605" y="-314.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_BugzillaComponent -->
-<g id="edge7" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_BugzillaComponent</title>
+<g id="edge9" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_BugzillaComponent</title>
 <path fill="none" stroke="black" d="M423.58,-309.48C392.04,-292.7 358.1,-274.65 326.91,-258.06"/>
 <ellipse fill="black" stroke="black" cx="427.167" cy="-311.384" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="451.5" y="-280.8" font-family="Helvetica,sans-Serif" font-size="8.00">bugzilla_component (releasecomponent)</text>
 </g>
 <!-- pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_GlobalComponent -->
-<g id="edge9" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_GlobalComponent</title>
+<g id="edge11" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_GlobalComponent</title>
 <path fill="none" stroke="black" d="M541.09,-298.23C541.7,-290.69 542.63,-283.17 544,-276 546.67,-262.03 551.69,-247.33 556.87,-234.5"/>
 <ellipse fill="black" stroke="black" cx="540.813" cy="-302.429" rx="4" ry="4"/>
 <text text-anchor="middle" x="614" y="-280.8" font-family="Helvetica,sans-Serif" font-size="8.00">global_component (releasecomponent)</text>
 </g>
 <!-- pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_ReleaseComponentType -->
-<g id="edge11" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_ReleaseComponentType</title>
+<g id="edge7" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_ReleaseComponentType</title>
 <path fill="none" stroke="black" d="M639.29,-301.29C673.36,-275.93 709.88,-248.73 736.89,-228.61"/>
 <ellipse fill="black" stroke="black" cx="635.718" cy="-303.951" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="719" y="-280.8" font-family="Helvetica,sans-Serif" font-size="8.00">type (release_components)</text>
