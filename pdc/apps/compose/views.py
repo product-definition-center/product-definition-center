@@ -1107,7 +1107,7 @@ class ComposeImageView(StrictQueryParamMixin, CheckParametersMixin,
         `composeinfo.json` and `image-manifest.json` files.
 
         You can use <a href="https://pagure.io/pungi">Pungi</a> to produce
-        `composeinfo.json` and `rpm-manifest.json`.
+        `composeinfo.json` and `image-manifest.json`.
 
         __Example__:
 
