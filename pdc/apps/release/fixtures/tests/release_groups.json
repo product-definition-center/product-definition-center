@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "name": "rhel_test",
-      "description": "good",
+      "description": "test",
       "type": 1,
       "releases": [1],
       "active": true
@@ -15,7 +15,7 @@
     "pk": 2,
     "fields": {
       "name": "rhel_test1",
-      "description": "test",
+      "description": "good",
       "type": 2,
       "releases": [1],
       "active": true

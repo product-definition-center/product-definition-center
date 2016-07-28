@@ -33,7 +33,8 @@ REST_FRAMEWORK = {
 #        'rest_framework.permissions.DjangoModelPermissions'
 #    ],
 
-    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',
+                                'rest_framework.filters.OrderingFilter'),
 
     'DEFAULT_METADATA_CLASS': 'contrib.bulk_operations.metadata.BulkMetadata',
 

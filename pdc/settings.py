@@ -92,7 +92,8 @@ REST_FRAMEWORK = {
 
     'DEFAULT_METADATA_CLASS': 'contrib.bulk_operations.metadata.BulkMetadata',
 
-    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',
+                                'rest_framework.filters.OrderingFilter'),
 
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',

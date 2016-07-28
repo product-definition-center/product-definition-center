@@ -1829,16 +1829,32 @@ class ReleaseGroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(reverse("releasegroups-detail", args=["rhel_test"]))
         expect_result = {'active': True, 'type': u'Async',
                          'name': u'rhel_test', 'releases': [u'release-1.0'],
-                         'description': u'good'}
+                         'description': u'test'}
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expect_result)
+
+    def test_override_ordering_by_description_key(self):
+        response = self.client.get(reverse("releasegroups-list"), format='json')
+        expect_result = {'active': True, 'type': u'Async',
+                         'name': u'rhel_test', 'releases': [u'release-1.0'],
+                         'description': u'test'}
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEquals(response.data.get('results')[0], expect_result)
+        response1 = self.client.get(reverse("releasegroups-list"), {'ordering': 'description'},
+                                    format='json')
+        expect_result1 = {'active': True, 'type': u'QuarterlyUpdate',
+                          'name': u'rhel_test1', 'releases': [u'release-1.0'],
+                          'description': u'good'}
+        self.assertEqual(response1.status_code, status.HTTP_200_OK)
+        self.assertEquals(response1.data.get('results')[0], expect_result1)
 
     def test_retrieve_with_description_para(self):
         response = self.client.get(reverse("releasegroups-detail", args=["rhel_test"]),
                                    args={'description': 'good'}, format='json')
         expect_result = {'active': True, 'type': u'Async',
                          'name': u'rhel_test', 'releases': [u'release-1.0'],
-                         'description': u'good'}
+                         'description': u'test'}
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expect_result)
 
@@ -1908,7 +1924,7 @@ class ReleaseGroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([2])
 
     def test_update(self):
-        args = {'type': 'QuarterlyUpdate', 'name': 'test_update', 'description': 'test',
+        args = {'type': 'QuarterlyUpdate', 'name': 'test_update', 'description': 'good',
                 'releases': [u'release-1.0']}
         response = self.client.put(reverse("releasegroups-detail", args=['rhel_test']),
                                    args, format='json')
@@ -1925,7 +1941,7 @@ class ReleaseGroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_update_without_type(self):
         self.test_create()
-        args = {'name': 'test_update', 'description': 'test',
+        args = {'name': 'test_update', 'description': 'good',
                 'releases': [u'release-1.0']}
         response = self.client.put(reverse("releasegroups-detail", args=['test']),
                                    args, format='json')
@@ -1933,7 +1949,7 @@ class ReleaseGroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_update_without_name(self):
         self.test_create()
-        args = {'type': 'QuarterlyUpdate', 'description': 'test',
+        args = {'type': 'QuarterlyUpdate', 'description': 'good',
                 'releases': [u'release-1.0']}
         response = self.client.put(reverse("releasegroups-detail", args=['test']),
                                    args, format='json')
@@ -1948,7 +1964,7 @@ class ReleaseGroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_with_error_release(self):
-        args = {'type': 'QuarterlyUpdate', 'name': 'test_update', 'description': 'test',
+        args = {'type': 'QuarterlyUpdate', 'name': 'test_update', 'description': 'good',
                 'releases': [u'release']}
         response = self.client.put(reverse("releasegroups-detail", args=['rhel_test']),
                                    args, format='json')

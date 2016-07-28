@@ -176,7 +176,12 @@ class StrictQueryParamMixin(object):
     `query_params` class attribute on the serializer. Note that this should
     only include the parameters that are passed via URL query string, not
     request body fields.
+    ordering_fields parameter is prepared for OrderingFilter class,the current
+    value of ordering_fields means user can override ordering the results
+    by given key.
     """
+    ordering_fields = '__all__'
+
     def initial(self, request, *args, **kwargs):
         super(StrictQueryParamMixin, self).initial(request, *args, **kwargs)
 
@@ -186,11 +191,17 @@ class StrictQueryParamMixin(object):
         if (request.method.lower() not in self.http_method_names or
                 not hasattr(self, request.method.lower())):
             return
-
         allowed_keys = drf_introspection.get_allowed_query_params(self)
         extra_keys = set(request.query_params.keys()) - allowed_keys
         if extra_keys:
             raise FieldError('Unknown query params: %s.' % ', '.join(sorted(extra_keys)))
+
+        # If 'ordering' in query parameter, check the key whether in fields.
+        if 'ordering' in request.query_params.keys():
+            if request.query_params.get('ordering') not in self.__class__.serializer_class.Meta.fields:
+                raise FieldError('Unknown query key: %s not in fields: %s' %
+                                 (request.query_params.get('ordering'),
+                                  self.__class__.serializer_class.Meta.fields))
 
 
 class PermissionMixin(object):

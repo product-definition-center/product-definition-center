@@ -31,7 +31,8 @@ def get_allowed_query_params(view):
     allowed_keys.update(getattr(view.__class__, 'filter_fields', []))
     # Take extra params specified on viewset.
     allowed_keys.update(getattr(view.__class__, 'extra_query_params', []))
-
+    # add ordering key to allowed_keys params
+    allowed_keys.update(['ordering'])
     # Add pagination param.
     if hasattr(view, 'paginator'):
         page = getattr(view.paginator, 'page_query_param', None)
