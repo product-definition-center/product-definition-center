@@ -562,6 +562,8 @@ class ComposeViewSet(StrictQueryParamMixin,
         query params, the last one will take effect.
         """
         self.order_queryset = True
+        if 'ordering' in self.request.query_params.keys():
+            self.order_queryset = False
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
 

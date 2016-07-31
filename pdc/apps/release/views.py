@@ -374,7 +374,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
         """
         return super(ReleaseViewSet, self).retrieve(*args, **kwargs)
 
-    def list(self, *args, **kwargs):
+    def list(self, request, *args, **kwargs):
         """
         __Method__: GET
 
@@ -394,7 +394,9 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
         The releases themselves are ordered by short and version.
         """
         self.order_queryset = True
-        return super(ReleaseViewSet, self).list(*args, **kwargs)
+        if 'ordering' in request.query_params.keys():
+            self.order_queryset = False
+        return super(ReleaseViewSet, self).list(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         """
