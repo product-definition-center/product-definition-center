@@ -1849,6 +1849,26 @@ class ReleaseGroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response1.status_code, status.HTTP_200_OK)
         self.assertEquals(response1.data.get('results')[0], expect_result1)
 
+    def test_override_ordering_with_both_character(self):
+        response = self.client.get(reverse("releasegroups-list"), format='json')
+        expect_result = {'active': True, 'type': u'Async',
+                         'name': u'rhel_test', 'releases': [u'release-1.0'],
+                         'description': u'test'}
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(response.data.get('results')[0], expect_result)
+
+        url = reverse("releasegroups-list")
+        response = self.client.get(url + '?ordering=type,-description')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(response.data.get('results')[0], expect_result)
+
+        response = self.client.get(url + '?ordering=description,-type')
+        expect_result = {'active': True, 'type': u'QuarterlyUpdate',
+                         'name': u'rhel_test1', 'releases': [u'release-1.0'],
+                         'description': u'good'}
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(response.data.get('results')[0], expect_result)
+
     def test_retrieve_with_description_para(self):
         response = self.client.get(reverse("releasegroups-detail", args=["rhel_test"]),
                                    args={'description': 'good'}, format='json')
