@@ -244,13 +244,13 @@
 <text text-anchor="start" x="345" y="-292.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ReleaseType -->
-<g id="edge9" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ReleaseType</title>
+<g id="edge11" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_ReleaseType</title>
 <path fill="none" stroke="black" d="M179.23,-285.41C178.48,-284.94 177.74,-284.47 177,-284 142.57,-262.29 118.86,-271.53 99,-236 72.999,-189.47 98.944,-128.27 121.37,-89.781"/>
 <ellipse fill="black" stroke="black" cx="182.619" cy="-287.553" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="139.5" y="-185.8" font-family="Helvetica,sans-Serif" font-size="8.00">release_type (release)</text>
 </g>
 <!-- pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_BaseProduct -->
-<g id="edge11" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_BaseProduct</title>
+<g id="edge7" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_BaseProduct</title>
 <path fill="none" stroke="black" d="M290,-276.24C290,-262.32 290,-248.25 290,-235.52"/>
 <ellipse fill="black" stroke="black" cx="290" cy="-280.41" rx="4" ry="4"/>
 <text text-anchor="middle" x="332" y="-258.8" font-family="Helvetica,sans-Serif" font-size="8.00">base_product (release)</text>
@@ -262,7 +262,7 @@
 <text text-anchor="middle" x="468" y="-258.8" font-family="Helvetica,sans-Serif" font-size="8.00">product_version (release)</text>
 </g>
 <!-- pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_Release -->
-<g id="edge7" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_Release</title>
+<g id="edge9" class="edge"><title>pdc_apps_release_models_Release&#45;&gt;pdc_apps_release_models_Release</title>
 <path fill="none" stroke="black" d="M401.92,-369.16C408.24,-366.22 412,-362.16 412,-357 412,-349.97 405.02,-345 394.13,-342.09"/>
 <ellipse fill="black" stroke="black" cx="397.902" cy="-370.578" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="479" y="-355.8" font-family="Helvetica,sans-Serif" font-size="8.00">integrated_with (integrated_releases)</text>
