@@ -3,12 +3,15 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+import os
+
 from django.conf import settings
 
 from rest_framework import pagination
 
 
 class AutoDetectedPageNumberPagination(pagination.PageNumberPagination):
+    template = os.path.join(os.path.dirname(__file__), 'templates/browsable_api/numbers.html')
     page_size = getattr(settings, 'REST_API_PAGE_SIZE', 20)
     page_size_query_param = getattr(settings,
                                     'REST_API_PAGE_SIZE_QUERY_PARAM',
