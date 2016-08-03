@@ -77,10 +77,24 @@ class ResourcePermissionReleatedField(serializers.RelatedField):
         return instance
 
 
-class GroupResourcePermissionSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+class GroupResourcePermissionSerializer(serializers.ModelSerializer):
     group = serializers.SlugRelatedField(slug_field='name', read_only=False, queryset=models.Group.objects.all())
-    resource_permission = ResourcePermissionReleatedField(queryset=ResourcePermission.objects.all())
+    resource = serializers.CharField(source='resource_permission.resource.name')
+    permission = serializers.CharField(source='resource_permission.permission.name')
+    extra_fields = ['resource_permission']
+
+    def validate(self, data):
+        resource_name = data['resource_permission']['resource']['name']
+        permission_name = data['resource_permission']['permission']['name']
+        try:
+            resource_permission = ResourcePermission.objects.get(resource__name=resource_name,
+                                                                 permission__name=permission_name)
+        except ResourcePermission.DoesNotExist:
+            raise serializers.ValidationError("Can't find corresponding resource permission.")
+
+        data['resource_permission'] = resource_permission
+        return data
 
     class Meta:
         model = GroupResourcePermission
-        fields = ("id", 'resource_permission', 'group')
+        fields = ("id", 'resource', 'permission', 'group')

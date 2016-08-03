@@ -406,8 +406,7 @@ class GroupResourcePermissionsTestCase(APITestCase):
 
         # grant user's group read permission
         url = reverse('groupresourcepermissions-list')
-        data = {'group': self.group.name,
-                "resource_permission": {"permission": "read", "resource": "release-components"}}
+        data = {'group': self.group.name, "permission": "read", "resource": "release-components"}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -433,8 +432,7 @@ class GroupResourcePermissionsTestCase(APITestCase):
 
         # grant user's group delete permission
         url = reverse('groupresourcepermissions-list')
-        data = {'group': self.group.name,
-                "resource_permission": {"permission": "delete", "resource": "release-components"}}
+        data = {'group': self.group.name, "permission": "delete", "resource": "release-components"}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -462,8 +460,7 @@ class GroupResourcePermissionsTestCase(APITestCase):
 
         # grant user's group update permission
         url = reverse('groupresourcepermissions-list')
-        data = {'group': self.group.name,
-                "resource_permission": {"permission": "update", "resource": "release-components"}}
+        data = {'group': self.group.name, "permission": "update", "resource": "release-components"}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -490,8 +487,7 @@ class GroupResourcePermissionsTestCase(APITestCase):
 
         # grant user's group create permission
         url = reverse('groupresourcepermissions-list')
-        data = {'group': self.group.name,
-                "resource_permission": {"permission": "create", "resource": "release-components"}}
+        data = {'group': self.group.name, "permission": "create", "resource": "release-components"}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -507,8 +503,7 @@ class GroupResourcePermissionsTestCase(APITestCase):
     def test_permission_change_after_update_permission(self):
         # grant user's group read permission
         url = reverse('groupresourcepermissions-list')
-        data = {'group': self.group.name,
-                "resource_permission": {"permission": "read", "resource": "release-components"}}
+        data = {'group': self.group.name, "permission": "read", "resource": "release-components"}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         created_id = response.data['id']
@@ -519,8 +514,7 @@ class GroupResourcePermissionsTestCase(APITestCase):
 
         # change read to create
         url = reverse('groupresourcepermissions-detail', args=[created_id])
-        data = {'group': self.group.name,
-                "resource_permission": {"permission": "create", "resource": "release-components"}}
+        data = {'group': self.group.name, "permission": "create", "resource": "release-components"}
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -530,8 +524,7 @@ class GroupResourcePermissionsTestCase(APITestCase):
 
         # change back
         url = reverse('groupresourcepermissions-detail', args=[created_id])
-        data = {'group': self.group.name,
-                "resource_permission": {"permission": "read", "resource": "release-components"}}
+        data = {'group': self.group.name, "permission": "read", "resource": "release-components"}
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -547,13 +540,8 @@ class GroupResourcePermissionsTestCase(APITestCase):
 
         # grant user's group update permission
         url = reverse('groupresourcepermissions-list')
-        data = {'group': self.group.name,
-                "resource_permission":
-                    {
-                        "permission": "read",
-                        "resource": "rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)"
-                    }
-                }
+        data = {'group': self.group.name, "permission": "read",
+                "resource": "rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)"}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -577,8 +565,7 @@ class GroupResourcePermissionsTestCase(APITestCase):
     def test_delete_group_permission(self):
         # grant user's group read permission
         permission_url = reverse('groupresourcepermissions-list')
-        data = {'group': self.group.name,
-                "resource_permission": {"permission": "read", "resource": "release-components"}}
+        data = {'group': self.group.name, "permission": "read", "resource": "release-components"}
         response = self.client.post(permission_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         created_id = response.data['id']
@@ -634,13 +621,8 @@ class GroupResourcePermissionsTestCase(APITestCase):
         response = self.client.get(url, data, format='json')
         self.assertEqual(response.data['count'], 0)
 
-        data = {'group': self.group.name,
-                "resource_permission":
-                    {
-                        "permission": "read",
-                        "resource": "rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)"
-                    }
-                }
+        data = {'group': self.group.name, "permission": "read",
+                "resource": "rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)"}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -649,13 +631,8 @@ class GroupResourcePermissionsTestCase(APITestCase):
         self.assertEqual(response.data['count'], 1)
 
     def test_retrieve(self):
-        data = {'group': self.group.name,
-                "resource_permission":
-                    {
-                        "permission": "read",
-                        "resource": "rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)"
-                    }
-                }
+        data = {'group': self.group.name, "permission": "read",
+                "resource": "rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)"}
         url = reverse('groupresourcepermissions-list')
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

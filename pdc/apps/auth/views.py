@@ -693,11 +693,8 @@ class GroupResourcePermissionViewSet(common_viewsets.PDCModelViewSet):
                     {
                         "id": int,
                         "group": string,
-                        "resource_permission":
-                            {
-                                "resource": string,
-                                "permission": string
-                            }
+                        "resource": string,
+                        "permission": string
                     },
                     ...
                 ]
@@ -717,11 +714,8 @@ class GroupResourcePermissionViewSet(common_viewsets.PDCModelViewSet):
 
             {
                 "group": string,
-                "resource_permission":
-                    {
-                        "resource": string,
-                        "permission": string
-                    }
+                "resource": string,
+                "permission": string
             }
 
         __Response__:
@@ -729,11 +723,8 @@ class GroupResourcePermissionViewSet(common_viewsets.PDCModelViewSet):
             {
                 "id": int,
                 "group": string,
-                "resource_permission":
-                    {
-                        "resource": string,
-                        "permission": string
-                    }
+                "resource": string,
+                "permission": string
             }
         """
         return super(GroupResourcePermissionViewSet, self).create(request, *args, **kwargs)
@@ -749,11 +740,8 @@ class GroupResourcePermissionViewSet(common_viewsets.PDCModelViewSet):
             {
                 "id": int,
                 "group": string,
-                "resource_permission":
-                    {
-                        "resource": string,
-                        "permission": string
-                    }
+                "resource": string,
+                "permission": string
             }
         """
         return super(GroupResourcePermissionViewSet, self).retrieve(request, *args, **kwargs)
@@ -768,11 +756,8 @@ class GroupResourcePermissionViewSet(common_viewsets.PDCModelViewSet):
 
             {
                 "group": string,
-                "resource_permission":
-                    {
-                        "resource": string,
-                        "permission": string
-                    }
+                "resource": string,
+                "permission": string
             }
 
         __Response__:
@@ -780,11 +765,8 @@ class GroupResourcePermissionViewSet(common_viewsets.PDCModelViewSet):
             {
                 "id": int,
                 "group": string,
-                "resource_permission":
-                    {
-                        "resource": string,
-                        "permission": string
-                    }
+                "resource": string,
+                "permission": string
             }
         """
         return super(GroupResourcePermissionViewSet, self).update(request, *args, **kwargs)
