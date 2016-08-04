@@ -201,11 +201,13 @@ class StrictQueryParamMixin(object):
 
     def _check_ordering_keys(self, request):
         ordering_keys = request.query_params.get('ordering')
+        valid_fields = [field.name for field in self.queryset.model._meta.fields]
+        valid_fields += self.queryset.query.aggregates.keys()
         tmp_list = [param.strip().lstrip('-') for param in ordering_keys.split(',')]
-        invalid_fields = set(tmp_list) - set(self.serializer_class.Meta.fields)
+        invalid_fields = set(tmp_list) - set(valid_fields)
         if invalid_fields:
             raise FieldError('Unknown query key: %s not in fields: %s' %
-                             (invalid_fields, self.serializer_class.Meta.fields))
+                             (invalid_fields, valid_fields))
 
 
 class PermissionMixin(object):
