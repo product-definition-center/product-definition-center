@@ -1536,6 +1536,27 @@ class RPMMappingAPITestCase(APITestCase):
                                           'include': True, 'release_id': 'release-1.0'}])
         self.assertEqual(1, models.OverrideRPM.objects.filter(rpm_arch='i386').count())
 
+    def test_update_with_special_input(self):
+        new_mapping = {'variant': {}}
+        response = self.client.put(self.url, new_mapping, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        new_mapping = {'variant': {'arch': {}}}
+        response = self.client.put(self.url, new_mapping, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        new_mapping = {'variant': {'arch': {'rpm_name': []}}}
+        response = self.client.put(self.url, new_mapping, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        new_mapping = {'variant': {'arch1': {'rpm_name1': ['rpm_arch1']}, 'arch2': {'rpm_name2': ['rpm_arch2']}}}
+        response = self.client.put(self.url, new_mapping, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        new_mapping = {'variant1': {'arch1': {'rpm_name1': ['rpm_arch1']}}, 'variant2': {'arch2': {'rpm_name2': ['rpm_arch2']}}}
+        response = self.client.put(self.url, new_mapping, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_update_with_wrong_input(self):
         self.client.force_authenticate(create_user("user", perms=[]))
         new_mapping = {'wronginput': '1'}
@@ -1544,13 +1565,19 @@ class RPMMappingAPITestCase(APITestCase):
         self.assertEqual(response.data['detail'], 'The parameters\' format for updating is wrong. '
                                                   'Please read API documentation')
 
-        new_mapping = {'wronginput': {}}
+        new_mapping = {'wronginput': {'key1': 'value1'}}
         response = self.client.put(self.url, new_mapping, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['detail'], 'The parameters\' format for updating is wrong. '
                                                   'Please read API documentation')
 
-        new_mapping = {'wronginput': {'key1': 'value1', 'key2': 'value2'}}
+        new_mapping = {'wronginput': {'key1': {'key11': 'value11'}}}
+        response = self.client.put(self.url, new_mapping, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['detail'], 'The parameters\' format for updating is wrong. '
+                                                  'Please read API documentation')
+
+        new_mapping = {'wronginput': {'key1': {'key11': {'key111': 'value111'}}}}
         response = self.client.put(self.url, new_mapping, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['detail'], 'The parameters\' format for updating is wrong. '

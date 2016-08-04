@@ -1008,10 +1008,12 @@ class ComposeRPMMappingView(StrictQueryParamMixin,
         if layer == 1:
             result = isinstance(in_data, list)
         elif layer > 1:
-            if not isinstance(in_data, dict) or len(in_data) != 1:
+            if not isinstance(in_data, dict):
                 result = False
             else:
-                result = self._update_parameters_acceptable((in_data.values()[0]), layer - 1)
+                result = True
+                for i in range(len(in_data.values())):
+                    result = result and self._update_parameters_acceptable((in_data.values()[i]), layer - 1)
         return result
 
     def update(self, request, **kwargs):
