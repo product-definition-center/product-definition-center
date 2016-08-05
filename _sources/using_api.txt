@@ -114,3 +114,20 @@ it from the menu in top right corner.
 
 To store the reason for the change, add HTTP header ``PDC-Change-Comment``,
 whose value is an arbitrary string that will be stored with the change.
+
+
+Override Ordering
+-----------------
+
+The client can override the ordering of the results with query parameter.
+By default, the query parameter is named ``ordering``.
+For example, to order releases by release_id:
+
+http://example.com/rest_api/v1/releases/?ordering=release_id
+
+The client may also specify reverse orderings by prefixing the field name with '-'.
+
+For example, to reverse orderings of releases by release_id:
+
+http://example.com/rest_api/v1/releases/?ordering=-release_id
+
