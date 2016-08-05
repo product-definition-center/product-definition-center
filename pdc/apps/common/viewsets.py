@@ -207,7 +207,7 @@ class StrictQueryParamMixin(object):
         invalid_fields = set(tmp_list) - set(valid_fields)
         if invalid_fields:
             raise FieldError('Unknown query key: %s not in fields: %s' %
-                             (invalid_fields, valid_fields))
+                             (list(invalid_fields), valid_fields))
 
 
 class PermissionMixin(object):
