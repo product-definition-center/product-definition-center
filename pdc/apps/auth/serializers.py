@@ -84,13 +84,19 @@ class GroupResourcePermissionSerializer(serializers.ModelSerializer):
     extra_fields = ['resource_permission']
 
     def validate(self, data):
-        resource_name = data['resource_permission']['resource']['name']
-        permission_name = data['resource_permission']['permission']['name']
+        resource_name = data.get('resource_permission', {}).get('resource', {}).get('name')
+        permission_name = data.get('resource_permission', {}).get('permission', {}).get('name')
+        if not resource_name and self.instance:
+            resource_name = self.instance.resource_permission.resource.name
+        if not permission_name and self.instance:
+            permission_name = self.instance.resource_permission.permission.name
+
         try:
             resource_permission = ResourcePermission.objects.get(resource__name=resource_name,
                                                                  permission__name=permission_name)
         except ResourcePermission.DoesNotExist:
-            raise serializers.ValidationError("Can't find corresponding resource permission.")
+            raise serializers.ValidationError("Can't find corresponding resource permission. "
+                                              "Resource: %s, permission %s" % (resource_name, permission_name))
 
         data['resource_permission'] = resource_permission
         return data
