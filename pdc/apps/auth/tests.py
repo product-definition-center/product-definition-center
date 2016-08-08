@@ -532,6 +532,49 @@ class GroupResourcePermissionsTestCase(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_permission_change_after_update_permission_with_patch(self):
+        # grant user's group read permission
+        url = reverse('groupresourcepermissions-list')
+        data = {'group': self.group.name, "permission": "read", "resource": "release-components"}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_id = response.data['id']
+
+        url = reverse('releasecomponent-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # change read to create
+        url = reverse('groupresourcepermissions-detail', args=[created_id])
+        data = {"permission": "create"}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        url = reverse('releasecomponent-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # change back
+        url = reverse('groupresourcepermissions-detail', args=[created_id])
+        data = {"permission": "read"}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        url = reverse('releasecomponent-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # only change group
+        group_2 = Group.objects.all().get(pk=2)
+        # change read to create
+        url = reverse('groupresourcepermissions-detail', args=[created_id])
+        data = {"group": group_2.name}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        url = reverse('releasecomponent-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_work_with_regexp_resource_name(self):
         url = reverse('findcomposebyrr-list', kwargs={'rpm_name': 'bash', 'release_id': 'release-1.0'})
         response = self.client.get(url, format='json')
