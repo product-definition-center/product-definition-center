@@ -3,8 +3,8 @@
 %define srcname pdc
 
 Name:           python-%{srcname}
-Version:        1.0.0
-Release:        2%{?dist}
+Version:        1.1.0
+Release:        1%{?dist}
 Summary:        Product Definition Center
 Group:          Development/Libraries
 License:        MIT
@@ -80,6 +80,66 @@ fi
 
 
 %changelog
+* Mon Aug 08 2016 Cheng Yu <ycheng@redhat.com> 1.1.0-1
+- Make group resource permission work correctly in PATCH method
+  (ycheng@redhat.com)
+- Change version in code. (chuzhang@redhat.com)
+- Update the error info and looks friendly. (bliu@redhat.com)
+- Update the valid fields for ordering (bliu@redhat.com)
+- Support multiple dict values and empty input for /composes/{compose_id}/rpm-
+  mapping/ (chuzhang@redhat.com)
+- Unnest group resource permissions create/update/response data.
+  (ycheng@redhat.com)
+- Make page always locate at page header part. (chuzhang@redhat.com)
+- Allowe - and , character together to ordering (bliu@redhat.com)
+- Verify the ordering key and update the Release and Compose view
+  (bliu@redhat.com)
+- Take keys into acount for ordering of all APIs (bliu@redhat.com)
+- Change the wrong doc description. (chuzhang@redhat.com)
+- Change doc description for compose/compose-images/compose-rpms
+  (chuzhang@redhat.com)
+- Support regexp search in rpm name. (ycheng@redhat.com)
+- Add more details to compose-images API docs. (chuzhang@redhat.com)
+- Doc change for compose api to mention how compose get created
+  (chuzhang@redhat.com)
+- Add page switch to the bottom (chuzhang@redhat.com)
+- Fix bugs in cache control and add test cases. (ycheng@redhat.com)
+- Implement more accurate last-modified header in some resources of PDC
+  (ycheng@redhat.com)
+- Specify Django version less than 1.9 in spec file. (chuzhang@redhat.com)
+- Add cache control headers to PDC HTTP response (ycheng@redhat.com)
+- Fix bugs when inputing wrong format which will return server error
+  (chuzhang@redhat.com)
+- Fix sync.sh problem in upstream version part. (ycheng@redhat.com)
+- Add two new rules to API stability (sochotnicky@redhat.com)
+- Group rpm query parameters in and operation. (chuzhang@redhat.com)
+- Add unique to Compose PathType's name field. (chuzhang@redhat.com)
+- Fix test failed after merge master to release branch. (ycheng@redhat.com)
+- Change "ComposeTreeRTTTestVewSet" to "ComposeTreeRTTTestViewSet"
+  (bliu@redhat.com)
+- Create new API of compose-tree-rtt-tests (bliu@redhat.com)
+- Update documentation for compose rpm mapping's bulk update method and fix
+  tests. (ycheng@redhat.com)
+- Put permission control on more resources and show correct permissions.
+  (ycheng@redhat.com)
+- Add python-django-rest-framework-composed-permissions as a dependency.
+  (ycheng@redhat.com)
+- Fix a bug for api auth/resource-permissions retrieve method.
+  (ycheng@redhat.com)
+- Change the way to generate resource permissions automatically.
+  (ycheng@redhat.com)
+- Fix a url mistake in mail content. (ycheng@redhat.com)
+- Create UI to display resource permissions in auth profile.
+  (chuzhang@redhat.com)
+- Announce big changes in PDC database (ycheng@redhat.com)
+- Document how to configure when behind a reverse proxy (bliu@redhat.com)
+- Fix a bug and add a flag for resource permissions. (ycheng@redhat.com)
+- Update the release-groups API (bliu@redhat.com)
+- Implement resource based permissions control. (ycheng@redhat.com)
+- instruct curl to follow HTTP redirect (karsten@t540.str.redhat.com)
+- Create release-group API (bliu@redhat.com)
+- Add 'subvariant' as a query parameter in images endpoint. (ycheng@redhat.com)
+
 * Tue May 17 2016 Cheng Yu <ycheng@redhat.com> 1.0.0-2
 - Pass empty string to productmd instead of None. (chuzhang@redhat.com)
 
