@@ -9,7 +9,7 @@
 <g id="graph1" class="graph" transform="scale(1 1) rotate(0) translate(4 219)">
 <title>model_graph</title>
 <polygon fill="white" stroke="white" points="-4,5 -4,-219 244,-219 244,5 -4,5"/>
-<g id="graph2" class="cluster"><title>cluster_pdc_apps_usage_models</title>
+<g id="graph2" class="cluster"><title>cluster_pdc_apps_usage</title>
 <polyline fill="none" stroke="#698b22" points="20,-76 219,-76 "/>
 <path fill="none" stroke="#698b22" d="M219,-76C225,-76 231,-82 231,-88"/>
 <polyline fill="none" stroke="#698b22" points="231,-88 231,-195 "/>

@@ -9,7 +9,7 @@
 <g id="graph1" class="graph" transform="scale(1 1) rotate(0) translate(4 305)">
 <title>model_graph</title>
 <polygon fill="white" stroke="white" points="-4,5 -4,-305 264,-305 264,5 -4,5"/>
-<g id="graph2" class="cluster"><title>cluster_django_contrib_auth_models</title>
+<g id="graph2" class="cluster"><title>cluster_django_contrib_auth</title>
 <polyline fill="none" stroke="#698b22" points="20,-76 239,-76 "/>
 <path fill="none" stroke="#698b22" d="M239,-76C245,-76 251,-82 251,-88"/>
 <polyline fill="none" stroke="#698b22" points="251,-88 251,-281 "/>
