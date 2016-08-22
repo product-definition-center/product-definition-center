@@ -3,6 +3,7 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+import django
 from django.contrib.auth import models
 
 from rest_framework import serializers
@@ -86,10 +87,13 @@ class GroupResourcePermissionSerializer(StrictSerializerMixin, serializers.Model
     def validate(self, data):
         resource_name = data.get('resource_permission', {}).get('resource', {}).get('name')
         permission_name = data.get('resource_permission', {}).get('permission', {}).get('name')
+        group = data.get('group')
         if not resource_name and self.instance:
             resource_name = self.instance.resource_permission.resource.name
         if not permission_name and self.instance:
             permission_name = self.instance.resource_permission.permission.name
+        if not permission_name and self.instance:
+            group = self.instance.group
 
         try:
             resource_permission = ResourcePermission.objects.get(resource__name=resource_name,
@@ -97,6 +101,9 @@ class GroupResourcePermissionSerializer(StrictSerializerMixin, serializers.Model
         except ResourcePermission.DoesNotExist:
             raise serializers.ValidationError("Can't find corresponding resource permission. "
                                               "Resource: %s, permission %s" % (resource_name, permission_name))
+        if GroupResourcePermission.objects.filter(resource_permission=resource_permission, group=group).exists():
+            raise django.core.exceptions.FieldError(
+                ['The fields resource, permission, group must make a unique set.'])
 
         data['resource_permission'] = resource_permission
         return data

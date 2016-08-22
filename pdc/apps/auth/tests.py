@@ -707,6 +707,39 @@ class GroupResourcePermissionsTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, {'detail': 'Unknown fields: "aaa".'})
 
+    def test_uniqueness_check_response(self):
+        # grant user's group update permission
+        url = reverse('groupresourcepermissions-list')
+        data = {'group': self.group.name, "permission": "read",
+                "resource": "rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)"}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # again
+        url = reverse('groupresourcepermissions-list')
+        data = {'group': self.group.name, "permission": "read",
+                "resource": "rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)"}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data,
+                         {'detail': "['The fields resource, permission, group must make a unique set.']"})
+
+        # check 'put' method to violate uniqueness
+        url = reverse('groupresourcepermissions-list')
+        data = {'group': self.group.name, "permission": "delete",
+                "resource": "rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)"}
+        response = self.client.post(url, data, format='json')
+        obj_id = response.data['id']
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        url = reverse('groupresourcepermissions-detail', kwargs={'pk': obj_id})
+        data = {'group': self.group.name, "permission": "read",
+                "resource": "rpc/find-compose-by-release-rpm/(?P<release_id>[^/]+)/(?P<rpm_name>[^/]+)"}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data,
+                         {'detail': "['The fields resource, permission, group must make a unique set.']"})
+
 
 class ResourcePermissionsAPITestCase(APITestCase):
     fixtures = [
