@@ -77,7 +77,7 @@ class ResourcePermissionReleatedField(serializers.RelatedField):
         return instance
 
 
-class GroupResourcePermissionSerializer(serializers.ModelSerializer):
+class GroupResourcePermissionSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     group = serializers.SlugRelatedField(slug_field='name', read_only=False, queryset=models.Group.objects.all())
     resource = serializers.CharField(source='resource_permission.resource.name')
     permission = serializers.CharField(source='resource_permission.permission.name')

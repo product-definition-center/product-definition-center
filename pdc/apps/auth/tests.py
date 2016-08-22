@@ -687,6 +687,26 @@ class GroupResourcePermissionsTestCase(APITestCase):
         data.update({'id': obj_id})
         self.assertEqual(data, response.data)
 
+    def test_list_with_unknown_field(self):
+        url = reverse('groupresourcepermissions-list')
+        data = {'aaa': 'bbb'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {"detail": "Unknown query params: aaa."})
+
+    def test_patch_with_unknown_field(self):
+        permission_url = reverse('groupresourcepermissions-list')
+        data = {'group': self.group.name, "permission": "read", "resource": "release-components"}
+        response = self.client.post(permission_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_id = response.data['id']
+
+        url = reverse('groupresourcepermissions-detail', kwargs={'pk': created_id})
+        data = {'group': self.group.name, "permission": "update", "aaa": "bbb"}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {'detail': 'Unknown fields: "aaa".'})
+
 
 class ResourcePermissionsAPITestCase(APITestCase):
     fixtures = [
