@@ -21,7 +21,7 @@ Requires:       kobo >= 0.4.2
 Requires:       kobo-django
 Requires:       kobo-rpmlib
 Requires:       koji
-Requires:       patternfly1
+Requires:       patternfly1 == 1.3.0
 Requires:       productmd >= 1.1
 Requires:       python-django-filter >= 0.9.2
 Requires:       python-ldap
