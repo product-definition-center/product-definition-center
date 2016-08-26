@@ -90,3 +90,11 @@ tbody tr.deleted td:before {  /* this adds the line to cross out the row */
     border-bottom: 1px solid #999;
     width: 100%;
 }
+.No {
+    color: rgb(255, 255, 255);
+    background-color: rgb(204, 0, 0);
+}
+.Yes {
+    color: rgb(255, 255, 255);
+    background-color: rgb(63, 156, 53);
+}

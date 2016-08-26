@@ -44,10 +44,10 @@
       {% for row in resource_permissions_matrix %}
         <tr>
           <td>{{ row.0 }}</td>
-          <td>{{ row.1 }}</td>
-          <td>{{ row.2 }}</td>
-          <td>{{ row.3 }}</td>
-          <td>{{ row.4 }}</td>
+          <td class="{{ row.1 }}">{{ row.1 }}</td>
+          <td class="{{ row.2 }}">{{ row.2 }}</td>
+          <td class="{{ row.3 }}">{{ row.3 }}</td>
+          <td class="{{ row.4 }}">{{ row.4 }}</td>
         </tr>
       {% endfor %}
     </tbody>
