@@ -3,7 +3,7 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
-
+from django.views.decorators.cache import never_cache
 from pdc.apps.common import viewsets
 from pdc.apps.common.constants import PUT_OPTIONAL_PARAM_WARNING
 from .models import (Person, Maillist, ContactRole,
@@ -490,6 +490,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
 
 class _BaseContactViewSet(viewsets.PDCModelViewSet):
+    @never_cache
     def list(self, *args, **kwargs):
         """
         __Method__: `GET`
@@ -509,6 +510,7 @@ class _BaseContactViewSet(viewsets.PDCModelViewSet):
         """
         return super(_BaseContactViewSet, self).list(*args, **kwargs)
 
+    @never_cache
     def retrieve(self, *args, **kwargs):
         """
         __Method__: `GET`

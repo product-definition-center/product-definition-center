@@ -612,7 +612,9 @@ class GlobalComponentContactRESTTestCase(TestCaseWithChangeSetMixin, APITestCase
         self.assertEqual(results[1]['contact']['mail_name'], 'maillist2')
 
     def test_retrieve_global_component_contacts(self):
-        response = self.client.get(reverse('globalcomponentcontacts-detail', args=[2]))
+        response = self.client.get(self.list_url)
+        results = response.data.get('results')
+        response = self.client.get(reverse('globalcomponentcontacts-detail', args=[results[1]['id']]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['role'], 'qe_ack')
         self.assertEqual(response.data['contact']['mail_name'], 'maillist2')
@@ -1199,3 +1201,16 @@ class ReleaseComponentContactRESTTestCase(TestCaseWithChangeSetMixin, APITestCas
         data = {'count_limit': '1'}
         response = self.client.patch(contact_role_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_should_not_instruct_client_cache_result(self):
+        response = self.client.get(self.list_url)
+        self.assertTrue(response.has_header('Cache-Control'))
+        self.assertTrue('max-age=0' in response['Cache-Control'])
+
+        data = {'component': {'id': 2}, 'role': 'watcher', 'contact': {'mail_name': 'maillist2'}}
+        response = self.client.post(self.list_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        resuld_id = response.data.get('id')
+        response = self.client.get(reverse('releasecomponentcontacts-detail', args=[resuld_id]))
+        self.assertTrue(response.has_header('Cache-Control'))
+        self.assertTrue('max-age=0' in response['Cache-Control'])
