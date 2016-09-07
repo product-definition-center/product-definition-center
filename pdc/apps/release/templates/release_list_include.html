@@ -10,7 +10,7 @@
     <th>{% trans "Product Version" %}</th>
     <th>{% trans "Release Type" %}</th>
     <th>
-        <select id="active_filter" value= {{paginator.per_page}}>
+        <select id="active_filter" value= {{ page_size }}>
             <option value="All" selected>all</option>
             <option value="True">active</option>
             <option value="False">inactive</option>

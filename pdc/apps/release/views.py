@@ -35,13 +35,19 @@ from pdc.apps.auth.permissions import APIPermission
 from . import lib
 
 
-class ReleaseListView(SearchView):
+class PageSizeMixin(object):
+    def get_context_data(self, **kwargs):
+        context = super(PageSizeMixin, self).get_context_data(**kwargs)
+        context['page_size'] = settings.ITEMS_PER_PAGE
+        return context
+
+
+class ReleaseListView(PageSizeMixin, SearchView):
     form_class = ReleaseSearchForm
     queryset = models.Release.objects.select_related('release_type', 'product_version', 'base_product')
     allow_empty = True
     template_name = "release_list.html"
     context_object_name = "release_list"
-    paginate_by = settings.ITEMS_PER_PAGE
 
 
 class ReleaseDetailView(DetailView):
@@ -83,13 +89,12 @@ class BaseProductDetailView(DetailView):
         return context
 
 
-class ProductListView(SearchView):
+class ProductListView(PageSizeMixin, SearchView):
     form_class = ProductSearchForm
     queryset = models.Product.objects.prefetch_related('productversion_set__release_set')
     allow_empty = True
     template_name = "product_list.html"
     context_object_name = "product_list"
-    paginate_by = settings.ITEMS_PER_PAGE
 
 
 class ProductDetailView(DetailView):
@@ -556,13 +561,12 @@ class BaseProductViewSet(ChangeSetCreateModelMixin,
         return super(BaseProductViewSet, self).update(*args, **kwargs)
 
 
-class ProductVersionListView(SearchView):
+class ProductVersionListView(PageSizeMixin, SearchView):
     form_class = ProductVersionSearchForm
     queryset = models.ProductVersion.objects.prefetch_related('release_set')
     allow_empty = True
     template_name = "product_version_list.html"
     context_object_name = "product_version_list"
-    paginate_by = settings.ITEMS_PER_PAGE
 
 
 class ProductVersionDetailView(DetailView):
