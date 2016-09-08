@@ -38,7 +38,7 @@ from . import lib
 class PageSizeMixin(object):
     def get_context_data(self, **kwargs):
         context = super(PageSizeMixin, self).get_context_data(**kwargs)
-        context['page_size'] = settings.ITEMS_PER_PAGE
+        context.update({'page_size': settings.ITEMS_PER_PAGE})
         return context
 
 
