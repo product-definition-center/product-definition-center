@@ -4,7 +4,6 @@
 # http://opensource.org/licenses/MIT
 #
 from django.apps import AppConfig
-from pdc.apps.utils.utils import connect_app_models_pre_save_signal
 
 
 class BindingsConfig(AppConfig):
@@ -19,6 +18,7 @@ class BindingsConfig(AppConfig):
         self._connect_signals()
 
     def _connect_signals(self):
+        from pdc.apps.utils.utils import connect_app_models_pre_save_signal
         models_name = ('ReleaseBugzillaMapping', 'ReleaseDistGitMapping', 'ReleaseComponentSRPMNameMapping')
         connect_app_models_pre_save_signal(self, [self.get_model(model_name) for model_name in models_name])
 
