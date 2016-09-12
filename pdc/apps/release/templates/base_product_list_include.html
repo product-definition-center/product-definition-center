@@ -12,7 +12,7 @@
   <tbody>
 {% for base_product in base_product_list %}
   <tr>
-    <td><a href="{% url "base_product/detail" base_product.id %}">{{ base_product }}</a></td>
+    <td><a href="{% url "base_product/detail/slug" base_product.base_product_id %}">{{ base_product }}</a></td>
     <td>{{ base_product.name }}</td>
     <td>{{ base_product.short }}</td>
     <td>{{ base_product.version }}</td>

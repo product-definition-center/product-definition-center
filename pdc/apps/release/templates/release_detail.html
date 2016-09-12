@@ -33,7 +33,7 @@
 {% if release.base_product %}
     <dt>{% trans "Base Product" %}</dt>
     <dd>
-      <a href="{% url "base_product/detail" release.base_product.id %}">
+      <a href="{% url "base_product/detail/slug" release.base_product.base_product_id %}">
         {{ release.base_product.name }} ({{ release.base_product }})
       </a>
     </dd>
@@ -59,9 +59,9 @@
     <td>
         {{ variant.variant_uid }}
         {% if variant.integrated_from %}
-            <span class="pull-right">(integrated from <a href="{% url "release/detail" variant.integrated_from.id %}">{{ variant.integrated_from.release_id }}</a>)</span>
+            <span class="pull-right">(integrated from <a href="{% url "release/detail/slug" variant.integrated_from.release_id %}">{{ variant.integrated_from.release_id }}</a>)</span>
         {% elif variant.integrated_to %}
-            <span class="pull-right">(integrated to <a href="{% url "release/detail" variant.integrated_to.id %}">{{ variant.integrated_to }}</a>)</span>
+            <span class="pull-right">(integrated to <a href="{% url "release/detail/slug" variant.integrated_to.release_id %}">{{ variant.integrated_to }}</a>)</span>
         {% endif %}
     </td>
     <td>{{ variant.variant_id }}</td>
