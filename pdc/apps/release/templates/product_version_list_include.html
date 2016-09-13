@@ -8,9 +8,9 @@
     <th>{% trans "Version" %}</th>
     <th>
         <select id="active_filter" value= {{ page_size }}>
-            <option value="All" selected>all</option>
-            <option value="True">active</option>
-            <option value="False">inactive</option>
+            <option value="All" selected>All product versions</option>
+            <option value="Active">Active product versions</option>
+            <option value="Inactive">Inactive product versions</option>
         </select>
     </th>
     <th>{% trans "Releases [active/total]" %}</th>
@@ -23,7 +23,13 @@
     <td>{{ version.name }}</td>
     <td>{{ version.short }}</td>
     <td>{{ version.version }}</td>
-    <td>{{ version.active }}</td>
+    <td>
+        {% if version.active %}
+            Active
+        {% else %}
+            Inactive
+        {% endif %}
+    </td>
     <td>{{ version.active_release_count }} / {{ version.release_count }}</td>
   </tr>
 {% endfor %}

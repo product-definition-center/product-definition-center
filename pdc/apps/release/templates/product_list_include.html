@@ -6,9 +6,9 @@
     <th>{% trans "Name" %}</th>
     <th>
         <select id="active_filter" value= {{ page_size }}>
-            <option value="All" selected>all</option>
-            <option value="True">active</option>
-            <option value="False">inactive</option>
+            <option value="All" selected>All products</option>
+            <option value="Active">Active products</option>
+            <option value="Inactive">Inactive products</option>
         </select>
     </th>
     <th>{% trans "Product Versions [active/total]" %}</th>
@@ -20,7 +20,13 @@
   <tr>
     <td><a href="{% url "product/detail/slug" product.short %}">{{ product.short }}</a></td>
     <td>{{ product.name }}</td>
-    <td>{{ product.active }}</td>
+    <td>
+        {% if product.active %}
+            Active
+        {% else %}
+            Inactive
+        {% endif %}
+    </td>
     <td>{{ product.active_product_version_count }} / {{ product.product_version_count }}</td>
     <td>{{ product.active_release_count }} / {{ product.release_count }}</td>
   </tr>

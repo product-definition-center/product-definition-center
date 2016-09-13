@@ -77,7 +77,7 @@ class BaseProductListView(SearchView):
     paginate_by = settings.ITEMS_PER_PAGE
 
 
-class BaseProductDetailView(DetailView):
+class BaseProductDetailView(PageSizeMixin, DetailView):
     model = models.BaseProduct
     pk_url_kwarg = "id"
     slug_url_kwarg = "base_product_id"
@@ -101,7 +101,7 @@ class ProductListView(PageSizeMixin, SearchView):
     context_object_name = "product_list"
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(PageSizeMixin, DetailView):
     queryset = models.Product.objects.prefetch_related('productversion_set__release_set')
     pk_url_kwarg = "id"
     slug_url_kwarg = "short"
@@ -575,7 +575,7 @@ class ProductVersionListView(PageSizeMixin, SearchView):
     context_object_name = "product_version_list"
 
 
-class ProductVersionDetailView(DetailView):
+class ProductVersionDetailView(PageSizeMixin, DetailView):
     queryset = models.ProductVersion.objects.prefetch_related('release_set__release_type')
     pk_url_kwarg = "id"
     slug_url_kwarg = "product_version_id"
