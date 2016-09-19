@@ -55,12 +55,15 @@ urlpatterns = [
 
     url(r"^release/$", ReleaseListView.as_view(), name="release/index"),
     url(r"^release/(?P<id>\d+)/$", ReleaseDetailView.as_view(), name="release/detail"),
+    url(r"^release/(?P<release_id>[^/]+)/$", ReleaseDetailView.as_view(), name="release/detail/slug"),
 
     url(r"^base-product/$", BaseProductListView.as_view(), name="base_product/index"),
     url(r"^base-product/(?P<id>\d+)/$", BaseProductDetailView.as_view(), name="base_product/detail"),
+    url(r"^base-product/(?P<base_product_id>[^/]+)/$", BaseProductDetailView.as_view(), name="base_product/detail/slug"),
 
     url(r"^product/$", ProductListView.as_view(), name="product/index"),
     url(r"^product/(?P<id>\d+)/$", ProductDetailView.as_view(), name="product/detail"),
+    url(r"^product/(?P<short>[^/]+)/$", ProductDetailView.as_view(), name="product/detail/slug"),
     url(r'^product-index/$', release_views.product_pages, name='product_pages'),
 
     url(r"^product-version/$",
@@ -69,6 +72,9 @@ urlpatterns = [
     url(r"^product-version/(?P<id>\d+)/$",
         ProductVersionDetailView.as_view(),
         name="product_version/detail"),
+    url(r"^product-version/(?P<product_version_id>[^/]+)/$",
+        ProductVersionDetailView.as_view(),
+        name="product_version/detail/slug"),
 
     url(r"^%s%s/" % (settings.REST_API_URL, settings.REST_API_VERSION), include(router.urls)),
 

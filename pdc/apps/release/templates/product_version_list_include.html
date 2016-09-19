@@ -19,7 +19,7 @@
  <tbody>
 {% for version in product_version_list %}
   <tr>
-    <td><a href="{% url "product_version/detail" version.id %}">{{ version.product_version_id }}</a></td>
+    <td><a href="{% url "product_version/detail/slug" version.product_version_id %}">{{ version.product_version_id }}</a></td>
     <td>{{ version.name }}</td>
     <td>{{ version.short }}</td>
     <td>{{ version.version }}</td>

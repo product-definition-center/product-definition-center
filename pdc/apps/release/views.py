@@ -55,6 +55,8 @@ class ReleaseDetailView(DetailView):
         .prefetch_related('variant_set__variant_type',
                           'variant_set__variantarch_set__arch')
     pk_url_kwarg = "id"
+    slug_url_kwarg = "release_id"
+    slug_field = "release_id"
     template_name = "release_detail.html"
 
     def get_context_data(self, **kwargs):
@@ -78,6 +80,8 @@ class BaseProductListView(SearchView):
 class BaseProductDetailView(DetailView):
     model = models.BaseProduct
     pk_url_kwarg = "id"
+    slug_url_kwarg = "base_product_id"
+    slug_field = "base_product_id"
     template_name = "base_product_detail.html"
     context_object_name = "base_product"
 
@@ -100,6 +104,8 @@ class ProductListView(PageSizeMixin, SearchView):
 class ProductDetailView(DetailView):
     queryset = models.Product.objects.prefetch_related('productversion_set__release_set')
     pk_url_kwarg = "id"
+    slug_url_kwarg = "short"
+    slug_field = "short"
     template_name = "product_detail.html"
     context_object_name = "product"
 
@@ -572,6 +578,8 @@ class ProductVersionListView(PageSizeMixin, SearchView):
 class ProductVersionDetailView(DetailView):
     queryset = models.ProductVersion.objects.prefetch_related('release_set__release_type')
     pk_url_kwarg = "id"
+    slug_url_kwarg = "product_version_id"
+    slug_field = "product_version_id"
     template_name = "product_version_detail.html"
     context_object_name = "product_version"
 
