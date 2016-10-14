@@ -569,6 +569,14 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertNumChanges([])
 
+    def test_create_release_component_with_type_extended_unique_together_fields(self):
+        # python27 already exists as an rpm, ensure we can add it as container.
+        url = reverse('releasecomponent-list')
+        data = {'release': 'release-1.0', 'global_component': 'python', 'name': 'python27', 'brew_package': 'python-pdc', 'type': 'container'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNumChanges([1])
+
     def test_create_release_component_for_non_existing_release(self):
         url = reverse('releasecomponent-list')
         data = {'release': 'hello-1.0',
