@@ -7,13 +7,15 @@
 import inspect
 import json
 
-from django.shortcuts import render, redirect
+from collections import OrderedDict
+from django.shortcuts import render, redirect, get_list_or_404
 from django.contrib.auth import (REDIRECT_FIELD_NAME, get_user_model,
                                  load_backend)
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import Group, Permission
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.conf import settings
+from django.core.urlresolvers import NoReverseMatch
 
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -21,6 +23,7 @@ from rest_framework.decorators import list_route
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import mixins, viewsets
+from rest_framework.reverse import reverse
 
 from . import backends
 from . import filters
@@ -30,8 +33,11 @@ from pdc.apps.auth.models import ResourcePermission, ActionPermission, Resource
 from pdc.apps.auth.permissions import APIPermission
 from pdc.apps.common.viewsets import StrictQueryParamMixin, ChangeSetUpdateModelMixin
 from pdc.apps.common import viewsets as common_viewsets
-from pdc.apps.utils.SortedRouter import router
-from pdc.apps.utils.utils import group_obj_export, convert_method_to_action, read_permission_for_all
+from pdc.apps.utils.SortedRouter import router, URL_ARG_RE
+from pdc.apps.utils.utils import (group_obj_export,
+                                  convert_method_to_action,
+                                  read_permission_for_all,
+                                  urldecode)
 
 
 def remoteuserlogin(request):
@@ -132,6 +138,121 @@ def user_profile(request):
     context = {'has_ldap': hasattr(settings, "LDAP_URI"),
                'resource_permissions_matrix': _get_resource_permissions_matrix(request.user)}
     return render(request, 'user_profile.html', context)
+
+
+def get_users_and_groups(resource_permission):
+    # get all groups
+    try:
+        group_resource_permission_list = get_list_or_404(models.GroupResourcePermission,
+                                                         resource_permission=resource_permission)
+        groups_list = [str(obj.group.name) for obj in group_resource_permission_list]
+    except Http404:
+        pass
+    # get all users
+    superusers_set = {user.username for user in models.User.objects.filter(is_superuser=True)}
+    users_set = {user.username for user in get_user_model().objects.filter(groups__name__in=groups_list)}
+    users_list = list(superusers_set.union(users_set))
+    groups = sorted(["@" + group_name for group_name in groups_list])
+    members = sorted(users_list + groups)
+    return members
+
+
+def _get_arg_value(arg_name):
+    """
+    Get a possible argument value. Generally, we want to have argument name
+    wrapped in braces, but when some form of primary key is expected, that
+    would raise internal server error when link is clicked.
+    """
+    if 'pk' in arg_name:
+        return '0'
+    return '{%s}' % arg_name
+
+
+def _get_list_url(url_name, viewset, request):
+    return reverse(url_name, request=request, format=None)
+
+
+def _get_nested_list_url(url_name, viewset, request, urlargs):
+    if not hasattr(viewset, 'list'):
+        raise NoReverseMatch
+    return reverse(
+        url_name,
+        request=request,
+        args=urlargs,
+        format=None
+    )
+
+
+def _get_detail_url(url_name, viewset, request, urlargs):
+    if not hasattr(viewset, 'retrieve'):
+        raise NoReverseMatch
+    return reverse(
+        url_name[:-5] + '-detail',
+        request=request,
+        args=urlargs + ['{%s}' % viewset.lookup_field],
+        format=None
+    )
+
+
+def get_url_with_resource(request):
+    api_root_dict = OrderedDict()
+    viewsets = {}
+    ret = OrderedDict()
+    list_name = router.routes[0].name
+    for prefix, viewset, basename in router.registry:
+        api_root_dict[prefix] = list_name.format(basename=basename)
+        viewsets[prefix] = viewset
+    sorted_api_root_dict = OrderedDict(sorted(api_root_dict.items()))
+    for key, url_name in sorted_api_root_dict.items():
+        name = URL_ARG_RE.sub(r'{\1}', key)
+        ret[name] = None
+        urlargs = [_get_arg_value(arg[0]) for arg in URL_ARG_RE.findall(key)]
+        for getter in [_get_list_url, _get_nested_list_url, _get_detail_url]:
+            try:
+                if getter == _get_list_url:
+                    ret[name] = urldecode(getter(url_name, viewsets[key], request))
+                else:
+                    ret[name] = urldecode(getter(url_name, viewsets[key], request, urlargs))
+                break
+            except NoReverseMatch:
+                continue
+    return ret
+
+
+def get_api_perms(request):
+    """
+    Return all API perms for @groups and users.
+    Format: {resource: {create/read/update/delete: [users, @groups]}}
+    """
+
+    perms = {}
+    ret = get_url_with_resource(request)
+
+    for obj in models.ResourcePermission.objects.all():
+        name = URL_ARG_RE.sub(r'{\1}', obj.resource.name)
+        url = ret[name]
+        members = get_users_and_groups(obj)
+        perms.setdefault(name, OrderedDict()).setdefault(obj.permission.name, set()).update(members)
+        perms.setdefault(name, OrderedDict()).setdefault('url', url)
+    # sort groups and users
+    for resource in perms:
+        for perm in perms[resource]:
+            if not isinstance(perms[resource][perm], set):
+                # sort only lists with groups and users, skip 'url'
+                continue
+            perms[resource][perm] = sorted(perms[resource][perm])
+    result = OrderedDict(sorted(perms.items()))
+    return result
+
+
+def api_perms(request):
+    """
+    Render API resource perms.
+    """
+    context = {
+        'api_perms': get_api_perms(request),
+    }
+    return render(request, 'api_perms.html', context)
 
 
 def refresh_ldap_groups(request):

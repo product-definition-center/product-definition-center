@@ -31,5 +31,6 @@ def run(resource):
             seen_roles.add(contact['contact_role'])
     print ''
 
+
 run('global-components')
 run('release-components')

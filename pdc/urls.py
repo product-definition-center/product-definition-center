@@ -77,7 +77,7 @@ urlpatterns = [
         name="product_version/detail/slug"),
 
     url(r"^%s%s/" % (settings.REST_API_URL, settings.REST_API_VERSION), include(router.urls)),
-
+    url(r"^%sperms/" % settings.REST_API_URL, auth_views.api_perms, name="api-perms"),
     url(r'^changes/$', ChangesetListView.as_view(), name='changeset/list'),
     url(r'^changes/(?P<id>\d+)/$', ChangesetDetailView.as_view(), name='changeset/detail'),
 ]

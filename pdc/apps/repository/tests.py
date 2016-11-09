@@ -29,8 +29,8 @@ class RepositorySerializerTestCase(APITestCase):
                              'repo_family': 'dist', 'product_id': 22, 'id': 1}
         self.data = {'content_format': 'rpm', 'content_category': 'binary',
                      'release_id': 'release-1.0', 'name': 'test_repo_2', 'service': 'rhn',
-                     'arch': 'x86_64', 'shadow': False, 'variant_uid': 'Server',
-                     'repo_family': 'dist', 'shadow': True}
+                     'arch': 'x86_64', 'variant_uid': 'Server', 'repo_family': 'dist',
+                     'shadow': True}
 
     def test_serialize(self):
         repo = models.Repo.objects.get(pk=1)

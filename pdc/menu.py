@@ -17,7 +17,10 @@ menu = (
 
     MenuItem("Releases", "release/index"),
     MenuItem("Composes", "compose/index"),
-    MenuItem("API", "api-root"),
+    MenuItem("API", "api-root", menu=(
+        MenuItem("API v1", "api-root"),
+        MenuItem("API Permissions", "api-perms"),
+    )),
 )
 
 css_active_class = "active"

@@ -248,6 +248,7 @@ def get_filters(view):
     FILTERS_CACHE[view] = filters
     return filters
 
+
 SERIALIZERS_CACHE = {}
 SERIALIZER_DEFS = {
     'BooleanField': 'boolean',
