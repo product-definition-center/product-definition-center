@@ -42,6 +42,7 @@ class UnreleasedVariant(models.Model): # Not the variant from compose ... which 
 class VariantDependency(models.Model):
 
     dependency = models.CharField(max_length=300)
+    stream = models.CharField(max_length=300)
 
     class Meta:
         abstract = True
