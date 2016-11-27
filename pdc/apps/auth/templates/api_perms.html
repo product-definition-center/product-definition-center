@@ -20,8 +20,8 @@
       {% for resource, perms in api_perms.items %}
         <tr>
           <td>{{ resource }}</td>
-          <td><a href="">{{ perms.url }}</a></td>
-          <td> @all </td>
+          <td><a href="{{ perms.url }}">{{ perms.url }}</a></td>
+          <td>{% for user in perms.read %}{{ user }}<br />{% endfor %} </td>
           <td>{% for user in perms.create %}{{ user }}<br />{% endfor %}</td>
           <td>{% for user in perms.update %}{{ user }}<br />{% endfor %}</td>
           <td>{% for user in perms.delete %}{{ user }}<br />{% endfor %}</td>
