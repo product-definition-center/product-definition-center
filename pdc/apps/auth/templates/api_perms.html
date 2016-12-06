@@ -3,6 +3,13 @@
 
 {% block content %}
 <h1>API Permissions</h1>
+<div>
+  <ul>
+    <li><strong>@all</strong> means that all users and groups have the permission here.</li>
+    <li><strong>@superusers</strong> list all superusers who have all permissions.</li>
+    <li><strong>N/A</strong> means that the resource doesn't have the related method .</li>
+  </ul>
+</div>
 
 <div id="api-permissions">
   <table class="table table-striped table-bordered">
@@ -21,14 +28,90 @@
         <tr>
           <td>{{ resource }}</td>
           <td><a href="{{ perms.url }}">{{ perms.url }}</a></td>
-          <td>{% for user in perms.read %}{{ user }}<br />{% endfor %} </td>
-          <td>{% for user in perms.create %}{{ user }}<br />{% endfor %}</td>
-          <td>{% for user in perms.update %}{{ user }}<br />{% endfor %}</td>
-          <td>{% for user in perms.delete %}{{ user }}<br />{% endfor %}</td>
+          <td>{% if perms.read %}
+                {% if '@all' in perms.read %}
+                    <em> @all </em> <br />
+                {% else %}
+                  {% for group, value in perms.read.items %}
+                    <button class="popover-trigger btn btn-link btn-lg"  title="{{group}}" id="{{value}}">
+                      <u>{{ group }}</u> <span class="i fa fa-angle-right"></span>
+                    </button>
+                  {% endfor %}
+                {% endif %}
+            {% else %}
+              <em>N/A </em>
+            {% endif %}
+          </td>
+
+          <td>
+            {% if perms.create %}
+              {% for group, value in perms.create.items %}
+              <button class="popover-trigger btn btn-link btn-lg"  title="{{group}}" id="{{value}}">
+                <u>{{ group }}</u> <span class="i fa fa-angle-right"></span>
+              </button>
+              {% endfor %}
+            {% else %}
+              <em>N/A </em>
+            {% endif %}
+          </td>
+          <td>
+            {% if perms.update %}
+              {% for group, value in perms.update.items %}
+              <button class="popover-trigger btn btn-link btn-lg"  title="{{group}}" id="{{value}}">
+                <u>{{ group }}</u> <span class="i fa fa-angle-right"></span>
+              </button>
+              {% endfor %}
+            {% else %}
+              <em>N/A </em>
+            {% endif %}
+          </td>
+          <td>
+            {% if perms.delete %}
+              {% for group, value in perms.delete.items %}
+              <button class="popover-trigger btn btn-link btn-lg"  title="{{group}}" id="{{value}}">
+                <u>{{ group }}</u> <span class="i fa fa-angle-right"></span>
+              </button>
+              {% endfor %}
+            {% else %}
+              <em>N/A </em>
+            {% endif %}
+          </td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
 
+<script type="text/javascript">
+var mouseIn = false;
+const timeout = 100;
+$("body").on('mouseenter', ".popover", function () { mouseIn = true });
+$("body").on('mouseleave', ".popover", function () { mouseIn = false });
+$(".popover-trigger").popover({
+    html: true,
+    trigger: 'focus',
+    delay: {hide: timeout},
+    placement: 'bottom',
+    viewport: {selector: "body", padding: 50},
+    content: function ()
+    { var data= $(this).attr('id');
+      data = data.replace('[', '')
+      data = data.replace(']', '')
+      var data_list = data.split(",");
+      var value= "";
+      for (i=0; i<data_list.length; i++){
+        value+= ( "<li>"+"<em>" + data_list[i]+"</em>" + "</li>")
+      };
+      return value;
+    },
+}).on('hide.bs.popover', function () {
+    if (mouseIn) {
+        $('.popover').on('mouseleave', function() {
+                setTimeout(function () {
+                        $('.popover-trigger').popover('hide');
+                        }, timeout)});
+        return false;
+    };
+});
+</script>
 {% endblock %}

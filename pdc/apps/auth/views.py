@@ -141,21 +141,21 @@ def user_profile(request):
 
 
 def get_users_and_groups(resource_permission):
-    members = dict()
-    inactive_user = {user.username for user in models.User.objects.filter(is_active=False)}
-    superusers_set = {user.username for user in models.User.objects.filter(is_superuser=True)}
+    group_popover = OrderedDict()
+    inactive_user = {str(user.username) for user in models.User.objects.filter(is_active=False)}
+    superusers_set = {str(user.username) for user in models.User.objects.filter(is_superuser=True)}
     try:
         group_resource_permission_list = get_list_or_404(models.GroupResourcePermission,
                                                          resource_permission=resource_permission)
         groups_list = [str(obj.group.name) for obj in group_resource_permission_list]
-        users_set = {user.username for user in get_user_model().objects.filter(groups__name__in=groups_list)}
-        users_list = list(superusers_set.union(users_set) - inactive_user)
+        for obj in groups_list:
+            users_set = {str(user.username) for user in get_user_model().objects.filter(groups__name=obj)}
+            users_list = sorted(users_set - inactive_user)
+            group_popover.setdefault('@' + obj, users_list)
     except Http404:
-        groups_list = []
-        users_list = list(superusers_set - inactive_user)
-    members['groups'] = groups_list
-    members['users'] = users_list
-    return members
+        pass
+    group_popover.setdefault('@superusers', sorted(superusers_set - inactive_user))
+    return group_popover
 
 
 def _get_arg_value(arg_name):
@@ -236,10 +236,8 @@ def get_api_perms(request):
         if read_permission_for_all() and obj.permission.name == 'read':
             members_list = ['@all']
         else:
-            members = get_users_and_groups(obj)
-            groups = ["@" + group_name for group_name in members['groups']]
-            members_list = sorted(members['users'] + groups)
-        perms.setdefault(name, OrderedDict()).setdefault(obj.permission.name, set()).update(members_list)
+            members_list = get_users_and_groups(obj)
+        perms.setdefault(name, OrderedDict()).setdefault(obj.permission.name, members_list)
         perms.setdefault(name, OrderedDict()).setdefault('url', url)
     # sort groups and users
     for resource in perms:
