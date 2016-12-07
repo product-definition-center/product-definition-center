@@ -15,6 +15,7 @@ class UnreleasedVariant(models.Model): # Not the variant from compose ... which 
     variant_version     = models.CharField(max_length=100, blank=False)
     variant_release     = models.CharField(max_length=100, blank=False)
     koji_tag            = models.CharField(max_length=300, blank=False)
+    modulemd            = models.TextField(blank=False)
 
     class Meta:
         ordering = ("variant_uid", "variant_version", "variant_release")
@@ -34,6 +35,7 @@ class UnreleasedVariant(models.Model): # Not the variant from compose ... which 
             'variant_version': self.variant_version,
             'variant_release': self.variant_release,
             'koji_tag': self.koji_tag,
+            'modulemd': self.modulemd,
             'runtime_deps': [ v.dependency for v in self.runtime_deps.all() ],
             'build_deps': [ v.dependency for v in self.build_deps.all() ],
         }

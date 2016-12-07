@@ -21,7 +21,7 @@ class TreeAPITestCase(APITestCase):
             'variant_id': "core", 'variant_uid': "Core",
             'variant_name': "Core", 'variant_version': "0",
             'variant_release': "1", 'variant_type': 'module',
-            'koji_tag': "module-core-0-1"
+            'koji_tag': "module-core-0-1", 'modulemd': 'foobar'
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -32,7 +32,7 @@ class TreeAPITestCase(APITestCase):
             'variant_id': "shells", 'variant_uid': "Shells",
             'variant_name': "Shells", 'variant_version': "0",
             'variant_release': "1", 'variant_type': 'module',
-            'koji_tag': "module-shells-0-1"}
+            'koji_tag': "module-shells-0-1", 'modulemd': 'foobar'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
