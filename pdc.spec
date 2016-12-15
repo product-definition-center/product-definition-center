@@ -3,7 +3,7 @@
 %define srcname pdc
 
 Name:           python-%{srcname}
-Version:        1.1.0
+Version:        1.2.0
 Release:        1%{?dist}
 Summary:        Product Definition Center
 Group:          Development/Libraries
@@ -80,6 +80,35 @@ fi
 
 
 %changelog
+* Thu Dec 15 2016 bliu <bliu@redhat.com> 1.2.0-1
+- WebUI shows the groups and superusers (bliu@redhat.com)
+- Remove inactive user and without group mapping to resource permission
+  (bliu@redhat.com)
+- Revert "To fix the bug when testing PDC-1757" (bliu@redhat.com)
+- To fix the bug when testing PDC-1757 (bliu@redhat.com)
+- To verify the 'read' permission for all members (bliu@redhat.com)
+- To list all API permissions (bliu@redhat.com)
+- Add a test specifically for the new extended unique_together setting.
+  (rbean@redhat.com)
+- Give a default value to ReleaseComponent.type in the Serializer.
+  (rbean@redhat.com)
+- Add migration for 80397f1 (rbean@redhat.com)
+- Make release components be unique by name/release/type. (rbean@redhat.com)
+- Rename the colunm name for release, product version and product
+  (bliu@redhat.com)
+- Fix apps loading in Django 1.9. (dmach@redhat.com)
+- Use slug in release / product version / product URLs. (dmach@redhat.com)
+- Display all/active/inactive (bliu@redhat.com)
+- Display all/active/inactive and filter the datatable (bliu@redhat.com)
+- Change contact APIs' response max-age to 0 (ycheng@redhat.com)
+- Display all/active/inactive (bliu@redhat.com)
+- Update the docs and add the ordering fields (bliu@redhat.com)
+- UI for displaying resource permission (bliu@redhat.com)
+- Update pdc.spec for using patternfly1 1.3.0 (bliu@redhat.com)
+- Change group-resource-permissions API prompt. (ycheng@redhat.com)
+- For group-resource-permissions API, add prompt when use illegal parameter.
+  (ycheng@redhat.com)
+
 * Mon Aug 08 2016 Cheng Yu <ycheng@redhat.com> 1.1.0-1
 - Make group resource permission work correctly in PATCH method
   (ycheng@redhat.com)
