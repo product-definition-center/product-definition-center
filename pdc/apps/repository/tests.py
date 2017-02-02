@@ -697,7 +697,8 @@ class VariantUpdateTestCase(APITestCase):
         response = self.client.get(reverse('variant-detail', args=['release-1.0/Server-UID']))
         self.assertDictEqual(dict(response.data),
                              {'release': 'release-1.0', 'name': 'Server name', 'type': 'variant',
-                              'id': 'Server', 'uid': 'Server-UID', 'arches': ['ppc64', 'x86_64']})
+                              'id': 'Server', 'uid': 'Server-UID', 'arches': ['ppc64', 'x86_64'],
+                              'variant_version': None, 'variant_release': None})
 
     def test_removing_arch_with_repos_fails(self):
         response = self.client.patch(reverse('variant-detail', args=['release-1.0/Server-UID']),
@@ -707,7 +708,8 @@ class VariantUpdateTestCase(APITestCase):
         response = self.client.get(reverse('variant-detail', args=['release-1.0/Server-UID']))
         self.assertDictEqual(dict(response.data),
                              {'release': 'release-1.0', 'name': 'Server name', 'type': 'variant',
-                              'id': 'Server', 'uid': 'Server-UID', 'arches': ['ppc64', 'x86_64']})
+                              'id': 'Server', 'uid': 'Server-UID', 'arches': ['ppc64', 'x86_64'],
+                              'variant_version': None, 'variant_release': None})
 
     def test_adding_another_variant_succeeds(self):
         response = self.client.patch(reverse('variant-detail', args=['release-1.0/Server-UID']),
@@ -717,7 +719,8 @@ class VariantUpdateTestCase(APITestCase):
         response = self.client.get(reverse('variant-detail', args=['release-1.0/Server-UID']))
         self.assertDictEqual(dict(response.data),
                              {'release': 'release-1.0', 'name': 'Server name', 'type': 'variant',
-                              'id': 'Server', 'uid': 'Server-UID', 'arches': ['ia64', 'ppc64', 'x86_64']})
+                              'id': 'Server', 'uid': 'Server-UID', 'arches': ['ia64', 'ppc64', 'x86_64'],
+                              'variant_version': None, 'variant_release': None})
 
     def test_removing_non_relevant_variant_succeeds(self):
         response = self.client.patch(reverse('variant-detail', args=['release-1.0/Server-UID']),
@@ -727,7 +730,8 @@ class VariantUpdateTestCase(APITestCase):
         response = self.client.get(reverse('variant-detail', args=['release-1.0/Server-UID']))
         self.assertDictEqual(dict(response.data),
                              {'release': 'release-1.0', 'name': 'Server name', 'type': 'variant',
-                              'id': 'Server', 'uid': 'Server-UID', 'arches': ['x86_64']})
+                              'id': 'Server', 'uid': 'Server-UID', 'arches': ['x86_64'],
+                              'variant_version': None, 'variant_release': None})
 
     def test_removing_non_relevant_variant_by_patch_succeeds(self):
         response = self.client.patch(reverse('variant-detail', args=['release-1.0/Server-UID']),
@@ -737,7 +741,8 @@ class VariantUpdateTestCase(APITestCase):
         response = self.client.get(reverse('variant-detail', args=['release-1.0/Server-UID']))
         self.assertDictEqual(dict(response.data),
                              {'release': 'release-1.0', 'name': 'Server name', 'type': 'variant',
-                              'id': 'Server', 'uid': 'Server-UID', 'arches': ['x86_64']})
+                              'id': 'Server', 'uid': 'Server-UID', 'arches': ['x86_64'],
+                              'variant_version': None, 'variant_release': None})
 
 
 class ContentCategoryTestCase(APITestCase):
