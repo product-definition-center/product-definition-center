@@ -4,7 +4,11 @@
 # http://opensource.org/licenses/MIT
 #
 import json
+import sys
 
+from distutils.version import LooseVersion
+
+from django import get_version
 from django.shortcuts import render
 from django.views import defaults
 from django.http import HttpResponse
@@ -19,6 +23,8 @@ from . import viewsets as pdc_viewsets
 from .serializers import LabelSerializer, ArchSerializer, SigKeySerializer
 from .filters import LabelFilter, SigKeyFilter
 from . import handlers
+
+django_version = LooseVersion(get_version())
 
 
 class LabelViewSet(pdc_viewsets.PDCModelViewSet):
@@ -383,4 +389,9 @@ def handle404(request):
         return HttpResponse(json.dumps(handlers.NOT_FOUND_JSON_RESPONSE),
                             status=status.HTTP_404_NOT_FOUND,
                             content_type='application/json')
-    return defaults.page_not_found(request)
+
+    if django_version < LooseVersion('1.9'):
+        return defaults.page_not_found(request)
+    else:
+        exc_class, exc, tb = sys.exc_info()
+        return defaults.page_not_found(request, exc)
