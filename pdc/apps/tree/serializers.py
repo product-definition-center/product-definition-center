@@ -77,6 +77,7 @@ class UnreleasedVariantSerializer(StrictSerializerMixin,
     variant_type        = serializers.CharField(max_length=100)
     variant_version     = serializers.CharField(max_length=100)
     variant_release     = serializers.CharField(max_length=100)
+    active              = serializers.BooleanField(default=False)
     koji_tag            = serializers.CharField(max_length=300)
     modulemd            = serializers.CharField()
     runtime_deps        = RuntimeDepSerializer(many=True, required=False)
@@ -87,7 +88,7 @@ class UnreleasedVariantSerializer(StrictSerializerMixin,
         fields = (
             'variant_id', 'variant_uid', 'variant_name', 'variant_type',
             'variant_version', 'variant_release', 'koji_tag', 'modulemd',
-            'runtime_deps', 'build_deps',
+            'runtime_deps', 'build_deps', 'active',
         )
 
 

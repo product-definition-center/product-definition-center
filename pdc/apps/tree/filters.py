@@ -30,6 +30,7 @@ class UnreleasedVariantFilter(django_filters.FilterSet):
     variant_type        = django_filters.CharFilter(name='variant_type', lookup_type='iexact')
     variant_version     = django_filters.CharFilter(name='variant_version', lookup_type='iexact')
     variant_release     = django_filters.CharFilter(name='variant_release', lookup_type='iexact')
+    active              = CaseInsensitiveBooleanFilter()
     koji_tag            = django_filters.CharFilter(name='koji_tag', lookup_type='iexact')
 
     class Meta:

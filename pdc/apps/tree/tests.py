@@ -49,3 +49,33 @@ class TreeAPITestCase(APITestCase):
             'url': "/mnt/test/location"}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_two_variants_query_by_active(self):
+        url = reverse('unreleasedvariant-list')
+        data = {
+            'variant_id': "core", 'variant_uid': "Core",
+            'variant_name': "Core", 'variant_version': "0",
+            'variant_release': "1", 'variant_type': 'module',
+            'koji_tag': "module-core-0-1", 'modulemd': 'foobar',
+            'active': False,
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = {
+            'variant_id': "core", 'variant_uid': "Core",
+            'variant_name': "Core", 'variant_version': "0",
+            'variant_release': "2", 'variant_type': 'module',
+            'koji_tag': "module-core-0-2", 'modulemd': 'foobar',
+            'active': True,
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+        data = {'active': True}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = json.loads(response.content)
+        self.assertEqual(results['count'], 1)
+        self.assertEqual(results['results'][0]['koji_tag'], 'module-core-0-2')

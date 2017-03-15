@@ -14,6 +14,7 @@ class UnreleasedVariant(models.Model): # Not the variant from compose ... which 
     # variant_version/_release are _not_ distribution versions/releases
     variant_version     = models.CharField(max_length=100, blank=False)
     variant_release     = models.CharField(max_length=100, blank=False)
+    active              = models.BooleanField(default=False)
     koji_tag            = models.CharField(max_length=300, blank=False)
     modulemd            = models.TextField(blank=False)
 
@@ -34,6 +35,7 @@ class UnreleasedVariant(models.Model): # Not the variant from compose ... which 
             'variant_type': self.variant_type,
             'variant_version': self.variant_version,
             'variant_release': self.variant_release,
+            'active': self.active,
             'koji_tag': self.koji_tag,
             'modulemd': self.modulemd,
             'runtime_deps': [ v.dependency for v in self.runtime_deps.all() ],
@@ -85,6 +87,7 @@ class Tree(models.Model):
                 'variant_uid': self.variant.variant_uid,
                 'variant_version': self.variant.variant_version,
                 'variant_release': self.variant.variant_release,
+                'active': self.variant.active,
             },
             #"dt_imported": self.dt_imported,
             "deleted": self.deleted,
