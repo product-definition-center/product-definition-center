@@ -11,11 +11,10 @@ from pdc.apps.common.fields import ChoiceSlugField
 from .models import (Tree, UnreleasedVariant, RuntimeDependency,
                      BuildDependency)
 
-#from pdc.apps.release.models import Release
 from pdc.apps.repository.models import ContentFormat
 
+
 class UnreleasedVariantField(serializers.Field):
-    #doc_format = "UnreleasedVariant.variant_uid"
 
     def to_internal_value(self, data):
         try:
@@ -27,28 +26,40 @@ class UnreleasedVariantField(serializers.Field):
     def to_representation(self, value):
         return {'variant_uid': value.variant_uid, 'variant_name': value.variant_name}
 
+
 class JSONSerializerField(serializers.Field):
     def to_internal_value(self, data):
         return data
+
     def to_representation(self, value):
         return value
 
+
 class TreeSerializer(StrictSerializerMixin,
-                        serializers.ModelSerializer):
+                     serializers.ModelSerializer):
 
     tree_id             = serializers.CharField()
     tree_date           = serializers.DateField()
     variant             = UnreleasedVariantField()
-    arch                = serializers.SlugRelatedField(slug_field='name', queryset=Arch.objects.all())
+    arch                = serializers.SlugRelatedField(slug_field='name',
+                                                       queryset=Arch.objects.all())
     deleted             = serializers.BooleanField(default=False)
     content             = JSONSerializerField()
-    content_format      = ChoiceSlugField(slug_field='name', many=True, queryset=ContentFormat.objects.all())
+    content_format      = ChoiceSlugField(slug_field='name', many=True,
+                                          queryset=ContentFormat.objects.all())
     url                 = serializers.CharField()
 
     class Meta:
         model = Tree
         fields = (
-            'tree_id', 'tree_date', 'variant', 'arch',  'deleted', 'content', 'content_format', 'url',
+            'tree_id',
+            'tree_date',
+            'variant',
+            'arch',
+            'deleted',
+            'content',
+            'content_format',
+            'url',
         )
 
     def validate(self, attrs):
@@ -69,8 +80,8 @@ class BuildDepSerializer(serializers.ModelSerializer):
 
 
 class UnreleasedVariantSerializer(StrictSerializerMixin,
-                        DynamicFieldsSerializerMixin,
-                        serializers.ModelSerializer):
+                                  DynamicFieldsSerializerMixin,
+                                  serializers.ModelSerializer):
     variant_id          = serializers.CharField(max_length=100)
     variant_uid         = serializers.CharField(max_length=200)
     variant_name        = serializers.CharField(max_length=300)
@@ -90,7 +101,6 @@ class UnreleasedVariantSerializer(StrictSerializerMixin,
             'variant_version', 'variant_release', 'koji_tag', 'modulemd',
             'runtime_deps', 'build_deps', 'active',
         )
-
 
     def validate(self, attrs):
         # TODO: validate

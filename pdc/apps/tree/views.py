@@ -147,7 +147,6 @@ class TreeViewSet(viewsets.PDCModelViewSet):
                 "dt_imported": 20160526,
             }
         """
-        #print request.data
         return super(TreeViewSet, self).create(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
@@ -166,6 +165,7 @@ class TreeViewSet(viewsets.PDCModelViewSet):
             curl -X DELETE -H "Content-Type: application/json" $URL:tree-detail:4181$
         """
         return super(TreeViewSet, self).destroy(request, *args, **kwargs)
+
 
 class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
     """

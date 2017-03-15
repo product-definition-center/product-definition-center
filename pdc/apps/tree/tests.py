@@ -14,6 +14,7 @@ from rest_framework import status
 rpms_json_path = os.path.join(os.path.dirname(__file__), "test_tree.json")
 rpms_json = open(rpms_json_path, "r").read()
 
+
 class TreeAPITestCase(APITestCase):
     def test_create_unreleasedvariant(self):
         url = reverse('unreleasedvariant-list')
@@ -44,8 +45,8 @@ class TreeAPITestCase(APITestCase):
                 'variant_version': "0",
                 'variant_release': "1"
             },
-            'arch': "x86_64", 'content_format': ['rpm',],
-            'content': {'rpm' : json.dumps(json.loads(rpms_json))},
+            'arch': "x86_64", 'content_format': ['rpm'],
+            'content': {'rpm': json.dumps(json.loads(rpms_json))},
             'url': "/mnt/test/location"}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -71,7 +72,6 @@ class TreeAPITestCase(APITestCase):
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
 
         data = {'active': True}
         response = self.client.get(url, data, format='json')
