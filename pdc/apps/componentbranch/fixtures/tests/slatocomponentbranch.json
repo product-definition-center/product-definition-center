@@ -1,0 +1,11 @@
+[
+{
+   "pk": 1,
+   "model": "componentbranch.slatocomponentbranch",
+   "fields": {
+      "sla": 1,
+      "eol": "2222-01-01",
+      "branch": 1
+   }
+}
+]

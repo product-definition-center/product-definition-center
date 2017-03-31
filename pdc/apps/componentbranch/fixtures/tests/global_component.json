@@ -1,0 +1,9 @@
+[
+{
+   "pk": 1, 
+   "model": "component.globalcomponent", 
+   "fields": {
+      "name": "python"
+   }
+}
+]

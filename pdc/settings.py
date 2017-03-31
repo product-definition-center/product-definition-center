@@ -74,6 +74,7 @@ INSTALLED_APPS = (
     'pdc.apps.bindings',
     'pdc.apps.usage',
     'pdc.apps.osbs',
+    'pdc.apps.componentbranch',
 
     'mptt',
 )
@@ -376,6 +377,9 @@ LOGGING = {
         }
     }
 }
+
+# ======== ComponentBranch App Configuration =========
+COMPONENT_BRANCH_NAME_BLACKLIST_REGEX = r''
 
 
 # Attempts to import server specific settings.

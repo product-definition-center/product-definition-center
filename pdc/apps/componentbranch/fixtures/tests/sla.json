@@ -1,0 +1,18 @@
+[
+{
+   "pk": 1,
+   "model": "componentbranch.sla",
+   "fields": {
+      "name": "security_fixes",
+      "description": "Security fixes are applied"
+   }
+},
+{
+   "pk": 2,
+   "model": "componentbranch.sla",
+   "fields": {
+      "name": "bug_fixes",
+      "description": "Bug fixes are applied"
+   }
+}
+]
