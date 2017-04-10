@@ -51,6 +51,7 @@ class TreeAPITestCase(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+
     def test_create_two_variants_query_by_active(self):
         url = reverse('unreleasedvariant-list')
         data = {
@@ -79,3 +80,60 @@ class TreeAPITestCase(APITestCase):
         results = json.loads(response.content)
         self.assertEqual(results['count'], 1)
         self.assertEqual(results['results'][0]['koji_tag'], 'module-core-0-2')
+
+    def test_filter_build_deps(self):
+        url = reverse('unreleasedvariant-list')
+
+        # Add variant with 'base-runtime-master' build-dep.
+        data = {
+            'variant_id': "core", 'variant_uid': "Core",
+            'variant_name': "Core", 'variant_version': "0",
+            'variant_release': "1", 'variant_type': 'module',
+            'koji_tag': "module-core-0-1", 'modulemd': 'foobar',
+            'build_deps': [{'dependency':'base-runtime', 'stream': 'master'}]
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Add variant with 'base-runtime-f26' build-dep.
+        data = {
+            'variant_id': "core3", 'variant_uid': "Core3",
+            'variant_name': "Core3", 'variant_version': "0",
+            'variant_release': "1", 'variant_type': 'module',
+            'koji_tag': "module-core3-0-1", 'modulemd': 'foobar',
+            'build_deps': [{'dependency':'base-runtime', 'stream': 'f26'}]
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Add variant with 'bootstrap-master' build-dep.
+        data = {
+            'variant_id': "core2", 'variant_uid': "Core2",
+            'variant_name': "Core2", 'variant_version': "0",
+            'variant_release': "1", 'variant_type': 'module',
+            'koji_tag': "module-core2-0-1", 'modulemd': 'foobar',
+            'build_deps': [{'dependency':'bootstrap', 'stream': 'master'}]
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Try to get unknown build-dep
+        data = {'build_dep_name': "unknown"}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 0)
+
+        # Try to get base-runtime build-dep
+        data = {'build_dep_name': "base-runtime"}
+        response = self.client.get(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+
+        # Try to get base-runtime-master build-dep
+        data = {'build_dep_name': "base-runtime",
+                'build_dep_stream': "master"}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+        self.assertEqual(response.data['results'][0]["variant_uid"], "Core")

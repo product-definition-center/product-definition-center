@@ -6,7 +6,7 @@
 
 import django_filters
 
-from pdc.apps.common.filters import CaseInsensitiveBooleanFilter
+from pdc.apps.common.filters import CaseInsensitiveBooleanFilter, MultiValueFilter
 from .models import (Tree, UnreleasedVariant)
 
 
@@ -40,9 +40,14 @@ class UnreleasedVariantFilter(django_filters.FilterSet):
     variant_release     = django_filters.CharFilter(name='variant_release', lookup_type='iexact')
     active              = CaseInsensitiveBooleanFilter()
     koji_tag            = django_filters.CharFilter(name='koji_tag', lookup_type='iexact')
+    runtime_dep_name    = MultiValueFilter(name='runtime_deps__dependency', distinct=True)
+    runtime_dep_stream  = MultiValueFilter(name='runtime_deps__stream', distinct=True)
+    build_dep_name      = MultiValueFilter(name='build_deps__dependency', distinct=True)
+    build_dep_stream    = MultiValueFilter(name='build_deps__stream', distinct=True)
 
     class Meta:
         model = UnreleasedVariant
         fields = ('variant_id', 'variant_uid', 'variant_name', 'variant_type',
                   'variant_version', 'variant_release', 'koji_tag',
-                  'modulemd', 'runtime_deps', 'build_deps')
+                  'modulemd', 'runtime_dep_name', 'runtime_dep_stream',
+                  'build_dep_name', 'build_dep_stream')
