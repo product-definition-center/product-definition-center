@@ -4,6 +4,7 @@
 # http://opensource.org/licenses/MIT
 from django.db import models
 from jsonfield import JSONField
+from pdc.apps.package.models import RPM
 
 
 class UnreleasedVariant(models.Model):
@@ -18,6 +19,7 @@ class UnreleasedVariant(models.Model):
     active              = models.BooleanField(default=False)
     koji_tag            = models.CharField(max_length=300, blank=False)
     modulemd            = models.TextField(blank=False)
+    rpms                = models.ManyToManyField(RPM)
 
     class Meta:
         ordering = ("variant_uid", "variant_version", "variant_release")
@@ -29,7 +31,7 @@ class UnreleasedVariant(models.Model):
         return u"%s" % (self.variant_uid, )
 
     def export(self):
-        return {
+        result = {
             'variant_id': self.variant_id,
             'variant_uid': self.variant_uid,
             'variant_name': self.variant_name,
@@ -42,6 +44,13 @@ class UnreleasedVariant(models.Model):
             'runtime_deps': [v.dependency for v in self.runtime_deps.all()],
             'build_deps': [v.dependency for v in self.build_deps.all()],
         }
+
+        result["rpms"] = []
+        objects = self.rpms.all()
+        for obj in objects:
+            result["rpms"].append(obj.export())
+
+        return result
 
 
 class VariantDependency(models.Model):

@@ -67,6 +67,8 @@ class RPMFilter(django_filters.FilterSet):
     filename    = MultiValueFilter()
     compose     = MultiValueFilter(name='composerpm__variant_arch__variant__compose__compose_id',
                                    distinct=True)
+    srpm_commit_hash = MultiValueFilter()
+    srpm_commit_branch = MultiValueFilter()
     linked_release = MultiValueFilter(name='linked_releases__release_id', distinct=True)
     built_for_release = MultiValueFilter(name='built_for_release__release_id', distinct=True)
     provides = django_filters.MethodFilter(action=partial(dependency_filter,

@@ -90,17 +90,20 @@ class FindComposeByReleaseRPMTestCase(APITestCase):
                 {'name': u'bash', 'version': u'1.2.3', 'epoch': 0, 'release': u'4.b1',
                  'arch': u'x86_64', 'srpm_name': u'bash', 'srpm_nevra': u'bash-0:1.2.3-4.b1.src',
                  'filename': 'bash-1.2.3-4.b1.x86_64.rpm', 'id': 1, 'built_for_release': None,
-                 'linked_composes': ['compose-1', 'compose-2'], 'linked_releases': []}]},
+                 'linked_composes': ['compose-1', 'compose-2'], 'linked_releases': [],
+                 'srpm_commit_hash': None, 'srpm_commit_branch': None}]},
             {'compose': u'compose-2', 'packages': [
                 {'name': u'bash', 'version': u'1.2.3', 'epoch': 0, 'release': u'4.b1',
                  'arch': u'x86_64', 'srpm_name': u'bash', 'srpm_nevra': u'bash-0:1.2.3-4.b1.src',
                  'filename': 'bash-1.2.3-4.b1.x86_64.rpm', 'id': 1, 'built_for_release': None,
-                 'linked_composes': ['compose-1', 'compose-2'], 'linked_releases': []}]},
+                 'linked_composes': ['compose-1', 'compose-2'], 'linked_releases': [],
+                 'srpm_commit_hash': None, 'srpm_commit_branch': None}]},
             {'compose': u'compose-3', 'packages': [
                 {'name': u'bash', 'version': u'5.6.7', 'epoch': 0, 'release': u'8',
                  'arch': u'x86_64', 'srpm_name': u'bash', 'srpm_nevra': None,
                  'filename': 'bash-5.6.7-8.x86_64.rpm', 'id': 2, 'built_for_release': None,
-                 'linked_composes': ['compose-3'], 'linked_releases': []}]}
+                 'linked_composes': ['compose-3'], 'linked_releases': [],
+                 'srpm_commit_hash': None, 'srpm_commit_branch': None}]}
         ]
         self.assertEqual(response.data, expected)
 
@@ -164,6 +167,7 @@ class FindOlderComposeByComposeRPMTestCase(APITestCase):
             dict(packages[0]),
             {'name': 'bash', 'version': '1.2.3', 'epoch': 0, 'release': '4.b1',
              'arch': 'x86_64', 'srpm_name': 'bash', 'srpm_nevra': 'bash-0:1.2.3-4.b1.src', 'built_for_release': None,
+             "srpm_commit_hash": None, "srpm_commit_branch": None,
              'filename': 'bash-1.2.3-4.b1.x86_64.rpm'})
 
     def test_same_version_different_arch(self):

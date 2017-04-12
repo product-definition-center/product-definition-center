@@ -12,6 +12,8 @@ from .models import (Tree, UnreleasedVariant, RuntimeDependency,
                      BuildDependency)
 
 from pdc.apps.repository.models import ContentFormat
+from pdc.apps.package.serializers import RPMRelatedField, RPMSerializer
+from pdc.apps.package.models import RPM
 
 
 class UnreleasedVariantField(serializers.Field):
@@ -93,13 +95,16 @@ class UnreleasedVariantSerializer(StrictSerializerMixin,
     modulemd            = serializers.CharField()
     runtime_deps        = RuntimeDepSerializer(many=True, required=False)
     build_deps          = BuildDepSerializer(many=True, required=False)
+    rpms                = RPMRelatedField(many=True, read_only=False,
+                                          queryset=RPM.objects.all(),
+                                          required=False)
 
     class Meta:
         model = UnreleasedVariant
         fields = (
             'variant_id', 'variant_uid', 'variant_name', 'variant_type',
             'variant_version', 'variant_release', 'koji_tag', 'modulemd',
-            'runtime_deps', 'build_deps', 'active',
+            'runtime_deps', 'build_deps', 'active', 'rpms',
         )
 
     def validate(self, attrs):
@@ -109,6 +114,7 @@ class UnreleasedVariantSerializer(StrictSerializerMixin,
     def create(self, validated_data):
         runtime_deps_data = validated_data.pop('runtime_deps', [])
         build_deps_data = validated_data.pop('build_deps', [])
+        rpm_data = validated_data.pop('rpms', [])
 
         variant = UnreleasedVariant.objects.create(**validated_data)
 
@@ -117,5 +123,8 @@ class UnreleasedVariantSerializer(StrictSerializerMixin,
 
         for dep_data in build_deps_data:
             BuildDependency.objects.create(variant=variant, **dep_data)
+
+        for rpm in rpm_data:
+            variant.rpms.add(rpm)
 
         return variant

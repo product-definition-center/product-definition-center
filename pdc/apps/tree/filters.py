@@ -44,10 +44,11 @@ class UnreleasedVariantFilter(django_filters.FilterSet):
     runtime_dep_stream  = MultiValueFilter(name='runtime_deps__stream', distinct=True)
     build_dep_name      = MultiValueFilter(name='build_deps__dependency', distinct=True)
     build_dep_stream    = MultiValueFilter(name='build_deps__stream', distinct=True)
+    component_name      = MultiValueFilter(name='rpms__srpm_name', distinct=True)
 
     class Meta:
         model = UnreleasedVariant
         fields = ('variant_id', 'variant_uid', 'variant_name', 'variant_type',
                   'variant_version', 'variant_release', 'koji_tag',
                   'modulemd', 'runtime_dep_name', 'runtime_dep_stream',
-                  'build_dep_name', 'build_dep_stream')
+                  'build_dep_name', 'build_dep_stream', 'component_name')

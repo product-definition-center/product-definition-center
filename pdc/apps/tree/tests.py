@@ -11,11 +11,17 @@ from django.core.urlresolvers import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 
+from pdc.apps.common.test_utils import TestCaseWithChangeSetMixin
+
 rpms_json_path = os.path.join(os.path.dirname(__file__), "test_tree.json")
 rpms_json = open(rpms_json_path, "r").read()
 
 
-class TreeAPITestCase(APITestCase):
+class TreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
+    fixtures = [
+        'pdc/apps/tree/fixtures/test/rpm.json',
+    ]
+
     def test_create_unreleasedvariant(self):
         url = reverse('unreleasedvariant-list')
         data = {
@@ -137,3 +143,53 @@ class TreeAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 1)
         self.assertEqual(response.data['results'][0]["variant_uid"], "Core")
+
+    def test_create_with_new_rpms(self):
+        url = reverse('unreleasedvariant-list')
+        data = {
+            'variant_id': "core", 'variant_uid': "Core",
+            'variant_name': "Core", 'variant_version': "0",
+            'variant_release': "1", 'variant_type': 'module',
+            'koji_tag': "module-core-0-1", 'modulemd': 'foobar',
+            'active': False,
+            'rpms': [{'name': 'new_rpm', 'epoch': 0, 'version': '1.0.0',
+                        'release': '1', 'arch': 'src', 'srpm_name': 'new_srpm'}]
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNumChanges([2])
+        self.assertIn('new_rpm', response.content)
+
+    def test_create_with_exist_rpms(self):
+        url = reverse('unreleasedvariant-list')
+        data = {
+            'variant_id': "core", 'variant_uid': "Core",
+            'variant_name': "Core", 'variant_version': "0",
+            'variant_release': "1", 'variant_type': 'module',
+            'koji_tag': "module-core-0-1", 'modulemd': 'foobar',
+            'active': False,
+            'rpms': [{
+                "name": "bash-doc",
+                "epoch": 0,
+                "version": "1.2.3",
+                "release": "4.b2",
+                "arch": "x86_64",
+                "srpm_name": "bash",
+                "srpm_nevra": "bash-0:1.2.3-4.b2.src"}]
+        }
+
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNumChanges([1])
+        self.assertIn('bash-doc', response.content)
+
+        # Try to get the module with component "bash".
+        response = self.client.get(url + '?component_name=bash', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+        self.assertEqual(response.data['results'][0]["variant_uid"], "Core")
+
+        # Try to get a module with unknown component.
+        response = self.client.get(url + '?component_name=unknown', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 0)
