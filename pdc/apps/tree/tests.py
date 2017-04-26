@@ -160,6 +160,61 @@ class TreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([2])
         self.assertIn('new_rpm', response.content)
 
+    def test_filter_by_rpms(self):
+        url = reverse('unreleasedvariant-list')
+        # add a variant with rpm 'foobar' from branch 'master'
+        data = {
+            'variant_id': "core", 'variant_uid': "Core",
+            'variant_name': "Core", 'variant_version': "0",
+            'variant_release': "1", 'variant_type': 'module',
+            'koji_tag': "module-core-0-1", 'modulemd': 'foobar',
+            'active': True,
+            'rpms': [{'name': 'foobar', 'epoch': 0, 'version': '1.0.0',
+                      'release': '1', 'arch': 'src', 'srpm_name': 'foobar',
+                      'srpm_commit_branch': 'master'}]
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('foobar', response.content)
+
+        # add another variant with rpm 'foobar' from branch 'rawhide'
+        data = {
+            'variant_id': "core2", 'variant_uid': "Core2",
+            'variant_name': "Core2", 'variant_version': "0",
+            'variant_release': "1", 'variant_type': 'module',
+            'koji_tag': "module-core2-0-1", 'modulemd': 'foobar',
+            'active': True,
+            'rpms': [{'name': 'foobar', 'epoch': 0, 'version': '2.0.0',
+                      'release': '1', 'arch': 'src', 'srpm_name': 'foobar',
+                      'srpm_commit_branch': 'rawhide'}]
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('foobar', response.content)
+
+        # query modules with rpm name
+        data = {'component_name': 'foobar'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+        self.assertIn("Core", [x['variant_uid'] for x in response.data['results']])
+        self.assertIn("Core2", [x['variant_uid'] for x in response.data['results']])
+
+        # query modules with rpm name and branch
+        data = {'component_name': 'foobar', 'component_branch': 'master'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+        self.assertIn("Core", [x['variant_uid'] for x in response.data['results']])
+        self.assertNotIn("Core2", [x['variant_uid'] for x in response.data['results']])
+
+        data = {'component_name': 'foobar', 'component_branch': 'rawhide'}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+        self.assertNotIn("Core", [x['variant_uid'] for x in response.data['results']])
+        self.assertIn("Core2", [x['variant_uid'] for x in response.data['results']])
+
     def test_create_with_exist_rpms(self):
         url = reverse('unreleasedvariant-list')
         data = {
