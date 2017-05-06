@@ -55,7 +55,7 @@ class ComposeListView(SearchView):
     form_class = ComposeSearchForm
     queryset = Compose.objects.all() \
         .select_related('release', 'compose_type') \
-        .prefetch_related('linked_releases').order_by('id')
+        .prefetch_related('linked_releases').order_by('-id')
     allow_empty = True
     template_name = "compose_list.html"
     context_object_name = "compose_list"

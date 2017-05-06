@@ -1,5 +1,5 @@
 Django >= 1.8.1,<1.9
-https://git.fedorahosted.org/cgit/kobo.git/snapshot/kobo-0.4.3.tar.gz#egg=kobo
+https://github.com/release-engineering/kobo/archive/kobo-0.4.3.tar.gz
 # requires: openldap-devel
 python-ldap
 # django rest framework
