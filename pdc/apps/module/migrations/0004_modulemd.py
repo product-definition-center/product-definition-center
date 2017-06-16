@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tree', '0003_dep_stream'),
+        ('module', '0003_dep_stream'),
     ]
 
     operations = [

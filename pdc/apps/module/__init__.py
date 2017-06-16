@@ -3,4 +3,4 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
-default_app_config = 'pdc.apps.tree.apps.TreeConfig'
+default_app_config = 'pdc.apps.module.apps.ModuleConfig'

@@ -7,28 +7,7 @@
 import django_filters
 
 from pdc.apps.common.filters import CaseInsensitiveBooleanFilter, MultiValueFilter
-from .models import (Tree, UnreleasedVariant)
-
-
-class TreeFilter(django_filters.FilterSet):
-    tree_id         = django_filters.CharFilter(name='tree_id', lookup_type='iexact')
-    deleted         = CaseInsensitiveBooleanFilter()
-    arch            = django_filters.CharFilter(name='arch__name', lookup_type='iexact')
-    variant_uid     = django_filters.CharFilter(name='unreleasedvariant__variant_uid', lookup_type='iexact')
-    content_format  = django_filters.CharFilter(name="content_format__name")
-
-    class Meta:
-        model = Tree
-        fields = (
-            'deleted',
-            'tree_id',
-            'tree_date',
-            'variant',
-            'arch',
-            'content',
-            'content_format',
-            'url',
-        )
+from .models import UnreleasedVariant
 
 
 class UnreleasedVariantFilter(django_filters.FilterSet):

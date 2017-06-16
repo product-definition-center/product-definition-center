@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tree', '0002_builddependency_runtimedependency'),
+        ('module', '0002_builddependency_runtimedependency'),
     ]
 
     operations = [

@@ -72,38 +72,3 @@ class BuildDependency(VariantDependency):
 
     variant = models.ForeignKey("UnreleasedVariant",
                                 related_name="build_deps")
-
-
-class Tree(models.Model):
-    tree_id             = models.CharField(max_length=200, unique=True)
-    tree_date           = models.DateField()
-    arch                = models.ForeignKey("common.Arch", related_name="+")
-    variant             = models.ForeignKey(UnreleasedVariant)
-    dt_imported         = models.DateTimeField(auto_now_add=True)
-    deleted             = models.BooleanField(default=False)
-    content             = JSONField()
-    content_format      = models.ManyToManyField('repository.ContentFormat')
-    url                 = models.CharField(max_length=255)  # Currently just some local path
-
-    class Meta:
-        ordering = ("tree_id",)
-
-    def export(self):
-        return {
-            "tree_id": self.tree_id,
-            "tree_date": self.tree_date.isoformat(),
-            "arch": self.arch.name,
-            "variant": {
-                'variant_uid': self.variant.variant_uid,
-                'variant_version': self.variant.variant_version,
-                'variant_release': self.variant.variant_release,
-                'active': self.variant.active,
-            },
-            "deleted": self.deleted,
-            "content": self.content,
-            "content_format": [item.name for item in self.content_format.all()],
-            "url": self.url,
-        }
-
-    def __unicode__(self):
-        return u"%s" % self.tree_id

@@ -5,173 +5,16 @@
 #
 
 from pdc.apps.common import viewsets
-from .models import (Tree, UnreleasedVariant,)
-from .serializers import (TreeSerializer, UnreleasedVariantSerializer)
-from .filters import (TreeFilter, UnreleasedVariantFilter)
-
-
-class TreeViewSet(viewsets.PDCModelViewSet):
-    """
-    ##Overview##
-
-    This page shows the usage of the **Tree API**, please see the
-    following for more details.
-
-    ##Test tools##
-
-    You can use ``curl`` in terminal, with -X _method_ (GET|POST|PUT|DELETE),
-    -d _data_ (a json string). or GUI plugins for
-    browsers, such as ``RESTClient``, ``RESTConsole``.
-
-    ## Customize Output ##
-
-    There are two query params that you can use to customize your output.
-
-    `fields`:          string, can be set multiple times, to demand what fields you want to include;
-
-    `exclude_fields`:  string, can be set multiple times, to demand what fields you do NOT want.
-
-    __NOTE__: If both given, `exclude_fields` *rules* `fields`.
-
-    """
-    model = Tree
-    queryset = Tree.objects.all().order_by('tree_id')
-    serializer_class = TreeSerializer
-    filter_class = TreeFilter
-    lookup_field = 'tree_id'
-    lookup_value_regex = '[^/]+'
-
-    def list(self, request, *args, **kwargs):
-        """
-        __Method__:
-        GET
-
-        __URL__: $LINK:tree-list$
-
-        __Query Params__:
-
-        %(FILTERS)s
-
-        __Response__:
-
-            # paged lists
-            {
-                "count": int,
-                "next": url,
-                "previous": url,
-                "results": [
-                    {
-                        "tree_id": string,
-                        "tree_date": date,
-                        "variant": string
-                        "arch": string,
-                        "deleted": bool,
-                        "content": json_data,
-                        "content_format": [string, ...],
-                        'url':                    string,
-                    },
-                    ...
-            }
-        """
-        return super(TreeViewSet, self).list(request, *args, **kwargs)
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        __Method__:
-        GET
-
-        __URL__: $LINK:tree-detail:tree_id$
-
-        __Response__:
-
-            {
-                "tree_id": string,
-                "tree_date": date,
-                "variant": string
-                "arch": string,
-                "content": json_data,
-                "content_format": [string, ...],
-                "url": string
-                "deleted": bool,
-                "dt_imported": date
-            }
-        """
-        return super(TreeViewSet, self).retrieve(request, *args, **kwargs)
-
-    def create(self, request, *args, **kwargs):
-        """
-        __Method__:
-        POST
-
-        __URL__: $LINK:tree-list$
-
-        __Data__:
-
-            {
-                'tree_id':                string,         # required
-                'tree_date':              string,         # required
-                'variant':                string,         # required
-                'arch':                   string,         # required
-                'content':                json_data,      # required
-                'content_format':       [string, ],     # required
-                'url':                    string,         # required
-                'deleted':                bool            # optional
-            }
-
-        __Response__:
-
-            {
-                "tree_id": string,
-                "tree_date": date,
-                "variant": string,
-                "arch": string,
-                "content": json_data,
-                "content_format": [string, ],
-                "deleted": bool
-                "dt_imported": date
-            }
-
-        __Example__:
-
-            curl -X POST -H "Content-Type: application/json" $URL:tree-list$ \\
-                    -d '{ "tree_id": "core-x86_64-20160610", "tree_date": "20160526", "variant": "Core", "arch": "x86_64",}'
-            # output
-            {
-                "tree_id": "core-x86_64-20160610",
-                "tree_date": "20160526",
-                "variant": "Core"
-                "arch": "x86_64",
-                'content': {'rpms' : [], 'images': [], ...}
-                'content_format' : ['rpms, 'images', ...]
-                "deleted": False,
-                "dt_imported": 20160526,
-            }
-        """
-        return super(TreeViewSet, self).create(request, *args, **kwargs)
-
-    def destroy(self, request, *args, **kwargs):
-        """
-        __Method__:
-        DELETE
-
-        __URL__: $LINK:tree-detail:tree_id$
-
-        __Response__:
-
-            STATUS: 204 NO CONTENT
-
-        __Example__:
-
-            curl -X DELETE -H "Content-Type: application/json" $URL:tree-detail:4181$
-        """
-        return super(TreeViewSet, self).destroy(request, *args, **kwargs)
+from .models import UnreleasedVariant
+from .serializers import UnreleasedVariantSerializer
+from .filters import UnreleasedVariantFilter
 
 
 class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
     """
     ##Overview##
 
-    This page shows the usage of the **Tree API**, please see the
+    This page shows the usage of the **Module API**, please see the
     following for more details.
 
     ##Test tools##
@@ -277,7 +120,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -X POST -H "Content-Type: application/json" $URL:tree-list$ \\
+            curl -X POST -H "Content-Type: application/json" $URL:unreleasedvariant-list$ \\
                     -d '{ "variant_id": "core", "variant_uid": "Core", "variant_name": "Minimalistic Core", "variant_type": "module", }'
             # output
             {
@@ -302,6 +145,6 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -X DELETE -H "Content-Type: application/json" $URL:tree-detail:4181$
+            curl -X DELETE -H "Content-Type: application/json" $URL:unreleasedvariant-detail:4181$
         """
         return super(UnreleasedVariantViewSet, self).destroy(request, **kwargs)

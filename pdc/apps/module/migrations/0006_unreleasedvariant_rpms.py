@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('package', '0013_set_default_subvariant_to_empty_string'),
-        ('tree', '0005_unreleasedvariant_active'),
+        ('module', '0005_unreleasedvariant_active'),
     ]
 
     operations = [

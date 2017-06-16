@@ -13,16 +13,13 @@ from rest_framework import status
 
 from pdc.apps.common.test_utils import TestCaseWithChangeSetMixin
 
-rpms_json_path = os.path.join(os.path.dirname(__file__), "test_tree.json")
-rpms_json = open(rpms_json_path, "r").read()
 
-
-class TreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
+class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
-        'pdc/apps/tree/fixtures/test/rpm.json',
+        'pdc/apps/module/fixtures/test/rpm.json',
     ]
 
-    def test_create_unreleasedvariant(self):
+    def test_create_unreleasedvariant1(self):
         url = reverse('unreleasedvariant-list')
         data = {
             'variant_id': "core", 'variant_uid': "Core",
@@ -33,7 +30,7 @@ class TreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_create_tree(self):
+    def test_create_unreleasedvariant2(self):
         url = reverse('unreleasedvariant-list')
         data = {
             'variant_id': "shells", 'variant_uid': "Shells",
@@ -42,21 +39,6 @@ class TreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'koji_tag': "module-shells-0-1", 'modulemd': 'foobar'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        url = reverse('tree-list')
-        data = {
-            'tree_id': "Shells-x86_64-20160529.0", 'tree_date': "2016-05-29",
-            'variant': {
-                'variant_uid': "Shells",
-                'variant_version': "0",
-                'variant_release': "1"
-            },
-            'arch': "x86_64", 'content_format': ['rpm'],
-            'content': {'rpm': json.dumps(json.loads(rpms_json))},
-            'url': "/mnt/test/location"}
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
 
     def test_create_two_variants_query_by_active(self):
         url = reverse('unreleasedvariant-list')

@@ -8,8 +8,7 @@ from rest_framework import serializers
 from pdc.apps.common.models import Arch
 from pdc.apps.common.serializers import StrictSerializerMixin, DynamicFieldsSerializerMixin
 from pdc.apps.common.fields import ChoiceSlugField
-from .models import (Tree, UnreleasedVariant, RuntimeDependency,
-                     BuildDependency)
+from .models import (UnreleasedVariant, RuntimeDependency, BuildDependency)
 
 from pdc.apps.repository.models import ContentFormat
 from pdc.apps.package.serializers import RPMRelatedField, RPMSerializer
@@ -35,38 +34,6 @@ class JSONSerializerField(serializers.Field):
 
     def to_representation(self, value):
         return value
-
-
-class TreeSerializer(StrictSerializerMixin,
-                     serializers.ModelSerializer):
-
-    tree_id             = serializers.CharField()
-    tree_date           = serializers.DateField()
-    variant             = UnreleasedVariantField()
-    arch                = serializers.SlugRelatedField(slug_field='name',
-                                                       queryset=Arch.objects.all())
-    deleted             = serializers.BooleanField(default=False)
-    content             = JSONSerializerField()
-    content_format      = ChoiceSlugField(slug_field='name', many=True,
-                                          queryset=ContentFormat.objects.all())
-    url                 = serializers.CharField()
-
-    class Meta:
-        model = Tree
-        fields = (
-            'tree_id',
-            'tree_date',
-            'variant',
-            'arch',
-            'deleted',
-            'content',
-            'content_format',
-            'url',
-        )
-
-    def validate(self, attrs):
-        # TODO: validate
-        return attrs
 
 
 class RuntimeDepSerializer(serializers.ModelSerializer):

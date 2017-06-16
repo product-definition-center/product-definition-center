@@ -6,8 +6,8 @@
 from django.apps import AppConfig
 
 
-class TreeConfig(AppConfig):
-    name = 'pdc.apps.tree'
+class ModuleConfig(AppConfig):
+    name = 'pdc.apps.module'
 
     def ready(self):
         from pdc.apps.utils.utils import connect_app_models_pre_save_signal
