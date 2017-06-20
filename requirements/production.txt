@@ -1,5 +1,5 @@
 Django >= 1.8.1,<1.9
-https://github.com/release-engineering/kobo/archive/kobo-0.4.3.tar.gz
+kobo>=0.4.3
 # requires: openldap-devel
 python-ldap
 # django rest framework
