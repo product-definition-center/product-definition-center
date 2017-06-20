@@ -8,7 +8,7 @@ from rest_framework import serializers
 from pdc.apps.common.models import Arch
 from pdc.apps.common.serializers import StrictSerializerMixin, DynamicFieldsSerializerMixin
 from pdc.apps.common.fields import ChoiceSlugField
-from .models import (UnreleasedVariant, RuntimeDependency, BuildDependency)
+from .models import UnreleasedVariant, RuntimeDependency, BuildDependency
 
 from pdc.apps.repository.models import ContentFormat
 from pdc.apps.package.serializers import RPMRelatedField, RPMSerializer
