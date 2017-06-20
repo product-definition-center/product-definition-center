@@ -66,8 +66,16 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
                         "variant_name": string,
                         "variant_type": string,
                         "variant_version": string,
+                        "variant_release": string,
+                        "koji_tag": string,
+                        "modulemd": string,
+                        "active": bool,
+                        "runtime_deps": [{"dependency": string, "stream": string}, ... ],
+                        "build_deps": [{"dependency": string, "stream": string}, ... ],
+                        "rpms": [string, ... ]
                     },
                     ...
+                ]
             }
         """
         return super(UnreleasedVariantViewSet, self).list(request, *args, **kwargs)
@@ -87,6 +95,13 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
                 "variant_name": string,
                 "variant_type": string,
                 "variant_version": string,
+                "variant_release": string,
+                "koji_tag": string,
+                "modulemd": string,
+                "active": bool,
+                "runtime_deps": [{"dependency": string, "stream": string}, ... ],
+                "build_deps": [{"dependency": string, "stream": string}, ... ],
+                "rpms": [string, ... ]
             }
         """
         return super(UnreleasedVariantViewSet, self).retrieve(request, *args, **kwargs)
@@ -101,33 +116,54 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
         __Data__:
 
             {
-                        "variant_id": string,     # required
-                        "variant_uid": string,    # required
-                        "variant_name": string,   # required
-                        "variant_type": string,   # required
-                        "variant_version": string,# version of this particular variant
-                        "variant_release": string,# release of this particular variant
+                "variant_id": string,     # required
+                "variant_uid": string,    # required
+                "variant_name": string,   # required
+                "variant_type": string,   # required
+                "variant_version": string,# version of this particular variant
+                "variant_release": string,# release of this particular variant
+                "koji_tag": string,       # required
+                "modulemd": string,       # required
+                "active": bool,           # required
+                "runtime_deps": [{"dependency": string, "stream": string}, ... ],
+                "build_deps": [{"dependency": string, "stream": string}, ... ],
+                "rpms": [string, ... ]
             }
 
         __Response__:
 
             {
-                        "variant_id": string,   # required
-                        "variant_uid": string,  # required
-                        "variant_name": string, # required
-                        "variant_type": string, # required
+                "variant_id": string,
+                "variant_uid": string,
+                "variant_name": string,
+                "variant_type": string,
+                "variant_version": string,
+                "variant_release": string,
+                "koji_tag": string,
+                "modulemd": string,
+                "active": bool,
+                "runtime_deps": [{"dependency": string, "stream": string}, ... ],
+                "build_deps": [{"dependency": string, "stream": string}, ... ],
+                "rpms": [string, ... ]
             }
 
         __Example__:
 
             curl -X POST -H "Content-Type: application/json" $URL:unreleasedvariant-list$ \\
-                    -d '{ "variant_id": "core", "variant_uid": "Core", "variant_name": "Minimalistic Core", "variant_type": "module", }'
+                    -d '{ "variant_id": "core", "variant_uid": "Core", "variant_name": "Minimalistic Core", "variant_type": "module", "variant_version": "master", "variant_release": "20170101", "koji_tag": "foobar", "active": false }'
             # output
             {
-                "variant_id": "core",   # required
-                "variant_uid": "Core",  # required
-                "variant_name": "Minimalistic Core", # required
-                "variant_type": "module", # required
+                "variant_id": "core",
+                "variant_uid": "Core",
+                "variant_name": "Minimalistic Core",
+                "variant_type": "module",
+                "variant_version": "master",
+                "variant_release": "20170101",
+                "koji_tag": "foobar",
+                "active": false,
+                "runtime_deps": [],
+                "build_deps": [],
+                "rpms": [],
             }
         """
         return super(UnreleasedVariantViewSet, self).create(request, **kwargs)
