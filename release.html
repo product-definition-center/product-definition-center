@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>6. Release &#8212; PDC 1.2.0-1.6.g48c7761 documentation</title>
+    <title>6. Release &#8212; PDC 1.2.0-1.7.g4ad5644 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.2.0-1.6.g48c7761',
+        VERSION:     '1.2.0-1.7.g4ad5644',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -29,7 +29,7 @@
     <link rel="next" title="7. Deployment" href="deployment.html" />
     <link rel="prev" title="5. PDC Model Graphs" href="model_graphs.html" /> 
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="model_graphs.html" title="5. PDC Model Graphs"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 1.2.0-1.6.g48c7761 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 1.2.0-1.7.g4ad5644 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -56,7 +56,7 @@
 <div class="section" id="versioning">
 <h2>6.1. Versioning<a class="headerlink" href="#versioning" title="Permalink to this headline">¶</a></h2>
 <p>PDC versioning is based on <a class="reference external" href="http://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
-<p>And it&#8217;s RPM compatible.</p>
+<p>And it’s RPM compatible.</p>
 <p>Given a version number MAJOR.MINOR.PATCH, increment the:</p>
 <ol class="arabic simple">
 <li>MAJOR version when you make incompatible API changes,</li>
@@ -92,7 +92,7 @@ Examples: 1.0.0-12.g1234abc, 1.0.0-s5.4.g1234abc.</p>
 <p>A short instructions as:</p>
 <ol class="arabic simple">
 <li>Tag: tito tag</li>
-<li>Test Build: tito build &#8211;rpm &#8211;offline</li>
+<li>Test Build: tito build –rpm –offline</li>
 <li>Push: git push origin &amp;&amp; git push origin $TAG</li>
 <li>Release: tito release copr-pdc/copr-pdc-test</li>
 </ol>
@@ -109,7 +109,7 @@ Examples: 1.0.0-12.g1234abc, 1.0.0-s5.4.g1234abc.</p>
 <li>create an annotated git tag based on our version;</li>
 <li>update the spec file accordingly, generate changelog event.</li>
 </ul>
-<p>For more options about <cite>tito tag</cite>, run <cite>tito tag &#8211;help</cite>.</p>
+<p>For more options about <cite>tito tag</cite>, run <cite>tito tag –help</cite>.</p>
 </div>
 <div class="section" id="test-build">
 <h3>6.2.2. Test Build<a class="headerlink" href="#test-build" title="Permalink to this headline">¶</a></h3>
@@ -138,7 +138,7 @@ $ tito build --test --tgz/srpm/rpm
 </div>
 <div class="section" id="push">
 <h3>6.2.3. Push<a class="headerlink" href="#push" title="Permalink to this headline">¶</a></h3>
-<p>When you&#8217;re happy with your build, it&#8217;s time to push commit and tag to remote.</p>
+<p>When you’re happy with your build, it’s time to push commit and tag to remote.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ git push origin &amp;&amp; git push origin &lt;your_tag&gt;
 </pre></div>
 </div>
@@ -258,12 +258,12 @@ $ tito release copr-pdc-test
         <li class="right" >
           <a href="model_graphs.html" title="5. PDC Model Graphs"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 1.2.0-1.6.g48c7761 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 1.2.0-1.7.g4ad5644 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2014-2015, PDC Devel Team.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

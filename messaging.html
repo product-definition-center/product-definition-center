@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>8. Messaging &#8212; PDC 1.2.0-1.6.g48c7761 documentation</title>
+    <title>8. Messaging &#8212; PDC 1.2.0-1.7.g4ad5644 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.2.0-1.6.g48c7761',
+        VERSION:     '1.2.0-1.7.g4ad5644',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -28,7 +28,7 @@
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="7. Deployment" href="deployment.html" /> 
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="deployment.html" title="7. Deployment"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 1.2.0-1.6.g48c7761 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 1.2.0-1.7.g4ad5644 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -126,7 +126,7 @@ to use the <cite>DummyMessenger</cite>.</p>
 </li>
 <li><p class="first"><cite>FedmsgMessenger</cite></p>
 <p>If you want to send PDC messages to Fedora Infrastructure Message Bus, you should choose <cite>FedmsgMessenger</cite> by setting
-the <cite>MLP</cite> to &#8216;fedmsg&#8217;.</p>
+the <cite>MLP</cite> to ‘fedmsg’.</p>
 <p><cite>fedmsg</cite> needs to be installed.</p>
 <p><cite>FedmsgMessenger</cite> config example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Messaging Bus Config</span>
@@ -141,7 +141,7 @@ the <cite>MLP</cite> to &#8216;fedmsg&#8217;.</p>
 <p><cite>Kombu</cite> is a messaging library for Python. It supports AMQP(v0.9) and several message server solutions by using
 pluggable transports.</p>
 <dl class="docutils">
-<dt>NOTE: Not support AMQP(v1.0), so if you&#8217;re using some messaging server implements AMQP(v1.0), like ActiveMQ, then</dt>
+<dt>NOTE: Not support AMQP(v1.0), so if you’re using some messaging server implements AMQP(v1.0), like ActiveMQ, then</dt>
 <dd><p class="first last">you should use <cite>ProtonMessenger</cite> instead.</p>
 </dd>
 </dl>
@@ -174,7 +174,7 @@ the broker, <cite>EXCHANGE</cite> and <cite>OPTIONS</cite>.</p>
 </div>
 </li>
 <li><p class="first"><cite>ProtonMessenger</cite></p>
-<p>Qpid-Proton supports AMQP(v1.0), and as if you&#8217;re connecting to message server, like ActiveMQ, that supports
+<p>Qpid-Proton supports AMQP(v1.0), and as if you’re connecting to message server, like ActiveMQ, that supports
 AMQP(v1.0), <cite>ProtonMessenger</cite> should be your choice.</p>
 <p>NOTE: current implementation does not support multi endpoints failover.</p>
 <p><cite>qpid-proton</cite> needs to be installed.</p>
@@ -273,12 +273,12 @@ acceptable for your application, we recommend you to use <cite>StompMessenger</c
         <li class="right" >
           <a href="deployment.html" title="7. Deployment"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PDC 1.2.0-1.6.g48c7761 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PDC 1.2.0-1.7.g4ad5644 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2014-2015, PDC Devel Team.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>
