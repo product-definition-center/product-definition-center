@@ -14,7 +14,8 @@ from .models import (GlobalComponent,
                      BugzillaComponent,
                      ReleaseComponentGroup,
                      GroupType,
-                     ReleaseComponentRelationship)
+                     ReleaseComponentRelationship,
+                     ReleaseComponentRelationshipType)
 from pdc.apps.common.filters import (ComposeFilterSet,
                                      value_is_not_empty,
                                      MultiValueFilter,
@@ -95,3 +96,11 @@ class ReleaseComponentRelationshipFilter(ComposeFilterSet):
         model = ReleaseComponentRelationship
         fields = ('type', 'from_component_release', 'from_component_name', 'to_component_release',
                   'to_component_name')
+
+
+class ReleaseComponentRelationshipTypeFilter(ComposeFilterSet):
+    name = MultiValueFilter()
+
+    class Meta:
+        model = ReleaseComponentRelationshipType
+        fields = ('name',)

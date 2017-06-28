@@ -1,0 +1,16 @@
+[
+    {
+        "fields": {
+            "name": "type1"
+        },
+        "model": "component.ReleaseComponentRelationshipType",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "name": "type2"
+        },
+        "model": "component.ReleaseComponentRelationshipType",
+        "pk": 2
+    }
+]

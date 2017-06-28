@@ -46,7 +46,8 @@ from .filters import (ComponentFilter,
                       BugzillaComponentFilter,
                       GroupFilter,
                       GroupTypeFilter,
-                      ReleaseComponentRelationshipFilter)
+                      ReleaseComponentRelationshipFilter,
+                      ReleaseComponentRelationshipTypeFilter)
 from . import signals
 
 
@@ -1174,15 +1175,35 @@ class GroupViewSet(viewsets.PDCModelViewSet):
         return super(GroupViewSet, self).destroy(request, *args, **kwargs)
 
 
-class ReleaseComponentRelationshipTypeViewSet(viewsets.StrictQueryParamMixin,
-                                              mixins.ListModelMixin,
-                                              drf_viewsets.GenericViewSet):
+class ReleaseComponentRelationshipTypeViewSet(viewsets.PDCModelViewSet):
     """
-    API endpoint that allows release_component_relationship_types to be viewed.
+    API endpoint that allows release_component_relationship_types to be viewed or edited.
     """
     serializer_class = RCRelationshipTypeSerializer
     queryset = ReleaseComponentRelationshipType.objects.all().order_by('id')
     permission_classes = (APIPermission,)
+    filter_class = ReleaseComponentRelationshipTypeFilter
+
+    def create(self, request, *args, **kwargs):
+        """
+        __Method__: POST
+
+        __URL__: $LINK:componentrelationshiptype-list$
+
+        __Data__:
+
+            {
+                "name": "string", # required
+            }
+
+        *type*: $LINK:componentrelationshiptype-list$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ReleaseComponentRelationshipTypeViewSet, self).create(
+            request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
         """
@@ -1195,6 +1216,51 @@ class ReleaseComponentRelationshipTypeViewSet(viewsets.StrictQueryParamMixin,
         %(SERIALIZER)s
         """
         return super(ReleaseComponentRelationshipTypeViewSet, self).list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:componentrelationshiptype-detail:instance_pk$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ReleaseComponentRelationshipTypeViewSet, self).retrieve(
+            request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__: PUT, PATCH
+
+        __URL__: $LINK:componentrelationshiptype-detail:instance_pk$
+
+        __Data__:
+
+            {
+                "name": "string", # required
+            }
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ReleaseComponentRelationshipTypeViewSet, self).update(
+            request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        __Method__: DELETE
+
+        __URL__: $LINK:componentrelationshiptype-detail:instance_pk$
+
+        __Response__:
+
+        On success, HTTP status code is 204 and the response has no content.
+        """
+        return super(ReleaseComponentRelationshipTypeViewSet, self).destroy(
+            request, *args, **kwargs)
 
 
 class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):

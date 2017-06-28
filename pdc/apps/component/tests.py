@@ -1865,3 +1865,68 @@ class ReleaseComponentRelationshipRESTTestCase(TestCaseWithChangeSetMixin, APITe
 
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class ComponentRelationshipTypeRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
+    """
+    Test case for "component-relationship-types" REST API
+    """
+
+    fixtures = [
+        'pdc/apps/component/fixtures/tests/release_component_relationship_type.json',
+    ]
+
+    def test_list_relationship_types(self):
+        url = reverse('componentrelationshiptype-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+
+    def test_query_relationship_types(self):
+        url = reverse('componentrelationshiptype-list')
+        response = self.client.get(url + '?name=type1', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_get_specified_relationship_type(self):
+        url = reverse('componentrelationshiptype-detail', kwargs={'pk': 1})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_specified_relationship_type_not_exist(self):
+        url = reverse('componentrelationshiptype-detail', kwargs={'pk': 9999})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_create_relationship_type(self):
+        url = reverse('componentrelationshiptype-list')
+        data = {'name': 'type3'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNumChanges([1])
+
+    def test_update_relationship_type(self):
+        url = reverse('componentrelationshiptype-detail', kwargs={'pk': 1})
+        data = {'name': 'type3'}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], data['name'])
+        self.assertNumChanges([1])
+
+    def test_delete_relationship_type(self):
+        url = reverse('componentrelationshiptype-detail', kwargs={'pk': 1})
+        response = self.client.delete(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertNumChanges([1])
+
+    def test_create_relationship_type_nonunique(self):
+        url = reverse('componentrelationshiptype-list')
+        data = {'name': 'type1'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_relationship_type_nonunique(self):
+        url = reverse('componentrelationshiptype-detail', kwargs={'pk': 2})
+        data = {'name': 'type1'}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

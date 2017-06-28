@@ -263,6 +263,13 @@ class ReleaseComponentRelationshipType(models.Model):
     def __unicode__(self):
         return u"%s" % self.name
 
+    def export(self, fields=None):
+        _fields = ['name'] if fields is None else fields
+        result = dict()
+        if 'name' in _fields:
+            result['name'] = self.name
+        return result
+
 
 class ReleaseComponentRelationship(models.Model):
     relation_type = models.ForeignKey(ReleaseComponentRelationshipType)

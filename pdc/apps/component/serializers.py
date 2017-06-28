@@ -320,7 +320,7 @@ class RCRelationshipTypeSerializer(StrictSerializerMixin, serializers.ModelSeria
 
     class Meta:
         model = ReleaseComponentRelationshipType
-        fields = ('name',)
+        fields = ('id', 'name')
 
 
 class ReleaseComponentRelationshipSerializer(StrictSerializerMixin, serializers.ModelSerializer):
