@@ -85,9 +85,9 @@ Option 3: Start it on Docker
 
     $ sudo docker build -t <YOUR_NAME>/pdc <the directory your Dockerfile is located>
 
-* Run the container ::
+* Run the container (``:Z`` flag is required to mount volumes with SELinux) ::
 
-    $ docker run -it -P -v $PWD:$PWD <YOUR_NAME>/pdc python $PWD/manage.py runserver 0.0.0.0:8000
+    $ docker run -it -P -v $PWD:$PWD:Z <YOUR_NAME>/pdc python $PWD/manage.py runserver 0.0.0.0:8000
 
 * Check the address
 
