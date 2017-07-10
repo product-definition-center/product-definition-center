@@ -66,6 +66,7 @@ Responses are available in JSON format.
 
 URL_SPEC_RE = re.compile(r'\$(?P<type>URL|LINK):(?P<details>[^$]+)\$')
 ORDERING_STRING = "\n * `ordering` is used to override the ordering of the results, the value could be: "
+ORDERING_STRING_NESTED = "The nested ordering is supported by using double underscore \_\_ ."
 
 
 class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
@@ -144,7 +145,7 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
             if 'list' == method:
                 ordering_field = get_ordering_field(view, method)
                 if ordering_field:
-                    ordering_string = ORDERING_STRING + " %s ." % ordering_field
+                    ordering_string = ORDERING_STRING + " %s . " % ordering_field + ORDERING_STRING_NESTED
                     macros['FILTERS'] += ordering_string
             if '%(SERIALIZER)s' in docstring:
                 macros['SERIALIZER'] = get_serializer(view, include_read_only=True)

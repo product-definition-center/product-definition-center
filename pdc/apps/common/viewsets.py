@@ -205,7 +205,8 @@ class StrictQueryParamMixin(object):
         serializer_fields = self._get_fields_from_serializer_class()
         valid_fields = list(set(model_fields).intersection(set(serializer_fields)))
         valid_fields += self.queryset.query.aggregates.keys()
-        tmp_list = [param.strip().lstrip('-') for param in ordering_keys.split(',')]
+        # If there is a nested ordering with '__', check if it is valid in the RelatedNestedOrderingFilter
+        tmp_list = [param.strip().lstrip('-') for param in ordering_keys.split(',') if '__' not in param]
         invalid_fields = set(tmp_list) - set(valid_fields)
         if invalid_fields:
             raise FieldError('Unknown query key: %s not in fields: %s' %

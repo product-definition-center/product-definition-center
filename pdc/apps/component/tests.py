@@ -1866,6 +1866,47 @@ class ReleaseComponentRelationshipRESTTestCase(TestCaseWithChangeSetMixin, APITe
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_list_relationship_by_nested(self):
+
+        def f(ordering_value):
+            response = self.client.get(reverse("rcrelationship-list"), {'ordering': ordering_value}, format='json')
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.data.get('count'), 2)
+            data = response.data.get('results')
+            if ordering_value == "to_component__name":
+                self.assertTrue(self, data[0].get('to_component')["name"] <= data[1].get('to_component')["name"])
+            elif ordering_value == "-to_component__name":
+                self.assertTrue(self, data[0].get('to_component')["name"] >= data[1].get('to_component')["name"])
+            elif ordering_value == "to_component__release":
+                self.assertTrue(self, data[0].get('to_component')["release"] <= data[1].get('to_component')["release"])
+            else:
+                self.assertTrue(self, data[0].get('to_component')["release"] >= data[1].get('to_component')["release"])
+
+        for v in ["to_component__name", "-to_component__name", "to_component__release", "-to_component__release"]:
+            f(v)
+
+    def test_list_relationship_non_exist_nested(self):
+        for v in ["to_component_non_exist__release", "to_component__release_non_exist"]:
+            response = self.client.get(reverse("rcrelationship-list"), {'ordering': v}, format='json')
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_list_relationship_multi_nested(self):
+        response = self.client.get(reverse("rcrelationship-list"),
+                                   {'ordering': 'to_component__release,to_component__name'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+        data = response.data.get('results')
+
+        self.assertTrue(self, data[0].get('to_component')["release"] <= data[1].get('to_component')["release"])
+
+        response = self.client.get(reverse("rcrelationship-list"),
+                                   {'ordering': '-to_component__name,to_component__release'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+        data = response.data.get('results')
+        self.assertTrue(self, data[0].get('to_component')["name"] >= data[1].get('to_component')["name"])
+
 
 class ComponentRelationshipTypeRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     """
