@@ -2725,8 +2725,8 @@ class ComposeTreeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
                 'compose-1/Server2/x86_64/BRQ/nfs': {'scheme': 'http', 'url': 'http://example.com', 'synced_content': ['binary', 'debug', 'source']}}
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['compose-1/Server2/x86_64/BRQ/nfs'].get('synced_content'),
-                         ['binary', 'debug', 'source'])
+        self.assertEqual(set(response.data['compose-1/Server2/x86_64/BRQ/nfs'].get('synced_content')),
+                         set(['binary', 'debug', 'source']))
         self.assertNumChanges([2])
 
     def test_delete_existing(self):
