@@ -36,7 +36,7 @@ class RPM(models.Model):
     release             = models.CharField(max_length=200, db_index=True)
     arch                = models.CharField(max_length=200, db_index=True)  # nosrc
     srpm_name           = models.CharField(max_length=200, db_index=True)  # package (name of srpm)
-    built_for_release   = models.ForeignKey('release.Release', null=True, blank=True)
+    built_for_release   = models.ForeignKey('release.Release', null=True, blank=True, on_delete=models.CASCADE)
     srpm_nevra          = models.CharField(max_length=200, null=True, blank=True, db_index=True)
     # Well behaved filenames are unique, but that is enforced by having unique NVRA.
     filename            = models.CharField(max_length=4096)
@@ -169,7 +169,7 @@ class Dependency(models.Model):
     name = models.CharField(max_length=200)
     version = models.CharField(max_length=200, blank=True, null=True)
     comparison = models.CharField(max_length=50, blank=True, null=True)
-    rpm = models.ForeignKey(RPM)
+    rpm = models.ForeignKey(RPM, on_delete=models.CASCADE)
 
     def __unicode__(self):
         base_str = self.name
@@ -225,8 +225,8 @@ class ImageType(models.Model):
 
 class Image(models.Model):
     file_name           = models.CharField(max_length=200, db_index=True)
-    image_format        = models.ForeignKey(ImageFormat)
-    image_type          = models.ForeignKey(ImageType)
+    image_format        = models.ForeignKey(ImageFormat, on_delete=models.CASCADE)
+    image_type          = models.ForeignKey(ImageType, on_delete=models.CASCADE)
     disc_number         = models.PositiveIntegerField()
     disc_count          = models.PositiveIntegerField()
     arch                = models.CharField(max_length=200, db_index=True)
@@ -280,14 +280,15 @@ class Archive(models.Model):
 
 class BuildImage(models.Model):
     image_id            = models.CharField(max_length=200)
-    image_format        = models.ForeignKey(ImageFormat)
+    image_format        = models.ForeignKey(ImageFormat, on_delete=models.CASCADE)
     md5                 = models.CharField(max_length=32, validators=[validate_md5])
 
     rpms                = models.ManyToManyField(RPM)
     archives            = models.ManyToManyField(Archive)
     releases            = models.ManyToManyField(Release)
     test_result         = models.ForeignKey(ComposeAcceptanceTestingState,
-                                            default=ComposeAcceptanceTestingState.get_untested)
+                                            default=ComposeAcceptanceTestingState.get_untested,
+                                            on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (

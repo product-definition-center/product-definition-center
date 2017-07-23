@@ -81,10 +81,10 @@ class Repo(models.Model):
     variant_arch        = models.ForeignKey("release.VariantArch",
                                             related_name="repos",
                                             on_delete=models.PROTECT)
-    service             = models.ForeignKey(Service)
-    repo_family         = models.ForeignKey(RepoFamily)
-    content_format      = models.ForeignKey(ContentFormat)
-    content_category    = models.ForeignKey(ContentCategory)
+    service             = models.ForeignKey(Service, on_delete=models.CASCADE)
+    repo_family         = models.ForeignKey(RepoFamily, on_delete=models.CASCADE)
+    content_format      = models.ForeignKey(ContentFormat, on_delete=models.CASCADE)
+    content_category    = models.ForeignKey(ContentCategory, on_delete=models.CASCADE)
     shadow              = models.BooleanField(default=False)
     name                = models.CharField(max_length=2000, db_index=True)
     # Store engineering product ID which is used to identify products shipped via CDN

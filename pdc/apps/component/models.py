@@ -52,7 +52,7 @@ class Upstream(models.Model):
 
 class BugzillaComponent(mptt_models.MPTTModel):
     name                        = models.CharField(max_length=100, validators=[validate_bc_name])
-    parent_component = mptt_models.TreeForeignKey('self', null=True, blank=True, related_name='children')
+    parent_component = mptt_models.TreeForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.CASCADE)
 
     class Meta:
         unique_together = [
@@ -98,7 +98,7 @@ class GlobalComponent(models.Model):
     name            = models.CharField(max_length=100, unique=True)
     dist_git_path   = models.CharField(max_length=200, blank=True, null=True)
     labels          = models.ManyToManyField(Label, blank=True)
-    upstream        = models.OneToOneField(Upstream, blank=True, null=True)
+    upstream        = models.OneToOneField(Upstream, blank=True, null=True, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return u"%s" % self.name
@@ -139,8 +139,8 @@ class ReleaseComponentType(models.Model):
 class ReleaseComponent(models.Model):
     """Record which release is connecting to which components"""
 
-    release                     = models.ForeignKey(Release)
-    global_component            = models.ForeignKey(GlobalComponent)
+    release                     = models.ForeignKey(Release, on_delete=models.CASCADE)
+    global_component            = models.ForeignKey(GlobalComponent, on_delete=models.CASCADE)
     bugzilla_component          = models.ForeignKey(BugzillaComponent, blank=True, null=True, on_delete=models.SET_NULL)
     type                        = models.ForeignKey(ReleaseComponentType, default=1, on_delete=models.SET_DEFAULT,
                                                     related_name='release_components')
@@ -227,7 +227,7 @@ class GroupType(models.Model):
 class ReleaseComponentGroup(models.Model):
     group_type = models.ForeignKey(GroupType, related_name='release_component_groups',
                                    on_delete=models.PROTECT)
-    release = models.ForeignKey(Release, related_name='release_component_groups')
+    release = models.ForeignKey(Release, related_name='release_component_groups', on_delete=models.CASCADE)
     description = models.CharField(max_length=200)
     components = models.ManyToManyField(ReleaseComponent, related_name='release_component_groups', blank=True)
 
@@ -272,9 +272,9 @@ class ReleaseComponentRelationshipType(models.Model):
 
 
 class ReleaseComponentRelationship(models.Model):
-    relation_type = models.ForeignKey(ReleaseComponentRelationshipType)
-    from_component = models.ForeignKey(ReleaseComponent, related_name='from_release_components')
-    to_component = models.ForeignKey(ReleaseComponent, related_name='to_release_components')
+    relation_type = models.ForeignKey(ReleaseComponentRelationshipType, on_delete=models.CASCADE)
+    from_component = models.ForeignKey(ReleaseComponent, related_name='from_release_components', on_delete=models.CASCADE)
+    to_component = models.ForeignKey(ReleaseComponent, related_name='to_release_components', on_delete=models.CASCADE)
 
     def __unicode__(self):
         return u'%s %s %s' % (unicode(self.from_component), self.relation_type, unicode(self.to_component))

@@ -15,7 +15,7 @@ from pdc.apps.component.models import ReleaseComponent
 
 
 class ReleaseBugzillaMapping(models.Model):
-    release          = models.OneToOneField(Release)
+    release          = models.OneToOneField(Release, on_delete=models.CASCADE)
     bugzilla_product = models.CharField(max_length=200)
 
     def __unicode__(self):
@@ -78,7 +78,7 @@ def store_original_bugzilla_mapping(sender, request, release, **kwargs):
 
 
 class ReleaseDistGitMapping(models.Model):
-    release          = models.OneToOneField(Release, related_name='releasedistgitmapping')
+    release          = models.OneToOneField(Release, related_name='releasedistgitmapping', on_delete=models.CASCADE)
     dist_git_branch  = models.CharField(max_length=200)
 
     def __unicode__(self):
@@ -141,7 +141,8 @@ def log_cloned_dist_git_mapping(sender, request, release, **kwargs):
 
 class ReleaseComponentSRPMNameMapping(models.Model):
     release_component = models.OneToOneField(ReleaseComponent,
-                                             related_name='srpmnamemapping')
+                                             related_name='srpmnamemapping',
+                                             on_delete=models.CASCADE)
     srpm_name         = models.CharField(max_length=200, db_index=True)
 
     def __unicode__(self):

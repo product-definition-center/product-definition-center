@@ -16,7 +16,8 @@ class OSBSRecord(models.Model):
     is created or updated or when the flag is toggled on type.
     """
     component = models.OneToOneField(component_models.ReleaseComponent,
-                                     related_name='osbs')
+                                     related_name='osbs',
+                                     on_delete=models.CASCADE)
     autorebuild = models.NullBooleanField()
 
     def __unicode__(self):

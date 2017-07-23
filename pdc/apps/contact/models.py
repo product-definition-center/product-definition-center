@@ -72,7 +72,7 @@ class ContactManager(models.Manager):
 
 
 class Contact(models.Model):
-    content_type = models.ForeignKey(ContentType, editable=False, null=True)
+    content_type = models.ForeignKey(ContentType, editable=False, null=True, on_delete=models.CASCADE)
     active       = models.BooleanField(default=True)
 
     objects = ContactManager()
@@ -100,7 +100,7 @@ class Person(Contact):
     """
     Person as Contact.
     """
-    contact     = models.OneToOneField(Contact, related_name="person", parent_link=True)
+    contact = models.OneToOneField(Contact, related_name="person", parent_link=True, on_delete=models.CASCADE)
     username = models.CharField(max_length=128, db_index=True, unique=True)
     email       = models.EmailField()
 
@@ -118,7 +118,7 @@ class Maillist(Contact):
     """
     Maillist as Contact.
     """
-    contact   = models.OneToOneField(Contact, related_name="maillist", parent_link=True)
+    contact   = models.OneToOneField(Contact, related_name="maillist", parent_link=True, on_delete=models.CASCADE)
     mail_name = models.CharField(max_length=128, db_index=True, unique=True)
     email     = models.EmailField()
 

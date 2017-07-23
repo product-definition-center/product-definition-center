@@ -33,16 +33,17 @@ class ComposeAcceptanceTestingState(models.Model):
 
 
 class Compose(models.Model):
-    release             = models.ForeignKey("release.Release")
+    release             = models.ForeignKey("release.Release", on_delete=models.CASCADE)
     compose_id          = models.CharField(max_length=200, unique=True)
     compose_date        = models.DateField()
-    compose_type        = models.ForeignKey(ComposeType)
+    compose_type        = models.ForeignKey(ComposeType, on_delete=models.CASCADE)
     compose_respin      = models.PositiveIntegerField()
     compose_label       = models.CharField(max_length=200, null=True, blank=True)
     dt_imported         = models.DateTimeField(auto_now_add=True)
     deleted             = models.BooleanField(default=False)
     acceptance_testing  = models.ForeignKey(ComposeAcceptanceTestingState,
-                                            default=ComposeAcceptanceTestingState.get_untested)
+                                            default=ComposeAcceptanceTestingState.get_untested,
+                                            on_delete=models.CASCADE)
     linked_releases     = models.ManyToManyField('release.Release', related_name='linked_composes', blank=True)
 
     class Meta:
@@ -172,11 +173,11 @@ def find_by(list, key, val):
 # these variants are a snapshot of real compose content
 # -> no direct relation to release variants
 class Variant(models.Model):
-    compose             = models.ForeignKey(Compose)
+    compose             = models.ForeignKey(Compose, on_delete=models.CASCADE)
     variant_id          = models.CharField(max_length=100, blank=False)
     variant_uid         = models.CharField(max_length=200, blank=False)
     variant_name        = models.CharField(max_length=300, blank=False)
-    variant_type        = models.ForeignKey("release.VariantType", related_name="compose_variant")
+    variant_type        = models.ForeignKey("release.VariantType", related_name="compose_variant", on_delete=models.CASCADE)
     deleted             = models.BooleanField(default=False)
 
     class Meta:
@@ -204,10 +205,11 @@ class Variant(models.Model):
 
 
 class VariantArch(models.Model):
-    variant             = models.ForeignKey(Variant)
-    arch                = models.ForeignKey("common.Arch", related_name="+")
+    variant             = models.ForeignKey(Variant, on_delete=models.CASCADE)
+    arch                = models.ForeignKey("common.Arch", related_name="+", on_delete=models.CASCADE)
     rtt_testing_status  = models.ForeignKey(ComposeAcceptanceTestingState,
-                                            default=ComposeAcceptanceTestingState.get_untested)
+                                            default=ComposeAcceptanceTestingState.get_untested,
+                                            on_delete=models.CASCADE)
     deleted             = models.BooleanField(default=False)
 
     class Meta:
@@ -256,11 +258,11 @@ class ComposeRPMManager(models.Manager):
 
 
 class ComposeRPM(models.Model):
-    variant_arch        = models.ForeignKey(VariantArch, db_index=True)
-    rpm                 = models.ForeignKey("package.RPM", db_index=True)
-    sigkey              = models.ForeignKey("common.SigKey", null=True, blank=True)
-    content_category    = models.ForeignKey("repository.ContentCategory")
-    path                = models.ForeignKey(Path)
+    variant_arch        = models.ForeignKey(VariantArch, db_index=True, on_delete=models.CASCADE)
+    rpm                 = models.ForeignKey("package.RPM", db_index=True, on_delete=models.CASCADE)
+    sigkey              = models.ForeignKey("common.SigKey", null=True, blank=True, on_delete=models.CASCADE)
+    content_category    = models.ForeignKey("repository.ContentCategory", on_delete=models.CASCADE)
+    path                = models.ForeignKey(Path, on_delete=models.CASCADE)
 
     objects = ComposeRPMManager()
 
@@ -453,7 +455,7 @@ class ComposeRPMMapping(object):
 
 class OverrideRPM(models.Model):
     """To add/disable RPMs for a release"""
-    release             = models.ForeignKey("release.Release")
+    release             = models.ForeignKey("release.Release", on_delete=models.CASCADE)
     variant             = models.CharField(max_length=200)
     arch                = models.CharField(max_length=20)
     srpm_name           = models.CharField(max_length=200)  # srpm_name = package; needed for grouping with ComposeRPMs
@@ -526,11 +528,12 @@ class OverrideRPM(models.Model):
 
 
 class ComposeImage(models.Model):
-    variant_arch        = models.ForeignKey(VariantArch, db_index=True)
-    image               = models.ForeignKey("package.Image", db_index=True)
-    path                = models.ForeignKey(Path)
+    variant_arch        = models.ForeignKey(VariantArch, db_index=True, on_delete=models.CASCADE)
+    image               = models.ForeignKey("package.Image", db_index=True, on_delete=models.CASCADE)
+    path                = models.ForeignKey(Path, on_delete=models.CASCADE)
     rtt_test_result     = models.ForeignKey(ComposeAcceptanceTestingState,
-                                            default=ComposeAcceptanceTestingState.get_untested)
+                                            default=ComposeAcceptanceTestingState.get_untested,
+                                            on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (
@@ -575,11 +578,11 @@ class Scheme(models.Model):
 
 
 class ComposeTree(models.Model):
-    compose             = models.ForeignKey("Compose")
-    variant             = models.ForeignKey("Variant")
-    arch                = models.ForeignKey("common.Arch")
-    location            = models.ForeignKey("Location")
-    scheme              = models.ForeignKey("Scheme")
+    compose             = models.ForeignKey("Compose", on_delete=models.CASCADE)
+    variant             = models.ForeignKey("Variant", on_delete=models.CASCADE)
+    arch                = models.ForeignKey("common.Arch", on_delete=models.CASCADE)
+    location            = models.ForeignKey("Location", on_delete=models.CASCADE)
+    scheme              = models.ForeignKey("Scheme", on_delete=models.CASCADE)
     url                 = models.CharField(max_length=255)
     synced_content      = models.ManyToManyField('repository.ContentCategory')
 
@@ -617,10 +620,10 @@ class PathType(models.Model):
 
 class ComposeRelPath(models.Model):
     path                = models.CharField(max_length=2000)
-    compose             = models.ForeignKey("Compose")
-    variant             = models.ForeignKey("Variant")
-    arch                = models.ForeignKey("common.Arch")
-    type                = models.ForeignKey("PathType")
+    compose             = models.ForeignKey("Compose", on_delete=models.CASCADE)
+    variant             = models.ForeignKey("Variant", on_delete=models.CASCADE)
+    arch                = models.ForeignKey("common.Arch", on_delete=models.CASCADE)
+    type                = models.ForeignKey("PathType", on_delete=models.CASCADE)
 
     def __unicode__(self):
         return u"%s-%s-%s-%s-%s" % (self.compose, self.variant, self.arch, self.type.name, self.path)
