@@ -5,12 +5,13 @@
 #
 from django.utils import timezone
 from django.conf import settings
+from django.utils.deprecation import MiddlewareMixin
 import re
 
 from . import models
 
 
-class UsageMiddleware(object):
+class UsageMiddleware(MiddlewareMixin):
     """
     This middleware class updates tracking information in the database on each
     request to the API. The information stored is last access time for each

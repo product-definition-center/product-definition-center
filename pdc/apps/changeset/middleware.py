@@ -15,13 +15,14 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.core.mail import mail_admins
 from django.urls import reverse
+from django.utils.deprecation import MiddlewareMixin
 from rest_framework import status
 import json
 
 logger = logging.getLogger(__name__)
 
 
-class ChangesetMiddleware(object):
+class ChangesetMiddleware(MiddlewareMixin):
     """
     Create a new changeset for each request. It is accessible via
     `request.changeset`. If the view function ends sucessfully, the changeset

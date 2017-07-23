@@ -16,7 +16,7 @@ access. User details can be read from LDAP.
 Configuring settings.py
 -----------------------
 
-    MIDDLEWARE_CLASSES = (
+    MIDDLEWARE = (
         ...
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'auth.middleware.KerberosUserMiddleware',

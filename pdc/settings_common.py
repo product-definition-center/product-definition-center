@@ -134,7 +134,7 @@ REST_FRAMEWORK = {
     'NON_FIELD_ERRORS_KEY': 'detail',
 }
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.cache.UpdateCacheMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -155,7 +155,7 @@ MIDDLEWARE_CLASSES = [
 ]
 
 if 'test' in sys.argv:
-    MIDDLEWARE_CLASSES.remove('pdc.apps.utils.middleware.RestrictAdminMiddleware')
+    MIDDLEWARE.remove('pdc.apps.utils.middleware.RestrictAdminMiddleware')
     CACHE_MIDDLEWARE_SECONDS = 0
 
 AUTHENTICATION_BACKENDS = (

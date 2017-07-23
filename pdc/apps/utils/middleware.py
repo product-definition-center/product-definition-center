@@ -7,6 +7,7 @@ import logging
 from django.conf import settings
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.utils.deprecation import MiddlewareMixin
 
 from . import messenger
 
@@ -14,7 +15,7 @@ from . import messenger
 logger = logging.getLogger(__name__)
 
 
-class MessagingMiddleware(object):
+class MessagingMiddleware(MiddlewareMixin):
     """
     Create a messaging list for each request. It is accessible via
     `request._messagings`. If the request ends sucessfully, the messager
@@ -33,7 +34,7 @@ class MessagingMiddleware(object):
         return response
 
 
-class RestrictAdminMiddleware(object):
+class RestrictAdminMiddleware(MiddlewareMixin):
     """
     Restricts access to the admin page to only logged-in users with a certain user-level.
     """
