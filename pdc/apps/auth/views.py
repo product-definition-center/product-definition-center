@@ -45,7 +45,7 @@ def remoteuserlogin(request):
     # value, that can cause redirect loop while redirecting to it
     redirect_to = request.GET.get(REDIRECT_FIELD_NAME, '/').strip() or '/'
 
-    if request.user.is_authenticated() and request.user.is_active:
+    if request.user.is_authenticated and request.user.is_active:
         return HttpResponseRedirect(redirect_to)
 
     try:
@@ -53,7 +53,7 @@ def remoteuserlogin(request):
     except Exception:
         pass
 
-    if request.user.is_anonymous():
+    if request.user.is_anonymous:
         reason = "Failed to authenticate. Make sure your browser is correctly configured."
     elif not request.user.is_active:
         reason = "Account is not active."
@@ -67,7 +67,7 @@ def logout(request):
     # value, that can cause redirect loop while redirecting to it
     redirect_to = request.GET.get(REDIRECT_FIELD_NAME, '/').strip() or '/'
 
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return HttpResponseRedirect(redirect_to)
 
     backend = None
@@ -351,7 +351,7 @@ class TokenViewSet(StrictQueryParamMixin, viewsets.ViewSet):
             {"token": "00bf04e8187f6e6d54f510515e8bde88e5bb7904"}
         """
 
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             if request.user.is_active:
                 token, created = Token.objects.get_or_create(user=request.user)
                 return Response({'token': token.key})
@@ -381,7 +381,7 @@ class TokenViewSet(StrictQueryParamMixin, viewsets.ViewSet):
 
             {"token": "00bf04e8187f6e6d54f510515e8bde88e5bb7904"}
         """
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             if request.user.is_active:
                 try:
                     token = Token.objects.get(user=request.user)
@@ -712,7 +712,7 @@ class CurrentUserViewSet(mixins.ListModelMixin,
             }
         """
         user = request.user
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED,
                             data={'detail': 'Access denied to unauthorized users.'})
         return Response(data={

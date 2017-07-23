@@ -39,6 +39,6 @@ class RestrictAdminMiddleware(MiddlewareMixin):
     Restricts access to the admin page to only logged-in users with a certain user-level.
     """
     def process_request(self, request):
-        if request.user.is_authenticated() and request.path.startswith(reverse('admin:index')):
+        if request.user.is_authenticated and request.path.startswith(reverse('admin:index')):
             if not (request.user.is_active and request.user.is_superuser):
                 return HttpResponseRedirect("/%s%s/" % (settings.REST_API_URL, settings.REST_API_VERSION))

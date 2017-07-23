@@ -34,7 +34,7 @@ class UsageMiddleware(MiddlewareMixin):
             return response
 
         user = None
-        if request.user and request.user.is_authenticated():
+        if request.user and request.user.is_authenticated:
             user = request.user
             user.last_connected = data['now']
             user.save()

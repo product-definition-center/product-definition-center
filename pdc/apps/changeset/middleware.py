@@ -65,7 +65,7 @@ class ChangesetMiddleware(MiddlewareMixin):
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         user = None
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             user = request.user
 
         if request.method == "GET":
