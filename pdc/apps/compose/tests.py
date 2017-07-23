@@ -8,7 +8,7 @@ import json
 import mock
 from StringIO import StringIO
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase
 from django.test.client import Client
 from rest_framework.test import APITestCase

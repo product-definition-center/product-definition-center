@@ -8,7 +8,7 @@ import random
 import time
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status

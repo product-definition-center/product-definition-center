@@ -6,7 +6,7 @@
 from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import ValidationError
 
 from pdc.apps.bindings import models as binding_models

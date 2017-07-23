@@ -15,7 +15,7 @@ from django.utils.encoding import smart_text
 from contrib import drf_introspection
 
 from django.db.models.fields import NOT_PROVIDED
-from django.core.urlresolvers import NoReverseMatch
+from django.urls import NoReverseMatch
 from django.core.exceptions import FieldDoesNotExist
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.utils import formatting

@@ -9,7 +9,7 @@ import time
 
 from rest_framework.test import APITestCase
 from rest_framework import status
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test.client import Client
 
 from pdc.apps.common.test_utils import TestCaseWithChangeSetMixin

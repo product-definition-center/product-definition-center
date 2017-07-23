@@ -14,7 +14,7 @@ from . import models
 from django.http import HttpResponse
 from django.conf import settings
 from django.core.mail import mail_admins
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from rest_framework import status
 import json
 

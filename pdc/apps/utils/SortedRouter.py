@@ -7,7 +7,7 @@
 import re
 
 from collections import OrderedDict
-from django.core.urlresolvers import NoReverseMatch
+from django.urls import NoReverseMatch
 from rest_framework import views
 from rest_framework.reverse import reverse
 from rest_framework.response import Response
@@ -23,7 +23,7 @@ def get_resolver_match(request):
     try:
         return request.resolver_match
     except AttributeError:
-        from django.core.urlresolvers import resolve
+        from django.urls import resolve
         return resolve(request.path_info)
 
 

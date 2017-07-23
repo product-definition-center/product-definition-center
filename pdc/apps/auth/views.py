@@ -15,7 +15,7 @@ from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import Group, Permission
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.conf import settings
-from django.core.urlresolvers import NoReverseMatch
+from django.urls import NoReverseMatch
 
 from rest_framework import status
 from rest_framework.authtoken.models import Token

@@ -9,7 +9,7 @@ import json
 from django.test import TestCase
 from django.core.exceptions import FieldError, ValidationError
 from django.utils.datastructures import MultiValueDict
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from rest_framework.test import APITestCase
 from rest_framework import status
