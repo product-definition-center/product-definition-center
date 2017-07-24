@@ -36,6 +36,11 @@ component
 
 .. image:: models_svg/component.svg
 
+componentbranch
+---------------
+
+.. image:: models_svg/componentbranch.svg
+
 compose
 -------
 
