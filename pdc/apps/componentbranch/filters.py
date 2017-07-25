@@ -9,29 +9,16 @@ from django.db.models import Q
 from datetime import datetime
 
 from pdc.apps.common.filters import CaseInsensitiveBooleanFilter
+from pdc.apps.common import hacks
 from pdc.apps.componentbranch.models import (
     ComponentBranch, SLA, SLAToComponentBranch)
-
-
-def string_to_bool(item):
-    try:
-        # Check to see if a number was passed
-        return bool(int(item))
-    except ValueError:
-        # If it's not a number, check the string contents
-        if item.lower() == 'true':
-            return True
-        elif item.lower() == 'false':
-            return False
-        else:
-            raise ValueError('"{0}" is not a valid bool'.format(item))
 
 
 def filter_active(queryset, value):
     if not value:
         return queryset
     try:
-        processed_value = string_to_bool(value)
+        processed_value = hacks.convert_str_to_bool(value)
     except ValueError:
         # If a ValueError is thrown, then the value was invalid
         return queryset
@@ -62,7 +49,7 @@ def filter_active_sla_to_branch(queryset, value):
     if not value:
         return queryset
     try:
-        processed_value = string_to_bool(value)
+        processed_value = hacks.convert_str_to_bool(value)
     except ValueError:
         # If a ValueError is thrown, then the value was invalid
         return queryset
