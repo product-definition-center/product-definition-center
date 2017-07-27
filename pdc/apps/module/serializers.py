@@ -5,13 +5,10 @@
 #
 from rest_framework import serializers
 
-from pdc.apps.common.models import Arch
 from pdc.apps.common.serializers import StrictSerializerMixin, DynamicFieldsSerializerMixin
-from pdc.apps.common.fields import ChoiceSlugField
 from .models import UnreleasedVariant, RuntimeDependency, BuildDependency
 
-from pdc.apps.repository.models import ContentFormat
-from pdc.apps.package.serializers import RPMRelatedField, RPMSerializer
+from pdc.apps.package.serializers import RPMRelatedField
 from pdc.apps.package.models import RPM
 
 
@@ -19,7 +16,10 @@ class UnreleasedVariantField(serializers.Field):
 
     def to_internal_value(self, data):
         try:
-            variant = UnreleasedVariant.objects.get(variant_uid=data['variant_uid'], variant_version=data['variant_version'], variant_release=data['variant_release'])
+            variant = UnreleasedVariant.objects.get(
+                variant_uid=data['variant_uid'],
+                variant_version=data['variant_version'],
+                variant_release=data['variant_release'])
         except UnreleasedVariant.DoesNotExist:
             raise serializers.ValidationError("UnreleasedVariant %s does not exist.")
         return variant

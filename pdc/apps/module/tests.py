@@ -5,7 +5,6 @@
 # http://opensource.org/licenses/MIT
 #
 import json
-import os.path
 
 from django.core.urlresolvers import reverse
 from rest_framework.test import APITestCase
@@ -78,7 +77,7 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'variant_name': "Core", 'variant_version': "0",
             'variant_release': "1", 'variant_type': 'module',
             'koji_tag': "module-core-0-1", 'modulemd': 'foobar',
-            'build_deps': [{'dependency':'base-runtime', 'stream': 'master'}]
+            'build_deps': [{'dependency': 'base-runtime', 'stream': 'master'}]
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -89,7 +88,7 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'variant_name': "Core3", 'variant_version': "0",
             'variant_release': "1", 'variant_type': 'module',
             'koji_tag': "module-core3-0-1", 'modulemd': 'foobar',
-            'build_deps': [{'dependency':'base-runtime', 'stream': 'f26'}]
+            'build_deps': [{'dependency': 'base-runtime', 'stream': 'f26'}]
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -100,7 +99,7 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'variant_name': "Core2", 'variant_version': "0",
             'variant_release': "1", 'variant_type': 'module',
             'koji_tag': "module-core2-0-1", 'modulemd': 'foobar',
-            'build_deps': [{'dependency':'bootstrap', 'stream': 'master'}]
+            'build_deps': [{'dependency': 'bootstrap', 'stream': 'master'}]
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

@@ -3,7 +3,6 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 from django.db import models
-from jsonfield import JSONField
 from pdc.apps.package.models import RPM
 
 
