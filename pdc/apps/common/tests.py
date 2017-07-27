@@ -605,3 +605,41 @@ class JSONResponseFor404(APITestCase):
             json.loads(response.content)
         except ValueError:
             self.fail('Response was not JSON')
+
+
+class OrderingTestCase(APITestCase):
+    fixtures = ['pdc/apps/common/fixtures/test/sigkeys.json']
+
+    def test_ordering_single(self):
+        response = self.client.get(reverse('sigkey-list'), data={'ordering': 'name'}, format='json')
+        self.assertEqual(response.data['count'], 3)
+        results = response.data.get('results')
+        self.assertLess(results[0].get('name'), results[1].get('name'))
+        self.assertLess(results[1].get('name'), results[2].get('name'))
+
+    def test_ordering_single_reverse(self):
+        response = self.client.get(reverse('sigkey-list'), data={'ordering': '-key_id'}, format='json')
+        self.assertEqual(response.data['count'], 3)
+        results = response.data.get('results')
+        self.assertGreater(results[0].get('key_id'), results[1].get('key_id'))
+        self.assertGreater(results[1].get('key_id'), results[2].get('key_id'))
+
+    def test_ordering_multiple(self):
+        response = self.client.get(reverse('sigkey-list'), data={'ordering': 'description,name'}, format='json')
+        self.assertEqual(response.data['count'], 3)
+        results = response.data.get('results')
+        self.assertEqual(results[0].get('description'), 'A')
+        self.assertEqual(results[1].get('description'), 'A')
+        self.assertLess(results[0].get('name'), results[1].get('name'))
+        self.assertLess(results[1].get('description'), results[2].get('description'))
+
+    def test_ordering_bad_key(self):
+        response = self.client.get(reverse('sigkey-list'), data={'ordering': 'description_,name'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue('Unknown query key' in response.data.get('detail'))
+        self.assertTrue('description_' in response.data.get('detail'))
+
+        response = self.client.get(reverse('sigkey-list'), data={'ordering': 'description,name_'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue('Unknown query key' in response.data.get('detail'))
+        self.assertTrue('name_' in response.data.get('detail'))
