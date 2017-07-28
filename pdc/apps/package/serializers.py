@@ -70,7 +70,8 @@ class RPMSerializer(StrictSerializerMixin,
         model = models.RPM
         fields = ('id', 'name', 'version', 'epoch', 'release', 'arch', 'srpm_name',
                   'srpm_nevra', 'filename', 'linked_releases', 'linked_composes',
-                  'dependencies', 'built_for_release')
+                  'dependencies', 'built_for_release', 'srpm_commit_hash',
+                  'srpm_commit_branch')
 
     def create(self, validated_data):
         dependencies = validated_data.pop('dependencies', [])

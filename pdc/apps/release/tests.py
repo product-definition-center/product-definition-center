@@ -1513,8 +1513,13 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         }
         response = self.client.post(reverse('variant-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        args['arches'] = ['x86_64']
-        self.assertEqual(response.data, args)
+        expected = args.copy()
+        expected.update({
+            'arches': ['x86_64'],
+            'variant_version': None,
+            'variant_release': None,
+        })
+        self.assertEqual(response.data, expected)
         self.assertNumChanges([1])
         self.assertEqual(models.Variant.objects.count(), 3)
         self.assertEqual(models.VariantArch.objects.count(), 5)
@@ -1631,6 +1636,8 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
             'name': u'Workstation variant',
             'type': u'variant',
             'arches': ['ppc64', 'x86_64'],
+            'variant_version': None,
+            'variant_release': None,
         }
         response = self.client.put(reverse('variant-detail', args=['release-1.0/Server-UID']),
                                    args, format='json')
@@ -1756,6 +1763,8 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
             'release': 'release-1.0',
             'name': 'Server name',
             'type': 'variant',
+            'variant_version': None,
+            'variant_release': None,
         }
         self.assertItemsEqual(response.data.pop('arches'), ['x86_64', 'ppc64'])
         self.assertDictEqual(dict(response.data), expected)

@@ -1,0 +1,44 @@
+[
+  {
+    "model": "package.RPM",
+    "pk": 1,
+    "fields": {
+      "name": "bash",
+      "epoch": 0,
+      "version": "1.2.3",
+      "release": "4.b1",
+      "arch": "x86_64",
+      "srpm_name": "bash",
+      "srpm_nevra": "bash-0:1.2.3-4.b1.src",
+      "filename": "bash-1.2.3-4.b1.x86_64.rpm"
+    }
+  },
+  {
+    "model": "package.RPM",
+    "pk": 2,
+    "fields": {
+      "name": "bash-doc",
+      "epoch": 0,
+      "version": "1.2.3",
+      "release": "4.b2",
+      "arch": "x86_64",
+      "srpm_name": "bash",
+      "srpm_nevra": "bash-0:1.2.3-4.b2.src",
+      "filename": "bash-doc-1.2.3-4.b2.x86_64.rpm"
+    }
+  },
+  {
+    "model": "package.RPM",
+    "pk": 3,
+    "fields": {
+      "name": "bash-other",
+      "epoch": 0,
+      "version": "1.2.3",
+      "release": "4",
+      "arch": "src",
+      "srpm_name": "bash",
+      "srpm_nevra": null,
+      "filename": "bash-other-1.2.3-4.x86_64.rpm"
+    }
+  }
+]

@@ -561,6 +561,7 @@ class RPMDepsAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
                 'release': '4.b1', 'arch': 'x86_64', 'srpm_name': 'bash',
                 'filename': 'bash-1.2.3-4.b1.x86_64.rpm', "built_for_release": None,
                 'linked_releases': [], 'srpm_nevra': 'fake_bash-0:1.2.3-4.b1.src',
+                'srpm_commit_hash': '', 'srpm_commit_branch': '',
                 'dependencies': {'requires': ['required-package'],
                                  'obsoletes': ['obsolete-package'],
                                  'suggests': ['suggested-package >= 1.0.0'],
@@ -910,6 +911,7 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                        "srpm_name": "bash", "srpm_nevra": "bash-0:1.2.3-4.b1.src",
                        "filename": "bash-1.2.3-4.b1.x86_64.rpm", "linked_releases": [],
                        "built_for_release": "release-1.0",
+                       "srpm_commit_hash": None, "srpm_commit_branch": None,
                        "linked_composes": ["compose-1"], "dependencies": self.empty_deps}
         self.assertEqual(response.data, expect_data)
 
@@ -922,14 +924,15 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('rpms-list')
         data = {"name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1", "arch": "x86_64",
                 "srpm_name": "bash", "filename": "bash-1.2.3-4.b1.x86_64.rpm", "linked_releases": ['release-1.0'],
-                "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src"}
+                "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src", "srpm_commit_hash": "bash", "srpm_commit_branch": "master"}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         expected_response_data = {"id": 4, 'linked_composes': [],
                                   "name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1",
                                   "arch": "x86_64", "srpm_name": "bash", "filename": "bash-1.2.3-4.b1.x86_64.rpm",
                                   "linked_releases": ['release-1.0'], "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src",
-                                  "built_for_release": None, "dependencies": self.empty_deps}
+                                  "built_for_release": None, "dependencies": self.empty_deps, "srpm_commit_hash": "bash",
+                                  "srpm_commit_branch": "master"}
         self.assertEqual(response.data, expected_response_data)
         self.assertNumChanges([1])
 
@@ -944,7 +947,8 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                                   "name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1",
                                   "arch": "x86_64", "srpm_name": "bash", "filename": "bash-1.2.3-4.b1.x86_64.rpm",
                                   "linked_releases": ['release-1.0'], "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src",
-                                  "built_for_release": "release-1.0", "dependencies": self.empty_deps}
+                                  "built_for_release": "release-1.0", "dependencies": self.empty_deps,
+                                  "srpm_commit_hash": None, "srpm_commit_branch": None}
         self.assertEqual(response.data, expected_response_data)
         self.assertNumChanges([1])
 
@@ -1005,6 +1009,7 @@ class RPMAPIRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def test_update_rpm(self):
         data = {"name": "fake_bash", "version": "1.2.3", "epoch": 0, "release": "4.b1", "arch": "x86_64",
                 "srpm_name": "bash", "filename": "bash-1.2.3-4.b1.x86_64.rpm", "linked_releases": ['release-1.0'],
+                "srpm_commit_hash": None, "srpm_commit_branch": None,
                 "srpm_nevra": "fake_bash-0:1.2.3-4.b1.src", "built_for_release": 'release-2.0'}
         url = reverse('rpms-detail', args=[1])
         response = self.client.put(url, data, format='json')

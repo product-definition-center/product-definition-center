@@ -39,6 +39,8 @@ class RPM(models.Model):
     # Well behaved filenames are unique, but that is enforced by having unique NVRA.
     filename            = models.CharField(max_length=4096)
     linked_releases     = models.ManyToManyField('release.Release', related_name='linked_rpms')
+    srpm_commit_hash    = models.CharField(max_length=200, db_index=True, null=True, blank=True)
+    srpm_commit_branch  = models.CharField(max_length=200, db_index=True, null=True, blank=True)
 
     class Meta:
         unique_together = (
@@ -94,21 +96,23 @@ class RPM(models.Model):
         super(RPM, self).save(*args, **kwargs)
 
     @staticmethod
-    def bulk_insert(cursor, rpm_nevra, filename, srpm_nevra=None):
+    def bulk_insert(cursor, rpm_nevra, filename, srpm_nevra=None,
+                    srpm_commit_hash=None, srpm_commit_branch=None):
         nvra = parse_nvra(rpm_nevra)
         if srpm_nevra:
             srpm_name = parse_nvra(srpm_nevra)["name"]
         else:
             srpm_name = nvra["name"]
 
-        sql = add_returning("""INSERT INTO %s (name, epoch, version, release, arch, srpm_nevra, srpm_name, filename)
-                               VALUES (%%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s)""" % RPM._meta.db_table)
+        sql = add_returning("""INSERT INTO %s (name, epoch, version, release, arch, srpm_nevra, srpm_name, filename, srpm_commit_hash, srpm_commit_branch)
+                               VALUES (%%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s)""" % RPM._meta.db_table)
 
         try:
             sid = transaction.savepoint()
             RPM.check_srpm_nevra(rpm_nevra, srpm_nevra)
             cursor.execute(sql, [nvra["name"], nvra["epoch"], nvra["version"], nvra["release"],
-                                 nvra["arch"], srpm_nevra, srpm_name, filename])
+                                 nvra["arch"], srpm_nevra, srpm_name, filename, srpm_commit_hash,
+                                 srpm_commit_branch])
             if connection.features.can_return_id_from_insert:
                 insert_id = connection.ops.fetch_returned_insert_id(cursor)
             else:
