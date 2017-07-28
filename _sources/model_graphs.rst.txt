@@ -51,6 +51,11 @@ contact
 
 .. image:: models_svg/contact.svg
 
+module
+------
+
+.. image:: models_svg/module.svg
+
 osbs
 ----
 
