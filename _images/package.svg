@@ -419,14 +419,14 @@
 <text text-anchor="middle" x="698" y="-276.8" font-family="Helvetica,sans-Serif" font-size="8.00">archives (buildimage)</text>
 </g>
 <!-- pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_release_models_Release -->
-<g id="edge19" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_release_models_Release</title>
+<g id="edge21" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_release_models_Release</title>
 <path fill="none" stroke="black" d="M693.33,-361.67C746.54,-291.86 824.77,-163.08 759,-76 739.42,-50.08 649.92,-32.337 596.19,-23.813"/>
 <ellipse fill="black" stroke="black" cx="690.711" cy="-365.071" rx="4.00002" ry="4.00002"/>
 <ellipse fill="black" stroke="black" cx="592.163" cy="-23.1872" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="822.5" y="-167.8" font-family="Helvetica,sans-Serif" font-size="8.00">releases (buildimage)</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeAcceptanceTestingState -->
-<g id="node19" class="node"><title>pdc_apps_compose_models_ComposeAcceptanceTestingState</title>
+<g id="node18" class="node"><title>pdc_apps_compose_models_ComposeAcceptanceTestingState</title>
 <polygon fill="palegoldenrod" stroke="palegoldenrod" points="888.5,-160.5 888.5,-177.5 1043.5,-177.5 1043.5,-160.5 888.5,-160.5"/>
 <polygon fill="#698b22" stroke="#698b22" points="889,-160 889,-177 1044,-177 1044,-160 889,-160"/>
 <text text-anchor="start" x="894" y="-166.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
@@ -434,7 +434,7 @@
 <text text-anchor="start" x="1034" y="-166.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
 </g>
 <!-- pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState -->
-<g id="edge21" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState</title>
+<g id="edge19" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState</title>
 <path fill="none" stroke="black" d="M719.94,-363.46C762.76,-333 818.86,-292.15 867,-254 895.05,-231.77 926.19,-204.6 945.92,-187.06"/>
 <ellipse fill="black" stroke="black" cx="716.45" cy="-365.942" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="880" y="-276.8" font-family="Helvetica,sans-Serif" font-size="8.00">test_result (buildimage)</text>
