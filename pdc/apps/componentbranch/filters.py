@@ -87,6 +87,7 @@ class ComponentBranchFilter(django_filters.FilterSet):
 
     class Meta:
         model = ComponentBranch
+        exclude = ()
 
 
 class SLAFilter(django_filters.FilterSet):
