@@ -77,11 +77,11 @@ def filter_active_sla_to_branch(queryset, value):
 
 
 class ComponentBranchFilter(django_filters.FilterSet):
-    name = django_filters.CharFilter(name='name', lookup_type='exact')
+    name = django_filters.CharFilter(name='name', lookup_expr='exact')
     global_component = django_filters.CharFilter(
-        name='global_component__name', lookup_type='exact')
+        name='global_component__name', lookup_expr='exact')
     type = django_filters.CharFilter(
-        name='type__name', lookup_type='exact')
+        name='type__name', lookup_expr='exact')
     active = CaseInsensitiveBooleanFilter(action=filter_active)
     critical_path = CaseInsensitiveBooleanFilter()
 
@@ -99,14 +99,14 @@ class SLAFilter(django_filters.FilterSet):
 
 
 class SLAToComponentBranchFilter(django_filters.FilterSet):
-    sla = django_filters.CharFilter(name='sla__name', lookup_type='exact')
-    branch = django_filters.CharFilter(name='branch__name', lookup_type='exact')
-    global_component = django_filters.CharFilter(name='branch__global_component__name', lookup_type='exact')
-    branch_type = django_filters.CharFilter(name='branch__type__name', lookup_type='exact')
+    sla = django_filters.CharFilter(name='sla__name', lookup_expr='exact')
+    branch = django_filters.CharFilter(name='branch__name', lookup_expr='exact')
+    global_component = django_filters.CharFilter(name='branch__global_component__name', lookup_expr='exact')
+    branch_type = django_filters.CharFilter(name='branch__type__name', lookup_expr='exact')
     branch_active = CaseInsensitiveBooleanFilter(name='branch__active', action=filter_active_sla_to_branch)
-    branch_critical_path = CaseInsensitiveBooleanFilter(name='branch__critical_path', lookup_type='iexact')
-    eol_after = django_filters.DateFilter(name="eol", lookup_type='gte')
-    eol_before = django_filters.DateFilter(name="eol", lookup_type='lte')
+    branch_critical_path = CaseInsensitiveBooleanFilter(name='branch__critical_path', lookup_expr='iexact')
+    eol_after = django_filters.DateFilter(name="eol", lookup_expr='gte')
+    eol_before = django_filters.DateFilter(name="eol", lookup_expr='lte')
 
     class Meta:
         model = SLAToComponentBranch

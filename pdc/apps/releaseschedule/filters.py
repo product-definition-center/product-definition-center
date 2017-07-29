@@ -30,12 +30,12 @@ def filter_later_than_today(queryset, value):
 
 
 class ReleaseScheduleFilter(django_filters.FilterSet):
-    release = django_filters.CharFilter(name='release__release_id', lookup_type='exact')
-    product_version = django_filters.CharFilter(name='release__product_version__product_version_id', lookup_type='exact')
-    sla = django_filters.ModelMultipleChoiceFilter(name="sla__name", queryset=SLA.objects.all(), to_field_name='name', lookup_type='exact')
+    release = django_filters.CharFilter(name='release__release_id', lookup_expr='exact')
+    product_version = django_filters.CharFilter(name='release__product_version__product_version_id', lookup_expr='exact')
+    sla = django_filters.ModelMultipleChoiceFilter(name="sla__name", queryset=SLA.objects.all(), to_field_name='name', lookup_expr='exact')
     active = CaseInsensitiveBooleanFilter(name="date", action=filter_later_than_today)
-    date_after = django_filters.DateFilter(name="date", lookup_type='gte')
-    date_before = django_filters.DateFilter(name="date", lookup_type='lte')
+    date_after = django_filters.DateFilter(name="date", lookup_expr='gte')
+    date_before = django_filters.DateFilter(name="date", lookup_expr='lte')
 
     class Meta:
         model = ReleaseSchedule

@@ -113,7 +113,7 @@ class ProductFilter(django_filters.FilterSet):
 
 
 class ReleaseTypeFilter(django_filters.FilterSet):
-    name = django_filters.CharFilter(lookup_type="icontains")
+    name = django_filters.CharFilter(lookup_expr="icontains")
     short = filters.MultiValueFilter(name='short')
 
     class Meta:

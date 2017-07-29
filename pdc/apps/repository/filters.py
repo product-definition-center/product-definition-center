@@ -30,7 +30,7 @@ class RepoFilter(filters.FilterSet):
 
 
 class RepoFamilyFilter(filters.FilterSet):
-    name = filters.CharFilter(lookup_type="icontains")
+    name = filters.CharFilter(lookup_expr="icontains")
 
     class Meta:
         model = models.RepoFamily

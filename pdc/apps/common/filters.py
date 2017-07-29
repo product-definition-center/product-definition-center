@@ -234,7 +234,7 @@ class LabelFilter(FilterSet):
 class SigKeyFilter(FilterSet):
     name = MultiValueFilter()
     key_id = MultiValueFilter()
-    description = django_filters.CharFilter(lookup_type="icontains")
+    description = django_filters.CharFilter(lookup_expr="icontains")
 
     class Meta:
         model = SigKey

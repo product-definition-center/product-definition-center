@@ -12,7 +12,7 @@ from pdc.apps.module.models import Module
 
 class ModuleFilterBase(django_filters.FilterSet):
     active              = CaseInsensitiveBooleanFilter()
-    koji_tag            = django_filters.CharFilter(name='koji_tag', lookup_type='iexact')
+    koji_tag            = django_filters.CharFilter(name='koji_tag', lookup_expr='iexact')
     runtime_dep_name    = MultiValueFilter(name='runtime_deps__dependency', distinct=True)
     runtime_dep_stream  = MultiValueFilter(name='runtime_deps__stream', distinct=True)
     build_dep_name      = MultiValueFilter(name='build_deps__dependency', distinct=True)
@@ -23,11 +23,11 @@ class ModuleFilterBase(django_filters.FilterSet):
 
 
 class ModuleFilter(ModuleFilterBase):
-    uid                 = django_filters.CharFilter(name='uid', lookup_type='iexact')
-    name                = django_filters.CharFilter(name='name', lookup_type='iexact')
-    stream              = django_filters.CharFilter(name='stream', lookup_type='iexact')
-    version             = django_filters.CharFilter(name='version', lookup_type='iexact')
-    context             = django_filters.CharFilter(name='context', lookup_type='iexact')
+    uid                 = django_filters.CharFilter(name='uid', lookup_expr='iexact')
+    name                = django_filters.CharFilter(name='name', lookup_expr='iexact')
+    stream              = django_filters.CharFilter(name='stream', lookup_expr='iexact')
+    version             = django_filters.CharFilter(name='version', lookup_expr='iexact')
+    context             = django_filters.CharFilter(name='context', lookup_expr='iexact')
 
     class Meta:
         model = Module

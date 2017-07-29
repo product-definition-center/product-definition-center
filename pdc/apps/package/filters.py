@@ -205,10 +205,10 @@ class ReleasedFilesFilter(django_filters.FilterSet):
     service = MultiValueFilter(name='repo__service__name')
     arch = MultiValueFilter(name='repo__variant_arch__arch__name')
     variant_uid = MultiValueFilter(name='repo__variant_arch__variant__variant_uid')
-    release_date_after = django_filters.DateFilter(name="release_date", lookup_type='gte')
-    release_date_before = django_filters.DateFilter(name="release_date", lookup_type='lte')
-    released_date_after = django_filters.DateFilter(name="released_date", lookup_type='gte')
-    released_date_before = django_filters.DateFilter(name="released_date", lookup_type='lte')
+    release_date_after = django_filters.DateFilter(name="release_date", lookup_expr='gte')
+    release_date_before = django_filters.DateFilter(name="release_date", lookup_expr='lte')
+    released_date_after = django_filters.DateFilter(name="released_date", lookup_expr='gte')
+    released_date_before = django_filters.DateFilter(name="released_date", lookup_expr='lte')
 
     class Meta:
         model = models.ReleasedFiles

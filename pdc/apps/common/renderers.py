@@ -256,7 +256,7 @@ def get_filters(view):
             # filter defined in FilterSet
             filter = filterset_fields.get(key)
             filter_type = FILTER_DEFS.get(filter.__class__.__name__, 'string')
-            lookup_type = LOOKUP_TYPES.get(filter.lookup_type)
+            lookup_type = LOOKUP_TYPES.get(filter.lookup_expr)
             if lookup_type:
                 lookup_type = ', %s' % lookup_type
             filters.append(' * `%s` (%s%s)' % (key, filter_type, lookup_type or ''))

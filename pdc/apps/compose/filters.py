@@ -62,7 +62,7 @@ class ComposeFilter(django_filters.FilterSet):
 
 class OverrideRPMFilter(django_filters.FilterSet):
     release     = MultiValueCaseInsensitiveFilter(name='release__release_id')
-    comment     = django_filters.CharFilter(lookup_type='icontains')
+    comment     = django_filters.CharFilter(lookup_expr='icontains')
     arch        = MultiValueFilter(name='arch')
     variant     = MultiValueFilter(name='variant')
     srpm_name   = MultiValueFilter(name='srpm_name')
