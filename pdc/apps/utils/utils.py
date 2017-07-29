@@ -9,7 +9,8 @@ from pdc.apps.common.hacks import validate_model
 from pdc.apps.common.constants import PDC_WARNING_HEADER_NAME
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.db.models.fields.related import OneToOneRel
+from django.core.exceptions import FieldDoesNotExist
+from django.db.models.fields.reverse_related import OneToOneRel
 from django.db.models.signals import pre_save
 from django.forms.models import model_to_dict
 from rest_framework.filters import OrderingFilter
@@ -86,12 +87,12 @@ class RelatedNestedOrderingFilter(OrderingFilter):
     """
     def is_valid_field(self, model, field):
         """
-        Return true if the field exists within the model or there is a '__' here.
+        Return true if the field exists within the model (or in the related
+        model specified using the Django ORM __ notation)
         """
         field_name, rest  = _get_field_name_and_rest(field)
         try:
-            field, parent_model, direct, m2m = \
-                model._meta.get_field_by_name(field_name)
+            field = model._meta.get_field(field_name)
 
             # Check if foreign key value exists
             if isinstance(field, OneToOneRel):
@@ -99,11 +100,11 @@ class RelatedNestedOrderingFilter(OrderingFilter):
             if field.rel and rest:
                 return self.is_valid_field(field.rel.to, rest)
             return True
-        except Exception as e:
+        except FieldDoesNotExist:
             # There is no such field
-            raise FieldError("Unknown query key: %s" % e)
+            raise FieldError("Unknown ordering key: %s" % field_name)
 
-    def remove_invalid_fields(self, queryset, ordering_files, view):
+    def remove_invalid_fields(self, queryset, ordering_files, view, request):
         """
         Rewrite the remove_invalid_fields methods and add the nested ordering
         """
