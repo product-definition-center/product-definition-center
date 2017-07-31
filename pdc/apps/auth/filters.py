@@ -8,7 +8,7 @@ from django.contrib.auth import models
 import django_filters
 
 from pdc.apps.common.filters import MultiValueFilter
-from .models import GroupResourcePermission, ResourcePermission
+from .models import GroupResourcePermission, ResourcePermission, ResourceApiUrl
 
 
 class PermissionFilter(django_filters.FilterSet):
@@ -55,3 +55,12 @@ class ResourcePermissionFilter(django_filters.FilterSet):
     class Meta:
         model = ResourcePermission
         fields = ('resource', 'permission')
+
+
+class ResourceApiUrlFilter(django_filters.FilterSet):
+    resource = MultiValueFilter(name='resource__name')
+    url = MultiValueFilter()
+
+    class Meta:
+        model = ResourceApiUrl
+        fields = ('resource', 'url')

@@ -797,3 +797,73 @@ class ResourcePermissionsAPITestCase(APITestCase):
         data = {'permission': 'create', 'resource': 'group-resource-permissions'}
         response = self.client.get(self.url, data, format='json')
         self.assertEqual(response.data['count'], 1)
+
+
+class ResourceApiUrlsTestCase(APITestCase):
+    fixtures = ['pdc/apps/auth/fixtures/tests/resource_api_urls.json']
+
+    def test_list(self):
+        url = reverse('resourceapiurls-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+        data = {
+            "id": 1,
+            "resource": "auth/groups",
+            "url": "https://www.example.com/pdc/auth/groups"
+        }
+        self.assertEqual(response.data.get('results')[0], data)
+
+    def test_retrieve(self):
+        url = reverse('resourceapiurls-detail', args=[1])
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = {
+            "id": 1,
+            "resource": "auth/groups",
+            "url": "https://www.example.com/pdc/auth/groups"
+        }
+        self.assertEqual(response.data, data)
+
+    def test_create(self):
+        url = reverse('resourceapiurls-list')
+        data = {
+            "resource": "auth/permissions",
+            "url": "https://www.example.com/pdc/auth/permissions"}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['resource'], data['resource'])
+        self.assertEqual(response.data['url'], data['url'])
+
+    def test_update(self):
+        url = reverse('resourceapiurls-detail', args=[1])
+        data = {"url": "https://www.example.com/pdc/auth/groups-new"}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data['id'] = 1
+        data['resource'] = "auth/groups"
+        self.assertEqual(response.data, data)
+
+    def test_filter(self):
+        url = reverse('resourceapiurls-list')
+        response = self.client.get(url, {"resource": "auth/groups"}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+        data = {
+            "id": 1,
+            "resource": "auth/groups",
+            "url": "https://www.example.com/pdc/auth/groups"
+        }
+        self.assertEqual(response.data.get('results')[0], data)
+
+    def test_delete(self):
+        url = reverse('resourceapiurls-detail', args=[1])
+        response = self.client.delete(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_add_api_again_fails(self):
+        url = reverse('resourceapiurls-list')
+        data = {'resource': 'auth/groups', 'url': 'https://www.example.com/pdc/auth/groups-new'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, ['The API URL for given resource already exists.'])

@@ -16,3 +16,4 @@ class UserAdmin(admin.ModelAdmin):
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Resource)
 admin.site.register(models.ResourcePermission)
+admin.site.register(models.ResourceApiUrl)
