@@ -22,35 +22,11 @@
 #         'debug_toolbar',
 #     )
 #
-# Example 2: when you run PDC locally, you may not want to enable
-# the permission check system of the `REST_FRAMEWORK`, to do
-# this, just need to comment out the `DEFAULT_PERMISSION_CLASSES`
-# section.
+# Example 2: when you run PDC locally, you may not want to enable the permission
+# checks, uncomment this line, set DISABLE_RESOURCE_PERMISSION_CHECK with True.
+#     DISABLE_RESOURCE_PERMISSION_CHECK = True
 #
-#     REST_FRAMEWORK = {
-#         'DEFAULT_AUTHENTICATION_CLASSES': (
-#             'pdc.apps.auth.authentication.TokenAuthenticationWithChangeSet',
-#             'rest_framework.authentication.SessionAuthentication',
-#         ),
-#
-#     #    'DEFAULT_PERMISSION_CLASSES': [
-#     #        'rest_framework.permissions.DjangoModelPermissions'
-#     #    ],
-#
-#         'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',
-#                                     'pdc.apps.utils.utils.RelatedNestedOrderingFilter'),
-#
-#         'DEFAULT_METADATA_CLASS': 'contrib.bulk_operations.metadata.BulkMetadata',
-#
-#         'DEFAULT_RENDERER_CLASSES': (
-#             'rest_framework.renderers.JSONRenderer',
-#             'pdc.apps.common.renderers.ReadOnlyBrowsableAPIRenderer',
-#         ),
-#
-#         'EXCEPTION_HANDLER': 'pdc.apps.common.handlers.exception_handler',
-#
-#         'DEFAULT_PAGINATION_CLASS': 'pdc.apps.common.pagination.AutoDetectedPageNumberPagination',
-#     }
+
 
 
 import os.path
