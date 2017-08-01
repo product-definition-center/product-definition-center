@@ -111,10 +111,8 @@ Feel free to customize your `settings_local.py`. Changes will be populated
 automatically. In local development environment, you may need to set ``DEBUG =
 True`` to get better error messages and comment out ``ALLOWED_HOSTS`` setting.
 
-For development you might also consider uncommenting ``REST_FRAMEWORK`` section
-but keeping nested ``DEFAULT_PERMISSION_CLASSES`` item commented. This will
-disable authentication.
-
+When you run PDC locally, you may not want to enable the permission checks,
+just uncomment ``DISABLE_RESOURCE_PERMISSION_CHECK`` line.
 
 Init database
 -------------
