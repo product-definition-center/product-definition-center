@@ -3,6 +3,8 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+import re
+
 from django.contrib.auth import models
 
 from rest_framework import serializers
@@ -126,7 +128,11 @@ class ResourceApiUrlSerializer(StrictSerializerMixin, serializers.ModelSerialize
             resource_name = self.instance.resource.name
 
         try:
-            resource = Resource.objects.get(name=resource_name)
+            regex = re.sub(r'{.*?}', r'(.*?)', resource_name)
+            if regex != resource_name:
+                resource = Resource.objects.get(name__regex=regex)
+            else:
+                resource = Resource.objects.get(name=resource_name)
         except Resource.DoesNotExist:
             raise serializers.ValidationError("Can't find resource %s." % resource_name)
 
