@@ -16,4 +16,3 @@ lxml
 pygraphviz
 # docs
 Sphinx
-django-jsonfield
