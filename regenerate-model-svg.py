@@ -43,18 +43,18 @@ run_cmd(['python', 'manage.py', 'graph_models', '-aE',
          '-o', 'docs/source/models_svg/overview.svg'])
 file_contents += SECTION.format('overview', '-' * len('overview'))
 
-for app in sorted(apps.get_apps(), key=lambda x: x.__name__):
-    if not app.__name__.startswith('pdc.'):
+for config in sorted(apps.get_app_configs(), key=lambda x: x.label):
+    if not config.name.startswith('pdc.') or config.models_module is None:
         continue
 
     try:
-        _, _, name, _ = app.__name__.split('.')
+        label = config.label
     except ValueError:
         sys.exit(1)
 
-    run_cmd(['python', 'manage.py', 'graph_models', '-gE', name,
-             '-o', 'docs/source/models_svg/{}.svg'.format(name)])
-    file_contents += SECTION.format(name, '-' * len(name))
+    run_cmd(['python', 'manage.py', 'graph_models', '-gE', label,
+             '-o', 'docs/source/models_svg/{}.svg'.format(label)])
+    file_contents += SECTION.format(label, '-' * len(label))
 
 with open('docs/source/model_graphs.rst', 'w') as f:
     f.write(file_contents)
