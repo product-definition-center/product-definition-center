@@ -11,11 +11,6 @@ overview
 
 .. image:: models_svg/overview.svg
 
-auth
-----
-
-.. image:: models_svg/auth.svg
-
 bindings
 --------
 
@@ -50,6 +45,11 @@ contact
 -------
 
 .. image:: models_svg/contact.svg
+
+kerb_auth
+---------
+
+.. image:: models_svg/kerb_auth.svg
 
 module
 ------
