@@ -1,0 +1,51 @@
+[
+    {
+        "pk": 1,
+        "model": "kerb_auth.resource",
+        "fields": {
+            "name": "resource1",
+            "view": ""
+        }
+    },
+    {
+        "pk": 2,
+        "model": "kerb_auth.resource",
+        "fields": {
+            "name": "resource2",
+            "view": ""
+        }
+    },
+
+    {
+        "pk": 1,
+        "model": "kerb_auth.resourcepermission",
+        "fields": {
+            "resource": 2,
+            "permission": 1
+        }
+    },
+    {
+        "pk": 2,
+        "model": "kerb_auth.resourcepermission",
+        "fields": {
+            "resource": 1,
+            "permission": 2
+        }
+    },
+    {
+        "pk": 3,
+        "model": "kerb_auth.resourcepermission",
+        "fields": {
+            "resource": 2,
+            "permission": 2
+        }
+    },
+    {
+        "pk": 4,
+        "model": "kerb_auth.resourcepermission",
+        "fields": {
+            "resource": 1,
+            "permission": 1
+        }
+    }
+]
