@@ -130,23 +130,8 @@
 <text text-anchor="start" x="414.52" y="-244.133" font-family="Helvetica " font-size="8.00">CharField</text>
 <text text-anchor="start" x="450.52" y="-244.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
-<!-- django_contrib_auth_models_Group -->
-<g id="node12" class="node"><title>django_contrib_auth_models_Group</title>
-<polygon fill="palegoldenrod" stroke="palegoldenrod" points="893.02,-148.5 893.02,-165.5 938.02,-165.5 938.02,-148.5 893.02,-148.5"/>
-<polygon fill="#698b22" stroke="#698b22" points="893.52,-148 893.52,-165 938.52,-165 938.52,-148 893.52,-148"/>
-<text text-anchor="start" x="898.52" y="-154.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
-<text text-anchor="start" x="903.52" y="-154.633" font-family="Helvetica Bold" font-size="8.00" fill="white">Group</text>
-<text text-anchor="start" x="928.52" y="-154.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
-</g>
-<!-- pdc_apps_auth_models_User&#45;&gt;django_contrib_auth_models_Group -->
-<g id="edge9" class="edge"><title>pdc_apps_auth_models_User&#45;&gt;django_contrib_auth_models_Group</title>
-<path fill="none" stroke="black" d="M499.13,-236.6C499.59,-236.4 500.06,-236.2 500.52,-236 578.96,-202.4 804.04,-223.75 881.52,-188 885.8,-186.03 889.91,-183.32 893.7,-180.32"/>
-<ellipse fill="black" stroke="black" cx="495.284" cy="-238.425" rx="4.00002" ry="4.00002"/>
-<ellipse fill="black" stroke="black" cx="896.734" cy="-177.696" rx="4.00002" ry="4.00002"/>
-<text text-anchor="middle" x="820.02" y="-210.8" font-family="Helvetica,sans-Serif" font-size="8.00">groups (user)</text>
-</g>
 <!-- django_contrib_auth_models_Permission -->
-<g id="node14" class="node"><title>django_contrib_auth_models_Permission</title>
+<g id="node12" class="node"><title>django_contrib_auth_models_Permission</title>
 <polygon fill="palegoldenrod" stroke="palegoldenrod" points="971,-148.5 971,-165.5 1034,-165.5 1034,-148.5 971,-148.5"/>
 <polygon fill="#698b22" stroke="#698b22" points="971.5,-148 971.5,-165 1034.5,-165 1034.5,-148 971.5,-148"/>
 <text text-anchor="start" x="976" y="-154.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
@@ -154,11 +139,26 @@
 <text text-anchor="start" x="1025" y="-154.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
 </g>
 <!-- pdc_apps_auth_models_User&#45;&gt;django_contrib_auth_models_Permission -->
-<g id="edge11" class="edge"><title>pdc_apps_auth_models_User&#45;&gt;django_contrib_auth_models_Permission</title>
+<g id="edge9" class="edge"><title>pdc_apps_auth_models_User&#45;&gt;django_contrib_auth_models_Permission</title>
 <path fill="none" stroke="black" d="M499.11,-236.55C499.58,-236.37 500.05,-236.18 500.52,-236 572.78,-208.15 772.12,-230.62 848.52,-218 896.83,-210.02 909.91,-208.17 954.52,-188 959.93,-185.56 965.43,-182.56 970.68,-179.41"/>
 <ellipse fill="black" stroke="black" cx="495.218" cy="-238.244" rx="4.00002" ry="4.00002"/>
 <ellipse fill="black" stroke="black" cx="974.278" cy="-177.16" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="951.02" y="-210.8" font-family="Helvetica,sans-Serif" font-size="8.00">user_permissions (user)</text>
+</g>
+<!-- django_contrib_auth_models_Group -->
+<g id="node14" class="node"><title>django_contrib_auth_models_Group</title>
+<polygon fill="palegoldenrod" stroke="palegoldenrod" points="893.02,-148.5 893.02,-165.5 938.02,-165.5 938.02,-148.5 893.02,-148.5"/>
+<polygon fill="#698b22" stroke="#698b22" points="893.52,-148 893.52,-165 938.52,-165 938.52,-148 893.52,-148"/>
+<text text-anchor="start" x="898.52" y="-154.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
+<text text-anchor="start" x="903.52" y="-154.633" font-family="Helvetica Bold" font-size="8.00" fill="white">Group</text>
+<text text-anchor="start" x="928.52" y="-154.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
+</g>
+<!-- pdc_apps_auth_models_User&#45;&gt;django_contrib_auth_models_Group -->
+<g id="edge11" class="edge"><title>pdc_apps_auth_models_User&#45;&gt;django_contrib_auth_models_Group</title>
+<path fill="none" stroke="black" d="M499.13,-236.6C499.59,-236.4 500.06,-236.2 500.52,-236 578.96,-202.4 804.04,-223.75 881.52,-188 885.8,-186.03 889.91,-183.32 893.7,-180.32"/>
+<ellipse fill="black" stroke="black" cx="495.284" cy="-238.425" rx="4.00002" ry="4.00002"/>
+<ellipse fill="black" stroke="black" cx="896.734" cy="-177.696" rx="4.00002" ry="4.00002"/>
+<text text-anchor="middle" x="820.02" y="-210.8" font-family="Helvetica,sans-Serif" font-size="8.00">groups (user)</text>
 </g>
 <!-- pdc_apps_auth_models_Resource -->
 <g id="node5" class="node"><title>pdc_apps_auth_models_Resource</title>
@@ -230,13 +230,13 @@
 <text text-anchor="start" x="242.52" y="-134.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_Resource -->
-<g id="edge5" class="edge"><title>pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_Resource</title>
+<g id="edge3" class="edge"><title>pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_Resource</title>
 <path fill="none" stroke="black" d="M163.73,-118.32C160.72,-105.06 157.39,-90.412 154.54,-77.858"/>
 <ellipse fill="black" stroke="black" cx="164.672" cy="-122.46" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="216.52" y="-100.8" font-family="Helvetica,sans-Serif" font-size="8.00">resource (resourcepermission)</text>
 </g>
 <!-- pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_ActionPermission -->
-<g id="edge3" class="edge"><title>pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_ActionPermission</title>
+<g id="edge5" class="edge"><title>pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_ActionPermission</title>
 <path fill="none" stroke="black" d="M257.47,-121.98C263.91,-117.74 270.03,-113.09 275.52,-108 286.36,-97.963 294.77,-83.786 300.63,-71.625"/>
 <ellipse fill="black" stroke="black" cx="253.761" cy="-124.299" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="345.02" y="-100.8" font-family="Helvetica,sans-Serif" font-size="8.00">permission (resourcepermission)</text>
