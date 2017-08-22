@@ -729,12 +729,12 @@ class ReleaseComponentCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSe
         try:
             source_release = get_object_or_404(models.Release, release_id=source_release_id)
         except Http404:
-            return Response({'detail': 'Source_release %s is not existed' % source_release_id},
+            return Response({'detail': 'Source_release %s does not exist' % source_release_id},
                             status=status.HTTP_404_NOT_FOUND)
         try:
             target_release = get_object_or_404(models.Release, release_id=target_release_id)
         except Http404:
-            return Response({'detail': 'Target_release %s is not existed' % target_release_id},
+            return Response({'detail': 'Target_release %s does not exist' % target_release_id},
                             status=status.HTTP_404_NOT_FOUND)
 
         if source_release.releasecomponent_set.count() == 0:
