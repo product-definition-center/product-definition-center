@@ -399,7 +399,7 @@
 <text text-anchor="start" x="701" y="-376.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_package_models_RPM -->
-<g id="edge13" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_package_models_RPM</title>
+<g id="edge9" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_package_models_RPM</title>
 <path fill="none" stroke="black" d="M621.27,-361.59C603.43,-334.24 579.83,-300.18 556,-272 552.55,-267.92 548.96,-263.82 545.27,-259.74"/>
 <ellipse fill="black" stroke="black" cx="623.497" cy="-365.032" rx="4.00002" ry="4.00002"/>
 <ellipse fill="black" stroke="black" cx="542.507" cy="-256.714" rx="4.00002" ry="4.00002"/>
@@ -412,7 +412,7 @@
 <text text-anchor="middle" x="500.5" y="-276.8" font-family="Helvetica,sans-Serif" font-size="8.00">image_format (buildimage)</text>
 </g>
 <!-- pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_package_models_Archive -->
-<g id="edge9" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_package_models_Archive</title>
+<g id="edge13" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_package_models_Archive</title>
 <path fill="none" stroke="black" d="M654.93,-360.3C657.32,-319.01 660.68,-261 663.07,-219.71"/>
 <ellipse fill="black" stroke="black" cx="654.7" cy="-364.297" rx="4" ry="4"/>
 <ellipse fill="black" stroke="black" cx="663.301" cy="-215.683" rx="4" ry="4"/>
