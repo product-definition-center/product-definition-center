@@ -1820,6 +1820,47 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([])
 
 
+class VariantCPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
+    fixtures = [
+        "pdc/apps/release/fixtures/tests/variants_standalone.json",
+    ]
+
+    def test_add_cpe(self):
+        args = {
+            'release': 'release-1.0',
+            'variant_uid': 'Server-UID',
+            'cpe': 'cpe:',
+        }
+        response = self.client.post(reverse('variantcpe-list'), args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(args, response.data)
+        self.assertNumChanges([1])
+
+    def test_bad_cpe(self):
+        args = {
+            'release': 'release-1.0',
+            'variant_uid': 'Server-UID',
+            'cpe': 'not-cpe:',
+        }
+        response = self.client.post(reverse('variantcpe-list'), args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data.get('cpe', {}).get('detail'), 'CPE must start with "cpe:"')
+
+    def test_add_cpe_and_remove_variant(self):
+        args = {
+            'release': 'release-1.0',
+            'variant_uid': 'Server-UID',
+            'cpe': 'cpe:',
+        }
+        response = self.client.post(reverse('variantcpe-list'), args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(models.VariantCPE.objects.count(), 1)
+
+        response = self.client.delete(reverse('variant-detail', args=['release-1.0/Server-UID']))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(models.VariantCPE.objects.count(), 0)
+
+
 class ReleaseGroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     fixtures = [

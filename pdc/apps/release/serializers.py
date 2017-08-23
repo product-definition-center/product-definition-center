@@ -10,9 +10,20 @@ from pdc.apps.common.fields import ChoiceSlugField
 from pdc.apps.common import models as common_models
 from pdc.apps.common.serializers import StrictSerializerMixin
 from .models import (Product, ProductVersion, Release,
-                     BaseProduct, ReleaseType, Variant,
+                     BaseProduct, ReleaseType, Variant, VariantCPE,
                      VariantArch, VariantType, ReleaseGroup, ReleaseGroupType)
 from . import signals
+
+
+class CPESerializer(serializers.CharField):
+    """ Serializer for CPE strings (starts with "cpe:") """
+    doc_format = "string"
+
+    def to_internal_value(self, data):
+        verified_data = super(CPESerializer, self).to_internal_value(data)
+        if not verified_data.startswith("cpe:"):
+            raise serializers.ValidationError({'detail': 'CPE must start with "cpe:"'})
+        return verified_data
 
 
 class ProductSerializer(StrictSerializerMixin, serializers.ModelSerializer):
@@ -203,6 +214,28 @@ class ReleaseVariantSerializer(StrictSerializerMixin, serializers.ModelSerialize
             instance.variantarch_set.filter(arch__name=arch_name).delete()
 
         return instance
+
+
+class ReleaseVariantCPESerializer(StrictSerializerMixin, serializers.ModelSerializer):
+    release = serializers.CharField(source='variant.release.release_id')
+    variant_uid = serializers.CharField(source='variant.variant_uid')
+    cpe = CPESerializer(allow_blank=False, allow_null=False, required=True)
+
+    class Meta:
+        model = VariantCPE
+        fields = ('release', 'variant_uid', 'cpe')
+
+    def to_internal_value(self, data):
+        verified_data = super(ReleaseVariantCPESerializer, self).to_internal_value(data)
+        variant = verified_data['variant']
+        release_id = variant['release']['release_id']
+        variant_uid = variant['variant_uid']
+        try:
+            verified_data['variant'] = Variant.objects.get(release__release_id=release_id, variant_uid=variant_uid)
+        except Variant.DoesNotExist:
+            raise serializers.ValidationError(
+                {'detail': 'variant (release=%s, uid=%s) does not exist' % (release_id, variant_uid)})
+        return verified_data
 
 
 class VariantTypeSerializer(StrictSerializerMixin, serializers.ModelSerializer):

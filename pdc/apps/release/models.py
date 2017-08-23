@@ -323,7 +323,24 @@ class Variant(models.Model):
             'variant_uid': self.variant_uid,
             'variant_name': self.variant_name,
             'variant_type': self.variant_type.name,
-            'arches': self.arches,
+            'arches': self.arches
+        }
+
+
+class VariantCPE(models.Model):
+    """
+    CPE for release variant.
+    """
+    variant = models.OneToOneField(Variant)
+
+    # CPE (https://cpe.mitre.org/)
+    cpe = models.CharField(max_length=300, blank=False, null=False)
+
+    def export(self):
+        return {
+            'release': self.variant.release.release_id,
+            'variant_uid': self.variant.variant_uid,
+            'cpe': self.cpe,
         }
 
 

@@ -20,7 +20,7 @@ from .forms import (ReleaseSearchForm, BaseProductSearchForm,
 from .models import ProductVersion, Release, BaseProduct, Variant, Product
 from .serializers import (ProductSerializer, ProductVersionSerializer,
                           ReleaseSerializer, BaseProductSerializer,
-                          ReleaseTypeSerializer, ReleaseVariantSerializer,
+                          ReleaseTypeSerializer, ReleaseVariantSerializer, ReleaseVariantCPESerializer,
                           VariantTypeSerializer, ReleaseGroupSerializer)
 from pdc.apps.compose import models as compose_models
 from pdc.apps.repository import models as repo_models
@@ -1010,6 +1010,101 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
         __URL__: $LINK:variant-detail:release_id}/{variant_uid$
         """
         return super(ReleaseVariantViewSet, self).destroy(*args, **kwargs)
+
+
+class ReleaseVariantCPEViewSet(ChangeSetModelMixin,
+                               ConditionalProcessingMixin,
+                               StrictQueryParamMixin,
+                               MultiLookupFieldMixin,
+                               viewsets.GenericViewSet):
+    """
+    Common Platform Enumeration (CPE) for $LINK:variant-list$.
+
+    CPE is a standardized method of describing and identifying classes of operating systems.
+
+    Common Vulnerabilities and Exposures (CVE) contain list of affected CPEs.
+
+    For more information about CPE see [cpe.mitre.org](https://cpe.mitre.org/).
+    """
+
+    queryset = models.VariantCPE.objects.all()
+    serializer_class = ReleaseVariantCPESerializer
+    filter_class = filters.ReleaseVariantCPEFilter
+    permission_classes = (APIPermission,)
+    lookup_fields = (('variant__release__release_id', r'[^/]+'), ('variant__variant_uid', r'[^/]+'))
+
+    def create(self, request, *args, **kwargs):
+        """
+        __Method__: POST
+
+        __URL__: $LINK:variantcpe-list$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+
+        return super(ReleaseVariantCPEViewSet, self).create(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:variantcpe-detail:release_id}/{variant_uid$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ReleaseVariantCPEViewSet, self).retrieve(request, *args, **kwargs)
+
+    def list(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:variantcpe-list$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+        __Response__: a paged list of following objects
+
+        %(SERIALIZER)s
+        """
+        return super(ReleaseVariantCPEViewSet, self).list(*args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__: PUT, PATCH
+
+        __URL__: $LINK:variantcpe-detail:release_id}/{variant_uid$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ReleaseVariantCPEViewSet, self).update(request, *args, **kwargs)
+
+    def destroy(self, *args, **kwargs):
+        """
+        __Method__: `DELETE`
+
+        __URL__: $LINK:variantcpe-detail:release_id}/{variant_uid$
+
+        __Response__:
+
+        On success, HTTP status code is 204 and the response has no content.
+        """
+        return super(ReleaseVariantCPEViewSet, self).destroy(*args, **kwargs)
 
 
 class VariantTypeViewSet(StrictQueryParamMixin,

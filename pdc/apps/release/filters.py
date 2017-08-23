@@ -6,7 +6,7 @@
 import django_filters
 
 from pdc.apps.common import filters
-from .models import Release, ProductVersion, Product, ReleaseType, Variant, BaseProduct, ReleaseGroup
+from .models import Release, ProductVersion, Product, ReleaseType, Variant, VariantCPE, BaseProduct, ReleaseGroup
 
 
 class ActiveReleasesFilter(filters.CaseInsensitiveBooleanFilter):
@@ -110,6 +110,16 @@ class ReleaseVariantFilter(django_filters.FilterSet):
     class Meta:
         model = Variant
         fields = ('release', 'id', 'uid', 'name', 'type')
+
+
+class ReleaseVariantCPEFilter(django_filters.FilterSet):
+    release = filters.MultiValueFilter(name='variant__release__release_id')
+    variant_uid = filters.MultiValueFilter(name='variant__variant_uid')
+    cpe = filters.MultiValueFilter(name='cpe')
+
+    class Meta:
+        model = VariantCPE
+        fields = ('release', 'variant_uid', 'cpe')
 
 
 class ReleaseGroupFilter(django_filters.FilterSet):
