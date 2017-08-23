@@ -59,33 +59,33 @@
 <text text-anchor="start" x="158" y="-92.1333" font-family="Helvetica " font-size="8.00">CharField</text>
 <text text-anchor="start" x="194" y="-92.1333" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
-<!-- pdc_apps_component_models_ReleaseComponentType -->
-<g id="node7" class="node"><title>pdc_apps_component_models_ReleaseComponentType</title>
-<polygon fill="palegoldenrod" stroke="palegoldenrod" points="7.5,-9.5 7.5,-26.5 124.5,-26.5 124.5,-9.5 7.5,-9.5"/>
-<polygon fill="#698b22" stroke="#698b22" points="8,-9 8,-26 125,-26 125,-9 8,-9"/>
-<text text-anchor="start" x="13" y="-15.6333" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
-<text text-anchor="start" x="18" y="-15.6333" font-family="Helvetica Bold" font-size="8.00" fill="white">ReleaseComponentType</text>
-<text text-anchor="start" x="115" y="-15.6333" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
-</g>
-<!-- pdc_apps_componentbranch_models_ComponentBranch&#45;&gt;pdc_apps_component_models_ReleaseComponentType -->
-<g id="edge7" class="edge"><title>pdc_apps_componentbranch_models_ComponentBranch&#45;&gt;pdc_apps_component_models_ReleaseComponentType</title>
-<path fill="none" stroke="black" d="M101.26,-77.36C98.773,-73.535 96.33,-69.716 94,-66 87.954,-56.354 81.532,-45.403 76.366,-36.398"/>
-<ellipse fill="black" stroke="black" cx="103.569" cy="-80.8873" rx="4.00002" ry="4.00002"/>
-<text text-anchor="middle" x="138" y="-58.8" font-family="Helvetica,sans-Serif" font-size="8.00">type (componentbranch)</text>
-</g>
 <!-- pdc_apps_component_models_GlobalComponent -->
-<g id="node9" class="node"><title>pdc_apps_component_models_GlobalComponent</title>
-<polygon fill="palegoldenrod" stroke="palegoldenrod" points="157.5,-9.5 157.5,-26.5 250.5,-26.5 250.5,-9.5 157.5,-9.5"/>
-<polygon fill="#698b22" stroke="#698b22" points="158,-9 158,-26 251,-26 251,-9 158,-9"/>
-<text text-anchor="start" x="163" y="-15.6333" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
-<text text-anchor="start" x="168" y="-15.6333" font-family="Helvetica Bold" font-size="8.00" fill="white">GlobalComponent</text>
-<text text-anchor="start" x="241" y="-15.6333" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
+<g id="node7" class="node"><title>pdc_apps_component_models_GlobalComponent</title>
+<polygon fill="palegoldenrod" stroke="palegoldenrod" points="7.5,-9.5 7.5,-26.5 100.5,-26.5 100.5,-9.5 7.5,-9.5"/>
+<polygon fill="#698b22" stroke="#698b22" points="8,-9 8,-26 101,-26 101,-9 8,-9"/>
+<text text-anchor="start" x="13" y="-15.6333" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
+<text text-anchor="start" x="18" y="-15.6333" font-family="Helvetica Bold" font-size="8.00" fill="white">GlobalComponent</text>
+<text text-anchor="start" x="91" y="-15.6333" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
 </g>
 <!-- pdc_apps_componentbranch_models_ComponentBranch&#45;&gt;pdc_apps_component_models_GlobalComponent -->
-<g id="edge9" class="edge"><title>pdc_apps_componentbranch_models_ComponentBranch&#45;&gt;pdc_apps_component_models_GlobalComponent</title>
-<path fill="none" stroke="black" d="M174.64,-77.42C177.23,-73.623 179.71,-69.791 182,-66 187.69,-56.583 192.87,-45.447 196.78,-36.274"/>
-<ellipse fill="black" stroke="black" cx="172.177" cy="-80.9296" rx="4.00002" ry="4.00002"/>
-<text text-anchor="middle" x="258.5" y="-58.8" font-family="Helvetica,sans-Serif" font-size="8.00">global_component (componentbranch)</text>
+<g id="edge7" class="edge"><title>pdc_apps_componentbranch_models_ComponentBranch&#45;&gt;pdc_apps_component_models_GlobalComponent</title>
+<path fill="none" stroke="black" d="M62.786,-78.215C59.816,-74.362 57.179,-70.289 55,-66 50.394,-56.934 49.951,-45.608 50.749,-36.234"/>
+<ellipse fill="black" stroke="black" cx="65.4995" cy="-81.433" rx="4.00002" ry="4.00002"/>
+<text text-anchor="middle" x="124.5" y="-58.8" font-family="Helvetica,sans-Serif" font-size="8.00">global_component (componentbranch)</text>
+</g>
+<!-- pdc_apps_component_models_ReleaseComponentType -->
+<g id="node9" class="node"><title>pdc_apps_component_models_ReleaseComponentType</title>
+<polygon fill="palegoldenrod" stroke="palegoldenrod" points="157.5,-9.5 157.5,-26.5 274.5,-26.5 274.5,-9.5 157.5,-9.5"/>
+<polygon fill="#698b22" stroke="#698b22" points="158,-9 158,-26 275,-26 275,-9 158,-9"/>
+<text text-anchor="start" x="163" y="-15.6333" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
+<text text-anchor="start" x="168" y="-15.6333" font-family="Helvetica Bold" font-size="8.00" fill="white">ReleaseComponentType</text>
+<text text-anchor="start" x="265" y="-15.6333" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
+</g>
+<!-- pdc_apps_componentbranch_models_ComponentBranch&#45;&gt;pdc_apps_component_models_ReleaseComponentType -->
+<g id="edge9" class="edge"><title>pdc_apps_componentbranch_models_ComponentBranch&#45;&gt;pdc_apps_component_models_ReleaseComponentType</title>
+<path fill="none" stroke="black" d="M184.93,-78.086C188.16,-74.122 191.22,-70.072 194,-66 200.31,-56.765 205.6,-45.431 209.41,-36.095"/>
+<ellipse fill="black" stroke="black" cx="182.334" cy="-81.1734" rx="4.00002" ry="4.00002"/>
+<text text-anchor="middle" x="245" y="-58.8" font-family="Helvetica,sans-Serif" font-size="8.00">type (componentbranch)</text>
 </g>
 <!-- pdc_apps_componentbranch_models_SLA -->
 <g id="node3" class="node"><title>pdc_apps_componentbranch_models_SLA</title>
@@ -144,13 +144,13 @@
 <text text-anchor="start" x="271" y="-226.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_componentbranch_models_SLAToComponentBranch&#45;&gt;pdc_apps_componentbranch_models_ComponentBranch -->
-<g id="edge3" class="edge"><title>pdc_apps_componentbranch_models_SLAToComponentBranch&#45;&gt;pdc_apps_componentbranch_models_ComponentBranch</title>
+<g id="edge5" class="edge"><title>pdc_apps_componentbranch_models_SLAToComponentBranch&#45;&gt;pdc_apps_componentbranch_models_ComponentBranch</title>
 <path fill="none" stroke="black" d="M196.59,-211.76C186.69,-198.15 175.78,-183.13 165.92,-169.56"/>
 <ellipse fill="black" stroke="black" cx="199.001" cy="-215.082" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="211.5" y="-192.8" font-family="Helvetica,sans-Serif" font-size="8.00">branch (slas)</text>
 </g>
 <!-- pdc_apps_componentbranch_models_SLAToComponentBranch&#45;&gt;pdc_apps_componentbranch_models_SLA -->
-<g id="edge5" class="edge"><title>pdc_apps_componentbranch_models_SLAToComponentBranch&#45;&gt;pdc_apps_componentbranch_models_SLA</title>
+<g id="edge3" class="edge"><title>pdc_apps_componentbranch_models_SLAToComponentBranch&#45;&gt;pdc_apps_componentbranch_models_SLA</title>
 <path fill="none" stroke="black" d="M266.4,-211.88C282.25,-194.09 300.26,-173.87 314.72,-157.63"/>
 <ellipse fill="black" stroke="black" cx="263.329" cy="-215.332" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="335" y="-192.8" font-family="Helvetica,sans-Serif" font-size="8.00">sla (slatocomponentbranch)</text>
