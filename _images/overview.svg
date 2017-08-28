@@ -64,8 +64,39 @@
 <text text-anchor="start" x="917" y="-1176.13" font-family="Helvetica " font-size="8.00">CharField</text>
 <text text-anchor="start" x="953" y="-1176.13" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
+<!-- django_contrib_contenttypes_models_ContentType -->
+<g id="node2" class="node"><title>django_contrib_contenttypes_models_ContentType</title>
+<polygon fill="palegoldenrod" stroke="palegoldenrod" points="944,-314.5 944,-367.5 1068,-367.5 1068,-314.5 944,-314.5"/>
+<polygon fill="#698b22" stroke="#698b22" points="944,-350 944,-367 1068,-367 1068,-350 944,-350"/>
+<text text-anchor="start" x="966" y="-356.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="976" y="-356.633" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;ContentType &#160;&#160;&#160;</text>
+<text text-anchor="start" x="946" y="-342.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="956" y="-342.133" font-family="Helvetica Bold" font-size="8.00">id</text>
+<text text-anchor="start" x="964" y="-342.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1006" y="-342.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1016" y="-342.133" font-family="Helvetica Bold" font-size="8.00">AutoField</text>
+<text text-anchor="start" x="1056" y="-342.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="946" y="-330.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="956" y="-330.133" font-family="Helvetica " font-size="8.00">app_label</text>
+<text text-anchor="start" x="991" y="-330.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1006" y="-330.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1016" y="-330.133" font-family="Helvetica " font-size="8.00">CharField</text>
+<text text-anchor="start" x="1052" y="-330.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="946" y="-318.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="956" y="-318.133" font-family="Helvetica " font-size="8.00">model</text>
+<text text-anchor="start" x="978" y="-318.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1006" y="-318.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1016" y="-318.133" font-family="Helvetica " font-size="8.00">CharField</text>
+<text text-anchor="start" x="1052" y="-318.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+</g>
+<!-- django_contrib_admin_models_LogEntry&#45;&gt;django_contrib_contenttypes_models_ContentType -->
+<g id="edge2" class="edge"><title>django_contrib_admin_models_LogEntry&#45;&gt;django_contrib_contenttypes_models_ContentType</title>
+<path fill="none" stroke="black" d="M1034,-1191.7C1105,-1161 1182,-1109.4 1182,-1030 1182,-1030 1182,-1030 1182,-547 1182,-469.86 1109.8,-407.01 1057.9,-371.8"/>
+<ellipse fill="black" stroke="black" cx="1029.98" cy="-1193.42" rx="4.00001" ry="4.00001"/>
+<text text-anchor="middle" x="1223.5" y="-787.8" font-family="Helvetica,sans-Serif" font-size="8.00">content_type (logentry)</text>
+</g>
 <!-- pdc_apps_auth_models_User -->
-<g id="node2" class="node"><title>pdc_apps_auth_models_User</title>
+<g id="node4" class="node"><title>pdc_apps_auth_models_User</title>
 <polygon fill="palegoldenrod" stroke="palegoldenrod" points="198.5,-950 198.5,-1110 355.5,-1110 355.5,-950 198.5,-950"/>
 <polygon fill="#698b22" stroke="#698b22" points="199,-1082 199,-1110 356,-1110 356,-1082 199,-1082"/>
 <text text-anchor="start" x="258.5" y="-1099.63" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
@@ -141,70 +172,13 @@
 <text text-anchor="start" x="326" y="-954.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
 <!-- django_contrib_admin_models_LogEntry&#45;&gt;pdc_apps_auth_models_User -->
-<g id="edge2" class="edge"><title>django_contrib_admin_models_LogEntry&#45;&gt;pdc_apps_auth_models_User</title>
+<g id="edge4" class="edge"><title>django_contrib_admin_models_LogEntry&#45;&gt;pdc_apps_auth_models_User</title>
 <path fill="none" stroke="black" d="M799.73,-1212.7C696.35,-1195.9 543,-1164.8 417,-1114 398.99,-1106.7 380.6,-1097.4 363.31,-1087.5"/>
 <ellipse fill="black" stroke="black" cx="803.762" cy="-1213.36" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="522.5" y="-1136.8" font-family="Helvetica,sans-Serif" font-size="8.00">user (logentry)</text>
 </g>
-<!-- django_contrib_contenttypes_models_ContentType -->
-<g id="node4" class="node"><title>django_contrib_contenttypes_models_ContentType</title>
-<polygon fill="palegoldenrod" stroke="palegoldenrod" points="944,-314.5 944,-367.5 1068,-367.5 1068,-314.5 944,-314.5"/>
-<polygon fill="#698b22" stroke="#698b22" points="944,-350 944,-367 1068,-367 1068,-350 944,-350"/>
-<text text-anchor="start" x="966" y="-356.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="976" y="-356.633" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;ContentType &#160;&#160;&#160;</text>
-<text text-anchor="start" x="946" y="-342.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="956" y="-342.133" font-family="Helvetica Bold" font-size="8.00">id</text>
-<text text-anchor="start" x="964" y="-342.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1006" y="-342.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1016" y="-342.133" font-family="Helvetica Bold" font-size="8.00">AutoField</text>
-<text text-anchor="start" x="1056" y="-342.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="946" y="-330.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="956" y="-330.133" font-family="Helvetica " font-size="8.00">app_label</text>
-<text text-anchor="start" x="991" y="-330.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1006" y="-330.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1016" y="-330.133" font-family="Helvetica " font-size="8.00">CharField</text>
-<text text-anchor="start" x="1052" y="-330.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="946" y="-318.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="956" y="-318.133" font-family="Helvetica " font-size="8.00">model</text>
-<text text-anchor="start" x="978" y="-318.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1006" y="-318.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1016" y="-318.133" font-family="Helvetica " font-size="8.00">CharField</text>
-<text text-anchor="start" x="1052" y="-318.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-</g>
-<!-- django_contrib_admin_models_LogEntry&#45;&gt;django_contrib_contenttypes_models_ContentType -->
-<g id="edge4" class="edge"><title>django_contrib_admin_models_LogEntry&#45;&gt;django_contrib_contenttypes_models_ContentType</title>
-<path fill="none" stroke="black" d="M1034,-1191.7C1105,-1161 1182,-1109.4 1182,-1030 1182,-1030 1182,-1030 1182,-547 1182,-469.86 1109.8,-407.01 1057.9,-371.8"/>
-<ellipse fill="black" stroke="black" cx="1029.98" cy="-1193.42" rx="4.00001" ry="4.00001"/>
-<text text-anchor="middle" x="1223.5" y="-787.8" font-family="Helvetica,sans-Serif" font-size="8.00">content_type (logentry)</text>
-</g>
-<!-- django_contrib_auth_models_Group -->
-<g id="node6" class="node"><title>django_contrib_auth_models_Group</title>
-<polygon fill="palegoldenrod" stroke="palegoldenrod" points="86,-768.5 86,-809.5 196,-809.5 196,-768.5 86,-768.5"/>
-<polygon fill="#698b22" stroke="#698b22" points="86,-792 86,-809 196,-809 196,-792 86,-792"/>
-<text text-anchor="start" x="114.5" y="-798.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="124.5" y="-798.633" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;Group &#160;&#160;&#160;</text>
-<text text-anchor="start" x="88" y="-784.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="98" y="-784.133" font-family="Helvetica Bold" font-size="8.00">id</text>
-<text text-anchor="start" x="106" y="-784.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="134" y="-784.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="144" y="-784.133" font-family="Helvetica Bold" font-size="8.00">AutoField</text>
-<text text-anchor="start" x="184" y="-784.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="88" y="-772.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="98" y="-772.133" font-family="Helvetica " font-size="8.00">name</text>
-<text text-anchor="start" x="119" y="-772.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="134" y="-772.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="144" y="-772.133" font-family="Helvetica " font-size="8.00">CharField</text>
-<text text-anchor="start" x="180" y="-772.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-</g>
-<!-- pdc_apps_auth_models_User&#45;&gt;django_contrib_auth_models_Group -->
-<g id="edge6" class="edge"><title>pdc_apps_auth_models_User&#45;&gt;django_contrib_auth_models_Group</title>
-<path fill="none" stroke="black" d="M183.33,-1008.1C141.02,-993.01 95.004,-968.2 70,-928 47.618,-892.02 79.072,-848.13 106.94,-819.42"/>
-<ellipse fill="black" stroke="black" cx="187.126" cy="-1009.4" rx="4.00001" ry="4.00001"/>
-<ellipse fill="black" stroke="black" cx="109.994" cy="-816.361" rx="4.00002" ry="4.00002"/>
-<text text-anchor="middle" x="94.5" y="-920.8" font-family="Helvetica,sans-Serif" font-size="8.00">groups (user)</text>
-</g>
 <!-- django_contrib_auth_models_Permission -->
-<g id="node8" class="node"><title>django_contrib_auth_models_Permission</title>
+<g id="node6" class="node"><title>django_contrib_auth_models_Permission</title>
 <polygon fill="palegoldenrod" stroke="palegoldenrod" points="195,-514.5 195,-579.5 359,-579.5 359,-514.5 195,-514.5"/>
 <polygon fill="#698b22" stroke="#698b22" points="195,-562 195,-579 359,-579 359,-562 195,-562"/>
 <text text-anchor="start" x="241" y="-568.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
@@ -235,11 +209,43 @@
 <text text-anchor="start" x="321" y="-518.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_auth_models_User&#45;&gt;django_contrib_auth_models_Permission -->
-<g id="edge8" class="edge"><title>pdc_apps_auth_models_User&#45;&gt;django_contrib_auth_models_Permission</title>
+<g id="edge6" class="edge"><title>pdc_apps_auth_models_User&#45;&gt;django_contrib_auth_models_Permission</title>
 <path fill="none" stroke="black" d="M277,-937.61C277,-833.99 277,-670.2 277,-591.76"/>
 <ellipse fill="black" stroke="black" cx="277" cy="-941.87" rx="4" ry="4"/>
 <ellipse fill="black" stroke="black" cx="277" cy="-587.53" rx="4" ry="4"/>
 <text text-anchor="middle" x="320.5" y="-787.8" font-family="Helvetica,sans-Serif" font-size="8.00">user_permissions (user)</text>
+</g>
+<!-- django_contrib_auth_models_Group -->
+<g id="node8" class="node"><title>django_contrib_auth_models_Group</title>
+<polygon fill="palegoldenrod" stroke="palegoldenrod" points="86,-768.5 86,-809.5 196,-809.5 196,-768.5 86,-768.5"/>
+<polygon fill="#698b22" stroke="#698b22" points="86,-792 86,-809 196,-809 196,-792 86,-792"/>
+<text text-anchor="start" x="114.5" y="-798.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="124.5" y="-798.633" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;Group &#160;&#160;&#160;</text>
+<text text-anchor="start" x="88" y="-784.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="98" y="-784.133" font-family="Helvetica Bold" font-size="8.00">id</text>
+<text text-anchor="start" x="106" y="-784.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="134" y="-784.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="144" y="-784.133" font-family="Helvetica Bold" font-size="8.00">AutoField</text>
+<text text-anchor="start" x="184" y="-784.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="88" y="-772.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="98" y="-772.133" font-family="Helvetica " font-size="8.00">name</text>
+<text text-anchor="start" x="119" y="-772.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="134" y="-772.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="144" y="-772.133" font-family="Helvetica " font-size="8.00">CharField</text>
+<text text-anchor="start" x="180" y="-772.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+</g>
+<!-- pdc_apps_auth_models_User&#45;&gt;django_contrib_auth_models_Group -->
+<g id="edge8" class="edge"><title>pdc_apps_auth_models_User&#45;&gt;django_contrib_auth_models_Group</title>
+<path fill="none" stroke="black" d="M183.33,-1008.1C141.02,-993.01 95.004,-968.2 70,-928 47.618,-892.02 79.072,-848.13 106.94,-819.42"/>
+<ellipse fill="black" stroke="black" cx="187.126" cy="-1009.4" rx="4.00001" ry="4.00001"/>
+<ellipse fill="black" stroke="black" cx="109.994" cy="-816.361" rx="4.00002" ry="4.00002"/>
+<text text-anchor="middle" x="94.5" y="-920.8" font-family="Helvetica,sans-Serif" font-size="8.00">groups (user)</text>
+</g>
+<!-- django_contrib_auth_models_Permission&#45;&gt;django_contrib_contenttypes_models_ContentType -->
+<g id="edge10" class="edge"><title>django_contrib_auth_models_Permission&#45;&gt;django_contrib_contenttypes_models_ContentType</title>
+<path fill="none" stroke="black" d="M342.8,-506.16C370.44,-490.47 403.45,-473.56 435,-462 609.12,-398.21 826.09,-363.79 935.66,-349.34"/>
+<ellipse fill="black" stroke="black" cx="338.989" cy="-508.348" rx="4.00002" ry="4.00002"/>
+<text text-anchor="middle" x="572.5" y="-436.8" font-family="Helvetica,sans-Serif" font-size="8.00">content_type (permission)</text>
 </g>
 <!-- django_contrib_auth_models_Group&#45;&gt;django_contrib_auth_models_Permission -->
 <g id="edge12" class="edge"><title>django_contrib_auth_models_Group&#45;&gt;django_contrib_auth_models_Permission</title>
@@ -247,12 +253,6 @@
 <ellipse fill="black" stroke="black" cx="148.121" cy="-760.411" rx="4.00001" ry="4.00001"/>
 <ellipse fill="black" stroke="black" cx="238.227" cy="-586.715" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="227" y="-654.8" font-family="Helvetica,sans-Serif" font-size="8.00">permissions (group)</text>
-</g>
-<!-- django_contrib_auth_models_Permission&#45;&gt;django_contrib_contenttypes_models_ContentType -->
-<g id="edge10" class="edge"><title>django_contrib_auth_models_Permission&#45;&gt;django_contrib_contenttypes_models_ContentType</title>
-<path fill="none" stroke="black" d="M342.8,-506.16C370.44,-490.47 403.45,-473.56 435,-462 609.12,-398.21 826.09,-363.79 935.66,-349.34"/>
-<ellipse fill="black" stroke="black" cx="338.989" cy="-508.348" rx="4.00002" ry="4.00002"/>
-<text text-anchor="middle" x="572.5" y="-436.8" font-family="Helvetica,sans-Serif" font-size="8.00">content_type (permission)</text>
 </g>
 <!-- django_contrib_sessions_models_Session -->
 <g id="node12" class="node"><title>django_contrib_sessions_models_Session</title>
@@ -411,13 +411,13 @@
 <text text-anchor="start" x="729" y="-766.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_Resource -->
-<g id="edge16" class="edge"><title>pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_Resource</title>
+<g id="edge18" class="edge"><title>pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_Resource</title>
 <path fill="none" stroke="black" d="M630.99,-752.09C610.49,-727.49 584.08,-693.94 564,-662 546.81,-634.64 530.8,-601.38 520.16,-577.68"/>
 <ellipse fill="black" stroke="black" cx="633.76" cy="-755.395" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="619" y="-654.8" font-family="Helvetica,sans-Serif" font-size="8.00">resource (resourcepermission)</text>
 </g>
 <!-- pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_ActionPermission -->
-<g id="edge18" class="edge"><title>pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_ActionPermission</title>
+<g id="edge16" class="edge"><title>pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_ActionPermission</title>
 <path fill="none" stroke="black" d="M667.48,-750.3C673.3,-700.02 683.28,-613.68 688.16,-571.56"/>
 <ellipse fill="black" stroke="black" cx="667.009" cy="-754.376" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="737.5" y="-654.8" font-family="Helvetica,sans-Serif" font-size="8.00">permission (resourcepermission)</text>
@@ -448,13 +448,13 @@
 <text text-anchor="start" x="616" y="-1007.13" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_auth_models_GroupResourcePermission&#45;&gt;django_contrib_auth_models_Group -->
-<g id="edge20" class="edge"><title>pdc_apps_auth_models_GroupResourcePermission&#45;&gt;django_contrib_auth_models_Group</title>
+<g id="edge22" class="edge"><title>pdc_apps_auth_models_GroupResourcePermission&#45;&gt;django_contrib_auth_models_Group</title>
 <path fill="none" stroke="black" d="M468.85,-995.38C439.77,-979.64 404.45,-961.19 372,-946 321.09,-922.18 302.13,-928.62 255,-898 218.49,-874.28 183.36,-837.98 161.97,-813.87"/>
 <ellipse fill="black" stroke="black" cx="472.594" cy="-997.412" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="383.5" y="-920.8" font-family="Helvetica,sans-Serif" font-size="8.00">group (groupresourcepermission)</text>
 </g>
 <!-- pdc_apps_auth_models_GroupResourcePermission&#45;&gt;pdc_apps_auth_models_ResourcePermission -->
-<g id="edge22" class="edge"><title>pdc_apps_auth_models_GroupResourcePermission&#45;&gt;pdc_apps_auth_models_ResourcePermission</title>
+<g id="edge20" class="edge"><title>pdc_apps_auth_models_GroupResourcePermission&#45;&gt;pdc_apps_auth_models_ResourcePermission</title>
 <path fill="none" stroke="black" d="M551.58,-992.42C577.65,-944.82 622.08,-863.7 646.21,-819.65"/>
 <ellipse fill="black" stroke="black" cx="549.639" cy="-995.97" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="681" y="-920.8" font-family="Helvetica,sans-Serif" font-size="8.00">resource_permission (groupresourcepermission)</text>
@@ -1143,50 +1143,19 @@
 <text text-anchor="middle" x="2091.5" y="-1136.8" font-family="Helvetica,sans-Serif" font-size="8.00">sigkey (composerpm)</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_compose_models_VariantArch -->
-<g id="edge58" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_compose_models_VariantArch</title>
+<g id="edge54" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_compose_models_VariantArch</title>
 <path fill="none" stroke="black" d="M2913,-1172C2913,-1140.4 2913,-1101.8 2913,-1072.8"/>
 <ellipse fill="black" stroke="black" cx="2913" cy="-1176.3" rx="4" ry="4"/>
 <text text-anchor="middle" x="2963" y="-1136.8" font-family="Helvetica,sans-Serif" font-size="8.00">variant_arch (composerpm)</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_compose_models_Path -->
-<g id="edge54" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_compose_models_Path</title>
+<g id="edge58" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_compose_models_Path</title>
 <path fill="none" stroke="black" d="M3019.3,-1223.8C3166,-1214.9 3421.1,-1192.9 3499,-1144 3532.6,-1122.9 3555,-1081.2 3566.6,-1054.5"/>
 <ellipse fill="black" stroke="black" cx="3015.09" cy="-1224.06" rx="4" ry="4"/>
 <text text-anchor="middle" x="3548.5" y="-1136.8" font-family="Helvetica,sans-Serif" font-size="8.00">path (composerpm)</text>
 </g>
-<!-- pdc_apps_repository_models_ContentCategory -->
-<g id="node55" class="node"><title>pdc_apps_repository_models_ContentCategory</title>
-<polygon fill="palegoldenrod" stroke="palegoldenrod" points="1817,-762.5 1817,-815.5 1945,-815.5 1945,-762.5 1817,-762.5"/>
-<polygon fill="#698b22" stroke="#698b22" points="1817,-798 1817,-815 1945,-815 1945,-798 1817,-798"/>
-<text text-anchor="start" x="1832.5" y="-804.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1842.5" y="-804.633" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;ContentCategory &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1819" y="-790.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1829" y="-790.133" font-family="Helvetica Bold" font-size="8.00">id</text>
-<text text-anchor="start" x="1837" y="-790.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1883" y="-790.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1893" y="-790.133" font-family="Helvetica Bold" font-size="8.00">AutoField</text>
-<text text-anchor="start" x="1933" y="-790.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1819" y="-778.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1829" y="-778.133" font-family="Helvetica " font-size="8.00">description</text>
-<text text-anchor="start" x="1868" y="-778.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1883" y="-778.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1893" y="-778.133" font-family="Helvetica " font-size="8.00">CharField</text>
-<text text-anchor="start" x="1929" y="-778.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1819" y="-766.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1829" y="-766.133" font-family="Helvetica " font-size="8.00">name</text>
-<text text-anchor="start" x="1850" y="-766.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1883" y="-766.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1893" y="-766.133" font-family="Helvetica " font-size="8.00">CharField</text>
-<text text-anchor="start" x="1929" y="-766.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-</g>
-<!-- pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_repository_models_ContentCategory -->
-<g id="edge52" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_repository_models_ContentCategory</title>
-<path fill="none" stroke="black" d="M2806.6,-1225.6C2548.9,-1216.3 1907.9,-1186.1 1846,-1114 1808.5,-1070.4 1852.4,-891.98 1872.2,-819.67"/>
-<ellipse fill="black" stroke="black" cx="2810.9" cy="-1225.76" rx="4" ry="4"/>
-<text text-anchor="middle" x="1904.5" y="-1028.8" font-family="Helvetica,sans-Serif" font-size="8.00">content_category (composerpm)</text>
-</g>
 <!-- pdc_apps_package_models_RPM -->
-<g id="node58" class="node"><title>pdc_apps_package_models_RPM</title>
+<g id="node55" class="node"><title>pdc_apps_package_models_RPM</title>
 <polygon fill="palegoldenrod" stroke="palegoldenrod" points="2999.5,-466.5 2999.5,-627.5 3196.5,-627.5 3196.5,-466.5 2999.5,-466.5"/>
 <polygon fill="#698b22" stroke="#698b22" points="3000,-610 3000,-627 3197,-627 3197,-610 3000,-610"/>
 <text text-anchor="start" x="3075" y="-616.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
@@ -1265,10 +1234,41 @@
 <text text-anchor="start" x="3151" y="-470.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_package_models_RPM -->
-<g id="edge56" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_package_models_RPM</title>
+<g id="edge52" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_package_models_RPM</title>
 <path fill="none" stroke="black" d="M3018.9,-1203.3C3090.7,-1183.7 3186.7,-1153.5 3266,-1114 3382.9,-1055.8 3399.4,-1019.9 3507,-946 3538.4,-924.44 3560.1,-931.64 3578,-898 3623.4,-812.43 3641.9,-752.8 3578,-680 3550.7,-648.94 3247.2,-647.77 3209,-632 3207.4,-631.35 3205.9,-630.68 3204.3,-629.97"/>
 <ellipse fill="black" stroke="black" cx="3014.96" cy="-1204.36" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="3599" y="-920.8" font-family="Helvetica,sans-Serif" font-size="8.00">rpm (composerpm)</text>
+</g>
+<!-- pdc_apps_repository_models_ContentCategory -->
+<g id="node58" class="node"><title>pdc_apps_repository_models_ContentCategory</title>
+<polygon fill="palegoldenrod" stroke="palegoldenrod" points="1817,-762.5 1817,-815.5 1945,-815.5 1945,-762.5 1817,-762.5"/>
+<polygon fill="#698b22" stroke="#698b22" points="1817,-798 1817,-815 1945,-815 1945,-798 1817,-798"/>
+<text text-anchor="start" x="1832.5" y="-804.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1842.5" y="-804.633" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;ContentCategory &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1819" y="-790.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1829" y="-790.133" font-family="Helvetica Bold" font-size="8.00">id</text>
+<text text-anchor="start" x="1837" y="-790.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1883" y="-790.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1893" y="-790.133" font-family="Helvetica Bold" font-size="8.00">AutoField</text>
+<text text-anchor="start" x="1933" y="-790.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1819" y="-778.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1829" y="-778.133" font-family="Helvetica " font-size="8.00">description</text>
+<text text-anchor="start" x="1868" y="-778.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1883" y="-778.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1893" y="-778.133" font-family="Helvetica " font-size="8.00">CharField</text>
+<text text-anchor="start" x="1929" y="-778.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1819" y="-766.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1829" y="-766.133" font-family="Helvetica " font-size="8.00">name</text>
+<text text-anchor="start" x="1850" y="-766.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1883" y="-766.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1893" y="-766.133" font-family="Helvetica " font-size="8.00">CharField</text>
+<text text-anchor="start" x="1929" y="-766.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+</g>
+<!-- pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_repository_models_ContentCategory -->
+<g id="edge56" class="edge"><title>pdc_apps_compose_models_ComposeRPM&#45;&gt;pdc_apps_repository_models_ContentCategory</title>
+<path fill="none" stroke="black" d="M2806.6,-1225.6C2548.9,-1216.3 1907.9,-1186.1 1846,-1114 1808.5,-1070.4 1852.4,-891.98 1872.2,-819.67"/>
+<ellipse fill="black" stroke="black" cx="2810.9" cy="-1225.76" rx="4" ry="4"/>
+<text text-anchor="middle" x="1904.5" y="-1028.8" font-family="Helvetica,sans-Serif" font-size="8.00">content_category (composerpm)</text>
 </g>
 <!-- pdc_apps_package_models_RPM&#45;&gt;pdc_apps_release_models_Release -->
 <g id="edge62" class="edge"><title>pdc_apps_package_models_RPM&#45;&gt;pdc_apps_release_models_Release</title>
@@ -1394,19 +1394,19 @@
 <text text-anchor="start" x="3752" y="-1194.13" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeImage&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState -->
-<g id="edge72" class="edge"><title>pdc_apps_compose_models_ComposeImage&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState</title>
+<g id="edge74" class="edge"><title>pdc_apps_compose_models_ComposeImage&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState</title>
 <path fill="none" stroke="black" d="M3580.9,-1216.5C3452,-1200.9 3219.6,-1174.5 3020,-1162 2855.6,-1151.7 2441.2,-1172.9 2279,-1144 2238.3,-1136.7 2220.9,-1142.5 2191,-1114 2133,-1058.6 2189.5,-993.68 2125,-946 2096.9,-925.24 1521.7,-923.63 1498,-898 1432.2,-826.92 1459.8,-769.05 1498,-680 1500.2,-674.77 1745.8,-443.02 1827.7,-365.77"/>
 <ellipse fill="black" stroke="black" cx="3584.93" cy="-1217" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="1554" y="-787.8" font-family="Helvetica,sans-Serif" font-size="8.00">rtt_test_result (composeimage)</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeImage&#45;&gt;pdc_apps_compose_models_VariantArch -->
-<g id="edge74" class="edge"><title>pdc_apps_compose_models_ComposeImage&#45;&gt;pdc_apps_compose_models_VariantArch</title>
+<g id="edge68" class="edge"><title>pdc_apps_compose_models_ComposeImage&#45;&gt;pdc_apps_compose_models_VariantArch</title>
 <path fill="none" stroke="black" d="M3646.7,-1180.2C3631.2,-1161.6 3611.1,-1142.4 3588,-1132 3536.9,-1109 3138.3,-1127.7 3084,-1114 3049,-1105.2 3012.8,-1088.7 2982.8,-1072.6"/>
 <ellipse fill="black" stroke="black" cx="3649.26" cy="-1183.31" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="3659.5" y="-1136.8" font-family="Helvetica,sans-Serif" font-size="8.00">variant_arch (composeimage)</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeImage&#45;&gt;pdc_apps_compose_models_Path -->
-<g id="edge68" class="edge"><title>pdc_apps_compose_models_ComposeImage&#45;&gt;pdc_apps_compose_models_Path</title>
+<g id="edge72" class="edge"><title>pdc_apps_compose_models_ComposeImage&#45;&gt;pdc_apps_compose_models_Path</title>
 <path fill="none" stroke="black" d="M3722.2,-1179C3730.7,-1163 3734,-1145.9 3723,-1132 3700.9,-1104.2 3675.2,-1132.7 3645,-1114 3621.4,-1099.4 3602.2,-1073.9 3590.1,-1054.8"/>
 <ellipse fill="black" stroke="black" cx="3719.99" cy="-1182.83" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="3767.5" y="-1136.8" font-family="Helvetica,sans-Serif" font-size="8.00">path (composeimage)</text>
@@ -1676,7 +1676,7 @@
 <text text-anchor="middle" x="2724" y="-787.8" font-family="Helvetica,sans-Serif" font-size="8.00">compose (composetree)</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_compose_models_Variant -->
-<g id="edge82" class="edge"><title>pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_compose_models_Variant</title>
+<g id="edge84" class="edge"><title>pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_compose_models_Variant</title>
 <path fill="none" stroke="black" d="M2353,-970.92C2367.8,-961.14 2383.8,-952.19 2400,-946 2466.8,-920.43 2491.6,-948.91 2560,-928 2571,-924.63 2572,-919.3 2583,-916 2660,-892.99 2690.9,-933.63 2763,-898 2788.1,-885.6 2810.2,-864.26 2827.3,-843.73"/>
 <ellipse fill="black" stroke="black" cx="2349.61" cy="-973.216" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="2622.5" y="-920.8" font-family="Helvetica,sans-Serif" font-size="8.00">variant (composetree)</text>
@@ -1689,7 +1689,7 @@
 <text text-anchor="middle" x="2068.5" y="-920.8" font-family="Helvetica,sans-Serif" font-size="8.00">synced_content (composetree)</text>
 </g>
 <!-- pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_compose_models_Location -->
-<g id="edge84" class="edge"><title>pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_compose_models_Location</title>
+<g id="edge82" class="edge"><title>pdc_apps_compose_models_ComposeTree&#45;&gt;pdc_apps_compose_models_Location</title>
 <path fill="none" stroke="black" d="M2193,-972.41C2163.5,-951.02 2131.7,-925.27 2106,-898 2083.6,-874.23 2063.6,-842.71 2050.4,-819.68"/>
 <ellipse fill="black" stroke="black" cx="2196.44" cy="-974.867" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="2178" y="-920.8" font-family="Helvetica,sans-Serif" font-size="8.00">location (composetree)</text>
@@ -2083,33 +2083,33 @@
 <text text-anchor="start" x="4010" y="-754.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState -->
-<g id="edge114" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState</title>
+<g id="edge116" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_compose_models_ComposeAcceptanceTestingState</title>
 <path fill="none" stroke="black" d="M3916.2,-740.95C3892.2,-719.64 3861.9,-695.85 3831,-680 3785.9,-656.84 3771.1,-657.68 3721,-650 3695.1,-646.02 3269.1,-648.91 3249,-632 3189.9,-582.24 3271.7,-512.18 3213,-462 3183.9,-437.13 2907.2,-446.93 2869,-444 2529.5,-417.91 2127.5,-372.92 1948.3,-352.13"/>
 <ellipse fill="black" stroke="black" cx="3919.14" cy="-743.62" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="3291" y="-545.8" font-family="Helvetica,sans-Serif" font-size="8.00">test_result (buildimage)</text>
 </g>
 <!-- pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_release_models_Release -->
-<g id="edge108" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_release_models_Release</title>
+<g id="edge110" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_release_models_Release</title>
 <path fill="none" stroke="black" d="M3968,-738.12C3972.6,-651.67 3979.3,-483.36 3963,-462 3923.8,-410.55 3752.7,-374.63 3639.1,-355.94"/>
 <ellipse fill="black" stroke="black" cx="3967.8" cy="-742.225" rx="4" ry="4"/>
 <ellipse fill="black" stroke="black" cx="3634.95" cy="-355.269" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="4011.5" y="-545.8" font-family="Helvetica,sans-Serif" font-size="8.00">releases (buildimage)</text>
 </g>
 <!-- pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_package_models_RPM -->
-<g id="edge112" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_package_models_RPM</title>
+<g id="edge108" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_package_models_RPM</title>
 <path fill="none" stroke="black" d="M3919.5,-740.71C3895.4,-718.33 3864.1,-693.7 3831,-680 3758.8,-650.08 3730.9,-684.48 3656,-662 3645,-658.68 3644.1,-652.99 3633,-650 3543.8,-626.08 3305.3,-661.9 3218,-632 3216,-631.31 3214,-630.58 3212,-629.81"/>
 <ellipse fill="black" stroke="black" cx="3922.58" cy="-743.603" rx="4.00002" ry="4.00002"/>
 <ellipse fill="black" stroke="black" cx="3208" cy="-628.157" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="3688.5" y="-654.8" font-family="Helvetica,sans-Serif" font-size="8.00">rpms (buildimage)</text>
 </g>
 <!-- pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_package_models_ImageFormat -->
-<g id="edge110" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_package_models_ImageFormat</title>
+<g id="edge114" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_package_models_ImageFormat</title>
 <path fill="none" stroke="black" d="M4062.6,-753.3C4114.1,-731.65 4176.4,-700.7 4225,-662 4257.5,-636.09 4286.1,-596.92 4302.8,-571.65"/>
 <ellipse fill="black" stroke="black" cx="4058.79" cy="-754.889" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="4285.5" y="-654.8" font-family="Helvetica,sans-Serif" font-size="8.00">image_format (buildimage)</text>
 </g>
 <!-- pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_package_models_Archive -->
-<g id="edge116" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_package_models_Archive</title>
+<g id="edge112" class="edge"><title>pdc_apps_package_models_BuildImage&#45;&gt;pdc_apps_package_models_Archive</title>
 <path fill="none" stroke="black" d="M4055.3,-741.84C4086.4,-721.32 4118.4,-694.46 4139,-662 4151.1,-642.97 4156.8,-618.86 4159.4,-597.63"/>
 <ellipse fill="black" stroke="black" cx="4051.65" cy="-744.21" rx="4.00002" ry="4.00002"/>
 <ellipse fill="black" stroke="black" cx="4159.85" cy="-593.635" rx="4.00001" ry="4.00001"/>
@@ -2614,19 +2614,19 @@
 <text text-anchor="start" x="1772" y="-760.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_contact_models_GlobalComponentContact&#45;&gt;pdc_apps_contact_models_ContactRole -->
-<g id="edge150" class="edge"><title>pdc_apps_contact_models_GlobalComponentContact&#45;&gt;pdc_apps_contact_models_ContactRole</title>
+<g id="edge154" class="edge"><title>pdc_apps_contact_models_GlobalComponentContact&#45;&gt;pdc_apps_contact_models_ContactRole</title>
 <path fill="none" stroke="black" d="M1738.7,-745.97C1756,-725.06 1778,-700.16 1800,-680 1873.9,-612.12 1985.4,-578.11 2064.9,-561.59"/>
 <ellipse fill="black" stroke="black" cx="1736.03" cy="-749.225" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="1887.5" y="-654.8" font-family="Helvetica,sans-Serif" font-size="8.00">role (globalcomponentcontact)</text>
 </g>
 <!-- pdc_apps_contact_models_GlobalComponentContact&#45;&gt;pdc_apps_contact_models_Contact -->
-<g id="edge152" class="edge"><title>pdc_apps_contact_models_GlobalComponentContact&#45;&gt;pdc_apps_contact_models_Contact</title>
+<g id="edge150" class="edge"><title>pdc_apps_contact_models_GlobalComponentContact&#45;&gt;pdc_apps_contact_models_Contact</title>
 <path fill="none" stroke="black" d="M1677.8,-745.83C1660.2,-721.93 1635,-694.26 1605,-680 1543.7,-650.85 1366.3,-676.55 1300,-662 1216.5,-643.68 1125.6,-604.99 1067.3,-577.55"/>
 <ellipse fill="black" stroke="black" cx="1680.25" cy="-749.212" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="1360.5" y="-654.8" font-family="Helvetica,sans-Serif" font-size="8.00">contact (globalcomponentcontact)</text>
 </g>
 <!-- pdc_apps_component_models_GlobalComponent -->
-<g id="node139" class="node"><title>pdc_apps_component_models_GlobalComponent</title>
+<g id="node138" class="node"><title>pdc_apps_component_models_GlobalComponent</title>
 <polygon fill="palegoldenrod" stroke="palegoldenrod" points="4970.5,-308.5 4970.5,-373.5 5143.5,-373.5 5143.5,-308.5 4970.5,-308.5"/>
 <polygon fill="#698b22" stroke="#698b22" points="4971,-356 4971,-373 5144,-373 5144,-356 4971,-356"/>
 <text text-anchor="start" x="5007" y="-362.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
@@ -2657,20 +2657,20 @@
 <text text-anchor="start" x="5090" y="-312.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_contact_models_GlobalComponentContact&#45;&gt;pdc_apps_component_models_GlobalComponent -->
-<g id="edge154" class="edge"><title>pdc_apps_contact_models_GlobalComponentContact&#45;&gt;pdc_apps_component_models_GlobalComponent</title>
+<g id="edge152" class="edge"><title>pdc_apps_contact_models_GlobalComponentContact&#45;&gt;pdc_apps_component_models_GlobalComponent</title>
 <path fill="none" stroke="black" d="M1729.9,-745.59C1746.4,-721.46 1770.4,-693.63 1800,-680 1848.6,-657.63 3671.6,-663.65 3725,-662 3826.9,-658.86 3852.1,-653.65 3954,-650 3980,-649.07 4869,-648.55 4889,-632 4948.5,-582.8 4886.7,-529.07 4925,-462 4944.1,-428.52 4975.7,-399.09 5003.2,-377.63"/>
 <ellipse fill="black" stroke="black" cx="1727.7" cy="-748.938" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="4992.5" y="-545.8" font-family="Helvetica,sans-Serif" font-size="8.00">component (globalcomponentcontact)</text>
 </g>
 <!-- pdc_apps_component_models_GlobalComponent&#45;&gt;pdc_apps_common_models_Label -->
-<g id="edge158" class="edge"><title>pdc_apps_component_models_GlobalComponent&#45;&gt;pdc_apps_common_models_Label</title>
-<path fill="none" stroke="black" d="M5035.9,-296.71C5022.9,-269.49 5006.5,-234.97 4994.1,-208.99"/>
-<ellipse fill="black" stroke="black" cx="5037.69" cy="-300.494" rx="4.00002" ry="4.00002"/>
-<ellipse fill="black" stroke="black" cx="4992.31" cy="-205.188" rx="4.00002" ry="4.00002"/>
-<text text-anchor="middle" x="5056" y="-242.8" font-family="Helvetica,sans-Serif" font-size="8.00">labels (globalcomponent)</text>
+<g id="edge156" class="edge"><title>pdc_apps_component_models_GlobalComponent&#45;&gt;pdc_apps_common_models_Label</title>
+<path fill="none" stroke="black" d="M5032.2,-297.18C5024.1,-282.37 5015.3,-265.63 5008,-250 5001.8,-236.9 4995.7,-222.28 4990.5,-209.21"/>
+<ellipse fill="black" stroke="black" cx="5034.11" cy="-300.753" rx="4.00002" ry="4.00002"/>
+<ellipse fill="black" stroke="black" cx="4988.99" cy="-205.433" rx="4.00001" ry="4.00001"/>
+<text text-anchor="middle" x="5053" y="-242.8" font-family="Helvetica,sans-Serif" font-size="8.00">labels (globalcomponent)</text>
 </g>
 <!-- pdc_apps_component_models_Upstream -->
-<g id="node141" class="node"><title>pdc_apps_component_models_Upstream</title>
+<g id="node142" class="node"><title>pdc_apps_component_models_Upstream</title>
 <polygon fill="palegoldenrod" stroke="palegoldenrod" points="5074,-138.5 5074,-203.5 5202,-203.5 5202,-138.5 5074,-138.5"/>
 <polygon fill="#698b22" stroke="#698b22" points="5074,-186 5074,-203 5202,-203 5202,-186 5074,-186"/>
 <text text-anchor="start" x="5105" y="-192.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
@@ -2701,9 +2701,9 @@
 <text text-anchor="start" x="5184" y="-142.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_component_models_GlobalComponent&#45;&gt;pdc_apps_component_models_Upstream -->
-<g id="edge156" class="edge"><title>pdc_apps_component_models_GlobalComponent&#45;&gt;pdc_apps_component_models_Upstream</title>
-<path fill="none" stroke="black" d="M5077.4,-304.19C5086.2,-287.77 5096.5,-268.1 5105,-250 5111.4,-236.42 5117.9,-221.26 5123.4,-207.88"/>
-<text text-anchor="middle" x="5160.5" y="-242.8" font-family="Helvetica,sans-Serif" font-size="8.00">upstream (globalcomponent)</text>
+<g id="edge158" class="edge"><title>pdc_apps_component_models_GlobalComponent&#45;&gt;pdc_apps_component_models_Upstream</title>
+<path fill="none" stroke="black" d="M5074.6,-304.11C5088.2,-275.5 5107,-236.04 5120.6,-207.52"/>
+<text text-anchor="middle" x="5155.5" y="-242.8" font-family="Helvetica,sans-Serif" font-size="8.00">upstream (globalcomponent)</text>
 </g>
 <!-- pdc_apps_contact_models_ReleaseComponentContact -->
 <g id="node144" class="node"><title>pdc_apps_contact_models_ReleaseComponentContact</title>
@@ -2737,13 +2737,13 @@
 <text text-anchor="start" x="2415" y="-760.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_contact_models_ReleaseComponentContact&#45;&gt;pdc_apps_contact_models_ContactRole -->
-<g id="edge160" class="edge"><title>pdc_apps_contact_models_ReleaseComponentContact&#45;&gt;pdc_apps_contact_models_ContactRole</title>
+<g id="edge164" class="edge"><title>pdc_apps_contact_models_ReleaseComponentContact&#45;&gt;pdc_apps_contact_models_ContactRole</title>
 <path fill="none" stroke="black" d="M2313.6,-745.61C2276.4,-697.18 2217.2,-620.06 2184.5,-577.57"/>
 <ellipse fill="black" stroke="black" cx="2316.33" cy="-749.101" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="2306" y="-654.8" font-family="Helvetica,sans-Serif" font-size="8.00">role (releasecomponentcontact)</text>
 </g>
 <!-- pdc_apps_contact_models_ReleaseComponentContact&#45;&gt;pdc_apps_contact_models_Contact -->
-<g id="edge164" class="edge"><title>pdc_apps_contact_models_ReleaseComponentContact&#45;&gt;pdc_apps_contact_models_Contact</title>
+<g id="edge160" class="edge"><title>pdc_apps_contact_models_ReleaseComponentContact&#45;&gt;pdc_apps_contact_models_Contact</title>
 <path fill="none" stroke="black" d="M2320.3,-745.86C2303.2,-722.26 2278.9,-694.88 2250,-680 2237.1,-673.37 1380.5,-585.29 1096.4,-556.23"/>
 <ellipse fill="black" stroke="black" cx="2322.6" cy="-749.128" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="2153" y="-654.8" font-family="Helvetica,sans-Serif" font-size="8.00">contact (releasecomponentcontact)</text>
@@ -2822,13 +2822,44 @@
 <text text-anchor="middle" x="4757.5" y="-436.8" font-family="Helvetica,sans-Serif" font-size="8.00">release (releasecomponent)</text>
 </g>
 <!-- pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_GlobalComponent -->
-<g id="edge172" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_GlobalComponent</title>
+<g id="edge168" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_GlobalComponent</title>
 <path fill="none" stroke="black" d="M5250.4,-476.16C5241.2,-470.69 5231.6,-465.82 5222,-462 5187.9,-448.5 5082.6,-471.18 5058,-444 5042.2,-426.5 5042.4,-399.66 5046.3,-377.77"/>
 <ellipse fill="black" stroke="black" cx="5253.91" cy="-478.344" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="5128" y="-436.8" font-family="Helvetica,sans-Serif" font-size="8.00">global_component (releasecomponent)</text>
 </g>
+<!-- pdc_apps_component_models_ReleaseComponentType -->
+<g id="node151" class="node"><title>pdc_apps_component_models_ReleaseComponentType</title>
+<polygon fill="palegoldenrod" stroke="palegoldenrod" points="5663.5,-314.5 5663.5,-367.5 5802.5,-367.5 5802.5,-314.5 5663.5,-314.5"/>
+<polygon fill="#698b22" stroke="#698b22" points="5664,-350 5664,-367 5803,-367 5803,-350 5664,-350"/>
+<text text-anchor="start" x="5671" y="-356.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="5681" y="-356.633" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;ReleaseComponentType &#160;&#160;&#160;</text>
+<text text-anchor="start" x="5666" y="-342.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="5676" y="-342.133" font-family="Helvetica Bold" font-size="8.00">id</text>
+<text text-anchor="start" x="5684" y="-342.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="5734" y="-342.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="5744" y="-342.133" font-family="Helvetica Bold" font-size="8.00">AutoField</text>
+<text text-anchor="start" x="5784" y="-342.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="5666" y="-330.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="5676" y="-330.133" font-family="Helvetica " font-size="8.00" fill="#7b7b7b">has_osbs</text>
+<text text-anchor="start" x="5710" y="-330.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="5734" y="-330.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="5744" y="-330.133" font-family="Helvetica " font-size="8.00" fill="#7b7b7b">BooleanField</text>
+<text text-anchor="start" x="5791" y="-330.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="5666" y="-318.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="5676" y="-318.133" font-family="Helvetica " font-size="8.00">name</text>
+<text text-anchor="start" x="5697" y="-318.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="5734" y="-318.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="5744" y="-318.133" font-family="Helvetica " font-size="8.00">CharField</text>
+<text text-anchor="start" x="5780" y="-318.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+</g>
+<!-- pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_ReleaseComponentType -->
+<g id="edge170" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_ReleaseComponentType</title>
+<path fill="none" stroke="black" d="M5446.8,-500.17C5501,-476.27 5566.4,-445.61 5623,-414 5645.9,-401.21 5670.3,-385.25 5690.3,-371.53"/>
+<ellipse fill="black" stroke="black" cx="5442.86" cy="-501.895" rx="4.00002" ry="4.00002"/>
+<text text-anchor="middle" x="5634" y="-436.8" font-family="Helvetica,sans-Serif" font-size="8.00">type (release_components)</text>
+</g>
 <!-- pdc_apps_component_models_BugzillaComponent -->
-<g id="node150" class="node"><title>pdc_apps_component_models_BugzillaComponent</title>
+<g id="node153" class="node"><title>pdc_apps_component_models_BugzillaComponent</title>
 <polygon fill="palegoldenrod" stroke="palegoldenrod" points="5280,-285 5280,-397 5484,-397 5484,-285 5280,-285"/>
 <polygon fill="#698b22" stroke="#698b22" points="5280,-369 5280,-397 5484,-397 5484,-369 5280,-369"/>
 <text text-anchor="start" x="5333" y="-386.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
@@ -2880,41 +2911,10 @@
 <text text-anchor="start" x="5463" y="-289.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_BugzillaComponent -->
-<g id="edge168" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_BugzillaComponent</title>
+<g id="edge172" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_BugzillaComponent</title>
 <path fill="none" stroke="black" d="M5353.4,-472.33C5355.7,-462.81 5357.9,-453.18 5360,-444 5363.2,-430.18 5366.4,-415.29 5369.4,-401.24"/>
 <ellipse fill="black" stroke="black" cx="5352.43" cy="-476.409" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="5434.5" y="-436.8" font-family="Helvetica,sans-Serif" font-size="8.00">bugzilla_component (releasecomponent)</text>
-</g>
-<!-- pdc_apps_component_models_ReleaseComponentType -->
-<g id="node152" class="node"><title>pdc_apps_component_models_ReleaseComponentType</title>
-<polygon fill="palegoldenrod" stroke="palegoldenrod" points="5663.5,-314.5 5663.5,-367.5 5802.5,-367.5 5802.5,-314.5 5663.5,-314.5"/>
-<polygon fill="#698b22" stroke="#698b22" points="5664,-350 5664,-367 5803,-367 5803,-350 5664,-350"/>
-<text text-anchor="start" x="5671" y="-356.633" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="5681" y="-356.633" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;ReleaseComponentType &#160;&#160;&#160;</text>
-<text text-anchor="start" x="5666" y="-342.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="5676" y="-342.133" font-family="Helvetica Bold" font-size="8.00">id</text>
-<text text-anchor="start" x="5684" y="-342.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="5734" y="-342.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="5744" y="-342.133" font-family="Helvetica Bold" font-size="8.00">AutoField</text>
-<text text-anchor="start" x="5784" y="-342.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="5666" y="-330.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="5676" y="-330.133" font-family="Helvetica " font-size="8.00" fill="#7b7b7b">has_osbs</text>
-<text text-anchor="start" x="5710" y="-330.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="5734" y="-330.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="5744" y="-330.133" font-family="Helvetica " font-size="8.00" fill="#7b7b7b">BooleanField</text>
-<text text-anchor="start" x="5791" y="-330.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="5666" y="-318.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="5676" y="-318.133" font-family="Helvetica " font-size="8.00">name</text>
-<text text-anchor="start" x="5697" y="-318.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="5734" y="-318.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="5744" y="-318.133" font-family="Helvetica " font-size="8.00">CharField</text>
-<text text-anchor="start" x="5780" y="-318.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-</g>
-<!-- pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_ReleaseComponentType -->
-<g id="edge170" class="edge"><title>pdc_apps_component_models_ReleaseComponent&#45;&gt;pdc_apps_component_models_ReleaseComponentType</title>
-<path fill="none" stroke="black" d="M5446.8,-500.17C5501,-476.27 5566.4,-445.61 5623,-414 5645.9,-401.21 5670.3,-385.25 5690.3,-371.53"/>
-<ellipse fill="black" stroke="black" cx="5442.86" cy="-501.895" rx="4.00002" ry="4.00002"/>
-<text text-anchor="middle" x="5634" y="-436.8" font-family="Helvetica,sans-Serif" font-size="8.00">type (release_components)</text>
 </g>
 <!-- pdc_apps_component_models_BugzillaComponent&#45;&gt;pdc_apps_component_models_BugzillaComponent -->
 <g id="edge174" class="edge"><title>pdc_apps_component_models_BugzillaComponent&#45;&gt;pdc_apps_component_models_BugzillaComponent</title>
@@ -3365,13 +3365,13 @@
 <text text-anchor="start" x="6121" y="-512.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_componentbranch_models_ComponentBranch&#45;&gt;pdc_apps_component_models_GlobalComponent -->
-<g id="edge204" class="edge"><title>pdc_apps_componentbranch_models_ComponentBranch&#45;&gt;pdc_apps_component_models_GlobalComponent</title>
+<g id="edge202" class="edge"><title>pdc_apps_componentbranch_models_ComponentBranch&#45;&gt;pdc_apps_component_models_GlobalComponent</title>
 <path fill="none" stroke="black" d="M6017.7,-499.06C5999.8,-484.34 5978.4,-469.95 5956,-462 5878.6,-434.52 5295.5,-468.13 5217,-444 5216.2,-443.77 5159.6,-407.26 5113.9,-377.78"/>
 <ellipse fill="black" stroke="black" cx="6021.05" cy="-501.895" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="5286.5" y="-436.8" font-family="Helvetica,sans-Serif" font-size="8.00">global_component (componentbranch)</text>
 </g>
 <!-- pdc_apps_componentbranch_models_ComponentBranch&#45;&gt;pdc_apps_component_models_ReleaseComponentType -->
-<g id="edge202" class="edge"><title>pdc_apps_componentbranch_models_ComponentBranch&#45;&gt;pdc_apps_component_models_ReleaseComponentType</title>
+<g id="edge204" class="edge"><title>pdc_apps_componentbranch_models_ComponentBranch&#45;&gt;pdc_apps_component_models_ReleaseComponentType</title>
 <path fill="none" stroke="black" d="M6007.9,-499.36C5991.5,-486.67 5973.4,-473.34 5956,-462 5903.8,-427.97 5841.2,-394.59 5795.6,-371.54"/>
 <ellipse fill="black" stroke="black" cx="6011.23" cy="-501.928" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="5970" y="-436.8" font-family="Helvetica,sans-Serif" font-size="8.00">type (componentbranch)</text>
@@ -3433,13 +3433,13 @@
 <text text-anchor="start" x="5994" y="-760.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_componentbranch_models_SLAToComponentBranch&#45;&gt;pdc_apps_componentbranch_models_ComponentBranch -->
-<g id="edge206" class="edge"><title>pdc_apps_componentbranch_models_SLAToComponentBranch&#45;&gt;pdc_apps_componentbranch_models_ComponentBranch</title>
+<g id="edge208" class="edge"><title>pdc_apps_componentbranch_models_SLAToComponentBranch&#45;&gt;pdc_apps_componentbranch_models_ComponentBranch</title>
 <path fill="none" stroke="black" d="M5974.4,-744.84C5994.8,-700.74 6026,-633.44 6046.2,-589.82"/>
 <ellipse fill="black" stroke="black" cx="5972.67" cy="-748.614" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="6039.5" y="-654.8" font-family="Helvetica,sans-Serif" font-size="8.00">branch (slas)</text>
 </g>
 <!-- pdc_apps_componentbranch_models_SLAToComponentBranch&#45;&gt;pdc_apps_componentbranch_models_SLA -->
-<g id="edge208" class="edge"><title>pdc_apps_componentbranch_models_SLAToComponentBranch&#45;&gt;pdc_apps_componentbranch_models_SLA</title>
+<g id="edge206" class="edge"><title>pdc_apps_componentbranch_models_SLAToComponentBranch&#45;&gt;pdc_apps_componentbranch_models_SLA</title>
 <path fill="none" stroke="black" d="M5938.2,-744.78C5929.6,-720.43 5919,-689.63 5910,-662 5900.8,-633.62 5890.9,-601.06 5884,-577.85"/>
 <ellipse fill="black" stroke="black" cx="5939.57" cy="-748.667" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="5960" y="-654.8" font-family="Helvetica,sans-Serif" font-size="8.00">sla (slatocomponentbranch)</text>
