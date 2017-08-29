@@ -67,7 +67,8 @@ Responses are available in JSON format.
 URL_SPEC_RE = re.compile(r'\$(?P<type>URL|LINK):(?P<details>[^$]+)\$')
 ORDERING_STRING = """
  * `ordering` (string) Comma separated list of fields for ordering results.
-   Use double underscores for nested field names (e.g. `parent__child` for `{"parent": {"child": ...}}`).
+    - To sort by a field in descending order, prefix its name with minus (e.g. `-name`).
+    - Use double underscores for nested field names (e.g. `parent__child` for `{"parent": {"child": ...}}`).
 """
 
 
