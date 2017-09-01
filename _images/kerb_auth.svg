@@ -230,13 +230,13 @@
 <text text-anchor="start" x="391" y="-134.133" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_Resource -->
-<g id="edge5" class="edge"><title>pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_Resource</title>
+<g id="edge3" class="edge"><title>pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_Resource</title>
 <path fill="none" stroke="black" d="M239.09,-122.86C230.09,-118.22 221.22,-113.24 213,-108 199.3,-99.26 185.47,-88.04 173.7,-77.611"/>
 <ellipse fill="black" stroke="black" cx="242.756" cy="-124.703" rx="4.00002" ry="4.00002"/>
 <text text-anchor="middle" x="268" y="-100.8" font-family="Helvetica,sans-Serif" font-size="8.00">resource (resourcepermission)</text>
 </g>
 <!-- pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_ActionPermission -->
-<g id="edge3" class="edge"><title>pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_ActionPermission</title>
+<g id="edge5" class="edge"><title>pdc_apps_auth_models_ResourcePermission&#45;&gt;pdc_apps_auth_models_ActionPermission</title>
 <path fill="none" stroke="black" d="M325.26,-117.99C326.94,-102.53 328.83,-85.222 330.32,-71.566"/>
 <ellipse fill="black" stroke="black" cx="324.777" cy="-122.384" rx="4" ry="4"/>
 <text text-anchor="middle" x="386.5" y="-100.8" font-family="Helvetica,sans-Serif" font-size="8.00">permission (resourcepermission)</text>
