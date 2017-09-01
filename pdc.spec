@@ -3,7 +3,7 @@
 %define srcname pdc
 
 Name:           python-%{srcname}
-Version:        1.2.0
+Version:        1.7.0
 Release:        1%{?dist}
 Summary:        Product Definition Center
 Group:          Development/Libraries
@@ -80,6 +80,74 @@ fi
 
 
 %changelog
+* Tue Aug 15 2017 Chuang Cao <chcao@redhat.com> 1.7.0-1
+- Revert "Automatic commit of package [python-pdc] minor release [1.7.0-1]."
+  (chcao@redhat.com)
+- Automatic commit of package [python-pdc] minor release [1.7.0-1].
+  (chcao@redhat.com)
+- Fix generating graphs for apps with a label (lholecek@redhat.com)
+- Add tests for ordering (hluk@email.cz)
+- Fix passing a serialization error to client (lholecek@redhat.com)
+- Modify the comment of disable api permission (chcao@redhat.com)
+- Remove unneeded django-jsonfield dependency (lholecek@redhat.com)
+- Add python-django-jsonfield as a dependency (lholecek@redhat.com)
+- Remove duplicate string-to-bool conversion function (lholecek@redhat.com)
+- Flake8 fixes (matt_prahl@live.com)
+- Update doc strings. (rbean@redhat.com)
+- Remove unneeded parentheses. (rbean@redhat.com)
+- Remove unused test_tree.json (rbean@redhat.com)
+- Remove all references to "tree" which we never ended up using.
+  (rbean@redhat.com)
+- Move the folder from tree/ to module/. (rbean@redhat.com)
+- Allow filtering modules by RPM's srpm_commit_branch. (qwan@redhat.com)
+- Add missing database migration script for srpm_commit_hash and
+  srpm_commit_branch. (jkaluza@redhat.com)
+- Allow storing RPMs used in module build. (jkaluza@redhat.com)
+- Add filters for build_deps and runtime_deps. (jkaluza@redhat.com)
+- Make flake8 happy. (rbean@redhat.com)
+- Add an active boolean field and use variant_uid for the lookup_field.
+  (rbean@redhat.com)
+- Fix app loading in django 1.9 like in #419. (rbean@redhat.com)
+- Get the repository test suite working again. (rbean@redhat.com)
+- Get the release app test suite working again. (rbean@redhat.com)
+- Also require django-jsonfield for devel and tests. (rbean@redhat.com)
+- Add 'modulemd' field to unreleasedvariants (jkaluza@redhat.com)
+- New style deps for stream-based modulemd 1.0. (rbean@redhat.com)
+- (Un)Serialize dependencies as simple strings. (nils@redhat.com)
+- fix RelatedManager not iterable by iterating over .all() (lkocman@redhat.com)
+- Add exports for UnreleasedVariant *_deps (lkocman@redhat.com)
+- add UnreleasedVariant *_deps to filters (lkocman@redhat.com)
+- Don't require runtime_deps/build_deps in the API. (nils@redhat.com)
+- implement querying of variant runtime/build deps (nils@redhat.com)
+- Add comment to variant_version/_release API docs. (nils@redhat.com)
+- Don't require variant_version/_release in the API. (nils@redhat.com)
+- Add variant_version/_release to release.Variant. (nils@redhat.com)
+- Add comment to variant_version/_release. (nils@redhat.com)
+- add missing fields to test API calls (nils@redhat.com)
+- API end points are plural, not singular (nils@redhat.com)
+- sync up filters with changes in the models (nils@redhat.com)
+- Add lookup_field etc. to Tree/UnreleasedVariant. (nils@redhat.com)
+- fix URLs in API docs (nils@redhat.com)
+- add migrations for Tree and UnreleasedVariant (nils@redhat.com)
+- rename TreeVariant* to UnreleasedVariant* (nils@redhat.com)
+- require django-jsonfield (nils@redhat.com)
+- move JSON test data to own file (nils@redhat.com)
+- Add initial version of tree app into pdc (lkocman@redhat.com)
+- Add release variant type 'module' (nils@redhat.com)
+- Add nested ordering filter (chcao@redhat.com)
+- Add the component-branches, component-sla-types, component-branch-slas APIs
+  (matt_prahl@live.com)
+- Add .idea to .gitignore (matt_prahl@live.com)
+- Allow to add/update/remove component relationship types (lholecek@redhat.com)
+- Fix mapping volume in example docker command (lholecek@redhat.com)
+- Fix requirements for ipdb (lholecek@redhat.com)
+- Fix installing kobo from requirements (lholecek@redhat.com)
+- Fix accidentally uncommented line in default settings (lholecek@redhat.com)
+- Default view of composes should be reversed in order (bliu@redhat.com)
+- Handle new page_not_found argument in django-1.9. (rbean@redhat.com)
+- unbrand (nils@redhat.com)
+- Allow using mod_auth_oidc for remote user auth. (rbean@redhat.com)
+
 * Thu Dec 15 2016 bliu <bliu@redhat.com> 1.2.0-1
 - WebUI shows the groups and superusers (bliu@redhat.com)
 - Remove inactive user and without group mapping to resource permission
