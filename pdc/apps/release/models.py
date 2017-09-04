@@ -18,6 +18,7 @@ from productmd.common import create_release_id
 
 from pdc.apps.common.hacks import as_list
 from . import signals
+from pdc.apps.common.models import SigKey
 
 
 class ReleaseType(models.Model):
@@ -167,6 +168,8 @@ class Release(models.Model):
                                             blank=True,
                                             related_name='integrated_releases')
 
+    sigkey              = models.ForeignKey(SigKey, blank=True, null=True)
+
     class Meta:
         unique_together = (
             ("short", "version", "release_type", "base_product"),
@@ -201,6 +204,7 @@ class Release(models.Model):
                                 if self.product_version else None),
             "integrated_with": (self.integrated_with.release_id
                                 if self.integrated_with else None),
+            "sigkey": (self.sigkey.key_id if self.sigkey else None)
         }
         if self.base_product:
             result["base_product"] = self.base_product.base_product_id

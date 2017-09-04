@@ -39,11 +39,13 @@ class ReleaseFilter(django_filters.FilterSet):
     name = filters.MultiValueFilter(name='name')
     short = filters.MultiValueFilter(name='short')
     version = filters.MultiValueFilter(name='version')
+    sigkey = filters.MultiValueFilter(name='sigkey__key_id')
 
     class Meta:
         model = Release
         fields = ("release_id", "name", "short", "version", 'product_version',
-                  "release_type", "base_product", 'active', 'integrated_with')
+                  "release_type", "base_product", 'active', 'integrated_with',
+                  'sigkey')
 
     def find_has_base_product(self, queryset, value, *args, **kwargs):
         """

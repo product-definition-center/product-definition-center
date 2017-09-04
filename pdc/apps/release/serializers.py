@@ -13,6 +13,7 @@ from .models import (Product, ProductVersion, Release,
                      BaseProduct, ReleaseType, Variant, VariantCPE,
                      VariantArch, VariantType, ReleaseGroup, ReleaseGroupType)
 from . import signals
+from pdc.apps.common.models import SigKey
 
 
 class CPESerializer(serializers.CharField):
@@ -82,12 +83,17 @@ class ReleaseSerializer(StrictSerializerMixin, serializers.ModelSerializer):
                                                    required=False,
                                                    allow_null=True,
                                                    default=None)
+    sigkey = serializers.SlugRelatedField(slug_field='key_id',
+                                          queryset=SigKey.objects.all(),
+                                          required=False,
+                                          allow_null=True,
+                                          default=None)
 
     class Meta:
         model = Release
         fields = ('release_id', 'short', 'version', 'name', 'base_product',
                   'active', 'product_version', 'release_type',
-                  'compose_set', 'integrated_with')
+                  'compose_set', 'integrated_with', 'sigkey')
 
     def get_compose_set(self, obj):
         """[Compose.compose_id]"""
