@@ -21,6 +21,15 @@ from . import signals
 from pdc.apps.common.models import SigKey
 
 
+def validateCPE(cpe):
+    """
+    Returns None if CPE text is valid, validation error string otherwise.
+    """
+    if not cpe.startswith("cpe:"):
+        return 'CPE must start with "cpe:"'
+    return None
+
+
 class ReleaseType(models.Model):
     short               = models.CharField(max_length=255, blank=False, unique=True)
     name                = models.CharField(max_length=255, blank=False, unique=True)
@@ -349,6 +358,11 @@ class VariantCPE(models.Model):
             'variant_uid': self.variant.variant_uid,
             'cpe': self.cpe,
         }
+
+    def clean(self):
+        error = validateCPE(self.cpe)
+        if error:
+            raise ValidationError(error)
 
 
 @receiver(signals.release_clone)

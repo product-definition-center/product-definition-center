@@ -11,7 +11,8 @@ from pdc.apps.common import models as common_models
 from pdc.apps.common.serializers import StrictSerializerMixin
 from .models import (Product, ProductVersion, Release,
                      BaseProduct, ReleaseType, Variant, VariantCPE,
-                     VariantArch, VariantType, ReleaseGroup, ReleaseGroupType)
+                     VariantArch, VariantType, ReleaseGroup, ReleaseGroupType,
+                     validateCPE)
 from . import signals
 from pdc.apps.common.models import SigKey
 
@@ -22,8 +23,9 @@ class CPESerializer(serializers.CharField):
 
     def to_internal_value(self, data):
         verified_data = super(CPESerializer, self).to_internal_value(data)
-        if not verified_data.startswith("cpe:"):
-            raise serializers.ValidationError({'detail': 'CPE must start with "cpe:"'})
+        error = validateCPE(verified_data)
+        if error:
+            raise serializers.ValidationError({'detail': error})
         return verified_data
 
 
