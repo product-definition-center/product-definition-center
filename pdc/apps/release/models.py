@@ -340,6 +340,9 @@ class VariantCPE(models.Model):
     # CPE (https://cpe.mitre.org/)
     cpe = models.CharField(max_length=300, blank=False, null=False)
 
+    def __unicode__(self):
+        return u"%s-%s %s" % (self.variant.release.release_id, self.variant.variant_uid, self.cpe)
+
     def export(self):
         return {
             'release': self.variant.release.release_id,
