@@ -1865,9 +1865,9 @@ class CPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(models.CPE.objects.count(), 2)
 
     def test_get_cpe(self):
-        name = "cpe:test1"
-        response = self.client.get(reverse('cpe-detail', args=[name]))
+        response = self.client.get(reverse('cpe-detail', args=[1]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        del response.data['id']
         self.assertEqual(response.data, {"cpe": "cpe:test1", "description": "CPE Test 1"})
 
     def test_filter_cpe(self):
@@ -1881,6 +1881,7 @@ class CPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args = {"cpe": "cpe:test-new", "description": "Test New"}
         response = self.client.post(reverse('cpe-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        del response.data['id']
         self.assertEqual(args, response.data)
         self.assertNumChanges([1])
 
@@ -1888,6 +1889,7 @@ class CPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args = {"cpe": "cpe:test-new"}
         response = self.client.post(reverse('cpe-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        del response.data['id']
         args['description'] = ''
         self.assertEqual(args, response.data)
         self.assertNumChanges([1])
@@ -1898,8 +1900,7 @@ class CPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data.get('cpe', {}).get('detail'), 'CPE must start with "cpe:"')
 
     def test_delete_cpe(self):
-        name = "cpe:test1"
-        response = self.client.delete(reverse('cpe-detail', args=[name]))
+        response = self.client.delete(reverse('cpe-detail', args=[1]))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(models.CPE.objects.count(), 1)
         self.assertNumChanges([1])

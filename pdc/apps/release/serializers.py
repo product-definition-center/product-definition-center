@@ -230,7 +230,7 @@ class CPESerializer(StrictSerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = CPE
-        fields = ('cpe', 'description')
+        fields = ('id', 'cpe', 'description')
 
 
 class ReleaseVariantCPESerializer(StrictSerializerMixin, serializers.ModelSerializer):

@@ -1029,7 +1029,6 @@ class CPEViewSet(PDCModelViewSet):
     serializer_class = CPESerializer
     filter_class = filters.CPEFilter
     permission_classes = (APIPermission,)
-    lookup_field = 'cpe'
 
     def create(self, request, *args, **kwargs):
         """
@@ -1052,7 +1051,7 @@ class CPEViewSet(PDCModelViewSet):
         """
         __Method__: GET
 
-        __URL__: $LINK:cpe-detail:cpe$
+        __URL__: $LINK:cpe-detail:instance_pk$
 
         __Response__:
 
@@ -1080,7 +1079,7 @@ class CPEViewSet(PDCModelViewSet):
         """
         __Method__: PUT, PATCH
 
-        __URL__: $LINK:cpe-detail:cpe$
+        __URL__: $LINK:cpe-detail:instance_pk$
 
         __Data__:
 
@@ -1096,7 +1095,7 @@ class CPEViewSet(PDCModelViewSet):
         """
         __Method__: `DELETE`
 
-        __URL__: $LINK:cpe-detail:cpe$
+        __URL__: $LINK:cpe-detail:instance_pk$
 
         __Response__:
 
