@@ -340,29 +340,47 @@ class Variant(models.Model):
         }
 
 
+class CPE(models.Model):
+    """
+    Common Platform Enumeration (CPE) for release variants.
+    """
+    # CPE (https://cpe.mitre.org/)
+    cpe = models.CharField(max_length=300, unique=True)
+
+    description = models.CharField(max_length=300, blank=True)
+
+    def __unicode__(self):
+        return u"%s" % self.cpe
+
+    def export(self):
+        return {
+            'cpe': self.cpe,
+            'description': self.description,
+        }
+
+
 class VariantCPE(models.Model):
     """
-    CPE for release variant.
+    Maps CPE to release variant.
+
+    Multiple release variants can have same CPE.
+
+    CPE field is not part of release variant data model so there can be
+    separate permissions for assigning CPE.
     """
     variant = models.OneToOneField(Variant)
 
-    # CPE (https://cpe.mitre.org/)
-    cpe = models.CharField(max_length=300, blank=False, null=False)
+    cpe = models.ForeignKey(CPE, null=False, blank=False, db_index=True)
 
     def __unicode__(self):
-        return u"%s-%s %s" % (self.variant.release.release_id, self.variant.variant_uid, self.cpe)
+        return u"%s-%s %s" % (self.variant.release.release_id, self.variant.variant_uid, self.cpe.cpe)
 
     def export(self):
         return {
             'release': self.variant.release.release_id,
             'variant_uid': self.variant.variant_uid,
-            'cpe': self.cpe,
+            'cpe': self.cpe.cpe,
         }
-
-    def clean(self):
-        error = validateCPE(self.cpe)
-        if error:
-            raise ValidationError(error)
 
 
 @receiver(signals.release_clone)

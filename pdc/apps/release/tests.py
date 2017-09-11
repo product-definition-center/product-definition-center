@@ -1853,37 +1853,90 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([])
 
 
+class CPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
+    fixtures = [
+        "pdc/apps/release/fixtures/tests/cpes.json",
+    ]
+
+    def test_list_cpe(self):
+        response = self.client.get(reverse('cpe-list'), format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+        self.assertEqual(models.CPE.objects.count(), 2)
+
+    def test_get_cpe(self):
+        name = "cpe:test1"
+        response = self.client.get(reverse('cpe-detail', args=[name]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"cpe": "cpe:test1", "description": "CPE Test 1"})
+
+    def test_filter_cpe(self):
+        name = "cpe:test1"
+        response = self.client.get(reverse('cpe-list'), {"cpe": name}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+        self.assertEqual(response.data['results'][0]['cpe'], name)
+
+    def test_add_cpe(self):
+        args = {"cpe": "cpe:test-new", "description": "Test New"}
+        response = self.client.post(reverse('cpe-list'), args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(args, response.data)
+        self.assertNumChanges([1])
+
+    def test_add_cpe_without_description(self):
+        args = {"cpe": "cpe:test-new"}
+        response = self.client.post(reverse('cpe-list'), args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        args['description'] = ''
+        self.assertEqual(args, response.data)
+        self.assertNumChanges([1])
+
+    def test_add_bad_cpe(self):
+        response = self.client.post(reverse('cpe-list'), {"cpe": "not-cpe:"}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data.get('cpe', {}).get('detail'), 'CPE must start with "cpe:"')
+
+    def test_delete_cpe(self):
+        name = "cpe:test1"
+        response = self.client.delete(reverse('cpe-detail', args=[name]))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(models.CPE.objects.count(), 1)
+        self.assertNumChanges([1])
+
+
 class VariantCPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
         "pdc/apps/release/fixtures/tests/variants_standalone.json",
+        "pdc/apps/release/fixtures/tests/cpes.json",
     ]
 
     def test_add_cpe(self):
         args = {
             'release': 'release-1.0',
             'variant_uid': 'Server-UID',
-            'cpe': 'cpe:',
+            'cpe': 'cpe:test1',
         }
         response = self.client.post(reverse('variantcpe-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(args, response.data)
         self.assertNumChanges([1])
 
-    def test_bad_cpe(self):
+    def test_missing_cpe(self):
         args = {
             'release': 'release-1.0',
             'variant_uid': 'Server-UID',
-            'cpe': 'not-cpe:',
+            'cpe': 'cpe:test99',
         }
         response = self.client.post(reverse('variantcpe-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data.get('cpe', {}).get('detail'), 'CPE must start with "cpe:"')
+        self.assertEqual(response.data.get('detail'), 'cpe "cpe:test99" does not exist')
 
     def test_add_cpe_and_remove_variant(self):
         args = {
             'release': 'release-1.0',
             'variant_uid': 'Server-UID',
-            'cpe': 'cpe:',
+            'cpe': 'cpe:test2',
         }
         response = self.client.post(reverse('variantcpe-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

@@ -10,19 +10,19 @@ from pdc.apps.common.fields import ChoiceSlugField
 from pdc.apps.common import models as common_models
 from pdc.apps.common.serializers import StrictSerializerMixin
 from .models import (Product, ProductVersion, Release,
-                     BaseProduct, ReleaseType, Variant, VariantCPE,
+                     BaseProduct, ReleaseType, Variant, CPE, VariantCPE,
                      VariantArch, VariantType, ReleaseGroup, ReleaseGroupType,
                      validateCPE)
 from . import signals
 from pdc.apps.common.models import SigKey
 
 
-class CPESerializer(serializers.CharField):
+class CPEField(serializers.CharField):
     """ Serializer for CPE strings (starts with "cpe:") """
     doc_format = "string"
 
     def to_internal_value(self, data):
-        verified_data = super(CPESerializer, self).to_internal_value(data)
+        verified_data = super(CPEField, self).to_internal_value(data)
         error = validateCPE(verified_data)
         if error:
             raise serializers.ValidationError({'detail': error})
@@ -224,10 +224,19 @@ class ReleaseVariantSerializer(StrictSerializerMixin, serializers.ModelSerialize
         return instance
 
 
+class CPESerializer(StrictSerializerMixin, serializers.ModelSerializer):
+    cpe = CPEField(allow_blank=False, allow_null=False, required=True)
+    description = serializers.CharField(allow_blank=True, allow_null=False, required=False)
+
+    class Meta:
+        model = CPE
+        fields = ('cpe', 'description')
+
+
 class ReleaseVariantCPESerializer(StrictSerializerMixin, serializers.ModelSerializer):
     release = serializers.CharField(source='variant.release.release_id')
     variant_uid = serializers.CharField(source='variant.variant_uid')
-    cpe = CPESerializer(allow_blank=False, allow_null=False, required=True)
+    cpe = CPEField(allow_blank=False, allow_null=False, required=True)
 
     class Meta:
         model = VariantCPE
@@ -235,6 +244,7 @@ class ReleaseVariantCPESerializer(StrictSerializerMixin, serializers.ModelSerial
 
     def to_internal_value(self, data):
         verified_data = super(ReleaseVariantCPESerializer, self).to_internal_value(data)
+
         variant = verified_data['variant']
         release_id = variant['release']['release_id']
         variant_uid = variant['variant_uid']
@@ -243,6 +253,13 @@ class ReleaseVariantCPESerializer(StrictSerializerMixin, serializers.ModelSerial
         except Variant.DoesNotExist:
             raise serializers.ValidationError(
                 {'detail': 'variant (release=%s, uid=%s) does not exist' % (release_id, variant_uid)})
+
+        cpe = verified_data['cpe']
+        try:
+            verified_data['cpe'] = CPE.objects.get(cpe=cpe)
+        except CPE.DoesNotExist:
+            raise serializers.ValidationError({'detail': 'cpe "%s" does not exist' % cpe})
+
         return verified_data
 
 

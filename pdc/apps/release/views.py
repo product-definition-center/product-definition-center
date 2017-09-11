@@ -20,7 +20,8 @@ from .forms import (ReleaseSearchForm, BaseProductSearchForm,
 from .models import ProductVersion, Release, BaseProduct, Variant, Product
 from .serializers import (ProductSerializer, ProductVersionSerializer,
                           ReleaseSerializer, BaseProductSerializer,
-                          ReleaseTypeSerializer, ReleaseVariantSerializer, ReleaseVariantCPESerializer,
+                          ReleaseTypeSerializer, ReleaseVariantSerializer,
+                          CPESerializer, ReleaseVariantCPESerializer,
                           VariantTypeSerializer, ReleaseGroupSerializer)
 from pdc.apps.compose import models as compose_models
 from pdc.apps.repository import models as repo_models
@@ -30,7 +31,8 @@ from pdc.apps.common.viewsets import (ChangeSetModelMixin,
                                       ChangeSetUpdateModelMixin,
                                       MultiLookupFieldMixin,
                                       StrictQueryParamMixin,
-                                      ConditionalProcessingMixin)
+                                      ConditionalProcessingMixin,
+                                      PDCModelViewSet)
 from pdc.apps.auth.permissions import APIPermission
 from . import lib
 
@@ -1012,19 +1014,104 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
         return super(ReleaseVariantViewSet, self).destroy(*args, **kwargs)
 
 
-class ReleaseVariantCPEViewSet(ChangeSetModelMixin,
-                               ConditionalProcessingMixin,
-                               StrictQueryParamMixin,
-                               MultiLookupFieldMixin,
-                               viewsets.GenericViewSet):
+class CPEViewSet(PDCModelViewSet):
     """
-    Common Platform Enumeration (CPE) for $LINK:variant-list$.
+    Common Platform Enumeration (CPE) for linking CPE with variants ($LINK:variantcpe-list$).
 
     CPE is a standardized method of describing and identifying classes of operating systems.
 
     Common Vulnerabilities and Exposures (CVE) contain list of affected CPEs.
 
     For more information about CPE see [cpe.mitre.org](https://cpe.mitre.org/).
+    """
+
+    queryset = models.CPE.objects.all()
+    serializer_class = CPESerializer
+    filter_class = filters.CPEFilter
+    permission_classes = (APIPermission,)
+    lookup_field = 'cpe'
+
+    def create(self, request, *args, **kwargs):
+        """
+        __Method__: POST
+
+        __URL__: $LINK:cpe-list$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+
+        return super(CPEViewSet, self).create(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:cpe-detail:cpe$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(CPEViewSet, self).retrieve(request, *args, **kwargs)
+
+    def list(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:cpe-list$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+        __Response__: a paged list of following objects
+
+        %(SERIALIZER)s
+        """
+        return super(CPEViewSet, self).list(*args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__: PUT, PATCH
+
+        __URL__: $LINK:cpe-detail:cpe$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(CPEViewSet, self).update(request, *args, **kwargs)
+
+    def destroy(self, *args, **kwargs):
+        """
+        __Method__: `DELETE`
+
+        __URL__: $LINK:cpe-detail:cpe$
+
+        __Response__:
+
+        On success, HTTP status code is 204 and the response has no content.
+        """
+        return super(CPEViewSet, self).destroy(*args, **kwargs)
+
+
+class ReleaseVariantCPEViewSet(ChangeSetModelMixin,
+                               ConditionalProcessingMixin,
+                               StrictQueryParamMixin,
+                               MultiLookupFieldMixin,
+                               viewsets.GenericViewSet):
+    """
+    Links each variant ($LINK:variant-list$) with CPE ($LINK:cpe-list$).
     """
 
     queryset = models.VariantCPE.objects.all()
