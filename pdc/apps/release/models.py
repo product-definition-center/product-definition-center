@@ -178,6 +178,7 @@ class Release(models.Model):
                                             related_name='integrated_releases')
 
     sigkey              = models.ForeignKey(SigKey, blank=True, null=True)
+    allow_buildroot_push = models.BooleanField(default=False)
 
     class Meta:
         unique_together = (
@@ -213,7 +214,8 @@ class Release(models.Model):
                                 if self.product_version else None),
             "integrated_with": (self.integrated_with.release_id
                                 if self.integrated_with else None),
-            "sigkey": (self.sigkey.key_id if self.sigkey else None)
+            "sigkey": (self.sigkey.key_id if self.sigkey else None),
+            "allow_buildroot_push": self.allow_buildroot_push
         }
         if self.base_product:
             result["base_product"] = self.base_product.base_product_id

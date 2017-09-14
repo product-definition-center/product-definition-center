@@ -90,12 +90,13 @@ class ReleaseSerializer(StrictSerializerMixin, serializers.ModelSerializer):
                                           required=False,
                                           allow_null=True,
                                           default=None)
+    allow_buildroot_push = serializers.BooleanField(default=False)
 
     class Meta:
         model = Release
         fields = ('release_id', 'short', 'version', 'name', 'base_product',
                   'active', 'product_version', 'release_type',
-                  'compose_set', 'integrated_with', 'sigkey')
+                  'compose_set', 'integrated_with', 'sigkey', 'allow_buildroot_push')
 
     def get_compose_set(self, obj):
         """[Compose.compose_id]"""
