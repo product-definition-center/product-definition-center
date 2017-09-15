@@ -15,7 +15,8 @@ from . import filters
 from pdc.apps.auth.permissions import APIPermission
 from pdc.apps.common.constants import PUT_OPTIONAL_PARAM_WARNING
 from pdc.apps.common.viewsets import (ChangeSetCreateModelMixin, StrictQueryParamMixin,
-                                      ChangeSetUpdateModelMixin, ChangeSetDestroyModelMixin)
+                                      ChangeSetUpdateModelMixin, ChangeSetDestroyModelMixin,
+                                      PDCModelViewSet)
 from pdc.apps.release.models import Release
 from pdc.apps.common import hacks
 from pdc.apps.common.serializers import StrictSerializerMixin
@@ -356,3 +357,87 @@ class ServiceViewSet(StrictQueryParamMixin,
         %(SERIALIZER)s
         """
         return super(ServiceViewSet, self).list(request, *args, **kwargs)
+
+
+class PushTargetViewSet(PDCModelViewSet):
+    """
+    Push targets for products, product versions, releases and release variants.
+    """
+
+    queryset = models.PushTarget.objects.all()
+    serializer_class = serializers.PushTargetSerializer
+    filter_class = filters.PushTargetFilter
+    permission_classes = (APIPermission,)
+
+    def create(self, request, *args, **kwargs):
+        """
+        __Method__: POST
+
+        __URL__: $LINK:pushtarget-list$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+
+        return super(PushTargetViewSet, self).create(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:pushtarget-detail:instance_pk$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(PushTargetViewSet, self).retrieve(request, *args, **kwargs)
+
+    def list(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:pushtarget-list$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+        __Response__: a paged list of following objects
+
+        %(SERIALIZER)s
+        """
+        return super(PushTargetViewSet, self).list(*args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__: PUT, PATCH
+
+        __URL__: $LINK:pushtarget-detail:instance_pk$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(PushTargetViewSet, self).update(request, *args, **kwargs)
+
+    def destroy(self, *args, **kwargs):
+        """
+        __Method__: `DELETE`
+
+        __URL__: $LINK:pushtarget-detail:instance_pk$
+
+        __Response__:
+
+        On success, HTTP status code is 204 and the response has no content.
+        """
+        return super(PushTargetViewSet, self).destroy(*args, **kwargs)

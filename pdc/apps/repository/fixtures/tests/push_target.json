@@ -1,0 +1,32 @@
+[
+    {
+        "model": "repository.PushTarget",
+        "pk": 1,
+        "fields": {
+            "name": "rhn-live",
+            "service": 1,
+            "host": "https://example.com/rhn-live",
+            "description": "RHN Live"
+        }
+    },
+    {
+        "model": "repository.PushTarget",
+        "pk": 2,
+        "fields": {
+            "name": "rhn-stage",
+            "service": 1,
+            "host": "https://example.com/rhn-live",
+            "description": "RHN Stage"
+        }
+    },
+    {
+        "model": "repository.PushTarget",
+        "pk": 3,
+        "fields": {
+            "name": "rhn-qa",
+            "service": 2,
+            "host": "https://example.com/rhn-qa",
+            "description": "RHN QA"
+        }
+    }
+]

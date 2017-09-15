@@ -19,7 +19,7 @@ from productmd.common import create_release_id
 from pdc.apps.common.hacks import as_list
 from . import signals
 from pdc.apps.common.models import SigKey
-from pdc.apps.repository.models import Service
+from pdc.apps.repository.models import PushTarget, Service
 
 
 def validateCPE(cpe):
@@ -82,6 +82,8 @@ class Product(models.Model):
     short = models.CharField(max_length=200, unique=True, validators=[
         RegexValidator(regex=RELEASE_SHORT_RE.pattern, message='Only accept lowercase letters, numbers or -')])
 
+    allowed_push_targets = models.ManyToManyField(PushTarget)
+
     class Meta:
         ordering = ("short", )
 
@@ -112,10 +114,46 @@ class Product(models.Model):
         return {
             "name": self.name,
             "short": self.short,
+            "allowed_push_targets": [push_target.name for push_target in self.allowed_push_targets.all()],
         }
 
 
-class ProductVersion(models.Model):
+class AllowedPushTargetsModel(models.Model):
+    """
+    Abstract model providing allowed_push_targets field.
+
+    This field stored in database as mask, masking fields from allowed push
+    targets from parent.
+
+    Abstract method _parent_allowed_push_targets() must be overridden.
+    """
+
+    masked_push_targets = models.ManyToManyField(PushTarget)
+
+    class Meta:
+        abstract = True
+
+    def _parent_allowed_push_targets(self):
+        """
+        Returns allowed push targets from parent.
+
+        This method must be overridden.
+        """
+        raise NotImplementedError()
+
+    @property
+    def allowed_push_targets(self):
+        return self._parent_allowed_push_targets().exclude(id__in=self.masked_push_targets.all())
+
+    @allowed_push_targets.setter
+    def allowed_push_targets(self, value):
+        self.masked_push_targets = self._parent_allowed_push_targets().exclude(id__in=value)
+
+    def _allowed_push_target_names(self):
+        return [push_target.name for push_target in self.allowed_push_targets]
+
+
+class ProductVersion(AllowedPushTargetsModel):
     name                = models.CharField(max_length=200)
     short = models.CharField(max_length=200, validators=[
         RegexValidator(regex=RELEASE_SHORT_RE.pattern, message='Only accept lowercase letters, numbers or -')])
@@ -152,8 +190,12 @@ class ProductVersion(models.Model):
             "short": self.short,
             "version": self.version,
             "product_version_id": self.product_version_id,
-            "product": self.product and self.product.short or None
+            "product": self.product and self.product.short or None,
+            "allowed_push_targets": self._allowed_push_target_names(),
         }
+
+    def _parent_allowed_push_targets(self):
+        return self.product.allowed_push_targets
 
 
 @receiver(pre_save, sender=ProductVersion)
@@ -161,7 +203,7 @@ def populate_product_version_id(sender, instance, **kwargs):
     instance.product_version_id = instance.get_product_version_id()
 
 
-class Release(models.Model):
+class Release(AllowedPushTargetsModel):
     # release_id is populated by populate_release_id() pre_save hook
     release_id          = models.CharField(max_length=200, blank=False, unique=True)
     short = models.CharField(max_length=200, blank=False, validators=[
@@ -218,7 +260,8 @@ class Release(models.Model):
                                 if self.integrated_with else None),
             "sigkey": (self.sigkey.key_id if self.sigkey else None),
             "allow_buildroot_push": self.allow_buildroot_push,
-            "allowed_debuginfo_services": []
+            "allowed_debuginfo_services": [],
+            "allowed_push_targets": self._allowed_push_target_names(),
         }
         allowed_debuginfo_services = self.allowed_debuginfo_services.all()
         if allowed_debuginfo_services:
@@ -282,6 +325,11 @@ class Release(models.Model):
                     self._integrated_release_variants[variant.variant_uid] = release
         return self._integrated_release_variants
 
+    def _parent_allowed_push_targets(self):
+        if self.product_version:
+            return self.product_version.allowed_push_targets
+        return PushTarget.objects.none()
+
 
 @receiver(pre_save, sender=Release)
 def populate_release_id(sender, instance, **kwargs):
@@ -295,7 +343,7 @@ class VariantType(models.Model):
         return u"%s" % (self.name, )
 
 
-class Variant(models.Model):
+class Variant(AllowedPushTargetsModel):
     release             = models.ForeignKey(Release)
     variant_id          = models.CharField(max_length=100, blank=False)
     variant_uid         = models.CharField(max_length=200, blank=False)
@@ -338,6 +386,9 @@ class Variant(models.Model):
         """
         return self.release.integrated_with
 
+    def _parent_allowed_push_targets(self):
+        return self.release.allowed_push_targets
+
     def export(self):
         return {
             'release': self.release.release_id,
@@ -345,7 +396,8 @@ class Variant(models.Model):
             'variant_uid': self.variant_uid,
             'variant_name': self.variant_name,
             'variant_type': self.variant_type.name,
-            'arches': self.arches
+            'arches': self.arches,
+            "allowed_push_targets": self._allowed_push_target_names(),
         }
 
 

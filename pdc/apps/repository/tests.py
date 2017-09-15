@@ -698,7 +698,8 @@ class VariantUpdateTestCase(APITestCase):
         self.assertDictEqual(dict(response.data),
                              {'release': 'release-1.0', 'name': 'Server name', 'type': 'variant',
                               'id': 'Server', 'uid': 'Server-UID', 'arches': ['ppc64', 'x86_64'],
-                              'variant_version': None, 'variant_release': None})
+                              'variant_version': None, 'variant_release': None,
+                              'allowed_push_targets': []})
 
     def test_removing_arch_with_repos_fails(self):
         response = self.client.patch(reverse('variant-detail', args=['release-1.0/Server-UID']),
@@ -709,7 +710,8 @@ class VariantUpdateTestCase(APITestCase):
         self.assertDictEqual(dict(response.data),
                              {'release': 'release-1.0', 'name': 'Server name', 'type': 'variant',
                               'id': 'Server', 'uid': 'Server-UID', 'arches': ['ppc64', 'x86_64'],
-                              'variant_version': None, 'variant_release': None})
+                              'variant_version': None, 'variant_release': None,
+                              'allowed_push_targets': []})
 
     def test_adding_another_variant_succeeds(self):
         response = self.client.patch(reverse('variant-detail', args=['release-1.0/Server-UID']),
@@ -720,7 +722,8 @@ class VariantUpdateTestCase(APITestCase):
         self.assertDictEqual(dict(response.data),
                              {'release': 'release-1.0', 'name': 'Server name', 'type': 'variant',
                               'id': 'Server', 'uid': 'Server-UID', 'arches': ['ia64', 'ppc64', 'x86_64'],
-                              'variant_version': None, 'variant_release': None})
+                              'variant_version': None, 'variant_release': None,
+                              'allowed_push_targets': []})
 
     def test_removing_non_relevant_variant_succeeds(self):
         response = self.client.patch(reverse('variant-detail', args=['release-1.0/Server-UID']),
@@ -731,7 +734,8 @@ class VariantUpdateTestCase(APITestCase):
         self.assertDictEqual(dict(response.data),
                              {'release': 'release-1.0', 'name': 'Server name', 'type': 'variant',
                               'id': 'Server', 'uid': 'Server-UID', 'arches': ['x86_64'],
-                              'variant_version': None, 'variant_release': None})
+                              'variant_version': None, 'variant_release': None,
+                              'allowed_push_targets': []})
 
     def test_removing_non_relevant_variant_by_patch_succeeds(self):
         response = self.client.patch(reverse('variant-detail', args=['release-1.0/Server-UID']),
@@ -742,7 +746,8 @@ class VariantUpdateTestCase(APITestCase):
         self.assertDictEqual(dict(response.data),
                              {'release': 'release-1.0', 'name': 'Server name', 'type': 'variant',
                               'id': 'Server', 'uid': 'Server-UID', 'arches': ['x86_64'],
-                              'variant_version': None, 'variant_release': None})
+                              'variant_version': None, 'variant_release': None,
+                              'allowed_push_targets': []})
 
 
 class ContentCategoryTestCase(APITestCase):
@@ -764,3 +769,50 @@ class ServiceTestCase(APITestCase):
         response = self.client.get(reverse('contentdeliveryservice-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 3)
+
+
+class PushTargetRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
+    fixtures = [
+        "pdc/apps/repository/fixtures/tests/push_target.json",
+    ]
+
+    def test_list_all(self):
+        response = self.client.get(reverse('pushtarget-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+
+    def test_retrieve(self):
+        data = {
+            "name": "rhn-live",
+            "service": "rhn",
+            "host": "https://example.com/rhn-live",
+            "description": "RHN Live",
+        }
+        response = self.client.get(reverse('pushtarget-detail', args=[1]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        del response.data['id']
+        self.assertEqual(response.data, data)
+
+    def test_add(self):
+        data = {
+            "name": "rhn-test",
+            "service": "rhn",
+            "host": "https://example.com/rhn-test",
+            "description": "RHN Test",
+        }
+        response = self.client.post(reverse('pushtarget-list'), data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        del response.data['id']
+        self.assertEqual(response.data, data)
+
+    def test_add_bad_service(self):
+        data = {
+            "name": "rhn-test",
+            "service": "rhnx",
+            "host": "https://example.com/rhn-test",
+            "description": "RHN Test",
+        }
+        response = self.client.post(reverse('pushtarget-list'), data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data, {'service': ["'rhnx' is not allowed value. Use one of 'rhn', 'pulp', 'ftp'."]})

@@ -28,6 +28,21 @@ class ActiveReleasesFilter(filters.CaseInsensitiveBooleanFilter):
             return qs.exclude(**{name: True}).distinct()
 
 
+class AllowedPushTargetsFilter(filters.MultiValueFilter):
+    def __init__(self, parent_names):
+        super(AllowedPushTargetsFilter, self).__init__()
+        self.parent_names = parent_names
+
+    @filters.value_is_not_empty
+    def filter(self, qs, value):
+        qs = qs.exclude(**{'masked_push_targets__name__in': value})
+        prefix = ''
+        for parent_name in self.parent_names:
+            prefix += parent_name + '__'
+            qs = qs.exclude(**{prefix + 'masked_push_targets__name__in': value})
+        return qs.filter(**{prefix + 'product__allowed_push_targets__name__in': value})
+
+
 class ReleaseFilter(django_filters.FilterSet):
     release_id = filters.MultiValueFilter(name='release_id')
     base_product = filters.MultiValueFilter(name='base_product__base_product_id')
@@ -42,12 +57,14 @@ class ReleaseFilter(django_filters.FilterSet):
     sigkey = filters.MultiValueFilter(name='sigkey__key_id')
     allow_buildroot_push = filters.CaseInsensitiveBooleanFilter()
     allowed_debuginfo_services = filters.MultiValueFilter(name='allowed_debuginfo_services__name')
+    allowed_push_targets = AllowedPushTargetsFilter(['product_version'])
 
     class Meta:
         model = Release
         fields = ("release_id", "name", "short", "version", 'product_version',
                   "release_type", "base_product", 'active', 'integrated_with',
-                  'sigkey', 'allow_buildroot_push', "allowed_debuginfo_services")
+                  'sigkey', 'allow_buildroot_push', 'allowed_debuginfo_services',
+                  'allowed_push_targets')
 
     def find_has_base_product(self, queryset, value, *args, **kwargs):
         """
@@ -77,20 +94,22 @@ class ProductVersionFilter(django_filters.FilterSet):
     version             = filters.MultiValueFilter(name='version')
     name                = filters.MultiValueFilter(name='name')
     product_version_id  = filters.MultiValueFilter(name='product_version_id')
+    allowed_push_targets = AllowedPushTargetsFilter([])
 
     class Meta:
         model = ProductVersion
-        fields = ('name', 'product_version_id', 'version', 'short', 'active')
+        fields = ('name', 'product_version_id', 'version', 'short', 'active', 'allowed_push_targets')
 
 
 class ProductFilter(django_filters.FilterSet):
     active = ActiveReleasesFilter(name='productversion__release')
     name = filters.MultiValueFilter(name='name')
     short = filters.MultiValueFilter(name='short')
+    allowed_push_targets = filters.MultiValueFilter(name='allowed_push_targets__name')
 
     class Meta:
         model = Product
-        fields = ('name', 'short', 'active')
+        fields = ('name', 'short', 'active', 'allowed_push_targets')
 
 
 class ReleaseTypeFilter(django_filters.FilterSet):
@@ -110,10 +129,11 @@ class ReleaseVariantFilter(django_filters.FilterSet):
     type    = filters.MultiValueFilter(name='variant_type__name')
     variant_version = filters.MultiValueFilter(name='variant_version')
     variant_release = filters.MultiValueFilter(name='variant_release')
+    allowed_push_targets = AllowedPushTargetsFilter(['release', 'product_version'])
 
     class Meta:
         model = Variant
-        fields = ('release', 'id', 'uid', 'name', 'type')
+        fields = ('release', 'id', 'uid', 'name', 'type', 'allowed_push_targets')
 
 
 class CPEFilter(django_filters.FilterSet):

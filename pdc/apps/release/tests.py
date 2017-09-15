@@ -126,7 +126,7 @@ class ProductRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args = {"name": "Fedora", "short": "f"}
         response = self.client.post(reverse('product-list'), args)
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
-        args.update({'active': False, 'product_versions': []})
+        args.update({'active': False, 'product_versions': [], 'allowed_push_targets': []})
         self.assertEqual(args, response.data)
         self.assertNumChanges([1])
 
@@ -159,7 +159,8 @@ class ProductRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(dict(response.data),
                          {"short": "product", "name": "Test Product",
-                          "product_versions": [], "active": False})
+                          "product_versions": [], "active": False,
+                          "allowed_push_targets": []})
 
     def test_all(self):
         response = self.client.get(reverse('product-list'))
@@ -170,10 +171,12 @@ class ProductRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
             {'name': u'Dummy product',
              'short': u'dummy',
              'active': False,
+             'allowed_push_targets': [],
              'product_versions': []},
             {'name': u'Test Product',
              'short': u'product',
              'active': False,
+             'allowed_push_targets': [],
              'product_versions': []},
         ]
         self.assertEqual(sorted(data), sorted(expected))
@@ -185,7 +188,8 @@ class ProductRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data, {"short": "f",
                                          "name": "Fedora",
                                          "active": False,
-                                         "product_versions": []})
+                                         "product_versions": [],
+                                         "allowed_push_targets": []})
 
     def test_query_with_illegal_active(self):
         response = self.client.get(reverse('product-list'), {"active": "abcd"})
@@ -265,6 +269,7 @@ class ProductVersionRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args.update({'product_version_id': 'product-2',
                      'active': False,
                      'releases': [],
+                     'allowed_push_targets': [],
                      'product': 'product'})
         self.assertEqual(args, dict(response.data))
         self.assertEqual(1, models.ProductVersion.objects.filter(product_version_id='product-2').count())
@@ -277,6 +282,7 @@ class ProductVersionRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args.update({'product_version_id': 'product-2',
                      'active': False,
                      'releases': [],
+                     'allowed_push_targets': [],
                      'product': 'product',
                      'short': 'product'})
         self.assertDictEqual(args, dict(response.data))
@@ -325,6 +331,7 @@ class ProductVersionRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                                                "name": "Product Version",
                                                "active": False,
                                                "releases": [],
+                                               "allowed_push_targets": [],
                                                "version": "1"})
 
     def test_all_for_dummy(self):
@@ -344,13 +351,14 @@ class ProductVersionRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response.data['version'] = 2
         del response.data['product_version_id']
         del response.data['releases']
+        del response.data['allowed_push_targets']
         del response.data['active']
         response = self.client.post(reverse('productversion-list'), response.data)
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         self.assertEqual(dict(response.data),
                          {'product': 'product', 'product_version_id': 'product-2',
                           'short': 'product', 'name': 'Product Version', 'version': '2',
-                          'active': False, 'releases': []})
+                          'active': False, 'releases': [], 'allowed_push_targets': []})
         self.assertNumChanges([1])
 
     def test_releases_are_ordered(self):
@@ -560,6 +568,7 @@ class ActiveFilterTestCase(APITestCase):
 
 class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
+        "pdc/apps/repository/fixtures/tests/push_target.json",
         "pdc/apps/release/fixtures/tests/release.json",
         "pdc/apps/release/fixtures/tests/product.json",
         "pdc/apps/release/fixtures/tests/base_product.json",
@@ -575,7 +584,9 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args.update({"active": True, 'allow_buildroot_push': False, 'integrated_with': None,
                      'base_product': None, 'product_version': None, 'compose_set': [],
                      'dist_git': None, 'release_id': 'f-20',
-                     'bugzilla': None, 'sigkey': None, 'allowed_debuginfo_services': []})
+                     'bugzilla': None, 'sigkey': None,
+                     'allowed_debuginfo_services': [],
+                     'allowed_push_targets': []})
         self.assertEqual(1, models.Release.objects.filter(release_id='f-20').count())
         self.assertEqual(dict(response.data), args)
         self.assertNumChanges([1])
@@ -587,7 +598,9 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         args.update({"active": True, 'allow_buildroot_push': False, 'integrated_with': None,
                      'base_product': None, 'product_version': None, 'compose_set': [],
-                     'dist_git': None, 'release_id': u'f-20', 'sigkey': None, 'allowed_debuginfo_services': []})
+                     'dist_git': None, 'release_id': u'f-20', 'sigkey': None,
+                     'allowed_debuginfo_services': [],
+                     'allowed_push_targets': []})
         self.assertEqual(ReleaseBugzillaMapping.objects.count(), 1)
         self.assertDictEqual(dict(response.data.pop('bugzilla')), args.pop('bugzilla'))
         self.assertDictEqual(dict(response.data), args)
@@ -601,7 +614,8 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args.update({"active": True, 'integrated_with': None,
                      'base_product': None, 'product_version': None, 'compose_set': [],
                      'release_id': 'f-20', 'bugzilla': None, 'sigkey': None, 'allow_buildroot_push': False,
-                     'allowed_debuginfo_services': []})
+                     'allowed_debuginfo_services': [],
+                     'allowed_push_targets': []})
         self.assertEqual(ReleaseDistGitMapping.objects.count(), 2)
         self.assertDictEqual(dict(response.data), args)
         self.assertNumChanges([2])
@@ -648,7 +662,9 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                      'release_id': 'product-1.1', 'active': True, 'base_product': None,
                      'compose_set': [], 'dist_git': None,
                      'bugzilla': None, 'integrated_with': None, 'sigkey': None,
-                     'allow_buildroot_push': False, 'allowed_debuginfo_services': []})
+                     'allow_buildroot_push': False,
+                     'allowed_debuginfo_services': [],
+                     'allowed_push_targets': []})
         self.assertEqual(args, dict(response.data))
         self.assertEqual(1, models.Release.objects.filter(release_id='product-1.1').count())
         self.assertNumChanges([1])
@@ -664,7 +680,9 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                      'active': True, 'compose_set': [], 'dist_git': None,
                      'release_id': 'supp-1.1@product-1', 'product_version': None,
                      'bugzilla': None, 'integrated_with': None, 'sigkey': None,
-                     'allow_buildroot_push': False, 'allowed_debuginfo_services': []})
+                     'allow_buildroot_push': False,
+                     'allowed_debuginfo_services': [],
+                     'allowed_push_targets': []})
         self.assertEqual(args, dict(response.data))
         self.assertNumChanges([1])
         response = self.client.get(reverse('release-list') + '?base_product=product-1')
@@ -766,7 +784,9 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                      'active': True, 'compose_set': [], 'dist_git': None,
                      'release_id': 'supp-1.1@product-1', 'product_version': None,
                      'bugzilla': None, 'integrated_with': None, 'sigkey': 'ABCDEF',
-                     'allow_buildroot_push': False, 'allowed_debuginfo_services': []})
+                     'allow_buildroot_push': False,
+                     'allowed_debuginfo_services': [],
+                     'allowed_push_targets': []})
         self.assertEqual(args, dict(response.data))
         self.assertNumChanges([1])
         response = self.client.get(reverse('release-list'), {'sigkey': 'ABCDEF'})
@@ -781,7 +801,9 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_create_list_with_allowed_debuginfo(self):
         args = {"name": "Supplementary", "short": "supp", "version": "1.1",
-                "release_type": "ga", "base_product": "product-1", "allowed_debuginfo_services": ["rhn", "ftp"]}
+                "release_type": "ga", "base_product": "product-1",
+                "allowed_push_targets": [],
+                "allowed_debuginfo_services": ["rhn", "ftp"]}
         response = self.client.post(reverse('release-list'), args)
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         args.update({'base_product': 'product-1',
@@ -796,7 +818,9 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_create_with_non_exist_allowed_debuginfo_services(self):
         args = {"name": "Supplementary", "short": "supp", "version": "1.1",
-                "release_type": "ga", "base_product": "product-1", "allowed_debuginfo_services": ["test"]}
+                "release_type": "ga", "base_product": "product-1",
+                "allowed_push_targets": [],
+                "allowed_debuginfo_services": ["test"]}
         response = self.client.post(reverse('release-list'), args)
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
@@ -826,7 +850,9 @@ class ReleaseCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
                               'product_version': None, 'base_product': None, 'active': True,
                               'release_id': 'release-1.1', 'compose_set': [],
                               'bugzilla': None, 'integrated_with': None, 'sigkey': None,
-                              'allow_buildroot_push': False, 'allowed_debuginfo_services': []})
+                              'allow_buildroot_push': False,
+                              'allowed_debuginfo_services': [],
+                              'allowed_push_targets': []})
         self.assertNumChanges([4])
 
     def test_clone_extra_fields(self):
@@ -931,7 +957,9 @@ class ReleaseCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
                               'product_version': None, 'base_product': None, 'active': True,
                               'release_id': 'release-1.1', 'compose_set': [],
                               'bugzilla': None, 'integrated_with': None, 'sigkey': None,
-                              'allow_buildroot_push': False, 'allowed_debuginfo_services': []})
+                              'allow_buildroot_push': False,
+                              'allowed_debuginfo_services': [],
+                              'allowed_push_targets': []})
         self.assertNumChanges([2])
 
     def test_clone_not_unique(self):
@@ -1349,7 +1377,9 @@ class ReleaseUpdateRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def test_update_allowed_debuginfo(self):
         response = self.client.put(self.url,
                                    {'short': 'product', 'version': '1.0', 'release_type': 'ga',
-                                    'name': 'Our Product', "allowed_debuginfo_services": ["rhn"]}, format='json')
+                                    'name': 'Our Product',
+                                    'allowed_push_targets': [],
+                                    'allowed_debuginfo_services': ['rhn']}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('name'), 'Our Product')
         self.assertEqual(response.data.get('allowed_debuginfo_services'), ["rhn"])
@@ -1498,7 +1528,9 @@ class ReleaseImportTestCase(TestCaseWithChangeSetMixin, APITestCase):
                               'base_product': None, 'compose_set': [],
                               'integrated_with': None, 'bugzilla': None,
                               'active': True, 'release_type': 'ga', 'dist_git': None,
-                              'sigkey': None, 'allow_buildroot_push': False, 'allowed_debuginfo_services': []})
+                              'sigkey': None, 'allow_buildroot_push': False,
+                              'allowed_debuginfo_services': [],
+                              'allowed_push_targets': []})
         release = models.Release.objects.get(release_id='tp-1.0')
         self.assertItemsEqual(release.trees,
                               ['Client.x86_64', 'Server.x86_64', 'Server.s390x',
@@ -1520,7 +1552,9 @@ class ReleaseImportTestCase(TestCaseWithChangeSetMixin, APITestCase):
                               'base_product': 'tp-1', 'compose_set': [],
                               'integrated_with': 'tp-1.0', 'bugzilla': None,
                               'active': True, 'release_type': 'ga', 'dist_git': None,
-                              'sigkey': None, 'allow_buildroot_push': False, 'allowed_debuginfo_services': []})
+                              'sigkey': None, 'allow_buildroot_push': False,
+                              'allowed_debuginfo_services': [],
+                              'allowed_push_targets': []})
         release = models.Release.objects.get(release_id='sap-1.0@tp-1')
         self.assertItemsEqual(release.trees, ['Server-SAP.x86_64'])
         self.assertEqual(release.variant_set.get(variant_uid='Server-SAP').integrated_to.release_id,
@@ -1599,6 +1633,7 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
             'arches': ['x86_64'],
             'variant_version': None,
             'variant_release': None,
+            'allowed_push_targets': [],
         })
         self.assertEqual(response.data, expected)
         self.assertNumChanges([1])
@@ -1719,6 +1754,7 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
             'arches': ['ppc64', 'x86_64'],
             'variant_version': None,
             'variant_release': None,
+            'allowed_push_targets': [],
         }
         response = self.client.put(reverse('variant-detail', args=['release-1.0/Server-UID']),
                                    args, format='json')
@@ -1846,6 +1882,7 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
             'type': 'variant',
             'variant_version': None,
             'variant_release': None,
+            'allowed_push_targets': [],
         }
         self.assertItemsEqual(response.data.pop('arches'), ['x86_64', 'ppc64'])
         self.assertDictEqual(dict(response.data), expected)
@@ -2306,3 +2343,166 @@ class ProductLastModifiedResponseTestCase(TestCaseWithChangeSetMixin, APITestCas
         response = self.client.get(reverse('product-list'))
         after_time = self._get_last_modified_epoch(response)
         self.assertGreaterEqual(after_time - before_time, 3)
+
+
+class AllowedPushTargetsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
+    fixtures = [
+        "pdc/apps/repository/fixtures/tests/push_target.json",
+        "pdc/apps/release/fixtures/tests/allowed_push_targets.json",
+    ]
+
+    def test_filter_product_by_push_target(self):
+        for push_target in ['rhn-live', 'rhn-stage', 'rhn-qa']:
+            response = self.client.get(reverse('product-list'), {'allowed_push_targets': push_target})
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.data.get('count'), 1)
+            self.assertIn(push_target, response.data.get('results')[0].get('allowed_push_targets'))
+
+    def test_filter_product_version_by_push_target(self):
+        push_target = 'rhn-qa'
+        response = self.client.get(reverse('productversion-list'), {'allowed_push_targets': push_target})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+        self.assertIn(push_target, response.data.get('results')[0].get('allowed_push_targets'))
+
+        push_target = 'rhn-live'
+        response = self.client.get(reverse('productversion-list'), {'allowed_push_targets': push_target})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+        self.assertIn(push_target, response.data.get('results')[0].get('allowed_push_targets'))
+        self.assertIn(push_target, response.data.get('results')[1].get('allowed_push_targets'))
+
+    def test_filter_release_by_push_target(self):
+        push_target = 'rhn-qa'
+        response = self.client.get(reverse('release-list'), {'allowed_push_targets': push_target})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+        self.assertIn(push_target, response.data.get('results')[0].get('allowed_push_targets'))
+
+        push_target = 'rhn-live'
+        response = self.client.get(reverse('release-list'), {'allowed_push_targets': push_target})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 2)
+        self.assertIn(push_target, response.data.get('results')[0].get('allowed_push_targets'))
+        self.assertIn(push_target, response.data.get('results')[1].get('allowed_push_targets'))
+
+    def test_filter_variant_by_push_target(self):
+        push_target = 'rhn-qa'
+        response = self.client.get(reverse('variant-list'), {'allowed_push_targets': push_target})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+        self.assertIn(push_target, response.data.get('results')[0].get('allowed_push_targets'))
+
+        push_target = 'rhn-live'
+        response = self.client.get(reverse('variant-list'), {'allowed_push_targets': push_target})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+        self.assertIn(push_target, response.data.get('results')[0].get('allowed_push_targets'))
+
+    def test_create_product_with_valid_push_targets(self):
+        allowed_push_targets = ['rhn-live', 'rhn-stage', 'rhn-qa']
+        args = {'name': 'Fedora', 'short': 'f', 'allowed_push_targets': allowed_push_targets}
+        response = self.client.post(reverse('product-list'), args)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(set(allowed_push_targets), set(response.data.get('allowed_push_targets')))
+
+    def test_create_product_with_non_existing_push_targets(self):
+        args = {'name': 'Fedora', 'short': 'f', 'allowed_push_targets': ['rhn-test']}
+        response = self.client.post(reverse('product-list'), args)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(
+            response.data.get('allowed_push_targets'), ['Object with name=rhn-test does not exist.'])
+
+    def test_get_product_version_inherited_allowed_push_targets(self):
+        response = self.client.get(reverse('productversion-detail', args=['product-1']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual({'rhn-live', 'rhn-stage'}, set(response.data.get('allowed_push_targets')))
+
+    def test_get_release_inherited_allowed_push_targets(self):
+        response = self.client.get(reverse('release-detail', args=['product-1.0']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual({'rhn-live', 'rhn-stage'}, set(response.data.get('allowed_push_targets')))
+
+    def test_get_variant_inherited_allowed_push_targets(self):
+        response = self.client.get(reverse('variant-detail', args=['product-1.0/Server']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual({'rhn-live', 'rhn-stage'}, set(response.data.get('allowed_push_targets')))
+
+    def test_update_product_propagates_allowed_push_targets(self):
+        allowed_push_targets = {'rhn-live', 'rhn-stage', 'rhn-qa'}
+
+        response = self.client.patch(
+            reverse('product-detail', args=['product']), {'allowed_push_targets': list(allowed_push_targets)})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(allowed_push_targets, set(response.data.get('allowed_push_targets')))
+
+        response = self.client.get(reverse('productversion-detail', args=['product-1']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(allowed_push_targets, set(response.data.get('allowed_push_targets')))
+
+        response = self.client.get(reverse('release-detail', args=['product-1.0']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(allowed_push_targets, set(response.data.get('allowed_push_targets')))
+
+        response = self.client.get(reverse('variant-detail', args=['product-1.0/Server']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(allowed_push_targets, set(response.data.get('allowed_push_targets')))
+
+    def test_update_product_version_propagates_allowed_push_targets(self):
+        old_allowed_push_targets = {'rhn-live', 'rhn-stage'}
+        allowed_push_targets = {'rhn-live'}
+
+        response = self.client.patch(
+            reverse('productversion-detail', args=['product-1']), {'allowed_push_targets': list(allowed_push_targets)})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(allowed_push_targets, set(response.data.get('allowed_push_targets')))
+
+        response = self.client.get(reverse('product-detail', args=['product']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(old_allowed_push_targets, set(response.data.get('allowed_push_targets')))
+
+        response = self.client.get(reverse('release-detail', args=['product-1.0']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(allowed_push_targets, set(response.data.get('allowed_push_targets')))
+
+        response = self.client.get(reverse('variant-detail', args=['product-1.0/Server']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(allowed_push_targets, set(response.data.get('allowed_push_targets')))
+
+    def test_update_release_propagates_allowed_push_targets(self):
+        old_allowed_push_targets = {'rhn-live', 'rhn-stage'}
+        allowed_push_targets = {'rhn-live'}
+
+        response = self.client.patch(
+            reverse('release-detail', args=['product-1.0']), {'allowed_push_targets': list(allowed_push_targets)})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(allowed_push_targets, set(response.data.get('allowed_push_targets')))
+
+        response = self.client.get(reverse('product-detail', args=['product']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(old_allowed_push_targets, set(response.data.get('allowed_push_targets')))
+
+        response = self.client.get(reverse('productversion-detail', args=['product-1']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(old_allowed_push_targets, set(response.data.get('allowed_push_targets')))
+
+        response = self.client.get(reverse('variant-detail', args=['product-1.0/Server']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(allowed_push_targets, set(response.data.get('allowed_push_targets')))
+
+    def test_create_product_version_with_valid_allowed_push_targets(self):
+        allowed_push_targets = ['rhn-live']
+        args = {'name': 'Our Awesome Product', 'short': 'product',
+                'version': '3', 'product': 'product',
+                'allowed_push_targets': allowed_push_targets}
+        response = self.client.post(reverse('productversion-list'), args)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(response.data.get('allowed_push_targets'), allowed_push_targets)
+
+    def test_create_product_version_with_not_allowed_push_targets(self):
+        args = {'name': 'Our Awesome Product', 'short': 'product',
+                'version': '3', 'product': 'product',
+                'allowed_push_targets': ['rhn-qa']}
+        response = self.client.post(reverse('productversion-list'), args)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(response.data.get('detail'), ["Push targets must be allowed in parent product: [u'rhn-qa']"])
