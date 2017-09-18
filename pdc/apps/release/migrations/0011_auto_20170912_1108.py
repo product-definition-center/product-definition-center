@@ -19,7 +19,11 @@ class Migration(migrations.Migration):
                 ('description', models.CharField(max_length=300, blank=True)),
             ],
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
+            model_name='variantcpe',
+            name='cpe',
+        ),
+        migrations.AddField(
             model_name='variantcpe',
             name='cpe',
             field=models.ForeignKey(to='release.CPE'),
