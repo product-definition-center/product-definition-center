@@ -15,6 +15,7 @@ from .models import (Product, ProductVersion, Release,
                      validateCPE)
 from . import signals
 from pdc.apps.common.models import SigKey
+from pdc.apps.repository.models import Service
 
 
 class CPEField(serializers.CharField):
@@ -91,12 +92,16 @@ class ReleaseSerializer(StrictSerializerMixin, serializers.ModelSerializer):
                                           allow_null=True,
                                           default=None)
     allow_buildroot_push = serializers.BooleanField(default=False)
+    allowed_debuginfo_services = ChoiceSlugField(slug_field='name',
+                                                 many=True, queryset=Service.objects.all(),
+                                                 required=False, default=[])
 
     class Meta:
         model = Release
         fields = ('release_id', 'short', 'version', 'name', 'base_product',
                   'active', 'product_version', 'release_type',
-                  'compose_set', 'integrated_with', 'sigkey', 'allow_buildroot_push')
+                  'compose_set', 'integrated_with', 'sigkey', 'allow_buildroot_push',
+                  'allowed_debuginfo_services')
 
     def get_compose_set(self, obj):
         """[Compose.compose_id]"""

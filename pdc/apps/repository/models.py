@@ -26,6 +26,12 @@ class Service(models.Model):
         """cached `name` to `id`"""
         return get_cached_id(cls, "name", value)
 
+    def export(self):
+        return {
+            'name': self.name,
+            'description': self.description
+        }
+
 
 class ContentFormat(models.Model):
     # rpm, kickstart, iso

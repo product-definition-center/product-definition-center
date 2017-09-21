@@ -575,7 +575,7 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args.update({"active": True, 'allow_buildroot_push': False, 'integrated_with': None,
                      'base_product': None, 'product_version': None, 'compose_set': [],
                      'dist_git': None, 'release_id': 'f-20',
-                     'bugzilla': None, 'sigkey': None})
+                     'bugzilla': None, 'sigkey': None, 'allowed_debuginfo_services': []})
         self.assertEqual(1, models.Release.objects.filter(release_id='f-20').count())
         self.assertEqual(dict(response.data), args)
         self.assertNumChanges([1])
@@ -587,7 +587,7 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         args.update({"active": True, 'allow_buildroot_push': False, 'integrated_with': None,
                      'base_product': None, 'product_version': None, 'compose_set': [],
-                     'dist_git': None, 'release_id': u'f-20', 'sigkey': None})
+                     'dist_git': None, 'release_id': u'f-20', 'sigkey': None, 'allowed_debuginfo_services': []})
         self.assertEqual(ReleaseBugzillaMapping.objects.count(), 1)
         self.assertDictEqual(dict(response.data.pop('bugzilla')), args.pop('bugzilla'))
         self.assertDictEqual(dict(response.data), args)
@@ -600,7 +600,8 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         args.update({"active": True, 'integrated_with': None,
                      'base_product': None, 'product_version': None, 'compose_set': [],
-                     'release_id': 'f-20', 'bugzilla': None, 'sigkey': None, 'allow_buildroot_push': False})
+                     'release_id': 'f-20', 'bugzilla': None, 'sigkey': None, 'allow_buildroot_push': False,
+                     'allowed_debuginfo_services': []})
         self.assertEqual(ReleaseDistGitMapping.objects.count(), 2)
         self.assertDictEqual(dict(response.data), args)
         self.assertNumChanges([2])
@@ -646,7 +647,8 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args.update({'product_version': 'product-1',
                      'release_id': 'product-1.1', 'active': True, 'base_product': None,
                      'compose_set': [], 'dist_git': None,
-                     'bugzilla': None, 'integrated_with': None, 'sigkey': None, 'allow_buildroot_push': False})
+                     'bugzilla': None, 'integrated_with': None, 'sigkey': None,
+                     'allow_buildroot_push': False, 'allowed_debuginfo_services': []})
         self.assertEqual(args, dict(response.data))
         self.assertEqual(1, models.Release.objects.filter(release_id='product-1.1').count())
         self.assertNumChanges([1])
@@ -661,7 +663,8 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args.update({'base_product': 'product-1',
                      'active': True, 'compose_set': [], 'dist_git': None,
                      'release_id': 'supp-1.1@product-1', 'product_version': None,
-                     'bugzilla': None, 'integrated_with': None, 'sigkey': None, 'allow_buildroot_push': False})
+                     'bugzilla': None, 'integrated_with': None, 'sigkey': None,
+                     'allow_buildroot_push': False, 'allowed_debuginfo_services': []})
         self.assertEqual(args, dict(response.data))
         self.assertNumChanges([1])
         response = self.client.get(reverse('release-list') + '?base_product=product-1')
@@ -762,7 +765,8 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args.update({'base_product': 'product-1',
                      'active': True, 'compose_set': [], 'dist_git': None,
                      'release_id': 'supp-1.1@product-1', 'product_version': None,
-                     'bugzilla': None, 'integrated_with': None, 'sigkey': 'ABCDEF', 'allow_buildroot_push': False})
+                     'bugzilla': None, 'integrated_with': None, 'sigkey': 'ABCDEF',
+                     'allow_buildroot_push': False, 'allowed_debuginfo_services': []})
         self.assertEqual(args, dict(response.data))
         self.assertNumChanges([1])
         response = self.client.get(reverse('release-list'), {'sigkey': 'ABCDEF'})
@@ -772,6 +776,27 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def test_create_with_non_exist_sigkey(self):
         args = {"name": "Supplementary", "short": "supp", "version": "1.1",
                 "release_type": "ga", "base_product": "product-1", 'sigkey': 'ABCD'}
+        response = self.client.post(reverse('release-list'), args)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+    def test_create_list_with_allowed_debuginfo(self):
+        args = {"name": "Supplementary", "short": "supp", "version": "1.1",
+                "release_type": "ga", "base_product": "product-1", "allowed_debuginfo_services": ["rhn", "ftp"]}
+        response = self.client.post(reverse('release-list'), args)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        args.update({'base_product': 'product-1',
+                     'active': True, 'compose_set': [], 'dist_git': None,
+                     'release_id': 'supp-1.1@product-1', 'product_version': None,
+                     'bugzilla': None, 'integrated_with': None, 'sigkey': None, 'allow_buildroot_push': False})
+        self.assertEqual(args, dict(response.data))
+        self.assertNumChanges([1])
+        response = self.client.get(reverse('release-list'), {"allowed_debuginfo_services": "ftp"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(args, response.data['results'][0])
+
+    def test_create_with_non_exist_allowed_debuginfo_services(self):
+        args = {"name": "Supplementary", "short": "supp", "version": "1.1",
+                "release_type": "ga", "base_product": "product-1", "allowed_debuginfo_services": ["test"]}
         response = self.client.post(reverse('release-list'), args)
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
@@ -800,7 +825,8 @@ class ReleaseCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
                               'name': 'Test Release', 'dist_git': {'branch': 'release_branch'},
                               'product_version': None, 'base_product': None, 'active': True,
                               'release_id': 'release-1.1', 'compose_set': [],
-                              'bugzilla': None, 'integrated_with': None, 'sigkey': None, 'allow_buildroot_push': False})
+                              'bugzilla': None, 'integrated_with': None, 'sigkey': None,
+                              'allow_buildroot_push': False, 'allowed_debuginfo_services': []})
         self.assertNumChanges([4])
 
     def test_clone_extra_fields(self):
@@ -904,7 +930,8 @@ class ReleaseCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
                               'name': 'Test Release', 'dist_git': {'branch': 'release_branch'},
                               'product_version': None, 'base_product': None, 'active': True,
                               'release_id': 'release-1.1', 'compose_set': [],
-                              'bugzilla': None, 'integrated_with': None, 'sigkey': None, 'allow_buildroot_push': False})
+                              'bugzilla': None, 'integrated_with': None, 'sigkey': None,
+                              'allow_buildroot_push': False, 'allowed_debuginfo_services': []})
         self.assertNumChanges([2])
 
     def test_clone_not_unique(self):
@@ -1319,6 +1346,14 @@ class ReleaseUpdateRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data.get('name'), 'Our Product')
         self.assertEqual(response.data.get('sigkey'), 'ABCDEF')
 
+    def test_update_allowed_debuginfo(self):
+        response = self.client.put(self.url,
+                                   {'short': 'product', 'version': '1.0', 'release_type': 'ga',
+                                    'name': 'Our Product', "allowed_debuginfo_services": ["rhn"]}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('name'), 'Our Product')
+        self.assertEqual(response.data.get('allowed_debuginfo_services'), ["rhn"])
+
 
 class ReleaseLatestComposeTestCase(APITestCase):
     fixtures = [
@@ -1463,7 +1498,7 @@ class ReleaseImportTestCase(TestCaseWithChangeSetMixin, APITestCase):
                               'base_product': None, 'compose_set': [],
                               'integrated_with': None, 'bugzilla': None,
                               'active': True, 'release_type': 'ga', 'dist_git': None,
-                              'sigkey': None, 'allow_buildroot_push': False})
+                              'sigkey': None, 'allow_buildroot_push': False, 'allowed_debuginfo_services': []})
         release = models.Release.objects.get(release_id='tp-1.0')
         self.assertItemsEqual(release.trees,
                               ['Client.x86_64', 'Server.x86_64', 'Server.s390x',
@@ -1485,7 +1520,7 @@ class ReleaseImportTestCase(TestCaseWithChangeSetMixin, APITestCase):
                               'base_product': 'tp-1', 'compose_set': [],
                               'integrated_with': 'tp-1.0', 'bugzilla': None,
                               'active': True, 'release_type': 'ga', 'dist_git': None,
-                              'sigkey': None, 'allow_buildroot_push': False})
+                              'sigkey': None, 'allow_buildroot_push': False, 'allowed_debuginfo_services': []})
         release = models.Release.objects.get(release_id='sap-1.0@tp-1')
         self.assertItemsEqual(release.trees, ['Server-SAP.x86_64'])
         self.assertEqual(release.variant_set.get(variant_uid='Server-SAP').integrated_to.release_id,

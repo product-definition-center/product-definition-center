@@ -19,6 +19,7 @@ from productmd.common import create_release_id
 from pdc.apps.common.hacks import as_list
 from . import signals
 from pdc.apps.common.models import SigKey
+from pdc.apps.repository.models import Service
 
 
 def validateCPE(cpe):
@@ -179,6 +180,7 @@ class Release(models.Model):
 
     sigkey              = models.ForeignKey(SigKey, blank=True, null=True)
     allow_buildroot_push = models.BooleanField(default=False)
+    allowed_debuginfo_services  = models.ManyToManyField(Service, blank=True)
 
     class Meta:
         unique_together = (
@@ -215,8 +217,13 @@ class Release(models.Model):
             "integrated_with": (self.integrated_with.release_id
                                 if self.integrated_with else None),
             "sigkey": (self.sigkey.key_id if self.sigkey else None),
-            "allow_buildroot_push": self.allow_buildroot_push
+            "allow_buildroot_push": self.allow_buildroot_push,
+            "allowed_debuginfo_services": []
         }
+        allowed_debuginfo_services = self.allowed_debuginfo_services.all()
+        if allowed_debuginfo_services:
+            for allowed_debuginfo in allowed_debuginfo_services:
+                result["allowed_debuginfo_services"].append(allowed_debuginfo.export())
         if self.base_product:
             result["base_product"] = self.base_product.base_product_id
         else:
