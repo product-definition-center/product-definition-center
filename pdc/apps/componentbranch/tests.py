@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from pdc.apps.component.models import GlobalComponent
+from pdc.apps.component.models import GlobalComponent, ReleaseComponentType
 from pdc.apps.componentbranch.models import (
     ComponentBranch, SLAToComponentBranch, SLA)
 
@@ -167,6 +167,36 @@ class ComponentBranchAPITestCase(APITestCase):
         self.assertEqual(response.data['results'][0]['type'], 'rpm')
         self.assertFalse(response.data['results'][0]['active'])
         self.assertFalse(response.data['results'][0]['critical_path'])
+
+    def test_get_branch_filter_case_sensitive(self):
+        gc2 = GlobalComponent(name='Python')
+        gc2.save()
+        rpm_ct = ReleaseComponentType.objects.get(name='rpm')
+        cb2 = ComponentBranch(name='some_branch', global_component=gc2,
+                              type=rpm_ct)
+        cb2.save()
+        url = reverse('componentbranch-list')
+        url = '{0}?global_component=python'.format(url)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+        self.assertEqual(response.data['results'][0]['global_component'],
+                         'python')
+        self.assertEqual(response.data['results'][1]['global_component'],
+                         'python')
+
+        url2 = reverse('componentbranch-list')
+        url2 = '{0}?global_component=Python'.format(url2)
+        response2 = self.client.get(url2)
+        self.assertEqual(response2.status_code, status.HTTP_200_OK)
+        self.assertEqual(response2.data['count'], 1)
+        self.assertEqual(response2.data['results'][0]['id'], 3)
+        self.assertEqual(response2.data['results'][0]['name'], 'some_branch')
+        self.assertEqual(response2.data['results'][0]['global_component'],
+                         'Python')
+        self.assertEqual(response2.data['results'][0]['type'], 'rpm')
+        self.assertFalse(response2.data['results'][0]['active'])
+        self.assertFalse(response2.data['results'][0]['critical_path'])
 
     def test_patch_branch(self):
         gc2 = GlobalComponent(name='pythonx')
@@ -665,3 +695,29 @@ class SLAToBranchAPITestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 3)
+
+    def test_get_branch_filter_case_sensitive(self):
+            gc2 = GlobalComponent(name='Python')
+            gc2.save()
+            rpm_ct = ReleaseComponentType.objects.get(name='rpm')
+            cb2 = ComponentBranch(name='some_branch', global_component=gc2,
+                                  type=rpm_ct)
+            cb2.save()
+            tomorrow = str(datetime.utcnow().date() + timedelta(days=1))
+            sla_bug_fixes = SLA.objects.get(name='bug_fixes')
+            sla_entry = SLAToComponentBranch(
+                sla=sla_bug_fixes, branch=cb2, eol=tomorrow)
+            sla_entry.save()
+            url = reverse('slatocomponentbranch-list')
+            url = '{0}?global_component=python'.format(url)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.data['count'], 1)
+            self.assertEqual(response.data['results'][0]['branch']['global_component'], 'python')
+
+            url2 = reverse('slatocomponentbranch-list')
+            url2 = '{0}?global_component=Python'.format(url2)
+            response2 = self.client.get(url2)
+            self.assertEqual(response2.status_code, status.HTTP_200_OK)
+            self.assertEqual(response2.data['count'], 1)
+            self.assertEqual(response2.data['results'][0]['branch']['global_component'], 'Python')
