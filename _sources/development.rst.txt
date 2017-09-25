@@ -76,7 +76,7 @@ Option 3: Start it on Docker
 
 * Install Docker: see the `official installation
   guide <https://docs.docker.com/installation/>`_ for details. Generally, it
-  might be enough to run install it with ``yum`` and the run it. ::
+  might be enough to run install it with ``yum`` and then run it. ::
 
     $ sudo yum install docker-engine
     $ sudo service docker start
