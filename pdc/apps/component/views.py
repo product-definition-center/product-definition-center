@@ -64,16 +64,6 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
     -d _data_ (a json string). or GUI plugins for
     browsers, such as ``RESTClient``, ``RESTConsole``.
 
-    ## Customize Output ##
-
-    There are two query params that you can use to customize your output.
-
-    `fields`:          string, can be set multiple times, to demand what fields you want to include;
-
-    `exclude_fields`:  string, can be set multiple times, to demand what fields you do NOT want.
-
-    __NOTE__: If both given, `exclude_fields` *rules* `fields`.
-
     """
     model = GlobalComponent
     queryset = GlobalComponent.objects.all().order_by('id')
@@ -436,16 +426,6 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
     You can use ``curl`` in terminal, with -X _method_ (GET|POST|PUT|DELETE),
     -d _data_ (a json string). or GUI plugins for
     browsers, such as ``RESTClient``, ``RESTConsole``.
-
-    ## Customize Output ##
-
-    There are two query params that you can use to customize your output.
-
-    `fields`:          string, can be set multiple times, to demand what fields you want to include;
-
-    `exclude_fields`:  string, can be set multiple times, to demand what fields you do NOT want.
-
-    __NOTE__: If both given, `exclude_fields` *rules* `fields`.
 
     """
     model = ReleaseComponent

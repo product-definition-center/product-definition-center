@@ -4,6 +4,8 @@
 # http://opensource.org/licenses/MIT
 #
 
+from .serializers import DynamicFieldsSerializerMixin
+
 
 def get_allowed_query_params(view):
     """
@@ -46,4 +48,9 @@ def get_allowed_query_params(view):
     serializer_class = getattr(view, 'serializer_class', None)
     if serializer_class:
         allowed_keys.update(getattr(serializer_class, 'query_params', set()))
+
+        # Add fields key if applicable.
+        if issubclass(serializer_class, DynamicFieldsSerializerMixin):
+            allowed_keys.add('fields')
+
     return allowed_keys

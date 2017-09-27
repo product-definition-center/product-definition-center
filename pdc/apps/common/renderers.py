@@ -70,6 +70,10 @@ ORDERING_STRING = """
     - To sort by a field in descending order, prefix its name with minus (e.g. `-name`).
     - Use double underscores for nested field names (e.g. `parent__child` for `{"parent": {"child": ...}}`).
 """
+FIELDS_STRING = """
+ * `fields` (string) Comma separated list of fields to display (can be faster than requesting all fields).
+ * `exclude_fields`: (string) Comma separated list of fields *NOT* to display (overrules `fields`).
+"""
 
 
 class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
@@ -148,6 +152,9 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
             # If the API has the LIST method, show ordering field info.
             if 'list' == method and view.serializer_class:
                 macros['FILTERS'] += ORDERING_STRING
+                # Show fields info if applicable.
+                if issubclass(view.serializer_class, drf_introspection.serializers.DynamicFieldsSerializerMixin):
+                    macros['FILTERS'] += FIELDS_STRING
             if '%(SERIALIZER)s' in docstring:
                 macros['SERIALIZER'] = get_serializer(view, include_read_only=True)
             if '%(WRITABLE_SERIALIZER)s' in docstring:

@@ -4,7 +4,7 @@
 # http://opensource.org/licenses/MIT
 #
 """
-This module defines two mixins intended for use with serializers.
+This module defines three mixins intended for use with serializers.
 """
 
 from rest_framework import serializers
@@ -50,7 +50,53 @@ class IntrospectableSerializerMixin(object):
         return set(self.fields.keys()) | self._extra_fields
 
 
-class StrictSerializerMixin(IntrospectableSerializerMixin):
+class DynamicFieldsSerializerMixin(object):
+    """
+    A Serializer mixin that takes additional `fields` or `exclude_fields`
+    list arguments that controls which fields should be displayed or not.
+
+    NOTE: When given both, `exclude_fields` will be processed after `fields`.
+    """
+
+    query_params = ('fields', 'exclude_fields')
+
+    def __init__(self, *args, **kwargs):
+        # Accept kwargs in __init__, like:
+        # Don't pass the 'fields' arg up to the superclass
+        fields = kwargs.pop('fields', [])
+        exclude_fields = kwargs.pop('exclude_fields', [])
+
+        # Instantiate the superclass normally
+        super(DynamicFieldsSerializerMixin, self).__init__(*args, **kwargs)
+
+        # Accept PARAMS passing from the 'request' in the serializer's context.
+        if hasattr(self, 'context') and isinstance(self.context, dict):
+            request = self.context.get('request', None)
+            # The 'fields' and 'exclude_fields" in request should only apply to
+            # top level serializer.
+            top_level = self.context.get('top_level', True)
+            if request and top_level:
+                fields += request.query_params.getlist('fields', [])
+                exclude_fields += request.query_params.getlist('exclude_fields', [])
+
+        existing = set(self.fields.keys())
+        # ignore nonexistent fields input
+        allowed = set(fields) & existing if fields else None
+        if allowed:
+            # exclude_fields *rules* fields
+            if exclude_fields:
+                # Drop any fields that are specified in the `exclude_fields` argument.
+                allowed = allowed - set(exclude_fields)
+            # Drop any fields that are not specified in the `fields` argument.
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
+        elif exclude_fields:
+            # Drop any fields that are specified in the `exclude_fields` argument.
+            for field_name in set(exclude_fields):
+                self.fields.pop(field_name, None)
+
+
+class StrictSerializerMixin(DynamicFieldsSerializerMixin, IntrospectableSerializerMixin):
     """
     A version of model serializer that raises a ``django.core.exceptions.FieldError``
     on deserializing data that includes unknown keys. This mixin inherits from
@@ -60,6 +106,9 @@ class StrictSerializerMixin(IntrospectableSerializerMixin):
     Additionally, if the input to the serializer is not a dict, a
     ``rest_framework.serializers.ValidationError`` will be raised. Also, when a
     read-only field is specified, a FieldError will be raised as well.
+
+    This mixin also inherits from the :class:`DynamicFieldsSerializerMixin` to
+    be able to select which fields to display.
     """
     def to_internal_value(self, data):
         if not isinstance(data, dict):

@@ -8,7 +8,7 @@ import json
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
-from pdc.apps.common.serializers import DynamicFieldsSerializerMixin, StrictSerializerMixin
+from pdc.apps.common.serializers import StrictSerializerMixin
 from pdc.apps.component.models import GlobalComponent, ReleaseComponent
 from pdc.apps.component.serializers import ReleaseComponentField
 from .models import (ContactRole, Person, Maillist,
@@ -45,8 +45,7 @@ class ContactRoleSerializer(StrictSerializerMixin,
         fields = ('name', 'count_limit')
 
 
-class PersonSerializer(DynamicFieldsSerializerMixin,
-                       StrictSerializerMixin,
+class PersonSerializer(StrictSerializerMixin,
                        serializers.HyperlinkedModelSerializer):
 
     class Meta:
@@ -54,8 +53,7 @@ class PersonSerializer(DynamicFieldsSerializerMixin,
         fields = ('id', 'username', 'email')
 
 
-class MaillistSerializer(DynamicFieldsSerializerMixin,
-                         StrictSerializerMixin,
+class MaillistSerializer(StrictSerializerMixin,
                          serializers.HyperlinkedModelSerializer):
 
     class Meta:
