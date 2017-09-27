@@ -30,6 +30,27 @@ SECRET_KEY = '3hm)=^*sowhxr%m)%_u3mk+!ncy=c)147xbevej%l_lcdogu#+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+# Default configuration for debug toolbar.
+DEBUG_TOOLBAR = False
+DEBUG_TOOLBAR_PANELS = [
+    'debug_toolbar.panels.versions.VersionsPanel',
+    'debug_toolbar.panels.timer.TimerPanel',
+    'debug_toolbar.panels.settings.SettingsPanel',
+    'debug_toolbar.panels.headers.HeadersPanel',
+    'debug_toolbar.panels.request.RequestPanel',
+    'debug_toolbar.panels.sql.SQLPanel',
+    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+    'debug_toolbar.panels.templates.TemplatesPanel',
+    'debug_toolbar.panels.cache.CachePanel',
+    'debug_toolbar.panels.signals.SignalsPanel',
+    'debug_toolbar.panels.logging.LoggingPanel',
+    'debug_toolbar.panels.redirects.RedirectsPanel',
+    'debug_toolbar.panels.profiling.ProfilingPanel',
+]
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False,
+    'SHOW_TOOLBAR_CALLBACK': lambda request: True,
+}
 
 ALLOWED_HOSTS = []
 
@@ -382,7 +403,6 @@ LOGGING = {
 # ======== ComponentBranch App Configuration =========
 COMPONENT_BRANCH_NAME_BLACKLIST_REGEX = r''
 
-
 # Attempts to import server specific settings.
 # Note that all server specific settings should go to 'settings_local.py'
 try:
@@ -394,3 +414,9 @@ if 'pdc.apps.bindings' in INSTALLED_APPS:
     WITH_BINDINGS = True
 else:
     WITH_BINDINGS = False
+
+if DEBUG and DEBUG_TOOLBAR:
+    INTERNAL_IPS = ('127.0.0.1',)
+    # Profiling panel requires debug toolbar to be the first middleware class.
+    MIDDLEWARE_CLASSES = ['debug_toolbar.middleware.DebugToolbarMiddleware',] + MIDDLEWARE_CLASSES
+    INSTALLED_APPS += ('debug_toolbar',)

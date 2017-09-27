@@ -10,16 +10,14 @@
 #       settings, please remember to update your settings_local.py
 #       when the items you extended got updated in settings.py.
 #
-# Example 1: if you want to enable `debug_toolbar` and
-# `django_extensions` in INSTALLED_APPS, please remember
-# to also include all the other apps listed in the settings.py,
+# Example 1: if you want to enable `django_extensions` in INSTALLED_APPS,
+# please remember to also include all the other apps listed in the settings.py,
 # otherwise, the missed apps will not get installed.
 #
 #     INSTALLED_APPS = (
 #         ...
 #
 #         'django_extensions',
-#         'debug_toolbar',
 #     )
 #
 # Example 2: when you run PDC locally, you may not want to enable the permission
@@ -34,6 +32,9 @@ import os.path
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 DEBUG = False
+
+# Show debug toolbar? (Only available when DEBUG is True.)
+#DEBUG_TOOLBAR = True
 
 # NOTE: this is needed when DEGUB is False.
 #       https://docs.djangoproject.com/en/1.8/ref/settings/#allowed-hosts
