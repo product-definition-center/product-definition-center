@@ -201,7 +201,7 @@
 <text text-anchor="middle" x="592.5" y="-95.1" font-family="Helvetica,sans-Serif" font-size="8.00">repo_family (repo)</text>
 </g>
 <!-- pdc_apps_release_models_VariantArch -->
-<g id="node6" class="node"><title>pdc_apps_release_models_VariantArch</title>
+<g id="node7" class="node"><title>pdc_apps_release_models_VariantArch</title>
 <polygon fill="palegoldenrod" stroke="none" points="728.5,-32 728.5,-50 795.5,-50 795.5,-32 728.5,-32"/>
 <polygon fill="#698b22" stroke="none" points="729,-32 729,-50 796,-50 796,-32 729,-32"/>
 <text text-anchor="start" x="734" y="-40.1" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
@@ -209,10 +209,53 @@
 <text text-anchor="start" x="786" y="-40.1" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;</text>
 </g>
 <!-- pdc_apps_repository_models_Repo&#45;&gt;pdc_apps_release_models_VariantArch -->
-<g id="edge5" class="edge"><title>pdc_apps_repository_models_Repo&#45;&gt;pdc_apps_release_models_VariantArch</title>
+<g id="edge6" class="edge"><title>pdc_apps_repository_models_Repo&#45;&gt;pdc_apps_release_models_VariantArch</title>
 <path fill="none" stroke="black" d="M562.15,-145.2C610.19,-125.2 665.66,-100.31 714,-74 722.09,-69.595 730.57,-64.223 738.11,-59.149"/>
 <ellipse fill="black" stroke="black" cx="558.195" cy="-146.839" rx="4.00001" ry="4.00001"/>
 <text text-anchor="middle" x="714.5" y="-95.1" font-family="Helvetica,sans-Serif" font-size="8.00">variant_arch (repos)</text>
+</g>
+<!-- pdc_apps_repository_models_PushTarget -->
+<g id="node6" class="node"><title>pdc_apps_repository_models_PushTarget</title>
+<polygon fill="palegoldenrod" stroke="none" points="16,-150.5 16,-233.5 182,-233.5 182,-150.5 16,-150.5"/>
+<polygon fill="#698b22" stroke="none" points="16,-215 16,-233 182,-233 182,-215 16,-215"/>
+<text text-anchor="start" x="55.5" y="-223.1" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="69.5" y="-223.1" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;&#160;&#160;PushTarget &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="18" y="-207.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="32" y="-207.6" font-family="Helvetica Bold" font-size="8.00">id</text>
+<text text-anchor="start" x="40" y="-207.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="90" y="-207.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="104" y="-207.6" font-family="Helvetica Bold" font-size="8.00">AutoField</text>
+<text text-anchor="start" x="144" y="-207.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="18" y="-194.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="32" y="-194.6" font-family="Helvetica Bold" font-size="8.00">service</text>
+<text text-anchor="start" x="60" y="-194.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="90" y="-194.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="104" y="-194.6" font-family="Helvetica Bold" font-size="8.00">ForeignKey (id)</text>
+<text text-anchor="start" x="166" y="-194.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="18" y="-181.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="32" y="-181.6" font-family="Helvetica " font-size="8.00" fill="#7b7b7b">description</text>
+<text text-anchor="start" x="71" y="-181.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="90" y="-181.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="104" y="-181.6" font-family="Helvetica " font-size="8.00" fill="#7b7b7b">CharField</text>
+<text text-anchor="start" x="140" y="-181.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="18" y="-168.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="32" y="-168.6" font-family="Helvetica " font-size="8.00" fill="#7b7b7b">host</text>
+<text text-anchor="start" x="48" y="-168.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="90" y="-168.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="104" y="-168.6" font-family="Helvetica " font-size="8.00" fill="#7b7b7b">URLField</text>
+<text text-anchor="start" x="138" y="-168.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="18" y="-155.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="32" y="-155.6" font-family="Helvetica " font-size="8.00">name</text>
+<text text-anchor="start" x="53" y="-155.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="90" y="-155.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="104" y="-155.6" font-family="Helvetica " font-size="8.00">CharField</text>
+<text text-anchor="start" x="140" y="-155.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;&#160;&#160;</text>
+</g>
+<!-- pdc_apps_repository_models_PushTarget&#45;&gt;pdc_apps_repository_models_Service -->
+<g id="edge5" class="edge"><title>pdc_apps_repository_models_PushTarget&#45;&gt;pdc_apps_repository_models_Service</title>
+<path fill="none" stroke="black" d="M95.1,-138.21C93.52,-116.73 91.736,-92.61 90.355,-73.896"/>
+<ellipse fill="black" stroke="black" cx="95.4041" cy="-142.311" rx="4" ry="4"/>
+<text text-anchor="middle" x="129" y="-95.1" font-family="Helvetica,sans-Serif" font-size="8.00">service (pushtarget)</text>
 </g>
 </g>
 </svg>
