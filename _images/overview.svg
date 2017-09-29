@@ -309,37 +309,37 @@
 <path fill="none" stroke="black" d="M1338,-1271.4C1322.5,-1254.4 1303.2,-1233.1 1286,-1214 1277.9,-1205 1269.4,-1195.5 1261,-1186.1"/>
 <text text-anchor="middle" x="1318" y="-1207.1" font-family="Helvetica,sans-Serif" font-size="8.00">user (auth_token)</text>
 </g>
-<!-- django_contrib_auth_models_AbstractBaseUser -->
-<g id="node8" class="node"><title>django_contrib_auth_models_AbstractBaseUser</title>
-<polygon fill="palegoldenrod" stroke="none" points="1297.5,-1452 1297.5,-1496 1434.5,-1496 1434.5,-1452 1297.5,-1452"/>
-<polygon fill="#698b22" stroke="none" points="1298,-1478 1298,-1496 1435,-1496 1435,-1478 1298,-1478"/>
-<text text-anchor="start" x="1316.5" y="-1486.1" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1326.5" y="-1486.1" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;AbstractBaseUser &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1300" y="-1470.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1310" y="-1470.6" font-family="Helvetica " font-size="8.00" fill="#7b7b7b">last_login</text>
-<text text-anchor="start" x="1344" y="-1470.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1360" y="-1470.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1370" y="-1470.6" font-family="Helvetica " font-size="8.00" fill="#7b7b7b">DateTimeField</text>
-<text text-anchor="start" x="1423" y="-1470.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1300" y="-1457.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1310" y="-1457.6" font-family="Helvetica " font-size="8.00">password</text>
-<text text-anchor="start" x="1345" y="-1457.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1360" y="-1457.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1370" y="-1457.6" font-family="Helvetica " font-size="8.00">CharField</text>
-<text text-anchor="start" x="1406" y="-1457.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-</g>
 <!-- django_contrib_auth_models_PermissionsMixin -->
-<g id="node9" class="node"><title>django_contrib_auth_models_PermissionsMixin</title>
-<polygon fill="palegoldenrod" stroke="none" points="1469,-1458.5 1469,-1489.5 1611,-1489.5 1611,-1458.5 1469,-1458.5"/>
-<polygon fill="#698b22" stroke="none" points="1469,-1471 1469,-1489 1611,-1489 1611,-1471 1469,-1471"/>
-<text text-anchor="start" x="1491" y="-1479.1" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1501" y="-1479.1" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;PermissionsMixin &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1471" y="-1463.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1481" y="-1463.6" font-family="Helvetica " font-size="8.00" fill="#7b7b7b">is_superuser</text>
-<text text-anchor="start" x="1527" y="-1463.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1542" y="-1463.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1552" y="-1463.6" font-family="Helvetica " font-size="8.00" fill="#7b7b7b">BooleanField</text>
-<text text-anchor="start" x="1599" y="-1463.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<g id="node8" class="node"><title>django_contrib_auth_models_PermissionsMixin</title>
+<polygon fill="palegoldenrod" stroke="none" points="1297,-1458.5 1297,-1489.5 1439,-1489.5 1439,-1458.5 1297,-1458.5"/>
+<polygon fill="#698b22" stroke="none" points="1297,-1471 1297,-1489 1439,-1489 1439,-1471 1297,-1471"/>
+<text text-anchor="start" x="1319" y="-1479.1" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1329" y="-1479.1" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;PermissionsMixin &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1299" y="-1463.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1309" y="-1463.6" font-family="Helvetica " font-size="8.00" fill="#7b7b7b">is_superuser</text>
+<text text-anchor="start" x="1355" y="-1463.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1370" y="-1463.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1380" y="-1463.6" font-family="Helvetica " font-size="8.00" fill="#7b7b7b">BooleanField</text>
+<text text-anchor="start" x="1427" y="-1463.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+</g>
+<!-- django_contrib_auth_models_AbstractBaseUser -->
+<g id="node9" class="node"><title>django_contrib_auth_models_AbstractBaseUser</title>
+<polygon fill="palegoldenrod" stroke="none" points="1473.5,-1452 1473.5,-1496 1610.5,-1496 1610.5,-1452 1473.5,-1452"/>
+<polygon fill="#698b22" stroke="none" points="1474,-1478 1474,-1496 1611,-1496 1611,-1478 1474,-1478"/>
+<text text-anchor="start" x="1492.5" y="-1486.1" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1502.5" y="-1486.1" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;AbstractBaseUser &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1476" y="-1470.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1486" y="-1470.6" font-family="Helvetica " font-size="8.00" fill="#7b7b7b">last_login</text>
+<text text-anchor="start" x="1520" y="-1470.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1536" y="-1470.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1546" y="-1470.6" font-family="Helvetica " font-size="8.00" fill="#7b7b7b">DateTimeField</text>
+<text text-anchor="start" x="1599" y="-1470.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1476" y="-1457.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1486" y="-1457.6" font-family="Helvetica " font-size="8.00">password</text>
+<text text-anchor="start" x="1521" y="-1457.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1536" y="-1457.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1546" y="-1457.6" font-family="Helvetica " font-size="8.00">CharField</text>
+<text text-anchor="start" x="1582" y="-1457.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_auth_models_Resource -->
 <g id="node10" class="node"><title>pdc_apps_auth_models_Resource</title>
@@ -1838,22 +1838,22 @@
 </g>
 <!-- pdc_apps_module_models_VariantDependency -->
 <g id="node44" class="node"><title>pdc_apps_module_models_VariantDependency</title>
-<polygon fill="palegoldenrod" stroke="none" points="1645.5,-1452 1645.5,-1496 1774.5,-1496 1774.5,-1452 1645.5,-1452"/>
-<polygon fill="#698b22" stroke="none" points="1646,-1478 1646,-1496 1775,-1496 1775,-1478 1646,-1478"/>
-<text text-anchor="start" x="1657.5" y="-1486.1" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1667.5" y="-1486.1" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;VariantDependency &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1648" y="-1470.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1658" y="-1470.6" font-family="Helvetica " font-size="8.00">dependency</text>
-<text text-anchor="start" x="1702" y="-1470.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1717" y="-1470.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1727" y="-1470.6" font-family="Helvetica " font-size="8.00">CharField</text>
-<text text-anchor="start" x="1763" y="-1470.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1648" y="-1457.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1658" y="-1457.6" font-family="Helvetica " font-size="8.00">stream</text>
-<text text-anchor="start" x="1683" y="-1457.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1717" y="-1457.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1727" y="-1457.6" font-family="Helvetica " font-size="8.00">CharField</text>
-<text text-anchor="start" x="1763" y="-1457.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<polygon fill="palegoldenrod" stroke="none" points="1644.5,-1452 1644.5,-1496 1773.5,-1496 1773.5,-1452 1644.5,-1452"/>
+<polygon fill="#698b22" stroke="none" points="1645,-1478 1645,-1496 1774,-1496 1774,-1478 1645,-1478"/>
+<text text-anchor="start" x="1656.5" y="-1486.1" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1666.5" y="-1486.1" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;VariantDependency &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1647" y="-1470.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1657" y="-1470.6" font-family="Helvetica " font-size="8.00">dependency</text>
+<text text-anchor="start" x="1701" y="-1470.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1716" y="-1470.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1726" y="-1470.6" font-family="Helvetica " font-size="8.00">CharField</text>
+<text text-anchor="start" x="1762" y="-1470.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1647" y="-1457.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1657" y="-1457.6" font-family="Helvetica " font-size="8.00">stream</text>
+<text text-anchor="start" x="1682" y="-1457.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1716" y="-1457.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1726" y="-1457.6" font-family="Helvetica " font-size="8.00">CharField</text>
+<text text-anchor="start" x="1762" y="-1457.6" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_module_models_UnreleasedVariant -->
 <g id="node45" class="node"><title>pdc_apps_module_models_UnreleasedVariant</title>
@@ -3010,10 +3010,10 @@
 </g>
 <!-- mptt_models_MPTTModel -->
 <g id="node71" class="node"><title>mptt_models_MPTTModel</title>
-<polygon fill="palegoldenrod" stroke="none" points="1808.5,-1465 1808.5,-1483 1893.5,-1483 1893.5,-1465 1808.5,-1465"/>
-<polygon fill="#698b22" stroke="none" points="1809,-1465 1809,-1483 1894,-1483 1894,-1465 1809,-1465"/>
-<text text-anchor="start" x="1814" y="-1473.1" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="1824" y="-1473.1" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;MPTTModel &#160;&#160;&#160;</text>
+<polygon fill="palegoldenrod" stroke="none" points="1807.5,-1465 1807.5,-1483 1892.5,-1483 1892.5,-1465 1807.5,-1465"/>
+<polygon fill="#698b22" stroke="none" points="1808,-1465 1808,-1483 1893,-1483 1893,-1465 1808,-1465"/>
+<text text-anchor="start" x="1813" y="-1473.1" font-family="Helvetica,sans-Serif" font-size="8.00"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="1823" y="-1473.1" font-family="Helvetica Bold" font-size="8.00" fill="white"> &#160;&#160;&#160;MPTTModel &#160;&#160;&#160;</text>
 </g>
 <!-- pdc_apps_component_models_GroupType -->
 <g id="node72" class="node"><title>pdc_apps_component_models_GroupType</title>
