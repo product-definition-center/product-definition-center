@@ -278,6 +278,12 @@ class CPESerializer(StrictSerializerMixin, serializers.ModelSerializer):
         model = CPE
         fields = ('id', 'cpe', 'description')
 
+    def create(self, validated_data):
+        cpe = validated_data['cpe']
+        if CPE.objects.filter(cpe=cpe).exists():
+            raise serializers.ValidationError({'detail': ['CPE "%s" already exists.' % cpe]})
+        return super(CPESerializer, self).create(validated_data)
+
 
 class ReleaseVariantCPESerializer(StrictSerializerMixin, serializers.ModelSerializer):
     release = serializers.CharField(source='variant.release.release_id')

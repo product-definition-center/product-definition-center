@@ -1984,6 +1984,12 @@ class CPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data.get('cpe', {}).get('detail'), 'CPE must start with "cpe:"')
 
+    def test_add_duplicate(self):
+        response = self.client.post(reverse('cpe-list'), {"cpe": "cpe:test1"}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {'detail': ['CPE "cpe:test1" already exists.']})
+        self.assertNumChanges([])
+
     def test_delete_cpe(self):
         response = self.client.delete(reverse('cpe-detail', args=[1]))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
