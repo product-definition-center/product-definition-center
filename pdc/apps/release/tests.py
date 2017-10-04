@@ -2070,6 +2070,13 @@ class VariantCPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(models.VariantCPE.objects.count(), 1)
 
+    def test_prevent_delete_used_cpe(self):
+        response = self.client.delete(reverse('cpe-detail', args=[1]))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(models.VariantCPE.objects.count(), 1)
+        self.assertEqual(models.CPE.objects.count(), 2)
+        self.assertNumChanges([])
+
 
 class ReleaseGroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 

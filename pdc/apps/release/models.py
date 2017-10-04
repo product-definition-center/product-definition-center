@@ -431,7 +431,7 @@ class VariantCPE(models.Model):
     """
     variant = models.OneToOneField(Variant)
 
-    cpe = models.ForeignKey(CPE, null=False, blank=False, db_index=True)
+    cpe = models.ForeignKey(CPE, null=False, blank=False, db_index=True, on_delete=models.PROTECT)
 
     def __unicode__(self):
         return u"%s-%s %s" % (self.variant.release.release_id, self.variant.variant_uid, self.cpe.cpe)
