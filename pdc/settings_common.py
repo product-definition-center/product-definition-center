@@ -100,6 +100,7 @@ INSTALLED_APPS = (
     'pdc.apps.osbs',
     'pdc.apps.componentbranch',
     'pdc.apps.unreleasedvariant',
+    'pdc.apps.releaseschedule',
 
     'mptt',
 )

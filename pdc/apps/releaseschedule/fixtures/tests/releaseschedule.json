@@ -1,0 +1,11 @@
+[
+{
+  "fields": {
+    "release": 1,
+    "date": "2017-01-01",
+    "sla": 1
+  },
+  "model": "releaseschedule.releaseschedule",
+  "pk": 1
+}
+]

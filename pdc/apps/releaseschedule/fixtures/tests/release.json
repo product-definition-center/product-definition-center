@@ -1,0 +1,59 @@
+[
+{
+  "fields": {
+    "release_id": "test-release-0.1",
+    "name": "Test Release",
+    "allowed_debuginfo_services": [],
+    "product_version": null,
+    "short": "test-release",
+    "integrated_with": null,
+    "sigkey": null,
+    "version": "0.1",
+    "active": true,
+    "allow_buildroot_push": false,
+    "masked_push_targets": [],
+    "base_product": null,
+    "release_type": 1
+  },
+  "model": "release.release",
+  "pk": 1
+},
+{
+  "fields": {
+    "release_id": "test-release-0.2",
+    "name": "Test Release",
+    "allowed_debuginfo_services": [],
+    "product_version": null,
+    "short": "test-release",
+    "integrated_with": null,
+    "sigkey": null,
+    "version": "0.2",
+    "active": true,
+    "allow_buildroot_push": false,
+    "masked_push_targets": [],
+    "base_product": null,
+    "release_type": 1
+  },
+  "model": "release.release",
+  "pk": 2
+},
+{
+  "fields": {
+    "release_id": "test-release-0.3",
+    "name": "Test Release",
+    "allowed_debuginfo_services": [],
+    "product_version": null,
+    "short": "test-release",
+    "integrated_with": null,
+    "sigkey": null,
+    "version": "0.3",
+    "active": true,
+    "allow_buildroot_push": false,
+    "masked_push_targets": [],
+    "base_product": null,
+    "release_type": 1
+  },
+  "model": "release.release",
+  "pk": 3
+}
+]
