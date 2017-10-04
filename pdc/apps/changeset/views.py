@@ -4,7 +4,7 @@
 # http://opensource.org/licenses/MIT
 #
 from django.conf import settings
-from django.core.exceptions import ValidationError
+from django.core.exceptions import FieldError, ValidationError
 from django.views.generic import ListView, DetailView
 
 from rest_framework import viewsets, status
@@ -146,7 +146,7 @@ class ChangesetViewSet(StrictQueryParamMixin,
         """
         try:
             return super(ChangesetViewSet, self).list(request, *args, **kwargs)
-        except ValidationError as exc:
+        except (FieldError, ValidationError) as exc:
             msg = exc.messages if hasattr(exc, 'messages') else str(exc)
             return Response({'detail': msg},
                             status=status.HTTP_400_BAD_REQUEST)
