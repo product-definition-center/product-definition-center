@@ -297,20 +297,22 @@ class ReleaseVariantCPESerializer(StrictSerializerMixin, serializers.ModelSerial
     def to_internal_value(self, data):
         verified_data = super(ReleaseVariantCPESerializer, self).to_internal_value(data)
 
-        variant = verified_data['variant']
-        release_id = variant['release']['release_id']
-        variant_uid = variant['variant_uid']
-        try:
-            verified_data['variant'] = Variant.objects.get(release__release_id=release_id, variant_uid=variant_uid)
-        except Variant.DoesNotExist:
-            raise serializers.ValidationError(
-                {'detail': 'variant (release=%s, uid=%s) does not exist' % (release_id, variant_uid)})
+        variant = verified_data.get('variant')
+        if variant is not None:
+            release_id = variant['release']['release_id']
+            variant_uid = variant['variant_uid']
+            try:
+                verified_data['variant'] = Variant.objects.get(release__release_id=release_id, variant_uid=variant_uid)
+            except Variant.DoesNotExist:
+                raise serializers.ValidationError(
+                    {'detail': 'variant (release=%s, uid=%s) does not exist' % (release_id, variant_uid)})
 
-        cpe = verified_data['cpe']
-        try:
-            verified_data['cpe'] = CPE.objects.get(cpe=cpe)
-        except CPE.DoesNotExist:
-            raise serializers.ValidationError({'detail': 'cpe "%s" does not exist' % cpe})
+        cpe = verified_data.get('cpe')
+        if cpe is not None:
+            try:
+                verified_data['cpe'] = CPE.objects.get(cpe=cpe)
+            except CPE.DoesNotExist:
+                raise serializers.ValidationError({'detail': 'cpe "%s" does not exist' % cpe})
 
         return verified_data
 
