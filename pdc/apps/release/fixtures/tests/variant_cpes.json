@@ -1,0 +1,10 @@
+[
+  {
+    "fields": {
+      "variant": 2,
+      "cpe": 1
+    },
+    "model": "release.VariantCpe",
+    "pk": 1
+  }
+]

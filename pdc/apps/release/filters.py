@@ -148,7 +148,7 @@ class CPEFilter(django_filters.FilterSet):
 class ReleaseVariantCPEFilter(django_filters.FilterSet):
     release = filters.MultiValueFilter(name='variant__release__release_id')
     variant_uid = filters.MultiValueFilter(name='variant__variant_uid')
-    cpe = filters.MultiValueFilter(name='cpe')
+    cpe = filters.MultiValueFilter(name='cpe__cpe')
 
     class Meta:
         model = VariantCPE

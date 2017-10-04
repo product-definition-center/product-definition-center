@@ -1995,7 +1995,39 @@ class VariantCPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
         "pdc/apps/release/fixtures/tests/variants_standalone.json",
         "pdc/apps/release/fixtures/tests/cpes.json",
+        "pdc/apps/release/fixtures/tests/variant_cpes.json",
     ]
+
+    def test_list(self):
+        response = self.client.get(reverse('variantcpe-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_detail(self):
+        data = {
+            'release': 'release-1.0',
+            'variant_uid': 'Client-UID',
+            'cpe': 'cpe:test1',
+        }
+        response = self.client.get(reverse('variantcpe-detail', args=['release-1.0/Client-UID']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, data)
+
+    def test_filter(self):
+        response = self.client.get(reverse('variantcpe-list'), {'release': 'release-1.0'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+        self.assertEqual(response.data.get('results')[0].get('release'), 'release-1.0')
+
+        response = self.client.get(reverse('variantcpe-list'), {'variant_uid': 'Client-UID'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+        self.assertEqual(response.data.get('results')[0].get('variant_uid'), 'Client-UID')
+
+        response = self.client.get(reverse('variantcpe-list'), {'cpe': 'cpe:test1'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+        self.assertEqual(response.data.get('results')[0].get('cpe'), 'cpe:test1')
 
     def test_add_cpe(self):
         args = {
@@ -2026,11 +2058,11 @@ class VariantCPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         }
         response = self.client.post(reverse('variantcpe-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(models.VariantCPE.objects.count(), 1)
+        self.assertEqual(models.VariantCPE.objects.count(), 2)
 
         response = self.client.delete(reverse('variant-detail', args=['release-1.0/Server-UID']))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(models.VariantCPE.objects.count(), 0)
+        self.assertEqual(models.VariantCPE.objects.count(), 1)
 
 
 class ReleaseGroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
