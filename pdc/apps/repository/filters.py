@@ -44,3 +44,22 @@ class PushTargetFilter(filters.FilterSet):
     class Meta:
         model = models.PushTarget
         fields = ('name', 'description', 'service', 'host')
+
+
+class MultiDestinationFilter(filters.FilterSet):
+    global_component = MultiValueFilter(name='global_component__name')
+    origin_repo = MultiValueFilter()
+    destination_repo = MultiValueFilter()
+    subscribers = MultiValueFilter(name='subscribers__name')
+    active = CaseInsensitiveBooleanFilter()
+
+    class Meta:
+        model = models.MultiDestination
+        fields = (
+            'id',
+            'global_component',
+            'origin_repo',
+            'destination_repo',
+            'subscribers',
+            'active',
+        )

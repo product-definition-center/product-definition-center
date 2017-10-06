@@ -8,7 +8,10 @@ from rest_framework import serializers
 
 from . import models
 from pdc.apps.common.fields import ChoiceSlugField
+from pdc.apps.common.hacks import convert_str_to_int
 from pdc.apps.common.serializers import StrictSerializerMixin
+from pdc.apps.component.models import GlobalComponent
+from pdc.apps.contact.models import Person
 from pdc.apps.release import models as release_models
 
 
@@ -70,6 +73,33 @@ class RepoSerializer(StrictSerializerMixin, serializers.ModelSerializer):
         return super(RepoSerializer, self).validate(attrs)
 
 
+class RepoField(serializers.RelatedField):
+    """Serializer field for repository."""
+
+    doc_format = 'Repo'
+    writable_doc_format = '{"id": "int"}'
+    queryset = models.Repo.objects.all()
+
+    def to_representation(self, value):
+        return RepoSerializer().to_representation(value)
+
+    def to_internal_value(self, data):
+        if not isinstance(data, dict):
+            raise serializers.ValidationError({'detail': "Input [%s] must be a dict." % data})
+
+        if data.keys() != ['id']:
+            raise serializers.ValidationError({'detail': 'Only accepts {"id":"int"}'})
+
+        repo_id = convert_str_to_int(data['id'])
+
+        try:
+            rc = models.Repo.objects.get(id=repo_id)
+        except models.Repo.DoesNotExist:
+            raise serializers.ValidationError({'detail': "Repo with id %s doesn't exist" % repo_id})
+
+        return rc
+
+
 class RepoFamilySerializer(StrictSerializerMixin, serializers.ModelSerializer):
     name          = serializers.CharField()
     description   = serializers.CharField()
@@ -109,3 +139,22 @@ class PushTargetSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.PushTarget
         fields = ('id', 'name', 'description', 'service', 'host')
+
+
+class MultiDestinationSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+    global_component = ChoiceSlugField(slug_field='name', queryset=GlobalComponent.objects.all())
+    origin_repo = RepoField()
+    destination_repo = RepoField()
+    subscribers = ChoiceSlugField(slug_field='username', many=True, queryset=Person.objects.filter(active=True), default=[])
+    active = serializers.BooleanField(default=True)
+
+    class Meta:
+        model = models.MultiDestination
+        fields = (
+            'id',
+            'global_component',
+            'origin_repo',
+            'destination_repo',
+            'subscribers',
+            'active',
+        )

@@ -7,6 +7,7 @@
 
 
 from django.db import models
+from django.core.exceptions import ValidationError
 
 from pdc.apps.common.models import get_cached_id
 
@@ -138,3 +139,37 @@ class PushTarget(models.Model):
             "host": self.host,
             "service": self.service.name,
         }
+
+
+class MultiDestination(models.Model):
+    global_component = models.ForeignKey('component.GlobalComponent')
+    origin_repo = models.ForeignKey(Repo, related_name='origin_repo')
+    destination_repo = models.ForeignKey(Repo, related_name='destination_repo')
+    subscribers = models.ManyToManyField('contact.Person', blank=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ('global_component', 'origin_repo', 'destination_repo')
+        ordering = ['global_component']
+
+    def __unicode__(self):
+        return u"%s, %s -> %s" % (
+            self.global_component.name, self.origin_repo.name, self.destination_repo.name)
+
+    def export(self):
+        return {
+            "global_component": self.global_component.name,
+            "origin_repo_id": self.origin_repo.id,
+            "destination_repo_id": self.destination_repo.id,
+            "subscribers": [subscriber.username for subscriber in self.subscribers.all()],
+            "active": self.active,
+        }
+
+    def clean(self):
+        if self.origin_repo == self.destination_repo:
+            raise ValidationError('Origin and destination repositories must differ.')
+        if self.origin_repo.variant_arch != self.destination_repo.variant_arch:
+            raise ValidationError('Architecture for origin and destination repositories must NOT differ.')
+        if self.origin_repo.service != self.destination_repo.service:
+            raise ValidationError('Service for origin and destination repositories must NOT differ.')
+        super(MultiDestination, self).clean()
