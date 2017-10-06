@@ -50,7 +50,7 @@ class ComposeModelTestCase(TestCase):
 
     def test_get_rpms_existing(self):
         self.assertEqual(unicode(self.compose.get_rpms('bash')),
-                         '[<RPM: bash-0:1.2.3-4.b1.x86_64.rpm>]')
+                         '<QuerySet [<RPM: bash-0:1.2.3-4.b1.x86_64.rpm>]>')
 
     def test_get_rpms_nonexisting(self):
         self.assertEqual(list(self.compose.get_rpms('foo')), [])

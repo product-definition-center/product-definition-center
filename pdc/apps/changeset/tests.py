@@ -32,7 +32,7 @@ class ChangesetMiddlewareTestCase(TestCase):
             self.assertTrue(func.called)
             self.assertEqual(ret, 123)
             self.assertEqual(func.call_args, call(self.request, 1, 2, 3, arg='val'))
-            self.assertEqual(changeset.mock_calls[0], call(author=None, comment=None))
+            self.assertEqual(changeset.mock_calls[0], call(author=self.request.user, comment=None))
             self.assertEqual(changeset.mock_calls[1], call().commit())
 
     def test_no_commit_with_exception(self):
@@ -45,7 +45,7 @@ class ChangesetMiddlewareTestCase(TestCase):
         with patch("pdc.apps.changeset.models.Changeset") as changeset:
             self.assertRaises(Exception, self.cm.process_view, self.request, func, [], {})
             self.assertTrue(func.called)
-            self.assertEqual(changeset.mock_calls, [call(author=None, comment=None)])
+            self.assertEqual(changeset.mock_calls, [call(author=self.request.user, comment=None)])
             self.assertTrue(changeset_logger.error.called)
 
 
