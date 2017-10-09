@@ -1,5 +1,6 @@
 *.py[co]
 *.sqlite3
+*.sqlite3-journal
 *.swp
 settings_local.py
 .tito/copr_user.conf
