@@ -8,7 +8,6 @@ import functools
 
 from django import forms
 from django.core.exceptions import ValidationError
-from django.core.validators import EMPTY_VALUES
 from django.db.models import Q
 from django.utils import six
 from django_filters.filterset import (BaseFilterSet,
@@ -202,22 +201,6 @@ class ComposeFilterSet(PDCBaseFilterSet):
                                     }
                     else:
                         qs = filter_.filter(qs, value)
-
-            if self._meta.order_by:
-                order_field = self.form.fields[self.order_by_field]
-                data = self.form[self.order_by_field].data
-                ordered_value = None
-                try:
-                    ordered_value = order_field.clean(data)
-                except forms.ValidationError:
-                    pass
-
-                if ordered_value in EMPTY_VALUES and self.strict:
-                    ordered_value = \
-                        self.form.fields[self.order_by_field].choices[0][0]
-
-                if ordered_value:
-                    qs = qs.order_by(*self.get_order_by(ordered_value))
 
             if together_cache:
                 for process_data in together_cache.itervalues():
