@@ -80,6 +80,7 @@ class ProductVersionSerializer(StrictSerializerMixin, serializers.ModelSerialize
         fields = ('name', 'short', 'version', 'active', 'product_version_id', 'product', 'releases', 'allowed_push_targets')
 
     def to_internal_value(self, data):
+        data = data.copy()
         if not self.partial and 'short' not in data:
             data['short'] = data.get('product')
         return super(ProductVersionSerializer, self).to_internal_value(data)

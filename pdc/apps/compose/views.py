@@ -624,7 +624,12 @@ class ComposeViewSet(StrictQueryParamMixin,
                             data={'detail': 'Only these properties can be updated: %s'
                                   % ', '.join(updatable_keys)})
 
-        arch_testing_status = as_dict(request.data.pop('rtt_tested_architectures', {}),
+        # Omit changing request data if immutable.
+        try:
+            rtt_tested_architectures = request.data.pop('rtt_tested_architectures', {})
+        except AttributeError:
+            rtt_tested_architectures = request.data.get('rtt_tested_architectures', {})
+        arch_testing_status = as_dict(rtt_tested_architectures,
                                       name='rtt_tested_architectures')
         self.update_arch_testing_status(arch_testing_status)
 
