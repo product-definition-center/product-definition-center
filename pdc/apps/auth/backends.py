@@ -103,8 +103,8 @@ class KerberosUserBackend(RemoteUserBackend):
     # * handle inactive users (mark inactive, remove groups)
     # * sync daily all users (cron-job?)
 
-    def authenticate(self, remote_user, **kwargs):
-        return super(KerberosUserBackend, self).authenticate(remote_user)
+    def authenticate(self, request, remote_user):
+        return super(KerberosUserBackend, self).authenticate(request, remote_user)
 
     def clean_username(self, username):
         # remove @REALM from username
@@ -123,8 +123,8 @@ class AuthMellonUserBackend(RemoteUserBackend):
     save_login = False
     logout_url = '/saml2/logout?ReturnTo='
 
-    def authenticate(self, remote_user, request, **kwargs):
-        user = super(AuthMellonUserBackend, self).authenticate(remote_user)
+    def authenticate(self, request, remote_user):
+        user = super(AuthMellonUserBackend, self).authenticate(request, remote_user)
         if user:
             update_user_from_auth_mellon(user, request)
         return user
@@ -134,8 +134,8 @@ class AuthOIDCUserBackend(RemoteUserBackend):
     save_login = False
     logout_url = '/oidc_redirect?logout='
 
-    def authenticate(self, remote_user, request, **kwargs):
-        user = super(AuthOIDCUserBackend, self).authenticate(remote_user)
+    def authenticate(self, request, remote_user):
+        user = super(AuthOIDCUserBackend, self).authenticate(request, remote_user)
         if user:
             update_user_from_auth_oidc(user, request)
         return user
