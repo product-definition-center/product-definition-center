@@ -196,6 +196,9 @@ class ProductViewSet(ChangeSetCreateModelMixin,
         product will change. The change of short name is *not* propagated to
         product versions nor releases.
 
+        Changing `allowed_push_targets` field also affects this field in
+        child product versions, releases and variants.
+
         __Response__:
 
         %(SERIALIZER)s
@@ -240,6 +243,8 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
 
         If `short` is not specified, the short name of associated product will
         be used.
+
+        Field `allowed_push_targets` must be subset of parent product.
 
         __Response__:
 
@@ -294,6 +299,11 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
         `product_version_id` will be modified accordingly, and the URL of the
         object will be changed. All changes are local to the updated model and
         are not propagated to associated releases.
+
+        Field `allowed_push_targets` must be subset of parent product.
+
+        Changing `allowed_push_targets` field also affects this field in
+        child releases and variants.
 
         __Response__:
 
@@ -358,6 +368,8 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
         __Data__:
 
         %(WRITABLE_SERIALIZER)s
+
+        Field `allowed_push_targets` must be subset of parent product version.
 
         *release_type*: $LINK:releasetype-list$
 
@@ -431,6 +443,11 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
         Please note that if you change the `short`, `version`, `release_type`
         or `base_product` fields, the `release_id` will be updated and the URL
         of this release will change.
+
+        Field `allowed_push_targets` must be subset of parent product version.
+
+        Changing `allowed_push_targets` field also affects this field in
+        child variants.
 
         __Response__:
 
@@ -900,8 +917,9 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
 
         %(WRITABLE_SERIALIZER)s
 
-        All fields are required. The required architectures must already be
-        present in PDC.
+        The required architectures must already be present in PDC.
+
+        Field `allowed_push_targets` must be subset of parent release.
 
         *type*: $LINK:releasevarianttype-list$
 
@@ -928,6 +946,8 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
         Changing the architectures may involve deleting some. Note that
         repositories are connected to some Variant.Arch pair and it is not
         possible to remove an arch with any repositories..
+
+        Field `allowed_push_targets` must be subset of parent release.
 
         *type*: $LINK:releasevarianttype-list$
 
@@ -966,6 +986,8 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
 
         If you try to remove architectures with associated repositories, the
         request will fail to do anything.
+
+        Field `allowed_push_targets` must be subset of parent release.
 
         __Response__:
 

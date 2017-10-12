@@ -804,6 +804,7 @@ class PushTargetRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         del response.data['id']
         self.assertEqual(response.data, data)
+        self.assertNumChanges([1])
 
     def test_add_bad_service(self):
         data = {
@@ -816,3 +817,4 @@ class PushTargetRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response.data, {'service': ["'rhnx' is not allowed value. Use one of 'rhn', 'pulp', 'ftp'."]})
+        self.assertNumChanges([])

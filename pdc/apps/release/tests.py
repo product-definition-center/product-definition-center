@@ -2450,6 +2450,7 @@ class AllowedPushTargetsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(reverse('product-list'), args)
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         self.assertEqual(set(allowed_push_targets), set(response.data.get('allowed_push_targets')))
+        self.assertNumChanges([1])
 
     def test_create_product_with_non_existing_push_targets(self):
         args = {'name': 'Fedora', 'short': 'f', 'allowed_push_targets': ['rhn-test']}
@@ -2457,6 +2458,7 @@ class AllowedPushTargetsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
         self.assertEqual(
             response.data.get('allowed_push_targets'), ['Object with name=rhn-test does not exist.'])
+        self.assertNumChanges([])
 
     def test_get_product_version_inherited_allowed_push_targets(self):
         response = self.client.get(reverse('productversion-detail', args=['product-1']))
@@ -2480,6 +2482,7 @@ class AllowedPushTargetsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
             reverse('product-detail', args=['product']), {'allowed_push_targets': list(allowed_push_targets)})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(allowed_push_targets, set(response.data.get('allowed_push_targets')))
+        self.assertNumChanges([1])
 
         response = self.client.get(reverse('productversion-detail', args=['product-1']))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -2501,6 +2504,7 @@ class AllowedPushTargetsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
             reverse('productversion-detail', args=['product-1']), {'allowed_push_targets': list(allowed_push_targets)})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(allowed_push_targets, set(response.data.get('allowed_push_targets')))
+        self.assertNumChanges([1])
 
         response = self.client.get(reverse('product-detail', args=['product']))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -2522,6 +2526,7 @@ class AllowedPushTargetsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
             reverse('release-detail', args=['product-1.0']), {'allowed_push_targets': list(allowed_push_targets)})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(allowed_push_targets, set(response.data.get('allowed_push_targets')))
+        self.assertNumChanges([1])
 
         response = self.client.get(reverse('product-detail', args=['product']))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -2543,6 +2548,7 @@ class AllowedPushTargetsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(reverse('productversion-list'), args)
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         self.assertEqual(response.data.get('allowed_push_targets'), allowed_push_targets)
+        self.assertNumChanges([1])
 
     def test_create_product_version_with_not_allowed_push_targets(self):
         args = {'name': 'Our Awesome Product', 'short': 'product',
@@ -2551,3 +2557,11 @@ class AllowedPushTargetsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(reverse('productversion-list'), args)
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
         self.assertEqual(response.data.get('detail'), ["Push targets must be allowed in parent product: [u'rhn-qa']"])
+        self.assertNumChanges([])
+
+    def test_patch_bad_variant_allowed_push_targets(self):
+        args = {'allowed_push_targets': ['rhn-live', 'rhn-qa']}
+        response = self.client.patch(reverse('variant-detail', args=['product-1.0/Server']), args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data.get('detail'), ["Push targets must be allowed in parent release: [u'rhn-qa']"])
+        self.assertNumChanges([])
