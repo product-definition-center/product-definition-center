@@ -294,6 +294,13 @@ class ReleaseVariantCPESerializer(StrictSerializerMixin, serializers.ModelSerial
         model = VariantCPE
         fields = ('release', 'variant_uid', 'cpe')
 
+    def create(self, validated_data):
+        variant = validated_data['variant']
+        if VariantCPE.objects.filter(variant=variant).exists():
+            raise serializers.ValidationError(
+                {'detail': ['CPE binding for variant "%s" already exists.' % variant]})
+        return super(ReleaseVariantCPESerializer, self).create(validated_data)
+
     def to_internal_value(self, data):
         verified_data = super(ReleaseVariantCPESerializer, self).to_internal_value(data)
 

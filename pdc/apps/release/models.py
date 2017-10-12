@@ -364,7 +364,7 @@ class Variant(AllowedPushTargetsModel):
         ordering = ("variant_uid", )
 
     def __unicode__(self):
-        return u"%s" % (self.variant_uid, )
+        return u"%s/%s" % (self.release, self.variant_uid)
 
     @property
     def arches(self):
