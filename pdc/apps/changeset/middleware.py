@@ -6,7 +6,6 @@
 import sys
 import logging
 
-from datetime import datetime
 from django.db import transaction
 from . import models
 
@@ -15,6 +14,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.core.mail import mail_admins
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.deprecation import MiddlewareMixin
 from rest_framework import status
 import json
@@ -88,7 +88,7 @@ class ChangesetMiddleware(MiddlewareMixin):
                 with transaction.atomic():
                     comment = request.META.get("HTTP_PDC_CHANGE_COMMENT", None)
                     request.changeset = models.Changeset(author=user, comment=comment)
-                    request.changeset.requested_on = datetime.now()
+                    request.changeset.requested_on = timezone.now()
                     response = view_func(request, *view_args, **view_kwargs)
                     # response.exception=True means there is an error occurs.
                     if getattr(response, 'exception', 0) or (
