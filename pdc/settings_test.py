@@ -7,7 +7,7 @@
 Extra Django settings for test environment of pdc project.
 """
 
-from settings import *
+from settings_common import *
 
 
 # Database settings
