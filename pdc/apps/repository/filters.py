@@ -50,6 +50,8 @@ class MultiDestinationFilter(filters.FilterSet):
     global_component = MultiValueFilter(name='global_component__name')
     origin_repo = MultiValueFilter()
     destination_repo = MultiValueFilter()
+    origin_repo_release_id = MultiValueFilter(name='origin_repo__variant_arch__variant__release__release_id')
+    destination_repo_release_id = MultiValueFilter(name='destination_repo__variant_arch__variant__release__release_id')
     subscribers = MultiValueFilter(name='subscribers__name')
     active = CaseInsensitiveBooleanFilter()
 
@@ -60,6 +62,8 @@ class MultiDestinationFilter(filters.FilterSet):
             'global_component',
             'origin_repo',
             'destination_repo',
+            'origin_repo_release_id',
+            'destination_repo_release_id',
             'subscribers',
             'active',
         )

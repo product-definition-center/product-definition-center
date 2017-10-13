@@ -857,6 +857,18 @@ class MultiDestinationRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 0)
 
+    def test_filter_by_release_id(self):
+        for repo in ['origin_repo', 'destination_repo']:
+            response = self.client.get(reverse('multidestination-list'), {repo + '_release_id': 'release-1.0'})
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.data.get('count'), 1)
+            result = response.data.get('results')[0]
+            self.assertEqual(result[repo]['release_id'], 'release-1.0')
+
+            response = self.client.get(reverse('multidestination-list'), {repo + '_release_id': 'release-2.0'})
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.data.get('count'), 0)
+
     def test_add(self):
         data = {
             'global_component': 'python',
