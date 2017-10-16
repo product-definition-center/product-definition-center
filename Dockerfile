@@ -31,7 +31,7 @@
 # 5. Edit code and see changes
 # save after editing code in your $PWD directory and see changes will happen in the container (changes need more time to take effect than in local env)
 
-FROM fedora:21
+FROM fedora:26
 MAINTAINER Zhikun Lao <zlao@redhat.com>
 
 LABEL Description = "product-definition-center"
@@ -39,35 +39,37 @@ LABEL Vendor = "Red Hat"
 LABEL Version = "0.5"
 
 # patternfly1
-RUN curl -L https://copr.fedoraproject.org/coprs/patternfly/patternfly1/repo/fedora-21/patternfly-patternfly1-fedora-21.repo > /etc/yum.repos.d/patternfly-patternfly1-fedora-21.repo
+RUN curl -L https://copr.fedorainfracloud.org/coprs/patternfly/patternfly1/repo/fedora-26/patternfly-patternfly1-fedora-26.repo > /etc/yum.repos.d/patternfly-patternfly1-fedora-26.repo
 RUN curl -L http://www.graphviz.org/graphviz-rhel.repo > /etc/yum.repos.d/graphviz-rhel.repo
 
 # solve dependencies
-RUN yum -y upgrade && yum install -y \
-rpm-build \
-sudo \
-passwd \
-tar \
-git \
-make \
-gcc \
-libuuid-devel \
-python-devel \
-python-setuptools \
-python-pip swig \
-openldap-devel \
-krb5-devel \
-koji \
-patternfly1 \
-vim-enhanced \
-'graphviz*' \
-libxml2 \
-libxslt \
-libxml2-devel \
-libxslt-devel \
-# openssh-server \
-net-tools \
-; yum clean all
+RUN dnf -y upgrade && \
+    dnf install -y \
+        rpm-build \
+        sudo \
+        passwd \
+        tar \
+        git \
+        make \
+        gcc \
+        libuuid-devel \
+        python-devel \
+        python-setuptools \
+        python-pip \
+        swig \
+        openldap-devel \
+        krb5-devel \
+        koji \
+        patternfly1 \
+        vim-enhanced \
+        'graphviz*' \
+        libxml2 \
+        libxslt \
+        libxml2-devel \
+        libxslt-devel \
+        # openssh-server \
+        net-tools && \
+    dnf clean all
 
 RUN echo "123" | passwd root --stdin
 

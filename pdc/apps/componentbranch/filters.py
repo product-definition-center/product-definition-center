@@ -77,11 +77,11 @@ def filter_active_sla_to_branch(queryset, value):
 
 
 class ComponentBranchFilter(django_filters.FilterSet):
-    name = django_filters.CharFilter(name='name', lookup_type='iexact')
+    name = django_filters.CharFilter(name='name', lookup_type='exact')
     global_component = django_filters.CharFilter(
-        name='global_component__name', lookup_type='iexact')
+        name='global_component__name', lookup_type='exact')
     type = django_filters.CharFilter(
-        name='type__name', lookup_type='iexact')
+        name='type__name', lookup_type='exact')
     active = CaseInsensitiveBooleanFilter(action=filter_active)
     critical_path = CaseInsensitiveBooleanFilter()
 
@@ -98,10 +98,10 @@ class SLAFilter(django_filters.FilterSet):
 
 
 class SLAToComponentBranchFilter(django_filters.FilterSet):
-    sla = django_filters.CharFilter(name='sla__name', lookup_type='iexact')
-    branch = django_filters.CharFilter(name='branch__name', lookup_type='iexact')
-    global_component = django_filters.CharFilter(name='branch__global_component__name', lookup_type='iexact')
-    branch_type = django_filters.CharFilter(name='branch__type__name', lookup_type='iexact')
+    sla = django_filters.CharFilter(name='sla__name', lookup_type='exact')
+    branch = django_filters.CharFilter(name='branch__name', lookup_type='exact')
+    global_component = django_filters.CharFilter(name='branch__global_component__name', lookup_type='exact')
+    branch_type = django_filters.CharFilter(name='branch__type__name', lookup_type='exact')
     branch_active = CaseInsensitiveBooleanFilter(name='branch__active', action=filter_active_sla_to_branch)
     branch_critical_path = CaseInsensitiveBooleanFilter(name='branch__critical_path', lookup_type='iexact')
     eol_after = django_filters.DateFilter(name="eol", lookup_type='gte')

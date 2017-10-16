@@ -1,0 +1,26 @@
+[
+    {
+        "model": "kerb_auth.Resource",
+        "pk": 1,
+        "fields": {
+            "name": "auth/groups",
+            "view": "<class 'pdc.apps.auth.views.GroupViewSet'>"
+        }
+    },
+    {
+        "model": "kerb_auth.Resource",
+        "pk": 2,
+        "fields": {
+            "name": "auth/permissions",
+            "view": "<class 'pdc.apps.auth.views.PermissionViewSet'>"
+        }
+    },
+    {
+        "model": "kerb_auth.ResourceApiUrl",
+        "pk": 1,
+        "fields": {
+            "resource": 1,
+            "url": "https://www.example.com/pdc/auth/groups"
+        }
+    }
+]

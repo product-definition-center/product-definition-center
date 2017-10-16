@@ -30,6 +30,10 @@ router.register(r'rpc/release/clone-components',
                 )
 router.register(r'release-variants',
                 views.ReleaseVariantViewSet)
+router.register(r'cpes',
+                views.CPEViewSet)
+router.register(r'variant-cpes',
+                views.ReleaseVariantCPEViewSet)
 router.register(r'release-variant-types', views.ReleaseVariantTypeViewSet,
                 base_name='releasevarianttype')
 

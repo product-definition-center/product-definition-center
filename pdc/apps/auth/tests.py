@@ -797,3 +797,129 @@ class ResourcePermissionsAPITestCase(APITestCase):
         data = {'permission': 'create', 'resource': 'group-resource-permissions'}
         response = self.client.get(self.url, data, format='json')
         self.assertEqual(response.data['count'], 1)
+
+
+class ResourceApiUrlsTestCase(APITestCase):
+    fixtures = ['pdc/apps/auth/fixtures/tests/resource_api_urls.json']
+
+    def test_list(self):
+        url = reverse('resourceapiurls-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+        data = {
+            "id": 1,
+            "resource": "auth/groups",
+            "url": "https://www.example.com/pdc/auth/groups"
+        }
+        self.assertEqual(response.data.get('results')[0], data)
+
+    def test_retrieve(self):
+        url = reverse('resourceapiurls-detail', args=[1])
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = {
+            "id": 1,
+            "resource": "auth/groups",
+            "url": "https://www.example.com/pdc/auth/groups"
+        }
+        self.assertEqual(response.data, data)
+
+    def test_create(self):
+        url = reverse('resourceapiurls-list')
+        data = {
+            "resource": "auth/permissions",
+            "url": "https://www.example.com/pdc/auth/permissions"}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['resource'], data['resource'])
+        self.assertEqual(response.data['url'], data['url'])
+
+    def test_update(self):
+        url = reverse('resourceapiurls-detail', args=[1])
+        data = {"url": "https://www.example.com/pdc/auth/groups-new"}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data['id'] = 1
+        data['resource'] = "auth/groups"
+        self.assertEqual(response.data, data)
+
+    def test_filter(self):
+        url = reverse('resourceapiurls-list')
+        response = self.client.get(url, {"resource": "auth/groups"}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+        data = {
+            "id": 1,
+            "resource": "auth/groups",
+            "url": "https://www.example.com/pdc/auth/groups"
+        }
+        self.assertEqual(response.data.get('results')[0], data)
+
+    def test_delete(self):
+        url = reverse('resourceapiurls-detail', args=[1])
+        response = self.client.delete(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_add_api_again_fails(self):
+        url = reverse('resourceapiurls-list')
+        data = {'resource': 'auth/groups', 'url': 'https://www.example.com/pdc/auth/groups-new'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, ['The API URL for given resource already exists.'])
+
+
+class OrderBySerializedNameTestCase(APITestCase):
+    fixtures = ['pdc/apps/auth/fixtures/tests/resource_permissions.json']
+
+    def setUp(self):
+        self.url = reverse('resourcepermissions-list')
+
+    def test_order(self):
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.data['count'], 4)
+
+        response = self.client.get(self.url, data={'ordering': 'resource'}, format='json')
+        self.assertEqual(response.data['count'], 4)
+        results = response.data.get('results')
+        self.assertEqual(results[0].get('resource'), 'resource1')
+        self.assertEqual(results[1].get('resource'), 'resource1')
+        self.assertEqual(results[2].get('resource'), 'resource2')
+        self.assertEqual(results[3].get('resource'), 'resource2')
+
+    def test_order_reversed(self):
+        response = self.client.get(self.url, data={'ordering': '-resource'}, format='json')
+        self.assertEqual(response.data['count'], 4)
+        results = response.data.get('results')
+        self.assertEqual(results[0].get('resource'), 'resource2')
+        self.assertEqual(results[1].get('resource'), 'resource2')
+        self.assertEqual(results[2].get('resource'), 'resource1')
+        self.assertEqual(results[3].get('resource'), 'resource1')
+
+    def test_order_multiple(self):
+        response = self.client.get(self.url, data={'ordering': 'permission,resource'}, format='json')
+        self.assertEqual(response.data['count'], 4)
+        results = response.data.get('results')
+        self.assertEqual(results[0].get('permission'), results[1].get('permission'))
+        self.assertEqual(results[0].get('resource'), 'resource1')
+        self.assertEqual(results[1].get('resource'), 'resource2')
+
+        self.assertLess(results[1].get('permission'), results[2].get('permission'))
+
+        self.assertEqual(results[2].get('permission'), results[3].get('permission'))
+        self.assertEqual(results[2].get('resource'), 'resource1')
+        self.assertEqual(results[3].get('resource'), 'resource2')
+
+    def test_order_multiple_reversed(self):
+        response = self.client.get(self.url, data={'ordering': 'permission,-resource'}, format='json')
+        self.assertEqual(response.data['count'], 4)
+        results = response.data.get('results')
+        self.assertEqual(results[0].get('permission'), results[1].get('permission'))
+        self.assertEqual(results[0].get('resource'), 'resource2')
+        self.assertEqual(results[1].get('resource'), 'resource1')
+
+        self.assertLess(results[1].get('permission'), results[2].get('permission'))
+
+        self.assertEqual(results[2].get('permission'), results[3].get('permission'))
+        self.assertEqual(results[2].get('resource'), 'resource2')
+        self.assertEqual(results[3].get('resource'), 'resource1')

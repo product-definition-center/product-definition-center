@@ -11,7 +11,7 @@ from rest_framework import serializers
 from . import models
 from pdc.apps.compose.models import ComposeAcceptanceTestingState
 from pdc.apps.common.fields import ChoiceSlugField
-from pdc.apps.common.serializers import StrictSerializerMixin, DynamicFieldsSerializerMixin
+from pdc.apps.common.serializers import StrictSerializerMixin
 
 
 class DefaultFilenameGenerator(object):
@@ -55,7 +55,6 @@ class DependencySerializer(serializers.BaseSerializer):
 
 
 class RPMSerializer(StrictSerializerMixin,
-                    DynamicFieldsSerializerMixin,
                     serializers.ModelSerializer):
     filename = serializers.CharField(default=DefaultFilenameGenerator())
     linked_releases = serializers.SlugRelatedField(many=True, slug_field='release_id',

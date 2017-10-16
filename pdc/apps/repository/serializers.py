@@ -98,3 +98,14 @@ class ServiceSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.Service
         fields = ('name', 'description',)
+
+
+class PushTargetSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+    name = serializers.CharField()
+    description = serializers.CharField(allow_blank=True)
+    host = serializers.CharField(allow_blank=True, required=False)
+    service = ChoiceSlugField(slug_field='name', queryset=models.Service.objects.all())
+
+    class Meta:
+        model = models.PushTarget
+        fields = ('id', 'name', 'description', 'service', 'host')

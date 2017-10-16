@@ -21,6 +21,7 @@ from .models import ProductVersion, Release, BaseProduct, Variant, Product
 from .serializers import (ProductSerializer, ProductVersionSerializer,
                           ReleaseSerializer, BaseProductSerializer,
                           ReleaseTypeSerializer, ReleaseVariantSerializer,
+                          CPESerializer, ReleaseVariantCPESerializer,
                           VariantTypeSerializer, ReleaseGroupSerializer)
 from pdc.apps.compose import models as compose_models
 from pdc.apps.repository import models as repo_models
@@ -30,7 +31,8 @@ from pdc.apps.common.viewsets import (ChangeSetModelMixin,
                                       ChangeSetUpdateModelMixin,
                                       MultiLookupFieldMixin,
                                       StrictQueryParamMixin,
-                                      ConditionalProcessingMixin)
+                                      ConditionalProcessingMixin,
+                                      PDCModelViewSet)
 from pdc.apps.auth.permissions import APIPermission
 from . import lib
 
@@ -194,6 +196,9 @@ class ProductViewSet(ChangeSetCreateModelMixin,
         product will change. The change of short name is *not* propagated to
         product versions nor releases.
 
+        Changing `allowed_push_targets` field also affects this field in
+        child product versions, releases and variants.
+
         __Response__:
 
         %(SERIALIZER)s
@@ -238,6 +243,8 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
 
         If `short` is not specified, the short name of associated product will
         be used.
+
+        Field `allowed_push_targets` must be subset of parent product.
 
         __Response__:
 
@@ -292,6 +299,11 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
         `product_version_id` will be modified accordingly, and the URL of the
         object will be changed. All changes are local to the updated model and
         are not propagated to associated releases.
+
+        Field `allowed_push_targets` must be subset of parent product.
+
+        Changing `allowed_push_targets` field also affects this field in
+        child releases and variants.
 
         __Response__:
 
@@ -356,6 +368,8 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
         __Data__:
 
         %(WRITABLE_SERIALIZER)s
+
+        Field `allowed_push_targets` must be subset of parent product version.
 
         *release_type*: $LINK:releasetype-list$
 
@@ -429,6 +443,11 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
         Please note that if you change the `short`, `version`, `release_type`
         or `base_product` fields, the `release_id` will be updated and the URL
         of this release will change.
+
+        Field `allowed_push_targets` must be subset of parent product version.
+
+        Changing `allowed_push_targets` field also affects this field in
+        child variants.
 
         __Response__:
 
@@ -729,12 +748,12 @@ class ReleaseComponentCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSe
         try:
             source_release = get_object_or_404(models.Release, release_id=source_release_id)
         except Http404:
-            return Response({'detail': 'Source_release %s is not existed' % source_release_id},
+            return Response({'detail': 'Source_release %s does not exist' % source_release_id},
                             status=status.HTTP_404_NOT_FOUND)
         try:
             target_release = get_object_or_404(models.Release, release_id=target_release_id)
         except Http404:
-            return Response({'detail': 'Target_release %s is not existed' % target_release_id},
+            return Response({'detail': 'Target_release %s does not exist' % target_release_id},
                             status=status.HTTP_404_NOT_FOUND)
 
         if source_release.releasecomponent_set.count() == 0:
@@ -898,8 +917,9 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
 
         %(WRITABLE_SERIALIZER)s
 
-        All fields are required. The required architectures must already be
-        present in PDC.
+        The required architectures must already be present in PDC.
+
+        Field `allowed_push_targets` must be subset of parent release.
 
         *type*: $LINK:releasevarianttype-list$
 
@@ -926,6 +946,8 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
         Changing the architectures may involve deleting some. Note that
         repositories are connected to some Variant.Arch pair and it is not
         possible to remove an arch with any repositories..
+
+        Field `allowed_push_targets` must be subset of parent release.
 
         *type*: $LINK:releasevarianttype-list$
 
@@ -964,6 +986,8 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
 
         If you try to remove architectures with associated repositories, the
         request will fail to do anything.
+
+        Field `allowed_push_targets` must be subset of parent release.
 
         __Response__:
 
@@ -1010,6 +1034,185 @@ class ReleaseVariantViewSet(ChangeSetModelMixin,
         __URL__: $LINK:variant-detail:release_id}/{variant_uid$
         """
         return super(ReleaseVariantViewSet, self).destroy(*args, **kwargs)
+
+
+class CPEViewSet(PDCModelViewSet):
+    """
+    Common Platform Enumeration (CPE) for linking CPE with variants ($LINK:variantcpe-list$).
+
+    CPE is a standardized method of describing and identifying classes of operating systems.
+
+    Common Vulnerabilities and Exposures (CVE) contain list of affected CPEs.
+
+    For more information about CPE see [cpe.mitre.org](https://cpe.mitre.org/).
+    """
+
+    queryset = models.CPE.objects.all()
+    serializer_class = CPESerializer
+    filter_class = filters.CPEFilter
+    permission_classes = (APIPermission,)
+
+    def create(self, request, *args, **kwargs):
+        """
+        __Method__: POST
+
+        __URL__: $LINK:cpe-list$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+
+        return super(CPEViewSet, self).create(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:cpe-detail:instance_pk$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(CPEViewSet, self).retrieve(request, *args, **kwargs)
+
+    def list(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:cpe-list$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+        __Response__: a paged list of following objects
+
+        %(SERIALIZER)s
+        """
+        return super(CPEViewSet, self).list(*args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__: PUT, PATCH
+
+        __URL__: $LINK:cpe-detail:instance_pk$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(CPEViewSet, self).update(request, *args, **kwargs)
+
+    def destroy(self, *args, **kwargs):
+        """
+        __Method__: `DELETE`
+
+        __URL__: $LINK:cpe-detail:instance_pk$
+
+        __Response__:
+
+        On success, HTTP status code is 204 and the response has no content.
+        """
+        return super(CPEViewSet, self).destroy(*args, **kwargs)
+
+
+class ReleaseVariantCPEViewSet(ChangeSetModelMixin,
+                               ConditionalProcessingMixin,
+                               StrictQueryParamMixin,
+                               MultiLookupFieldMixin,
+                               viewsets.GenericViewSet):
+    """
+    Links each variant ($LINK:variant-list$) with CPE ($LINK:cpe-list$).
+    """
+
+    queryset = models.VariantCPE.objects.all()
+    serializer_class = ReleaseVariantCPESerializer
+    filter_class = filters.ReleaseVariantCPEFilter
+    permission_classes = (APIPermission,)
+    lookup_fields = (('variant__release__release_id', r'[^/]+'), ('variant__variant_uid', r'[^/]+'))
+
+    def create(self, request, *args, **kwargs):
+        """
+        __Method__: POST
+
+        __URL__: $LINK:variantcpe-list$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+
+        return super(ReleaseVariantCPEViewSet, self).create(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:variantcpe-detail:release_id}/{variant_uid$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ReleaseVariantCPEViewSet, self).retrieve(request, *args, **kwargs)
+
+    def list(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:variantcpe-list$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+        __Response__: a paged list of following objects
+
+        %(SERIALIZER)s
+        """
+        return super(ReleaseVariantCPEViewSet, self).list(*args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__: PUT, PATCH
+
+        __URL__: $LINK:variantcpe-detail:release_id}/{variant_uid$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(ReleaseVariantCPEViewSet, self).update(request, *args, **kwargs)
+
+    def destroy(self, *args, **kwargs):
+        """
+        __Method__: `DELETE`
+
+        __URL__: $LINK:variantcpe-detail:release_id}/{variant_uid$
+
+        __Response__:
+
+        On success, HTTP status code is 204 and the response has no content.
+        """
+        return super(ReleaseVariantCPEViewSet, self).destroy(*args, **kwargs)
 
 
 class VariantTypeViewSet(StrictQueryParamMixin,

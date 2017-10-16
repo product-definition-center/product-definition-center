@@ -35,7 +35,7 @@ merge using fast-forward and push by hand. This will avoid creating a merge
 commit (which makes very little sense for a one-commit pull request).
 
     $ git merge --ff-only feature-branch
-    $ python manage.py test
+    $ make test
     $ git push origin master
 
 If you pushed the rebased branch, GitHub will automatically mark the pull
@@ -49,7 +49,7 @@ branch to GitHub and use the merge button. Doing it by hand has the advantage
 that you can check what you did.
 
     $ git merge --no-ff feature-branch
-    $ python manage.py test
+    $ make test
     $ git push origin master
 
 With this workflow, the history will remain completely linear for requests with

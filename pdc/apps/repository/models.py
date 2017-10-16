@@ -26,6 +26,12 @@ class Service(models.Model):
         """cached `name` to `id`"""
         return get_cached_id(cls, "name", value)
 
+    def export(self):
+        return {
+            'name': self.name,
+            'description': self.description
+        }
+
 
 class ContentFormat(models.Model):
     # rpm, kickstart, iso
@@ -111,3 +117,24 @@ class Repo(models.Model):
         """Return a string representation of a tree the repo belongs to."""
         return '%s.%s' % (self.variant_arch.variant.variant_uid,
                           self.variant_arch.arch.name)
+
+
+class PushTarget(models.Model):
+    name = models.CharField(max_length=100, blank=False, db_index=True, unique=True)
+    description = models.CharField(max_length=300, blank=True)
+    host = models.URLField(max_length=255, blank=True)
+    service = models.ForeignKey(Service)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __unicode__(self):
+        return u"%s" % self.name
+
+    def export(self):
+        return {
+            "name": self.name,
+            "description": self.description,
+            "host": self.host,
+            "service": self.service.name,
+        }

@@ -65,8 +65,15 @@ Responses are available in JSON format.
 """
 
 URL_SPEC_RE = re.compile(r'\$(?P<type>URL|LINK):(?P<details>[^$]+)\$')
-ORDERING_STRING = "\n * `ordering` is used to override the ordering of the results, the value could be: "
-ORDERING_STRING_NESTED = "The nested ordering is supported by using double underscore \_\_ ."
+ORDERING_STRING = """
+ * `ordering` (string) Comma separated list of fields for ordering results.
+    - To sort by a field in descending order, prefix its name with minus (e.g. `-name`).
+    - Use double underscores for nested field names (e.g. `parent__child` for `{"parent": {"child": ...}}`).
+"""
+FIELDS_STRING = """
+ * `fields` (string) Comma separated list of fields to display (can be faster than requesting all fields).
+ * `exclude_fields`: (string) Comma separated list of fields *NOT* to display (overrules `fields`).
+"""
 
 
 class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
@@ -142,11 +149,12 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
         macros = settings.BROWSABLE_DOCUMENT_MACROS
         if view:
             macros['FILTERS'] = get_filters(view)
-            if 'list' == method:
-                ordering_field = get_ordering_field(view, method)
-                if ordering_field:
-                    ordering_string = ORDERING_STRING + " %s . " % ordering_field + ORDERING_STRING_NESTED
-                    macros['FILTERS'] += ordering_string
+            # If the API has the LIST method, show ordering field info.
+            if 'list' == method and view.serializer_class:
+                macros['FILTERS'] += ORDERING_STRING
+                # Show fields info if applicable.
+                if issubclass(view.serializer_class, drf_introspection.serializers.DynamicFieldsSerializerMixin):
+                    macros['FILTERS'] += FIELDS_STRING
             if '%(SERIALIZER)s' in docstring:
                 macros['SERIALIZER'] = get_serializer(view, include_read_only=True)
             if '%(WRITABLE_SERIALIZER)s' in docstring:
@@ -179,22 +187,6 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
                              exc_info=sys.exc_info())
                 return 'BAD URL'
         return URL_SPEC_RE.sub(replace_url, text)
-
-
-def get_ordering_field(view, method):
-    """ If the APIs have the LIST method; for the view of LIST method, add the
-    Ordering field for the users.
-    """
-    if 'list' in method and view.serializer_class:
-        model_fields = [field.name for field in view.queryset.model._meta.fields]
-        serializer_fields = [
-            field.source or field_name
-            for field_name, field in view.serializer_class().fields.items()
-            if not getattr(field, 'write_only', False)]
-        valid_fields = list(set(model_fields).intersection(set(serializer_fields)))
-        return valid_fields
-    else:
-        return None
 
 
 FILTERS_CACHE = {}

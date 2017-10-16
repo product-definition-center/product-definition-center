@@ -29,7 +29,7 @@ from . import backends
 from . import filters
 from . import serializers
 from . import models
-from pdc.apps.auth.models import ResourcePermission, ActionPermission, Resource
+from pdc.apps.auth.models import ResourcePermission, ActionPermission, Resource, ResourceApiUrl
 from pdc.apps.auth.permissions import APIPermission
 from pdc.apps.common.viewsets import StrictQueryParamMixin, ChangeSetUpdateModelMixin
 from pdc.apps.common import viewsets as common_viewsets
@@ -237,8 +237,10 @@ def get_api_perms(request):
             members_list = ['@all']
         else:
             members_list = get_users_and_groups(obj)
-        perms.setdefault(name, OrderedDict()).setdefault(obj.permission.name, members_list)
-        perms.setdefault(name, OrderedDict()).setdefault('url', url)
+        perm = perms.setdefault(name, OrderedDict())
+        perm.setdefault(obj.permission.name, members_list)
+        perm.setdefault('url', url)
+        perm.setdefault('api_url', getattr(obj.resource, 'api_url', ''))
     # sort groups and users
     for resource in perms:
         for perm in perms[resource]:
@@ -908,3 +910,117 @@ class GroupResourcePermissionViewSet(common_viewsets.PDCModelViewSet):
         On success, HTTP status code is 204 and the response has no content.
         """
         return super(GroupResourcePermissionViewSet, self).destroy(request, *args, **kwargs)
+
+
+class ResourceApiUrlViewSet(common_viewsets.PDCModelViewSet):
+    """
+    This end-point provides URLs with documentation for the REST API.
+    """
+    queryset = ResourceApiUrl.objects.all()
+    serializer_class = serializers.ResourceApiUrlSerializer
+    filter_class = filters.ResourceApiUrlFilter
+
+    def list(self, request, *args, **kwargs):
+        """
+        Get information about API documentation URLs.
+
+        __Method__: `GET`
+
+        __URL__: $LINK:resourceapiurls-list$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+        __Response__:
+
+             # paged lists
+            {
+                "count": int,
+                "next": url,
+                "previous": url,
+                "results": [
+                    {
+                        "id": int,
+                        "resource": string,
+                        "url": string
+                    },
+                    ...
+                ]
+            }
+        """
+        return super(ResourceApiUrlViewSet, self).list(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        """
+        __Method__: POST
+
+        __URL__: $LINK:resourceapiurls-list$
+
+         __Data__:
+
+            {
+                "resource": string,
+                "url": string
+            }
+
+        __Response__:
+
+            {
+                "id": int,
+                "resource": string,
+                "url": string
+            }
+        """
+        return super(ResourceApiUrlViewSet, self).create(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:resourceapiurls-detail:instance_pk$
+
+        __Response__:
+
+            {
+                "id": int,
+                "resource": string,
+                "url": string
+            }
+        """
+        return super(ResourceApiUrlViewSet, self).retrieve(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__: PUT, PATCH
+
+        __URL__: $LINK:resourceapiurls-detail:instance_pk$
+
+        __Data__:
+
+            {
+                "resource": string,
+                "url": string
+            }
+
+        __Response__:
+
+            {
+                "id": int,
+                "resource": string,
+                "url": string
+            }
+        """
+        return super(ResourceApiUrlViewSet, self).update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        __Method__: DELETE
+
+        __URL__: $LINK:resourceapiurls-detail:instance_pk$
+
+        __Response__:
+
+        On success, HTTP status code is 204 and the response has no content.
+        """
+        return super(ResourceApiUrlViewSet, self).destroy(request, *args, **kwargs)

@@ -153,3 +153,24 @@ class GroupResourcePermission(models.Model):
             "resource_permission": str(self.resource_permission),
             "group": self.group.name,
         }
+
+
+class ResourceApiUrl(models.Model):
+    """
+    API documentation URLs for resources
+    """
+    resource = models.OneToOneField(
+        Resource, related_name='api_url', on_delete=models.CASCADE)
+    url = models.URLField(max_length=255, blank=True)
+
+    class Meta:
+        ordering = ("resource__name",)
+
+    def __unicode__(self):
+        return u"%s %s" % (self.resource, self.url)
+
+    def export(self):
+        return {
+            "resource": self.resource.name,
+            "url": self.url,
+        }

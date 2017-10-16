@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 
 from rest_framework import serializers
 
-from pdc.apps.common.serializers import DynamicFieldsSerializerMixin, LabelSerializer, StrictSerializerMixin
+from pdc.apps.common.serializers import LabelSerializer, StrictSerializerMixin
 from pdc.apps.common.fields import ChoiceSlugField
 from pdc.apps.release.models import Release
 from pdc.apps.common.hacks import convert_str_to_int
@@ -68,8 +68,7 @@ class UpstreamRelatedField(serializers.RelatedField):
             raise serializers.ValidationError("Unsupported upstream input.")
 
 
-class GlobalComponentSerializer(DynamicFieldsSerializerMixin,
-                                StrictSerializerMixin,
+class GlobalComponentSerializer(StrictSerializerMixin,
                                 serializers.HyperlinkedModelSerializer):
     name = serializers.CharField(required=True,
                                  max_length=100)
@@ -126,8 +125,7 @@ class TreeForeignKeyField(serializers.Field):
             return bc
 
 
-class BugzillaComponentSerializer(DynamicFieldsSerializerMixin,
-                                  StrictSerializerMixin,
+class BugzillaComponentSerializer(StrictSerializerMixin,
                                   serializers.HyperlinkedModelSerializer):
     """
     Bugzilla Component serializer.
@@ -167,8 +165,7 @@ class ReleaseComponentTypeSerializer(StrictSerializerMixin, serializers.ModelSer
         fields = ('name', 'has_osbs')
 
 
-class ReleaseComponentSerializer(DynamicFieldsSerializerMixin,
-                                 StrictSerializerMixin,
+class ReleaseComponentSerializer(StrictSerializerMixin,
                                  serializers.HyperlinkedModelSerializer):
     """
     ReleaseComponent Serializer

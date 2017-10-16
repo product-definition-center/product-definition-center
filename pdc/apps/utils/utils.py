@@ -63,6 +63,11 @@ def get_model_name_from_obj_or_cls(obj_or_cls):
     return ContentType.objects.get_for_model(obj_or_cls).model
 
 
+def _get_field_name_and_rest(field):
+    components = field.split('__', 1)
+    return components[0], components[1] if len(components) == 2 else None
+
+
 class RelatedNestedOrderingFilter(OrderingFilter):
     """
     Extends OrderingFilter to support ordering by fields in related models
@@ -82,14 +87,14 @@ class RelatedNestedOrderingFilter(OrderingFilter):
         """
         Return true if the field exists within the model or there is a '__' here.
         """
-        components = field.split('__', 1)
+        field_name, rest  = _get_field_name_and_rest(field)
         try:
             field, parent_model, direct, m2m = \
-                model._meta.get_field_by_name(components[0])
+                model._meta.get_field_by_name(field_name)
 
             # Check if foreign key value exists
-            if field.rel and len(components) == 2:
-                return self.is_valid_field(field.rel.to, components[1])
+            if field.rel and rest:
+                return self.is_valid_field(field.rel.to, rest)
             return True
         except Exception as e:
             # There is no such field
@@ -99,5 +104,20 @@ class RelatedNestedOrderingFilter(OrderingFilter):
         """
         Rewrite the remove_invalid_fields methods and add the nested ordering
         """
-        return [term for term in ordering_files
+        # First translate serialized field names to their source field names in model.
+        serializer_fields = view.serializer_class().fields
+        model_fields = []
+        for field in ordering_files:
+            field, rest = _get_field_name_and_rest(field)
+            serializer_field = serializer_fields.get(field.lstrip('-'))
+            if serializer_field and serializer_field.source:
+                model_field = serializer_field.source.replace('.', '__')
+                if field.startswith('-'):
+                    model_field = '-' + model_field
+                if rest:
+                    model_field += '__' + rest
+                field = model_field
+            model_fields.append(field)
+
+        return [term for term in model_fields
                 if self.is_valid_field(queryset.model, term.lstrip('-'))]

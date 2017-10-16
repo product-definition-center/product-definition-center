@@ -1,0 +1,127 @@
+[
+    {
+        "model": "release.Product",
+        "pk": 1,
+        "fields": {
+            "name": "Test Product",
+            "short": "product",
+            "allowed_push_targets": [
+                1,
+                2
+            ]
+        }
+    },
+    {
+        "model": "release.Product",
+        "pk": 2,
+        "fields": {
+            "name": "Test Product 2",
+            "short": "product2",
+            "allowed_push_targets": [
+                3
+            ]
+        }
+    },
+
+    {
+        "model": "release.ProductVersion",
+        "pk": 1,
+        "fields": {
+            "name": "Product Version",
+            "short": "product",
+            "version": "1",
+            "product_version_id": "product-1",
+            "product": 1
+        }
+    },
+    {
+        "model": "release.ProductVersion",
+        "pk": 2,
+        "fields": {
+            "name": "Product Version",
+            "short": "product",
+            "version": "2",
+            "product_version_id": "product-2",
+            "product": 1
+        }
+    },
+    {
+        "model": "release.ProductVersion",
+        "pk": 3,
+        "fields": {
+            "name": "Product2 Version",
+            "short": "product2",
+            "version": "1",
+            "product_version_id": "product2-1",
+            "product": 2
+        }
+    },
+
+    {
+        "model": "release.Release",
+        "pk": 1,
+        "fields": {
+            "release_type": 1,
+            "release_id": "product-1.0",
+            "name": "Our Awesome Product",
+            "product_version": 1,
+            "short": "product",
+            "version": "1.0",
+            "active": true,
+            "base_product": null
+        }
+    },
+    {
+        "model": "release.Release",
+        "pk": 2,
+        "fields": {
+            "release_type": 1,
+            "release_id": "product-2.0",
+            "name": "Our Awesome Product",
+            "product_version": 2,
+            "short": "product",
+            "version": "2.0",
+            "active": true,
+            "base_product": null
+        }
+    },
+    {
+        "model": "release.Release",
+        "pk": 3,
+        "fields": {
+            "release_type": 1,
+            "release_id": "product2-1.0",
+            "name": "Our Awesome Product",
+            "product_version": 3,
+            "short": "product2",
+            "version": "1.0",
+            "active": true,
+            "base_product": null
+        }
+    },
+
+    {
+        "model": "release.Variant",
+        "pk": 1,
+        "fields": {
+            "release": 1,
+            "variant_id": "Server",
+            "variant_type": 1,
+            "deleted": false,
+            "variant_name": "Server",
+            "variant_uid": "Server"
+        }
+    },
+    {
+        "model": "release.Variant",
+        "pk": 2,
+        "fields": {
+            "release": 3,
+            "variant_id": "Server",
+            "variant_type": 1,
+            "deleted": false,
+            "variant_name": "Server",
+            "variant_uid": "Server"
+        }
+    }
+]

@@ -14,8 +14,7 @@ from pdc.apps.common.fields import ChoiceSlugField
 from pdc.apps.component.models import ReleaseComponentType, GlobalComponent
 from pdc.apps.componentbranch.models import (
     ComponentBranch, SLA, SLAToComponentBranch)
-from pdc.apps.common.serializers import (
-    DynamicFieldsSerializerMixin, StrictSerializerMixin)
+from pdc.apps.common.serializers import StrictSerializerMixin
 
 
 def is_branch_active(branch):
@@ -84,7 +83,7 @@ class BranchNameField(serializers.Field):
         return data
 
 
-class SLASerializer(StrictSerializerMixin, DynamicFieldsSerializerMixin,
+class SLASerializer(StrictSerializerMixin,
                     serializers.ModelSerializer):
     """
     Serializer for the SLA model
@@ -119,7 +118,6 @@ class SLAToComponentBranchSerializerForComponentBranch(
 
 
 class ComponentBranchSerializer(StrictSerializerMixin,
-                                DynamicFieldsSerializerMixin,
                                 serializers.ModelSerializer):
     """
     A serializer for the ComponentBranch model
@@ -187,7 +185,6 @@ class ComponentBranchSerializerWithoutSLA(serializers.Serializer):
 
 
 class SLAToComponentBranchSerializer(StrictSerializerMixin,
-                                     DynamicFieldsSerializerMixin,
                                      serializers.Serializer):
     """
     A serializer for the SLAToComponentBranch model that allows branch creation

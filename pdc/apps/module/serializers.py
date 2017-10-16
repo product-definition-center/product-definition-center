@@ -5,7 +5,7 @@
 #
 from rest_framework import serializers
 
-from pdc.apps.common.serializers import StrictSerializerMixin, DynamicFieldsSerializerMixin
+from pdc.apps.common.serializers import StrictSerializerMixin
 from .models import UnreleasedVariant, RuntimeDependency, BuildDependency
 
 from pdc.apps.package.serializers import RPMRelatedField
@@ -49,7 +49,6 @@ class BuildDepSerializer(serializers.ModelSerializer):
 
 
 class UnreleasedVariantSerializer(StrictSerializerMixin,
-                                  DynamicFieldsSerializerMixin,
                                   serializers.ModelSerializer):
     variant_id          = serializers.CharField(max_length=100)
     variant_uid         = serializers.CharField(max_length=200)

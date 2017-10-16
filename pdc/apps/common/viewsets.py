@@ -203,7 +203,7 @@ class StrictQueryParamMixin(object):
         ordering_keys = request.query_params.get('ordering')
         model_fields = [field.name for field in self.queryset.model._meta.fields]
         serializer_fields = self._get_fields_from_serializer_class()
-        valid_fields = list(set(model_fields).intersection(set(serializer_fields)))
+        valid_fields = list(set(model_fields).union(set(serializer_fields)))
         valid_fields += self.queryset.query.aggregates.keys()
         # If there is a nested ordering with '__', check if it is valid in the RelatedNestedOrderingFilter
         tmp_list = [param.strip().lstrip('-') for param in ordering_keys.split(',') if '__' not in param]
@@ -215,10 +215,11 @@ class StrictQueryParamMixin(object):
     def _get_fields_from_serializer_class(self):
         """:return the fields from serializer class."""
         serializer_class = getattr(self, 'serializer_class')
-        valid_fields = [
-            field.source or field_name
-            for field_name, field in serializer_class().fields.items()
-            if not getattr(field, 'write_only', False)]
+        fields = serializer_class().fields
+        valid_fields = fields.keys() + [
+            field.source
+            for _, field in fields.items()
+            if field.source and not getattr(field, 'write_only', False)]
         return valid_fields
 
 

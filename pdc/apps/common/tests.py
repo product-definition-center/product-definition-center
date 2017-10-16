@@ -15,7 +15,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from rest_framework import serializers
 
-from .serializers import DynamicFieldsSerializerMixin
+from contrib.drf_introspection.serializers import DynamicFieldsSerializerMixin
 from .models import Label, SigKey
 from pdc.apps.common import validators
 from .test_utils import TestCaseWithChangeSetMixin

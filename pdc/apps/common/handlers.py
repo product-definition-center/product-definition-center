@@ -30,10 +30,6 @@ def exception_handler(exc, context):
     """
     response = views.exception_handler(exc, context)
 
-    # For development, we want to show the root cause stack in page.
-    if settings.DEBUG:
-        return response
-
     if response is None:
         if isinstance(exc, (exceptions.ValidationError, exceptions.FieldError)):
             # value is not correct or name is invalid.

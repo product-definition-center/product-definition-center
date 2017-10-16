@@ -16,7 +16,8 @@
     <thead>
       <tr>
         <th width="20%">Resource</th>
-        <th width="60%">URL</th>
+        <th width="30%">URL</th>
+        <th width="30%">API Description</th>
         <th>Read</th>
         <th>Create</th>
         <th>Update</th>
@@ -28,6 +29,7 @@
         <tr>
           <td>{{ resource }}</td>
           <td><a href="{{ perms.url }}">{{ perms.url }}</a></td>
+          <td><a href="{{ perms.api_url.url }}">{{ perms.api_url.url }}</a></td>
           <td>{% if perms.read %}
                 {% if '@all' in perms.read %}
                     <em> @all </em> <br />

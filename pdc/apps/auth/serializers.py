@@ -3,12 +3,18 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
+import re
+
 from django.contrib.auth import models
 
 from rest_framework import serializers
 
 from pdc.apps.common.serializers import StrictSerializerMixin
-from pdc.apps.auth.models import ResourcePermission, GroupResourcePermission
+from pdc.apps.auth.models import (
+    Resource,
+    ResourcePermission,
+    GroupResourcePermission,
+    ResourceApiUrl)
 
 
 class PermissionSerializer(StrictSerializerMixin, serializers.ModelSerializer):
@@ -110,3 +116,34 @@ class GroupResourcePermissionSerializer(StrictSerializerMixin, serializers.Model
     class Meta:
         model = GroupResourcePermission
         fields = ("id", 'resource', 'permission', 'group')
+
+
+class ResourceApiUrlSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+    resource = serializers.CharField(source='resource.name')
+    url = serializers.CharField()
+
+    def validate(self, data):
+        resource_name = data.get('resource', {}).get('name')
+        if not resource_name and self.instance:
+            resource_name = self.instance.resource.name
+
+        try:
+            regex = re.sub(r'{.*?}', r'(.*?)', resource_name)
+            if regex != resource_name:
+                resource = Resource.objects.get(name__regex=regex)
+            else:
+                resource = Resource.objects.get(name=resource_name)
+        except Resource.DoesNotExist:
+            raise serializers.ValidationError("Can't find resource %s." % resource_name)
+
+        data['resource'] = resource
+        return data
+
+    def create(self, validated_data):
+        if ResourceApiUrl.objects.filter(resource=validated_data['resource']).exists():
+            raise serializers.ValidationError('The API URL for given resource already exists.')
+        return super(ResourceApiUrlSerializer, self).create(validated_data)
+
+    class Meta:
+        model = ResourceApiUrl
+        fields = ('id', 'resource', 'url')

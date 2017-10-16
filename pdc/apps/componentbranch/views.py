@@ -30,16 +30,6 @@ class ComponentBranchViewSet(viewsets.PDCModelViewSet):
     -d _data_ (a json string). or GUI plugins for
     browsers, such as ``RESTClient``, ``RESTConsole``.
 
-    ## Customize Output ##
-
-    There are two query params that you can use to customize your output.
-
-    `fields`:          string, can be set multiple times, to demand what fields you want to include;
-
-    `exclude_fields`:  string, can be set multiple times, to demand what fields you do NOT want.
-
-    __NOTE__: If both given, `exclude_fields` *rules* `fields`.
-
     """
     model = ComponentBranch
     queryset = ComponentBranch.objects.order_by(
@@ -236,16 +226,6 @@ class SLAViewSet(viewsets.PDCModelViewSet):
     -d _data_ (a json string). or GUI plugins for
     browsers, such as ``RESTClient``, ``RESTConsole``.
 
-    ## Customize Output ##
-
-    There are two query params that you can use to customize your output.
-
-    `fields`:          string, can be set multiple times, to demand what fields you want to include;
-
-    `exclude_fields`:  string, can be set multiple times, to demand what fields you do NOT want.
-
-    __NOTE__: If both given, `exclude_fields` *rules* `fields`.
-
     """
     model = SLA
     queryset = SLA.objects.order_by('name')
@@ -408,16 +388,6 @@ class SLAToComponentBranchViewSet(viewsets.PDCModelViewSet):
     You can use ``curl`` in terminal, with -X _method_ (GET|POST|PUT|DELETE),
     -d _data_ (a json string). or GUI plugins for
     browsers, such as ``RESTClient``, ``RESTConsole``.
-
-    ## Customize Output ##
-
-    There are two query params that you can use to customize your output.
-
-    `fields`:          string, can be set multiple times, to demand what fields you want to include;
-
-    `exclude_fields`:  string, can be set multiple times, to demand what fields you do NOT want.
-
-    __NOTE__: If both given, `exclude_fields` *rules* `fields`.
 
     """
     model = SLAToComponentBranch

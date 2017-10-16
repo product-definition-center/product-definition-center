@@ -33,3 +33,14 @@ class RepoFamilyFilter(filters.FilterSet):
     class Meta:
         model = models.RepoFamily
         fields = ('name',)
+
+
+class PushTargetFilter(filters.FilterSet):
+    name = MultiValueFilter()
+    description = MultiValueFilter()
+    host = MultiValueFilter()
+    service = MultiValueFilter(name='service__name')
+
+    class Meta:
+        model = models.PushTarget
+        fields = ('name', 'description', 'service', 'host')

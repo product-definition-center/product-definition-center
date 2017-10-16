@@ -7,7 +7,7 @@
 Extra Django settings for test environment of pdc project.
 """
 
-from settings import *
+from settings_common import *
 
 
 # Database settings
@@ -15,10 +15,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'test.sqlite3',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+        'TEST': {'NAME': 'test.sqlite3'},
     }
 }
 

@@ -25,3 +25,5 @@ router.register(r'content-delivery-content-formats', views.ContentFormatViewSet,
                 base_name='contentdeliverycontentformat')
 router.register(r'content-delivery-services', views.ServiceViewSet,
                 base_name='contentdeliveryservice')
+router.register(r'push-targets', views.PushTargetViewSet,
+                base_name='pushtarget')

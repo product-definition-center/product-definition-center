@@ -7,7 +7,7 @@ from rest_framework import serializers, fields
 from rest_framework.reverse import reverse
 
 from pdc.apps.common.models import Arch
-from pdc.apps.common.serializers import StrictSerializerMixin, DynamicFieldsSerializerMixin
+from pdc.apps.common.serializers import StrictSerializerMixin
 from pdc.apps.common.fields import ChoiceSlugField
 from .models import (Compose, OverrideRPM, ComposeAcceptanceTestingState,
                      ComposeTree, Variant, Location, Scheme, ComposeImage,
@@ -46,7 +46,6 @@ class LinkedReleasesField(serializers.SlugRelatedField):
 
 
 class ComposeSerializer(StrictSerializerMixin,
-                        DynamicFieldsSerializerMixin,
                         serializers.ModelSerializer):
     compose_type                = serializers.CharField()
     release                     = serializers.CharField()
@@ -126,7 +125,6 @@ class ComposeTreeVariantField(serializers.Field):
 
 
 class ComposeTreeSerializer(StrictSerializerMixin,
-                            DynamicFieldsSerializerMixin,
                             serializers.ModelSerializer):
     compose                 = serializers.SlugRelatedField(slug_field='compose_id', queryset=Compose.objects.all())
     variant                 = ComposeTreeVariantField()
@@ -156,7 +154,6 @@ class ComposeTreeSerializer(StrictSerializerMixin,
 
 
 class ComposeTreeRTTTestSerializer(StrictSerializerMixin,
-                                   DynamicFieldsSerializerMixin,
                                    serializers.ModelSerializer):
     compose                 = serializers.CharField(source='variant.compose.compose_id', read_only=True)
     variant                 = ComposeTreeVariantField(read_only=True)
@@ -170,7 +167,6 @@ class ComposeTreeRTTTestSerializer(StrictSerializerMixin,
 
 
 class ComposeImageRTTTestSerializer(StrictSerializerMixin,
-                                    DynamicFieldsSerializerMixin,
                                     serializers.ModelSerializer):
     compose                 = serializers.CharField(source='variant_arch.variant.compose.compose_id', read_only=True)
     variant                 = serializers.CharField(source='variant_arch.variant', read_only=True)

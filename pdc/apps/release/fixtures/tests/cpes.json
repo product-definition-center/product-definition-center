@@ -1,0 +1,18 @@
+[
+  {
+    "fields": {
+      "cpe": "cpe:test1",
+      "description": "CPE Test 1"
+    },
+    "model": "release.cpe",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "cpe": "cpe:test2",
+      "description": "CPE Test 2"
+    },
+    "model": "release.cpe",
+    "pk": 2
+  }
+]
