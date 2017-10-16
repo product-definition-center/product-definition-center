@@ -75,3 +75,6 @@ help:
 	@echo '  build            - Run command: python setup.py build'
 	@echo '  install          - Run command: python setup.py install'
 	@echo '  help             - Show this help message and exit'
+
+release:
+	bash create-release.sh
