@@ -11,6 +11,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 
 from pdc.apps.common.test_utils import TestCaseWithChangeSetMixin
+from pdc.apps.module.models import UnreleasedVariant
 
 
 class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
@@ -229,3 +230,22 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(url + '?component_name=unknown', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('count'), 0)
+
+    def test_create_and_update_unreleasedvariant(self):
+        url = reverse('unreleasedvariant-list')
+        data = {
+            'variant_id': "core", 'variant_uid': "coretest123",
+            'variant_name': "core", 'variant_version': "0",
+            'variant_release': "1", 'variant_type': 'module',
+            'koji_tag': "module-core-0-1", 'modulemd': 'foobar',
+            'active': False
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        url_two = reverse('unreleasedvariant-detail', args=['coretest123'])
+        data_two = {'active': True}
+        response_two = self.client.patch(url_two, data_two, format='json')
+        self.assertEqual(response_two.status_code, status.HTTP_200_OK)
+        uv = UnreleasedVariant.objects.filter(
+            variant_uid='coretest123').first()
+        self.assertTrue(uv.active)

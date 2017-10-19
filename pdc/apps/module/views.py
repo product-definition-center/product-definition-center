@@ -174,3 +174,51 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
             curl -X DELETE -H "Content-Type: application/json" $URL:unreleasedvariant-detail:4181$
         """
         return super(UnreleasedVariantViewSet, self).destroy(request, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__:
+        PUT/PATCH
+
+        __URL__: $LINK:unreleasedvariant-detail:variant_uid$
+
+        __Data__:
+
+            {
+                "variant_id": string,     # required
+                "variant_uid": string,    # required
+                "variant_name": string,   # required
+                "variant_type": string,   # required
+                "variant_version": string,# version of this particular variant
+                "variant_release": string,# release of this particular variant
+                "koji_tag": string,       # required
+                "modulemd": string,       # required
+                "active": bool,           # required
+                "runtime_deps": [{"dependency": string, "stream": string}, ... ],
+                "build_deps": [{"dependency": string, "stream": string}, ... ],
+                "rpms": [string, ... ]
+            }
+
+        __Response__:
+
+            {
+                "variant_id": string,
+                "variant_uid": string,
+                "variant_name": string,
+                "variant_type": string,
+                "variant_version": string,
+                "variant_release": string,
+                "koji_tag": string,
+                "modulemd": string,
+                "active": bool,
+                "runtime_deps": [{"dependency": string, "stream": string}, ... ],
+                "build_deps": [{"dependency": string, "stream": string}, ... ],
+                "rpms": [string, ... ]
+            }
+
+        __Example__:
+
+            curl -X PATCH -d '{ "active": true}' -H "Content-Type: application/json" \\
+                $URL:unreleasedvariant-detail:testmodule-master-20170301215520$
+        """
+        return super(UnreleasedVariantViewSet, self).update(request, *args, **kwargs)
