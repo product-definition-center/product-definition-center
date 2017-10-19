@@ -141,6 +141,21 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([2])
         self.assertIn('new_rpm', response.content)
 
+    def test_create_and_delete_unreleasedvariant(self):
+        url = reverse('unreleasedvariant-list')
+        data = {
+            'variant_id': 'core', 'variant_uid': 'core-test-123',
+            'variant_name': 'core', 'variant_version': '0',
+            'variant_release': '1', 'variant_type': 'module',
+            'koji_tag': 'module-core-0-1', 'modulemd': 'foobar',
+            'active': False
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        url_two = reverse('unreleasedvariant-detail', args=['core-test-123'])
+        response_two = self.client.delete(url_two)
+        self.assertEqual(response_two.status_code, status.HTTP_204_NO_CONTENT)
+
     def test_filter_by_rpms(self):
         url = reverse('unreleasedvariant-list')
         # add a variant with rpm 'foobar' from branch 'master'
