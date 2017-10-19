@@ -74,7 +74,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__: $LINK:unreleasedvariant-detail:variant_id$
+        __URL__: $LINK:unreleasedvariant-detail:variant_uid$
 
         __Response__:
 
@@ -162,7 +162,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
         __Method__:
         DELETE
 
-        __URL__: $LINK:unreleasedvariant-detail:variant_id$
+        __URL__: $LINK:unreleasedvariant-detail:variant_uid$
 
         __Response__:
 
