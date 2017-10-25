@@ -292,7 +292,7 @@ class ReleaseVariantCPESerializer(StrictSerializerMixin, serializers.ModelSerial
 
     class Meta:
         model = VariantCPE
-        fields = ('release', 'variant_uid', 'cpe')
+        fields = ('id', 'release', 'variant_uid', 'cpe')
 
     def create(self, validated_data):
         variant = validated_data['variant']

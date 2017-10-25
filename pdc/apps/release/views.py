@@ -1126,11 +1126,7 @@ class CPEViewSet(PDCModelViewSet):
         return super(CPEViewSet, self).destroy(*args, **kwargs)
 
 
-class ReleaseVariantCPEViewSet(ChangeSetModelMixin,
-                               ConditionalProcessingMixin,
-                               StrictQueryParamMixin,
-                               MultiLookupFieldMixin,
-                               viewsets.GenericViewSet):
+class ReleaseVariantCPEViewSet(PDCModelViewSet):
     """
     Links each variant ($LINK:variant-list$) with CPE ($LINK:cpe-list$).
     """
@@ -1139,7 +1135,6 @@ class ReleaseVariantCPEViewSet(ChangeSetModelMixin,
     serializer_class = ReleaseVariantCPESerializer
     filter_class = filters.ReleaseVariantCPEFilter
     permission_classes = (APIPermission,)
-    lookup_fields = (('variant__release__release_id', r'[^/]+'), ('variant__variant_uid', r'[^/]+'))
 
     def create(self, request, *args, **kwargs):
         """
@@ -1162,7 +1157,7 @@ class ReleaseVariantCPEViewSet(ChangeSetModelMixin,
         """
         __Method__: GET
 
-        __URL__: $LINK:variantcpe-detail:release_id}/{variant_uid$
+        __URL__: $LINK:variantcpe-detail:instance-pk$
 
         __Response__:
 
@@ -1190,7 +1185,7 @@ class ReleaseVariantCPEViewSet(ChangeSetModelMixin,
         """
         __Method__: PUT, PATCH
 
-        __URL__: $LINK:variantcpe-detail:release_id}/{variant_uid$
+        __URL__: $LINK:variantcpe-detail:instance-pk$
 
         __Data__:
 
@@ -1206,7 +1201,7 @@ class ReleaseVariantCPEViewSet(ChangeSetModelMixin,
         """
         __Method__: `DELETE`
 
-        __URL__: $LINK:variantcpe-detail:release_id}/{variant_uid$
+        __URL__: $LINK:variantcpe-detail:instance-pk$
 
         __Response__:
 

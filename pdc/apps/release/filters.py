@@ -152,7 +152,7 @@ class ReleaseVariantCPEFilter(django_filters.FilterSet):
 
     class Meta:
         model = VariantCPE
-        fields = ('release', 'variant_uid', 'cpe')
+        fields = ('id', 'release', 'variant_uid', 'cpe')
 
 
 class ReleaseGroupFilter(django_filters.FilterSet):

@@ -2011,11 +2011,12 @@ class VariantCPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_detail(self):
         data = {
+            'id': 1,
             'release': 'release-1.0',
             'variant_uid': 'Client-UID',
             'cpe': 'cpe:test1',
         }
-        response = self.client.get(reverse('variantcpe-detail', args=['release-1.0/Client-UID']))
+        response = self.client.get(reverse('variantcpe-detail', args=[1]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, data)
 
@@ -2043,6 +2044,7 @@ class VariantCPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         }
         response = self.client.post(reverse('variantcpe-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        del response.data['id']
         self.assertEqual(args, response.data)
         self.assertNumChanges([1])
 
@@ -2086,11 +2088,12 @@ class VariantCPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([])
 
     def test_patch_release(self):
-        url = reverse('variantcpe-detail', args=['release-1.0/Client-UID'])
+        url = reverse('variantcpe-detail', args=[1])
         args = {'release': 'release2-1.0'}
         response = self.client.patch(url, args, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         args = {
+            'id': 1,
             'release': 'release2-1.0',
             'variant_uid': 'Client-UID',
             'cpe': 'cpe:test1',
@@ -2099,11 +2102,12 @@ class VariantCPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([1])
 
     def test_patch_variant_uid(self):
-        url = reverse('variantcpe-detail', args=['release-1.0/Client-UID'])
+        url = reverse('variantcpe-detail', args=[1])
         args = {'variant_uid': 'Server-UID'}
         response = self.client.patch(url, args, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         args = {
+            'id': 1,
             'release': 'release-1.0',
             'variant_uid': 'Server-UID',
             'cpe': 'cpe:test1',
@@ -2112,7 +2116,7 @@ class VariantCPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([1])
 
     def test_patch_non_existing_release(self):
-        url = reverse('variantcpe-detail', args=['release-1.0/Client-UID'])
+        url = reverse('variantcpe-detail', args=[1])
         args = {'release': 'bad_release'}
         response = self.client.patch(url, args, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -2122,7 +2126,7 @@ class VariantCPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([])
 
     def test_patch_non_existing_variant(self):
-        url = reverse('variantcpe-detail', args=['release-1.0/Client-UID'])
+        url = reverse('variantcpe-detail', args=[1])
         args = {'variant_uid': 'BAD-UID'}
         response = self.client.patch(url, args, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
