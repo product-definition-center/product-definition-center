@@ -686,7 +686,7 @@ class VariantUpdateTestCase(APITestCase):
         response = self.client.delete(reverse('variant-detail', args=['release-1.0/Server-UID']))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(models.Repo.objects.count(), 1)
-        self.assertEqual(release_models.Variant.objects.count(), 2)
+        self.assertEqual(release_models.Variant.objects.count(), 3)
         self.assertEqual(release_models.VariantArch.objects.count(), 4)
 
     def test_changing_variants_with_repos_fails(self):

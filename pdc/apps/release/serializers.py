@@ -306,8 +306,16 @@ class ReleaseVariantCPESerializer(StrictSerializerMixin, serializers.ModelSerial
 
         variant = verified_data.get('variant')
         if variant is not None:
-            release_id = variant['release']['release_id']
-            variant_uid = variant['variant_uid']
+            if 'release' in variant:
+                release_id = variant['release']['release_id']
+            else:
+                release_id = self.instance.variant.release.release_id
+
+            if 'variant_uid' in variant:
+                variant_uid = variant['variant_uid']
+            else:
+                variant_uid = self.instance.variant.variant_uid
+
             try:
                 verified_data['variant'] = Variant.objects.get(release__release_id=release_id, variant_uid=variant_uid)
             except Variant.DoesNotExist:
