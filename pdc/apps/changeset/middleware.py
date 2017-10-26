@@ -94,7 +94,7 @@ class ChangesetMiddleware(object):
                     else:
                         request.changeset.commit()
                         self._may_announce_big_change(request.changeset, request)
-            except:
+            except Exception:
                 # NOTE: catch all errors that were raised by view.
                 # And log the trace back to the file.
                 logger.error('View Function Error: %s', request.path,

@@ -27,7 +27,7 @@ def create_user(username, groups=None, perms=None, is_super=False):
     password = username
     try:
         get_user_model().objects.filter(username=username).delete()
-    except:
+    except Exception:
         pass
     if is_super:
         user = get_user_model().objects.create_superuser(username, email, password)
