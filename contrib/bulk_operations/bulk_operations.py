@@ -30,9 +30,13 @@ def _failure_response(ident, response, data=None):
     Given an identifier, a response from a view and optional data, return a
     Response object that describes the error.
     """
+    detail = response.data
+    if isinstance(detail, dict) and 'detail' in detail:
+        detail = detail['detail']
+
     result = {
         'id_of_invalid_data': ident,
-        'detail': response.data.get('detail', response.data),
+        'detail': detail,
     }
     if data:
         result['invalid_data'] = data
