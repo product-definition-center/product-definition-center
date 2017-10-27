@@ -3,7 +3,7 @@
 %define srcname pdc
 
 Name:           python-%{srcname}
-Version:        1.7.0
+Version:        1.8.0
 Release:        1%{?dist}
 Summary:        Product Definition Center
 Group:          Development/Libraries
@@ -80,6 +80,26 @@ fi
 
 
 %changelog
+* Tue Oct 17 2017 Lukas Holecek <lholecek@redhat.com> 1.8.0-1
+- Add push-targets endpoint and allowed_push_targets fields
+- Add allowed_debuginfos for release (chcao@redhat.com)
+- Add allow_buildroot_push to release API (chuzhang@redhat.com)
+- Add signing key in release api (chcao@redhat.com)
+- Add cpes endpoint (lholecek@redhat.com)
+- Add variant-cpes endpoint (lholecek@redhat.com)
+- Add descending ordering documentation on API pages (lholecek@redhat.com)
+- Add API documentation links (lholecek@redhat.com)
+- Make ComponentBranch filters case-sensitive (matt_prahl@live.com)
+- Move common settings in one file (chuzhang@redhat.com)
+- Always allow to select fields to display (lholecek@redhat.com)
+- Allow to use ordering names from serialized JSON (lholecek@redhat.com)
+- Fix not-found error string (lholecek@redhat.com)
+- Fix passing field errors to client (lholecek@redhat.com)
+- Use fuzzy filter for resources (lholecek@redhat.com)
+- Omit changing response for DEBUG mode (lholecek@redhat.com)
+- Simplify enabling debug toolbar in settings (lholecek@redhat.com)
+- doc: fix "then" spelling (kdreyer@redhat.com)
+
 * Tue Aug 15 2017 Chuang Cao <chcao@redhat.com> 1.7.0-1
 - Revert "Automatic commit of package [python-pdc] minor release [1.7.0-1]."
   (chcao@redhat.com)
