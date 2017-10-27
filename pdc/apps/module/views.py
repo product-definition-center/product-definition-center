@@ -29,7 +29,6 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
     serializer_class = UnreleasedVariantSerializer
     filter_class = UnreleasedVariantFilter
     lookup_field = 'variant_uid'
-    lookup_regex = '[^/]+'
 
     def list(self, request, *args, **kwargs):
         """
@@ -75,7 +74,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
         __Method__:
         GET
 
-        __URL__: $LINK:unreleasedvariant-detail:variant_id$
+        __URL__: $LINK:unreleasedvariant-detail:variant_uid$
 
         __Response__:
 
@@ -163,7 +162,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
         __Method__:
         DELETE
 
-        __URL__: $LINK:unreleasedvariant-detail:variant_id$
+        __URL__: $LINK:unreleasedvariant-detail:variant_uid$
 
         __Response__:
 
