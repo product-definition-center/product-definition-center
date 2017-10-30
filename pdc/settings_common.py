@@ -292,9 +292,6 @@ BROWSABLE_DOCUMENT_MACROS = {
 
 EMPTY_PATCH_ERROR_RESPONSE = {
     'detail': 'Partial update with no changes does not make much sense.',
-    'hint': ' '.join(['Please make sure the URL includes the trailing slash.',
-                      'Some software may automatically redirect you the the',
-                      'correct URL but not forward the request body.'])
 }
 
 INTERNAL_SERVER_ERROR_RESPONSE = {
