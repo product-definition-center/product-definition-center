@@ -48,8 +48,8 @@ class PushTargetFilter(filters.FilterSet):
 
 class MultiDestinationFilter(filters.FilterSet):
     global_component = MultiValueFilter(name='global_component__name')
-    origin_repo = MultiValueFilter()
-    destination_repo = MultiValueFilter()
+    origin_repo = MultiIntFilter()
+    destination_repo = MultiIntFilter()
     origin_repo_release_id = MultiValueFilter(name='origin_repo__variant_arch__variant__release__release_id')
     destination_repo_release_id = MultiValueFilter(name='destination_repo__variant_arch__variant__release__release_id')
     subscribers = MultiValueFilter(name='subscribers__name')

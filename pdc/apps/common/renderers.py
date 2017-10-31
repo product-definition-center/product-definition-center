@@ -196,6 +196,7 @@ FILTER_DEFS = {
     'BooleanFilter': 'bool',
     'CaseInsensitiveBooleanFilter': 'bool',
     'ActiveReleasesFilter': 'bool',
+    'NumberFilter': 'int',
     'MultiIntFilter': 'int',
     'MultiValueRegexFilter': 'regular expression'
 }
