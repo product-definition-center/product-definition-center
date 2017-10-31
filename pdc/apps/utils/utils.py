@@ -9,6 +9,7 @@ from pdc.apps.common.hacks import validate_model
 from pdc.apps.common.constants import PDC_WARNING_HEADER_NAME
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.fields.related import OneToOneRel
 from django.db.models.signals import pre_save
 from django.forms.models import model_to_dict
 from rest_framework.filters import OrderingFilter
@@ -93,6 +94,8 @@ class RelatedNestedOrderingFilter(OrderingFilter):
                 model._meta.get_field_by_name(field_name)
 
             # Check if foreign key value exists
+            if isinstance(field, OneToOneRel):
+                return self.is_valid_field(field.related_model, rest)
             if field.rel and rest:
                 return self.is_valid_field(field.rel.to, rest)
             return True
