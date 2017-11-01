@@ -120,7 +120,7 @@ class ContentFormatSerializer(StrictSerializerMixin, serializers.ModelSerializer
 
     class Meta:
         model = models.ContentFormat
-        fields = ('name', 'description',)
+        fields = ('name', 'pdc_endpoint', 'description',)
 
 
 class ServiceSerializer(StrictSerializerMixin, serializers.ModelSerializer):
