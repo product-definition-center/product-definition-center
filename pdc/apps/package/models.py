@@ -25,6 +25,8 @@ from pdc.apps.common.constants import ARCH_SRC
 from pdc.apps.release.models import Release
 from pdc.apps.compose.models import ComposeAcceptanceTestingState
 from pdc.apps.package.apps import PackageConfig
+from pdc.apps.repository.models import Repo
+from django.utils import timezone
 
 
 class RPM(models.Model):
@@ -354,6 +356,37 @@ class BuildImage(models.Model):
                 for obj in objects:
                     result[field].append(obj.export())
 
+        return result
+
+
+class ReleasedFiles(models.Model):
+    file_primary_key = models.IntegerField(blank=False, default=0)
+    repo             = models.ForeignKey(Repo)
+    released_date    = models.DateField(blank=True, null=True)
+    release_date     = models.DateField()
+    created_at       = models.DateTimeField(default=timezone.now)
+    updated_at       = models.DateTimeField(auto_now=True)
+    # 0 day release
+    zero_day_release = models.BooleanField(default=False)
+    obsolete         = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = (
+            ('file_primary_key', 'repo'),
+        )
+
+    def __unicode__(self):
+        return u"%s" % self.build
+
+    def export(self, fields=None):
+        _fields = (set(['file_primary_key', 'repo',
+                        'released_date', 'release_date', 'created_at',
+                        'updated_at', 'zero_day_release', 'obsolete'])
+                   if fields is None else set(fields))
+        result = model_to_dict(self, fields=_fields)
+        for k in ["release_date", "released_date", "created_at", "updated_at"]:
+            if k in result:
+                result[k] = str(result[k])
         return result
 
 

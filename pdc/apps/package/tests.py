@@ -1872,3 +1872,87 @@ class BuildImageRTTTestsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         url = reverse('buildimagertttests-detail', args=['my-server-docker-1.0-27/docker'])
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+class ReleasedFilesRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
+    fixtures = [
+        'pdc/apps/release/fixtures/tests/release.json',
+        'pdc/apps/release/fixtures/tests/variant.json',
+        'pdc/apps/release/fixtures/tests/variant_arch.json',
+        'pdc/apps/package/fixtures/test/repo.json',
+        'pdc/apps/package/fixtures/test/rpm.json',
+        'pdc/apps/package/fixtures/test/releasedfiles.json',
+    ]
+
+    def setUp(self):
+        self.existing = {
+            "file_primary_key": 2,
+            "repo": {"id": 3},
+            "release_date": "2017-11-12"
+        }
+
+    def test_get(self):
+        response = self.client.get(reverse('releasedfiles-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 2)
+
+        # Get data by filters
+        response = self.client.get(reverse('releasedfiles-list'), {'zero_day_release': '12332432'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        response = self.client.get(reverse('releasedfiles-list'), {'zero_day_release': 'true'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 0)
+
+        response = self.client.get(reverse('releasedfiles-list'), {'file_primary_key': 1})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+
+        response = self.client.get(reverse('releasedfiles-list'), {"release_date": "2017-11-11"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+
+        response = self.client.get(reverse('releasedfiles-list'), {"release_date_after": "2017-11-10"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 2)
+
+        response = self.client.get(reverse('releasedfiles-list'), {"release_date_before": "2017-11-10"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 0)
+
+        response = self.client.get(reverse('releasedfiles-list'), {"release_id": "release-1.0"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 2)
+
+    def test_retrieve(self):
+        response = self.client.get(reverse('releasedfiles-detail', args=[1]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["file"], "bash-1.2.3-4.b1.x86_64.rpm")
+
+    def test_update(self):
+        response = self.client.put(reverse('releasedfiles-detail', args=[1]), self.existing, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["file"], "bash-doc-1.2.3-4.b2.x86_64.rpm")
+        self.assertNumChanges([1])
+
+        # Update with missing repo, release_date
+        response = self.client.put(reverse('releasedfiles-detail', args=[1]), {"file_primary_key": 2}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Update with wrong file and
+        data = self.existing
+        data["file"] = "11111"
+        response = self.client.put(reverse('releasedfiles-detail', args=[1]), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_delete(self):
+        response = self.client.delete(reverse('releasedfiles-detail', args=[1]))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertNumChanges([1])
+        self.assertEqual(1, models.ReleasedFiles.objects.count())
+
+    def test_create(self):
+        response = self.client.post(reverse('releasedfiles-list'), self.existing, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(3, models.ReleasedFiles.objects.count())
+        self.assertNumChanges([1])

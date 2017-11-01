@@ -8,6 +8,7 @@ from rest_framework import viewsets, mixins
 from contrib.bulk_operations import bulk_operations
 from pdc.apps.common import viewsets as pdc_viewsets
 from pdc.apps.common.constants import PUT_OPTIONAL_PARAM_WARNING
+from pdc.apps.common.viewsets import PDCModelViewSet
 from pdc.apps.auth.permissions import APIPermission
 from . import models
 from . import serializers
@@ -532,3 +533,115 @@ class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
         of objects to be modified and their values use the same format as normal patch.
         """
         return bulk_operations.bulk_update_impl(self, *args, **kwargs)
+
+
+class ReleasedFilesViewSet(PDCModelViewSet):
+    """
+    #**Warning: This is an experimental API**#
+    This API endpoint is about released files.
+    """
+    queryset = models.ReleasedFiles.objects.all().order_by('id')
+    serializer_class = serializers.ReleasedFilesSerializer
+    filter_class = filters.ReleasedFilesFilter
+    permission_classes = (APIPermission,)
+    docstring_macros = PUT_OPTIONAL_PARAM_WARNING
+
+    def list(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:releasedfiles-list$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+        __Response__: a paged list of following objects
+
+        Return with *build*, *file*, *package* the *build* is *rpm.srpm_name-rpm.version-rpm.arch*,
+        the *file* is *rpm.filename*, the *package* is *rpm.srpm_name*.
+
+        Please visit $LINK:contentdeliverycontentformat-list$ to get the endpoint's name of file_primary_key
+
+        %(SERIALIZER)s
+        """
+        return super(ReleasedFilesViewSet, self).list(*args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        """
+        __Method__: POST
+
+        __URL__: $LINK:releasedfiles-list$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        * *repo*: $LINK:contentdeliveryrepos-list$
+
+        Currently release-files just can insert data with *repo.content_format* rpm.
+
+        __Response__:
+
+        Return with *build*, *file*, *package* the *build* is *rpm.srpm_name-rpm.version-rpm.arch*,
+        the *file* is *rpm.filename*, the *package* is *rpm.srpm_name*.
+
+        %(SERIALIZER)s
+        """
+        return super(ReleasedFilesViewSet, self).create(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:releasedfiles-detail:instance_pk$
+
+        __Response__:
+
+        Return with *build*, *file*, *package* the *build* is *rpm.srpm_name-rpm.version-rpm.arch*,
+        the *file* is *rpm.filename*, the *package* is *rpm.srpm_name*.
+
+        %(SERIALIZER)s
+        """
+        return super(ReleasedFilesViewSet, self).retrieve(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        %(PUT_OPTIONAL_PARAM_WARNING)s
+
+        __Method__: `PUT`, `PATCH`
+
+        __URL__: $LINK:releasedfiles-detail:instance_pk$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        * *repo*: $LINK:contentdeliveryrepos-list$
+
+        Currently pdc just can insert data with *repo.content_format* rpm.
+
+        __Response__:
+
+        Return with *build*, *file*, *package* the *build* is *rpm.srpm_name-rpm.version-rpm.arch*,
+        the *file* is *rpm.filename*, the *package* is *rpm.srpm_name*.
+
+        %(SERIALIZER)s
+        """
+        return super(ReleasedFilesViewSet, self).update(request, *args, **kwargs)
+
+    def destroy(self, *args, **kwargs):
+        """
+        __Method__: DELETE
+
+        __URL__: $LINK:releasedfiles-detail:instance_pk$
+
+        __Response__:
+
+        On success, HTTP status code is 204 and the response has no content
+
+        __Example__:
+
+            curl -X DELETE -H "Content-Type: application/json" $URL:releasedfiles-detail:1$
+        """
+        return super(ReleasedFilesViewSet, self).destroy(*args, **kwargs)

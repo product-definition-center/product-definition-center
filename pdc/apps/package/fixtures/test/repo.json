@@ -1,0 +1,42 @@
+[
+  {
+    "model": "repository.Repo",
+    "pk": 1,
+    "fields": {
+      "variant_arch": 1,
+      "service": 1,
+      "repo_family": 1,
+      "content_format": 1,
+      "content_category": 1,
+      "name": "test_repo",
+      "product_id": 22
+    }
+  },
+  {
+    "model": "repository.Repo",
+    "pk": 2,
+    "fields": {
+      "variant_arch": 1,
+      "service": 1,
+      "repo_family": 1,
+      "content_format": 1,
+      "content_category": 1,
+      "name": "test_repo_2",
+      "product_id": 23
+    }
+  },
+  {
+    "model": "repository.Repo",
+    "pk": 3,
+    "fields": {
+      "variant_arch": 1,
+      "service": 1,
+      "repo_family": 1,
+      "content_format": 1,
+      "content_category": 1,
+      "name": "test_repo_3",
+      "product_id": 24
+    }
+  }
+]
+

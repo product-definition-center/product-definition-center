@@ -76,7 +76,19 @@ class RepoSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 class RepoField(serializers.RelatedField):
     """Serializer field for repository."""
 
-    doc_format = 'Repo'
+    doc_format = """{
+                            "arch": "string",
+                            "content_category": "ContentCategory.name",
+                            "content_format": "ContentFormat.name",
+                            "id (read-only)": "int",
+                            "name": "string",
+                            "product_id (optional, default=null, nullable)": "int",
+                            "release_id": "string",
+                            "repo_family": "RepoFamily.name",
+                            "service": "Service.name",
+                            "shadow (optional, default=false)": "boolean",
+                            "variant_uid": "string"
+                        }"""
     writable_doc_format = '{"id": "int"}'
     queryset = models.Repo.objects.all()
 
@@ -120,7 +132,7 @@ class ContentFormatSerializer(StrictSerializerMixin, serializers.ModelSerializer
 
     class Meta:
         model = models.ContentFormat
-        fields = ('name', 'description',)
+        fields = ('name', 'pdc_endpoint', 'description')
 
 
 class ServiceSerializer(StrictSerializerMixin, serializers.ModelSerializer):

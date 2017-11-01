@@ -37,6 +37,7 @@ class Service(models.Model):
 class ContentFormat(models.Model):
     # rpm, kickstart, iso
     name          = models.CharField(max_length=50, unique=True)
+    pdc_endpoint = models.CharField(max_length=200, null=True)
     description   = models.CharField(max_length=200)
 
     def __unicode__(self):
