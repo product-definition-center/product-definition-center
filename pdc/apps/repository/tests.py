@@ -869,6 +869,19 @@ class MultiDestinationRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(response.data.get('count'), 0)
 
+    def test_filter_by_subscribers(self):
+        response = self.client.get(reverse('multidestination-list'), {'subscribers': 'person1'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+        response = self.client.get(reverse('multidestination-list'), {'subscribers': 'person3'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 0)
+
+        response = self.client.get(reverse('multidestination-list'), {'subscribers': ['person2', 'person3']})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
     def test_add(self):
         data = {
             'global_component': 'python',

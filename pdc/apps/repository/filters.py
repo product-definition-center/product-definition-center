@@ -4,8 +4,10 @@
 # http://opensource.org/licenses/MIT
 #
 import django_filters as filters
+from django.forms import SelectMultiple
 
-from pdc.apps.common.filters import MultiValueFilter, MultiIntFilter, CaseInsensitiveBooleanFilter
+from pdc.apps.common.filters import MultiValueFilter, MultiIntFilter, CaseInsensitiveBooleanFilter, value_is_not_empty
+from pdc.apps.contact.models import Person
 from . import models
 
 
@@ -52,8 +54,13 @@ class MultiDestinationFilter(filters.FilterSet):
     destination_repo = MultiIntFilter()
     origin_repo_release_id = MultiValueFilter(name='origin_repo__variant_arch__variant__release__release_id')
     destination_repo_release_id = MultiValueFilter(name='destination_repo__variant_arch__variant__release__release_id')
-    subscribers = MultiValueFilter(name='subscribers__name')
+    subscribers = filters.MethodFilter(action='filter_by_subscribers', widget=SelectMultiple)
     active = CaseInsensitiveBooleanFilter()
+
+    @value_is_not_empty
+    def filter_by_subscribers(self, qs, value):
+        people = Person.objects.filter(username__in=value)
+        return qs.filter(subscribers__in=people)
 
     class Meta:
         model = models.MultiDestination
