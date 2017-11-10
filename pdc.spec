@@ -3,7 +3,7 @@
 %define srcname pdc
 
 Name:           python-%{srcname}
-Version:        1.8.0
+Version:        1.9.0
 Release:        1%{?dist}
 Summary:        Product Definition Center
 Group:          Development/Libraries
@@ -80,6 +80,27 @@ fi
 
 
 %changelog
+* Fri Nov 10 2017 Chuang Cao <chcao@redhat.com> 1.9.0-1
+- Add release-files endpoint (chcao@redhat.com)
+- Allow filter multi-destinations by repo names (lholecek@redhat.com)
+- Fix filtering by subscribers for mutli-destinations (lholecek@redhat.com)
+- Use numerical ID to refer to variant-cpes (lholecek@redhat.com)
+- Fix filter type of IDs in docs (lholecek@redhat.com)
+- Ignore files created by setuptools (lholecek@redhat.com)
+- Support OneToOneRel in RelatedNestedOrderingFilter (chuzhang@redhat.com)
+- Fix reporting some validation errors (lholecek@redhat.com)
+- Remove "trailing slash" hint from errors (lholecek@redhat.com)
+- Fix partial update of variant-cpes (lholecek@redhat.com)
+- Fix flake8 warnings (lholecek@redhat.com)
+- Restrict djangorestframework's version (chcao@redhat.com)
+- Fix the URL format in the unreleasedvariants documentation
+  (matthew.prahl@outlook.com)
+- Remove unused 'lookup_regex' variable (matthew.prahl@outlook.com)
+- Add a delete test for the unreleasedvariants API (matthew.prahl@outlook.com)
+- Fix the PATCH API in unreleasedvariants (matthew.prahl@outlook.com)
+- Filter multi-destinations by repo release_id (lholecek@redhat.com)
+- Add multi-destinations (multi-product) endpoint (lholecek@redhat.com)
+
 * Tue Oct 17 2017 Lukas Holecek <lholecek@redhat.com> 1.8.0-1
 - Add push-targets endpoint and allowed_push_targets fields
 - Add allowed_debuginfos for release (chcao@redhat.com)
