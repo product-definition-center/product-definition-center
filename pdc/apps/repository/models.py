@@ -169,7 +169,7 @@ class MultiDestination(models.Model):
     def clean(self):
         if self.origin_repo == self.destination_repo:
             raise ValidationError('Origin and destination repositories must differ.')
-        if self.origin_repo.variant_arch != self.destination_repo.variant_arch:
+        if self.origin_repo.variant_arch.arch != self.destination_repo.variant_arch.arch:
             raise ValidationError('Architecture for origin and destination repositories must NOT differ.')
         if self.origin_repo.service != self.destination_repo.service:
             raise ValidationError('Service for origin and destination repositories must NOT differ.')
