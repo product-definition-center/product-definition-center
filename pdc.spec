@@ -4,7 +4,7 @@
 
 Name:           python-%{srcname}
 Version:        1.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Product Definition Center
 Group:          Development/Libraries
 License:        MIT
@@ -80,6 +80,9 @@ fi
 
 
 %changelog
+* Wed Nov 15 2017 Chuang Cao <chcao@redhat.com> 1.9.0-2
+- Fix checking arch for multi-destinations API (lholecek@redhat.com)
+
 * Fri Nov 10 2017 Chuang Cao <chcao@redhat.com> 1.9.0-1
 - Add release-files endpoint (chcao@redhat.com)
 - Allow filter multi-destinations by repo names (lholecek@redhat.com)
