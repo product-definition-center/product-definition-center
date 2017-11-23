@@ -10,10 +10,144 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 
 from pdc.apps.bindings import models as binding_models
+from pdc.apps.common.hacks import parse_epoch_version
 from pdc.apps.common.test_utils import TestCaseWithChangeSetMixin
 from pdc.apps.component import models as component_models
 from pdc.apps.release import models as release_models
 from . import models
+from .filters import dependency_predicate
+
+
+class VersionComparison(TestCase):
+    def test_equal(self):
+        def v(version):
+            return parse_epoch_version(version)
+
+        equal_1_2_3 = dependency_predicate("=", v('1.2.3'))
+
+        self.assertFalse(equal_1_2_3("=", v('1.2.2')))
+        self.assertTrue(equal_1_2_3("=", v('1.2.3')))
+        self.assertFalse(equal_1_2_3("=", v('1.2.4')))
+
+        self.assertFalse(equal_1_2_3("<", v('1.2.2')))
+        self.assertFalse(equal_1_2_3("<", v('1.2.3')))
+        self.assertTrue(equal_1_2_3("<", v('1.2.4')))
+
+        self.assertTrue(equal_1_2_3(">", v('1.2.2')))
+        self.assertFalse(equal_1_2_3(">", v('1.2.3')))
+        self.assertFalse(equal_1_2_3(">", v('1.2.4')))
+
+        self.assertFalse(equal_1_2_3("<=", v('1.2.2')))
+        self.assertTrue(equal_1_2_3("<=", v('1.2.3')))
+        self.assertTrue(equal_1_2_3("<=", v('1.2.4')))
+
+        self.assertTrue(equal_1_2_3(">=", v('1.2.2')))
+        self.assertTrue(equal_1_2_3(">=", v('1.2.3')))
+        self.assertFalse(equal_1_2_3(">=", v('1.2.4')))
+
+    def test_greater(self):
+        def v(version):
+            return parse_epoch_version(version)
+
+        greater_1_2_3 = dependency_predicate(">", v('1.2.3'))
+
+        self.assertFalse(greater_1_2_3("=", v('1.2.2')))
+        self.assertFalse(greater_1_2_3("=", v('1.2.3')))
+        self.assertTrue(greater_1_2_3("=", v('1.2.4')))
+
+        self.assertFalse(greater_1_2_3("<", v('1.2.2')))
+        self.assertFalse(greater_1_2_3("<", v('1.2.3')))
+        self.assertTrue(greater_1_2_3("<", v('1.2.4')))
+
+        self.assertTrue(greater_1_2_3(">", v('1.2.2')))
+        self.assertTrue(greater_1_2_3(">", v('1.2.3')))
+        self.assertTrue(greater_1_2_3(">", v('1.2.4')))
+
+        self.assertFalse(greater_1_2_3("<=", v('1.2.2')))
+        self.assertFalse(greater_1_2_3("<=", v('1.2.3')))
+        self.assertTrue(greater_1_2_3("<=", v('1.2.4')))
+
+        self.assertTrue(greater_1_2_3(">=", v('1.2.2')))
+        self.assertTrue(greater_1_2_3(">=", v('1.2.3')))
+        self.assertTrue(greater_1_2_3(">=", v('1.2.4')))
+
+    def test_less(self):
+        def v(version):
+            return parse_epoch_version(version)
+
+        less_1_2_3 = dependency_predicate("<", v('1.2.3'))
+
+        self.assertTrue(less_1_2_3("=", v('1.2.2')))
+        self.assertFalse(less_1_2_3("=", v('1.2.3')))
+        self.assertFalse(less_1_2_3("=", v('1.2.4')))
+
+        self.assertTrue(less_1_2_3("<", v('1.2.2')))
+        self.assertTrue(less_1_2_3("<", v('1.2.3')))
+        self.assertTrue(less_1_2_3("<", v('1.2.4')))
+
+        self.assertTrue(less_1_2_3(">", v('1.2.2')))
+        self.assertFalse(less_1_2_3(">", v('1.2.3')))
+        self.assertFalse(less_1_2_3(">", v('1.2.4')))
+
+        self.assertTrue(less_1_2_3("<=", v('1.2.2')))
+        self.assertTrue(less_1_2_3("<=", v('1.2.3')))
+        self.assertTrue(less_1_2_3("<=", v('1.2.4')))
+
+        self.assertTrue(less_1_2_3(">=", v('1.2.2')))
+        self.assertFalse(less_1_2_3(">=", v('1.2.3')))
+        self.assertFalse(less_1_2_3(">=", v('1.2.4')))
+
+    def test_greater_or_equal(self):
+        def v(version):
+            return parse_epoch_version(version)
+
+        greater_or_equal_1_2_3 = dependency_predicate(">=", v('1.2.3'))
+
+        self.assertFalse(greater_or_equal_1_2_3("=", v('1.2.2')))
+        self.assertTrue(greater_or_equal_1_2_3("=", v('1.2.3')))
+        self.assertTrue(greater_or_equal_1_2_3("=", v('1.2.4')))
+
+        self.assertFalse(greater_or_equal_1_2_3("<", v('1.2.2')))
+        self.assertFalse(greater_or_equal_1_2_3("<", v('1.2.3')))
+        self.assertTrue(greater_or_equal_1_2_3("<", v('1.2.4')))
+
+        self.assertTrue(greater_or_equal_1_2_3(">", v('1.2.2')))
+        self.assertTrue(greater_or_equal_1_2_3(">", v('1.2.3')))
+        self.assertTrue(greater_or_equal_1_2_3(">", v('1.2.4')))
+
+        self.assertFalse(greater_or_equal_1_2_3("<=", v('1.2.2')))
+        self.assertTrue(greater_or_equal_1_2_3("<=", v('1.2.3')))
+        self.assertTrue(greater_or_equal_1_2_3("<=", v('1.2.4')))
+
+        self.assertTrue(greater_or_equal_1_2_3(">=", v('1.2.2')))
+        self.assertTrue(greater_or_equal_1_2_3(">=", v('1.2.3')))
+        self.assertTrue(greater_or_equal_1_2_3(">=", v('1.2.4')))
+
+    def test_less_or_equal(self):
+        def v(version):
+            return parse_epoch_version(version)
+
+        less_1_2_3 = dependency_predicate("<=", v('1.2.3'))
+
+        self.assertTrue(less_1_2_3("=", v('1.2.2')))
+        self.assertTrue(less_1_2_3("=", v('1.2.3')))
+        self.assertFalse(less_1_2_3("=", v('1.2.4')))
+
+        self.assertTrue(less_1_2_3("<", v('1.2.2')))
+        self.assertTrue(less_1_2_3("<", v('1.2.3')))
+        self.assertTrue(less_1_2_3("<", v('1.2.4')))
+
+        self.assertTrue(less_1_2_3(">", v('1.2.2')))
+        self.assertFalse(less_1_2_3(">", v('1.2.3')))
+        self.assertFalse(less_1_2_3(">", v('1.2.4')))
+
+        self.assertTrue(less_1_2_3("<=", v('1.2.2')))
+        self.assertTrue(less_1_2_3("<=", v('1.2.3')))
+        self.assertTrue(less_1_2_3("<=", v('1.2.4')))
+
+        self.assertTrue(less_1_2_3(">=", v('1.2.2')))
+        self.assertTrue(less_1_2_3(">=", v('1.2.3')))
+        self.assertFalse(less_1_2_3(">=", v('1.2.4')))
 
 
 class RPMSortKeyTestCase(TestCase):

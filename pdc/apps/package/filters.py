@@ -13,45 +13,72 @@ import django_filters
 
 from pdc.apps.common.filters import (MultiValueFilter, MultiIntFilter, MultiValueRegexFilter,
                                      NullableCharFilter, CaseInsensitiveBooleanFilter)
+from pdc.apps.common.hacks import parse_epoch_version
+
 from . import models
+
+
+def dependency_predicate(op, version):
+    """
+    Returns function for comparing dependencies with given operator and
+    version (e.g. ">=" "2.7" satisfies dependency "python<3.0").
+    """
+    if op == '=':
+        def compare(dep_op, dep_version):
+            if dep_op == '=':
+                return version == dep_version
+            if dep_op == '<':
+                return version < dep_version
+            if dep_op == '>':
+                return version > dep_version
+            if dep_op == '<=':
+                return version <= dep_version
+            if dep_op == '>=':
+                return version >= dep_version
+        return compare
+
+    if op == '>':
+        return lambda dep_op, dep_version: '>' in dep_op or dep_version > version
+
+    if op == '<':
+        return lambda dep_op, dep_version: '<' in dep_op or dep_version < version
+
+    if op == '>=':
+        return lambda dep_op, dep_version: \
+            dependency_predicate('>', version)(dep_op, dep_version) or \
+            dependency_predicate('=', version)(dep_op, dep_version)
+
+    elif op == '<=':
+        return lambda dep_op, dep_version: \
+            dependency_predicate('<', version)(dep_op, dep_version) or \
+            dependency_predicate('=', version)(dep_op, dep_version)
+
+    raise FieldError('Unrecognized operator "{}" for {}'.format(op, type))
 
 
 def dependency_filter(type, queryset, value):
     m = models.Dependency.DEPENDENCY_PARSER.match(value)
     if not m:
         raise FieldError('Unrecognized value for filter for {}'.format(type))
+
     groups = m.groupdict()
-    queryset = queryset.filter(dependency__name=groups['name'], dependency__type=type).distinct()
-    for dep in models.Dependency.objects.filter(type=type, name=groups['name']):
+    name = groups['name']
+    op = groups['op']
+    version = groups['version']
 
-        is_equal = dep.is_equal(groups['version']) if groups['version'] else False
-        is_lower = dep.is_lower(groups['version']) if groups['version'] else False
-        is_higher = dep.is_higher(groups['version']) if groups['version'] else False
+    queryset = queryset.filter(dependency__name=name, dependency__type=type).distinct()
 
-        if groups['op'] == '=' and not dep.is_satisfied_by(groups['version']):
+    if not version:
+        return queryset
+
+    version = parse_epoch_version(version)
+    matches = dependency_predicate(op, version)
+    deps = models.Dependency.objects.filter(type=type, name=name)
+
+    for dep in deps:
+        dep_version = dep.parsed_version
+        if dep_version is not None and not matches(dep.comparison, dep_version):
             queryset = queryset.exclude(pk=dep.rpm_id)
-
-        # User requests everything depending on higher than X
-        elif groups['op'] == '>' and dep.comparison in ('<', '<=', '=') and (is_lower or is_equal):
-            queryset = queryset.exclude(pk=dep.rpm_id)
-
-        # User requests everything depending on lesser than X
-        elif groups['op'] == '<' and dep.comparison in ('>', '>=', '=') and (is_higher or is_equal):
-            queryset = queryset.exclude(pk=dep.rpm_id)
-
-        # User requests everything depending on at least X
-        elif groups['op'] == '>=':
-            if dep.comparison == '<' and (is_lower or is_equal):
-                queryset = queryset.exclude(pk=dep.rpm_id)
-            elif dep.comparison in ('<=', '=') and is_lower:
-                queryset = queryset.exclude(pk=dep.rpm_id)
-
-        # User requests everything depending on at most X
-        elif groups['op'] == '<=':
-            if dep.comparison == '>' and (is_higher or is_equal):
-                queryset = queryset.exclude(pk=dep.rpm_id)
-            elif dep.comparison in ('>=', '=') and is_higher:
-                queryset = queryset.exclude(pk=dep.rpm_id)
 
     return queryset
 

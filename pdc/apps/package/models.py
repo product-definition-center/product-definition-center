@@ -194,45 +194,6 @@ class Dependency(models.Model):
             self._version = parse_epoch_version(self.version) if self.version else None
         return self._version
 
-    def is_satisfied_by(self, other):
-        """
-        Check if other version satisfies this dependency.
-
-        :paramtype other: string
-        """
-        funcs = {
-            '=': lambda x: x == self.parsed_version,
-            '<': lambda x: x < self.parsed_version,
-            '<=': lambda x: x <= self.parsed_version,
-            '>': lambda x: x > self.parsed_version,
-            '>=': lambda x: x >= self.parsed_version,
-        }
-        return self.parsed_version is None or funcs[self.comparison](parse_epoch_version(other))
-
-    def is_equal(self, other):
-        """
-        Return true if the other version is equal to version in this dep.
-
-        :paramtype other: string
-        """
-        return self.parsed_version == parse_epoch_version(other)
-
-    def is_higher(self, other):
-        """
-        Return true if version in this dep is higher than the other version.
-
-        :paramtype other: string
-        """
-        return self.parsed_version > parse_epoch_version(other)
-
-    def is_lower(self, other):
-        """
-        Return true if version in this dep is lower than the other version.
-
-        :paramtype other: string
-        """
-        return self.parsed_version < parse_epoch_version(other)
-
 
 class ImageFormat(models.Model):
     name                = models.CharField(max_length=30, db_index=True, unique=True)

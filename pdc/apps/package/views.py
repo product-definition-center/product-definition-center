@@ -57,7 +57,7 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
         `python`, but exclude `python=2.6.0`. Filtering by `python<3.0.0`
         would include packages with `python>2.7.0`, `python=2.6.0`,
         `python<3.3.0` and `python`, but exclude `python>3.1.0` or
-        `python>3.0.0 && python <3.3.0`.
+        `python>3.0.0`.
 
         If dependency doesn't include version, it is satisfied by any filter.
 
