@@ -53,10 +53,13 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
         constraint will not make the package dependencies inconsistent.
 
         For example filtering by `python=2.7.0` would include packages with
-        dependency on `python=2.7.0`, `python>=2.6.0`, `python<3.0.0`, but
-        exclude `python=2.6.0`. Filtering by `python<3.0.0` would include
-        packages with `python>2.7.0`, `python=2.6.0`, `python<3.3.0`, but
-        exclude `python>3.1.0` or `python>3.0.0 && python <3.3.0`.
+        dependency on `python=2.7.0`, `python>=2.6.0`, `python<3.0.0` and
+        `python`, but exclude `python=2.6.0`. Filtering by `python<3.0.0`
+        would include packages with `python>2.7.0`, `python=2.6.0`,
+        `python<3.3.0` and `python`, but exclude `python>3.1.0` or
+        `python>3.0.0 && python <3.3.0`.
+
+        If dependency doesn't include version, it is satisfied by any filter.
 
         Only single filter for each dependency type is allowed.
 

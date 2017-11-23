@@ -191,7 +191,7 @@ class Dependency(models.Model):
     @property
     def parsed_version(self):
         if not hasattr(self, '_version'):
-            self._version = parse_epoch_version(self.version)
+            self._version = parse_epoch_version(self.version) if self.version else None
         return self._version
 
     def is_satisfied_by(self, other):
@@ -207,7 +207,7 @@ class Dependency(models.Model):
             '>': lambda x: x > self.parsed_version,
             '>=': lambda x: x >= self.parsed_version,
         }
-        return funcs[self.comparison](parse_epoch_version(other))
+        return self.parsed_version is None or funcs[self.comparison](parse_epoch_version(other))
 
     def is_equal(self, other):
         """
