@@ -333,7 +333,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
     """
     queryset = models.Release.objects \
                      .select_related('product_version', 'release_type', 'base_product') \
-                     .prefetch_related('compose_set').order_by('id')
+                     .order_by('id')
     serializer_class = ReleaseSerializer
     lookup_field = 'release_id'
     lookup_value_regex = '[^/]+'
