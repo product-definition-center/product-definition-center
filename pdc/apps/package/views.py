@@ -54,10 +54,13 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
 
         For example filtering by `python=2.7.0` would include packages with
         dependency on `python=2.7.0`, `python>=2.6.0`, `python<3.0.0` and
-        `python`, but exclude `python=2.6.0`. Filtering by `python<3.0.0`
-        would include packages with `python>2.7.0`, `python=2.6.0`,
-        `python<3.3.0` and `python`, but exclude `python>3.1.0` or
-        `python>3.0.0`.
+        `python`, but exclude `python=2.6.0` because it's not possible to use
+        python-2.6.0 package if the dependency filter specifies that the
+        package version should be greater or equal 2.6.0.
+
+        Another example: Dependency `python<3.0.0` satisfies filter
+        `python>=2.7.0` because it's possible to pick any version of python
+        between 2.7.0 (inclusive) up to 3.0.0 (exclusive) - e.g. python-2.7.0.
 
         If dependency doesn't include version, it is satisfied by any filter.
 
