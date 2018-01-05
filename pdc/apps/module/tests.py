@@ -25,7 +25,8 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'variant_id': "core", 'variant_uid': "Core",
             'variant_name': "Core", 'variant_version': "0",
             'variant_release': "1", 'variant_type': 'module',
-            'koji_tag': "module-core-0-1", 'modulemd': 'foobar'
+            'variant_context': '12345678', 'koji_tag': "module-core-0-1",
+            'modulemd': 'foobar'
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -36,7 +37,8 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'variant_id': "shells", 'variant_uid': "Shells",
             'variant_name': "Shells", 'variant_version': "0",
             'variant_release': "1", 'variant_type': 'module',
-            'koji_tag': "module-shells-0-1", 'modulemd': 'foobar'}
+            'variant_context': '12345678', 'koji_tag': "module-shells-0-1",
+            'modulemd': 'foobar'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -46,18 +48,18 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'variant_id': "core", 'variant_uid': "Core",
             'variant_name': "Core", 'variant_version': "0",
             'variant_release': "1", 'variant_type': 'module',
-            'koji_tag': "module-core-0-1", 'modulemd': 'foobar',
-            'active': False,
+            'variant_context': '12345678', 'koji_tag': "module-core-0-1",
+            'modulemd': 'foobar', 'active': False,
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         data = {
-            'variant_id': "core", 'variant_uid': "Core",
+            'variant_id': "core", 'variant_uid': "Core2",
             'variant_name': "Core", 'variant_version': "0",
             'variant_release': "2", 'variant_type': 'module',
-            'koji_tag': "module-core-0-2", 'modulemd': 'foobar',
-            'active': True,
+            'variant_context': '12345678', 'koji_tag': "module-core-0-2",
+            'modulemd': 'foobar', 'active': True,
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -77,8 +79,9 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'variant_id': "core", 'variant_uid': "Core",
             'variant_name': "Core", 'variant_version': "0",
             'variant_release': "1", 'variant_type': 'module',
-            'koji_tag': "module-core-0-1", 'modulemd': 'foobar',
-            'build_deps': [{'dependency': 'base-runtime', 'stream': 'master'}]
+            'variant_context': '12345678', 'koji_tag': "module-core-0-1",
+            'modulemd': 'foobar', 'build_deps': [
+                {'dependency': 'base-runtime', 'stream': 'master'}]
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -88,8 +91,9 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'variant_id': "core3", 'variant_uid': "Core3",
             'variant_name': "Core3", 'variant_version': "0",
             'variant_release': "1", 'variant_type': 'module',
-            'koji_tag': "module-core3-0-1", 'modulemd': 'foobar',
-            'build_deps': [{'dependency': 'base-runtime', 'stream': 'f26'}]
+            'variant_context': '12345678', 'koji_tag': "module-core3-0-1",
+            'modulemd': 'foobar', 'build_deps': [
+                {'dependency': 'base-runtime', 'stream': 'f26'}]
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -99,8 +103,9 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'variant_id': "core2", 'variant_uid': "Core2",
             'variant_name': "Core2", 'variant_version': "0",
             'variant_release': "1", 'variant_type': 'module',
-            'koji_tag': "module-core2-0-1", 'modulemd': 'foobar',
-            'build_deps': [{'dependency': 'bootstrap', 'stream': 'master'}]
+            'variant_context': '12345678', 'koji_tag': "module-core2-0-1",
+            'modulemd': 'foobar', 'build_deps': [
+                {'dependency': 'bootstrap', 'stream': 'master'}]
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -132,8 +137,8 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'variant_id': "core", 'variant_uid': "Core",
             'variant_name': "Core", 'variant_version': "0",
             'variant_release': "1", 'variant_type': 'module',
-            'koji_tag': "module-core-0-1", 'modulemd': 'foobar',
-            'active': False,
+            'variant_context': '12345678', 'koji_tag': "module-core-0-1",
+            'modulemd': 'foobar', 'active': False,
             'rpms': [{'name': 'new_rpm', 'epoch': 0, 'version': '1.0.0',
                         'release': '1', 'arch': 'src', 'srpm_name': 'new_srpm'}]
         }
@@ -148,8 +153,8 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'variant_id': 'core', 'variant_uid': 'core-test-123',
             'variant_name': 'core', 'variant_version': '0',
             'variant_release': '1', 'variant_type': 'module',
-            'koji_tag': 'module-core-0-1', 'modulemd': 'foobar',
-            'active': False
+            'variant_context': '12345678', 'koji_tag': 'module-core-0-1',
+            'modulemd': 'foobar', 'active': False
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -164,8 +169,8 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'variant_id': "core", 'variant_uid': "Core",
             'variant_name': "Core", 'variant_version': "0",
             'variant_release': "1", 'variant_type': 'module',
-            'koji_tag': "module-core-0-1", 'modulemd': 'foobar',
-            'active': True,
+            'variant_context': '12345678', 'koji_tag': "module-core-0-1",
+            'modulemd': 'foobar', 'active': True,
             'rpms': [{'name': 'foobar', 'epoch': 0, 'version': '1.0.0',
                       'release': '1', 'arch': 'src', 'srpm_name': 'foobar',
                       'srpm_commit_branch': 'master'}]
@@ -179,8 +184,8 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'variant_id': "core2", 'variant_uid': "Core2",
             'variant_name': "Core2", 'variant_version': "0",
             'variant_release': "1", 'variant_type': 'module',
-            'koji_tag': "module-core2-0-1", 'modulemd': 'foobar',
-            'active': True,
+            'variant_context': '12345678', 'koji_tag': "module-core2-0-1",
+            'modulemd': 'foobar', 'active': True,
             'rpms': [{'name': 'foobar', 'epoch': 0, 'version': '2.0.0',
                       'release': '1', 'arch': 'src', 'srpm_name': 'foobar',
                       'srpm_commit_branch': 'rawhide'}]
@@ -218,8 +223,8 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'variant_id': "core", 'variant_uid': "Core",
             'variant_name': "Core", 'variant_version': "0",
             'variant_release': "1", 'variant_type': 'module',
-            'koji_tag': "module-core-0-1", 'modulemd': 'foobar',
-            'active': False,
+            'variant_context': '12345678', 'koji_tag': "module-core-0-1",
+            'modulemd': 'foobar', 'active': False,
             'rpms': [{
                 "name": "bash-doc",
                 "epoch": 0,
@@ -252,8 +257,8 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'variant_id': "core", 'variant_uid': "coretest123",
             'variant_name': "core", 'variant_version': "0",
             'variant_release': "1", 'variant_type': 'module',
-            'koji_tag': "module-core-0-1", 'modulemd': 'foobar',
-            'active': False
+            'variant_context': '12345678', 'koji_tag': "module-core-0-1",
+            'modulemd': 'foobar', 'active': False
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -264,3 +269,32 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         uv = UnreleasedVariant.objects.filter(
             variant_uid='coretest123').first()
         self.assertTrue(uv.active)
+
+    def test_create_unreleasedvariant_default_context(self):
+        url = reverse('unreleasedvariant-list')
+        data = {
+            'variant_id': "core", 'variant_uid': "coretest123",
+            'variant_name': "Core", 'variant_version': "0",
+            'variant_release': "1", 'variant_type': 'module',
+            'koji_tag': "module-core-0-1", 'modulemd': 'foobar'
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        uv = UnreleasedVariant.objects.filter(
+            variant_uid='coretest123').first()
+        self.assertEqual(uv.variant_context, '00000000')
+
+    def test_create_unreleasedvariant_not_default_context(self):
+        url = reverse('unreleasedvariant-list')
+        data = {
+            'variant_id': "core", 'variant_uid': "coretest123",
+            'variant_name': "Core", 'variant_version': "0",
+            'variant_release': "1", 'variant_type': 'module',
+            'variant_context': 'a23d56a8', 'koji_tag': "module-core-0-1",
+            'modulemd': 'foobar'
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        uv = UnreleasedVariant.objects.filter(
+            variant_uid='coretest123').first()
+        self.assertEqual(uv.variant_context, 'a23d56a8')

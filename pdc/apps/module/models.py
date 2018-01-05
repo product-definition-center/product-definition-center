@@ -15,15 +15,21 @@ class UnreleasedVariant(models.Model):
     # variant_version/_release are _not_ distribution versions/releases
     variant_version     = models.CharField(max_length=100, blank=False)
     variant_release     = models.CharField(max_length=100, blank=False)
+    # Default to '00000000' for now since this field will only be used once
+    # other tooling is updated to supply this value. Eventually, this should
+    # not have a default.
+    variant_context     = models.CharField(max_length=100, blank=False, default='00000000')
     active              = models.BooleanField(default=False)
     koji_tag            = models.CharField(max_length=300, blank=False)
     modulemd            = models.TextField(blank=False)
     rpms                = models.ManyToManyField(RPM)
 
     class Meta:
-        ordering = ("variant_uid", "variant_version", "variant_release")
+        ordering = ("variant_name", "variant_version", "variant_release",
+                    "variant_context")
         unique_together = (
-            ("variant_uid", "variant_version", "variant_release"),
+            ("variant_name", "variant_version", "variant_release",
+             "variant_context"),
         )
 
     def __unicode__(self):
@@ -37,6 +43,7 @@ class UnreleasedVariant(models.Model):
             'variant_type': self.variant_type,
             'variant_version': self.variant_version,
             'variant_release': self.variant_release,
+            'variant_context': self.variant_context,
             'active': self.active,
             'koji_tag': self.koji_tag,
             'modulemd': self.modulemd,

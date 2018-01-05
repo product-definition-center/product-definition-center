@@ -17,6 +17,7 @@ class UnreleasedVariantFilter(django_filters.FilterSet):
     variant_type        = django_filters.CharFilter(name='variant_type', lookup_type='iexact')
     variant_version     = django_filters.CharFilter(name='variant_version', lookup_type='iexact')
     variant_release     = django_filters.CharFilter(name='variant_release', lookup_type='iexact')
+    variant_context     = django_filters.CharFilter(name='variant_context', lookup_type='iexact')
     active              = CaseInsensitiveBooleanFilter()
     koji_tag            = django_filters.CharFilter(name='koji_tag', lookup_type='iexact')
     runtime_dep_name    = MultiValueFilter(name='runtime_deps__dependency', distinct=True)
@@ -29,7 +30,7 @@ class UnreleasedVariantFilter(django_filters.FilterSet):
     class Meta:
         model = UnreleasedVariant
         fields = ('variant_id', 'variant_uid', 'variant_name', 'variant_type',
-                  'variant_version', 'variant_release', 'koji_tag',
+                  'variant_version', 'variant_release', 'variant_context', 'koji_tag',
                   'modulemd', 'runtime_dep_name', 'runtime_dep_stream',
                   'build_dep_name', 'build_dep_stream', 'component_name',
                   'component_branch')

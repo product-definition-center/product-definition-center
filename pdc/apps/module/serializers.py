@@ -32,6 +32,10 @@ class UnreleasedVariantSerializer(StrictSerializerMixin,
     variant_type        = serializers.CharField(max_length=100)
     variant_version     = serializers.CharField(max_length=100)
     variant_release     = serializers.CharField(max_length=100)
+    # Default to '00000000' for now since this field will only be used once
+    # other tooling is updated to supply this value. Eventually, this should
+    # not have a default.
+    variant_context     = serializers.CharField(max_length=100, default='00000000')
     active              = serializers.BooleanField(default=False)
     koji_tag            = serializers.CharField(max_length=300)
     modulemd            = serializers.CharField()
@@ -45,8 +49,9 @@ class UnreleasedVariantSerializer(StrictSerializerMixin,
         model = UnreleasedVariant
         fields = (
             'variant_id', 'variant_uid', 'variant_name', 'variant_type',
-            'variant_version', 'variant_release', 'koji_tag', 'modulemd',
-            'runtime_deps', 'build_deps', 'active', 'rpms',
+            'variant_version', 'variant_release', 'variant_context',
+            'koji_tag', 'modulemd', 'runtime_deps', 'build_deps', 'active',
+            'rpms',
         )
 
     def validate(self, attrs):

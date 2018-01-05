@@ -56,6 +56,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
                         "variant_type": string,
                         "variant_version": string,
                         "variant_release": string,
+                        "variant_context": string,
                         "koji_tag": string,
                         "modulemd": string,
                         "active": bool,
@@ -85,6 +86,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
                 "variant_type": string,
                 "variant_version": string,
                 "variant_release": string,
+                "variant_context": string,
                 "koji_tag": string,
                 "modulemd": string,
                 "active": bool,
@@ -111,6 +113,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
                 "variant_type": string,   # required
                 "variant_version": string,# version of this particular variant
                 "variant_release": string,# release of this particular variant
+                "variant_context": string,
                 "koji_tag": string,       # required
                 "modulemd": string,       # required
                 "active": bool,           # required
@@ -128,6 +131,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
                 "variant_type": string,
                 "variant_version": string,
                 "variant_release": string,
+                "variant_context": string,
                 "koji_tag": string,
                 "modulemd": string,
                 "active": bool,
@@ -139,7 +143,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
         __Example__:
 
             curl -X POST -H "Content-Type: application/json" $URL:unreleasedvariant-list$ \\
-                    -d '{ "variant_id": "core", "variant_uid": "Core", "variant_name": "Minimalistic Core", "variant_type": "module", "variant_version": "master", "variant_release": "20170101", "koji_tag": "foobar", "active": false }'
+                    -d '{ "variant_id": "core", "variant_uid": "Core", "variant_name": "Minimalistic Core", "variant_type": "module", "variant_version": "master", "variant_release": "20170101", "variant_context": "2f345c78", "koji_tag": "foobar", "active": false }'
             # output
             {
                 "variant_id": "core",
@@ -148,6 +152,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
                 "variant_type": "module",
                 "variant_version": "master",
                 "variant_release": "20170101",
+                "variant_context": string,
                 "koji_tag": "foobar",
                 "active": false,
                 "runtime_deps": [],
@@ -190,6 +195,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
                 "variant_type": string,   # required
                 "variant_version": string,# version of this particular variant
                 "variant_release": string,# release of this particular variant
+                "variant_context": string,# context of this particular variant
                 "koji_tag": string,       # required
                 "modulemd": string,       # required
                 "active": bool,           # required
@@ -207,6 +213,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
                 "variant_type": string,
                 "variant_version": string,
                 "variant_release": string,
+                "variant_context": string,
                 "koji_tag": string,
                 "modulemd": string,
                 "active": bool,
