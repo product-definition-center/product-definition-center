@@ -9,7 +9,7 @@ from pdc.apps.package.models import RPM
 class UnreleasedVariant(models.Model):
     # Not the variant from compose ... which back references compose
     variant_id          = models.CharField(max_length=100, blank=False)
-    variant_uid         = models.CharField(max_length=200, blank=False)
+    variant_uid         = models.CharField(max_length=200, blank=False, unique=True)
     variant_name        = models.CharField(max_length=300, blank=False)
     variant_type        = models.CharField(max_length=100, blank=False)
     # variant_version/_release are _not_ distribution versions/releases
