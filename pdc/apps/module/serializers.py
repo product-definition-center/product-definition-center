@@ -12,30 +12,6 @@ from pdc.apps.package.serializers import RPMRelatedField
 from pdc.apps.package.models import RPM
 
 
-class UnreleasedVariantField(serializers.Field):
-
-    def to_internal_value(self, data):
-        try:
-            variant = UnreleasedVariant.objects.get(
-                variant_uid=data['variant_uid'],
-                variant_version=data['variant_version'],
-                variant_release=data['variant_release'])
-        except UnreleasedVariant.DoesNotExist:
-            raise serializers.ValidationError("UnreleasedVariant %s does not exist.")
-        return variant
-
-    def to_representation(self, value):
-        return {'variant_uid': value.variant_uid, 'variant_name': value.variant_name}
-
-
-class JSONSerializerField(serializers.Field):
-    def to_internal_value(self, data):
-        return data
-
-    def to_representation(self, value):
-        return value
-
-
 class RuntimeDepSerializer(serializers.ModelSerializer):
     class Meta:
         model = RuntimeDependency
