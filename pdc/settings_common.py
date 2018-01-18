@@ -146,7 +146,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'kobo.django.menu.middleware.MenuMiddleware',
+    'pdc.apps.menu.middleware.MenuMiddleware',
     'pdc.apps.usage.middleware.UsageMiddleware',
     'pdc.apps.changeset.middleware.ChangesetMiddleware',
     'pdc.apps.utils.middleware.MessagingMiddleware',
