@@ -235,23 +235,16 @@ class ReleaseVariantSerializer(StrictSerializerMixin, serializers.ModelSerialize
         self.remove_arches = data.get('remove_arches', None)
         return super(ReleaseVariantSerializer, self).to_internal_value(data)
 
+    def create(self, validated_data):
+        arches = validated_data.pop('variantarch_set', [])
+        instance = super(ReleaseVariantSerializer, self).create(validated_data)
+        self._add_arches(instance, arches)
+        return instance
+
     def update(self, instance, validated_data):
         arches = validated_data.pop('variantarch_set', [])
         instance = super(ReleaseVariantSerializer, self).update(instance, validated_data)
-        if arches:
-            if self.add_arches or self.remove_arches:
-                raise FieldError(self.key_combination_error)
-            # If arches were completely specified, try first to remove unwanted
-            # arches, then create new ones.
-            requested = dict([(x.arch.name, x) for x in arches])
-            for variant in instance.variantarch_set.all():
-                if variant.arch.name in requested:
-                    del requested[variant.arch.name]
-                else:
-                    variant.delete()
-            for arch in requested.values():
-                arch.variant = instance
-                arch.save()
+        self._add_arches(instance, arches)
 
         # These loops can only do something on partial update: when doing PUT,
         # "arches" is required and if any of the other arch modifications were
@@ -269,6 +262,22 @@ class ReleaseVariantSerializer(StrictSerializerMixin, serializers.ModelSerialize
     def validate(self, data):
         convert_push_targets_to_mask(data, self.instance, 'release')
         return data
+
+    def _add_arches(self, instance, arches):
+        if arches:
+            if self.add_arches or self.remove_arches:
+                raise FieldError(self.key_combination_error)
+            # If arches were completely specified, try first to remove unwanted
+            # arches, then create new ones.
+            requested = dict([(x.arch.name, x) for x in arches])
+            for variant in instance.variantarch_set.all():
+                if variant.arch.name in requested:
+                    del requested[variant.arch.name]
+                else:
+                    variant.delete()
+            for arch in requested.values():
+                arch.variant = instance
+                arch.save()
 
 
 class CPESerializer(StrictSerializerMixin, serializers.ModelSerializer):
