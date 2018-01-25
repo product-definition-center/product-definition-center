@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2015 Red Hat
+# Copyright (c) 2018 Red Hat
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
