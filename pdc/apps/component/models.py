@@ -150,6 +150,7 @@ class ReleaseComponent(models.Model):
     active = models.BooleanField(default=True)
 
     class Meta:
+        ordering = ("id",)
         unique_together = [
             ("release", "name", "type"),
         ]

@@ -155,6 +155,7 @@ class GlobalComponentContact(ValidateRoleCountMixin, models.Model):
         return u'%s: %s: %s' % (unicode(self.component), unicode(self.role), unicode(self.contact))
 
     class Meta:
+        ordering = ('role', 'component', 'contact')
         unique_together = (('role', 'component', 'contact'), )
 
     def export(self, fields=None):
@@ -176,6 +177,7 @@ class ReleaseComponentContact(ValidateRoleCountMixin, models.Model):
         return u'%s: %s: %s' % (unicode(self.component), unicode(self.role), unicode(self.contact))
 
     class Meta:
+        ordering = ('role', 'component', 'contact')
         unique_together = (('role', 'component', 'contact'), )
 
     def export(self, fields=None):

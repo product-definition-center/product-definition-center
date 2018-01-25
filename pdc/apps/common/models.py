@@ -70,6 +70,9 @@ class Label(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=500)
 
+    class Meta:
+        ordering = ('name',)
+
     def __unicode__(self):
         return u'%s' % self.name
 

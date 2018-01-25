@@ -536,6 +536,7 @@ class ComposeImage(models.Model):
                                             on_delete=models.CASCADE)
 
     class Meta:
+        ordering = ("variant_arch", "image")
         unique_together = (
             ("variant_arch", "image"),
         )
@@ -587,6 +588,7 @@ class ComposeTree(models.Model):
     synced_content      = models.ManyToManyField('repository.ContentCategory')
 
     class Meta:
+        ordering = ("compose", "variant", "arch", "location", "scheme")
         unique_together = (
             ("compose", "variant", "arch", "location", "scheme"),
         )

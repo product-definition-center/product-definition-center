@@ -45,6 +45,7 @@ class RPM(models.Model):
     srpm_commit_branch  = models.CharField(max_length=200, db_index=True, null=True, blank=True)
 
     class Meta:
+        ordering = ("name", "epoch", "version", "release", "arch")
         unique_together = (
             ("name", "epoch", "version", "release", "arch"),
         )

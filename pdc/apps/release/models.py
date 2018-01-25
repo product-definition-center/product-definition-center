@@ -36,6 +36,9 @@ class ReleaseType(models.Model):
     name                = models.CharField(max_length=255, blank=False, unique=True)
     suffix              = models.CharField(max_length=255, blank=True, unique=True)
 
+    class Meta:
+        ordering = ('short', 'name', 'suffix')
+
     def __unicode__(self):
         return u"%s" % self.short
 
@@ -411,6 +414,9 @@ class CPE(models.Model):
 
     description = models.CharField(max_length=300, blank=True)
 
+    class Meta:
+        ordering = ("cpe",)
+
     def __unicode__(self):
         return u"%s" % self.cpe
 
@@ -435,6 +441,9 @@ class VariantCPE(models.Model):
     variant = models.ForeignKey(Variant, null=False, blank=False)
 
     cpe = models.ForeignKey(CPE, null=False, blank=False, db_index=True, on_delete=models.PROTECT)
+
+    class Meta:
+        ordering = ('variant', 'cpe')
 
     def __unicode__(self):
         return u"%s-%s %s" % (self.variant.release.release_id, self.variant.variant_uid, self.cpe.cpe)
