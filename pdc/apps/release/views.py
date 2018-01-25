@@ -136,19 +136,6 @@ class ProductViewSet(NotificationMixin,
     related_model_classes = (Product, ProductVersion)
 
     def create(self, request, *args, **kwargs):
-        """
-        __Method__: POST
-
-        __URL__: $LINK:product-list$
-
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
-
-        __Response__:
-
-        %(SERIALIZER)s
-        """
         response = super(ProductViewSet, self).create(request, *args, **kwargs)
         if response.status_code == status.HTTP_201_CREATED:
             signals.product_post_update.send(sender=self.object.__class__,
@@ -156,54 +143,14 @@ class ProductViewSet(NotificationMixin,
                                              request=request)
         return response
 
-    def retrieve(self, *args, **kwargs):
-        """
-        __Method__: GET
-
-        __URL__: $LINK:product-detail:short$
-
-        __Response__:
-
-        %(SERIALIZER)s
-        """
-        return super(ProductViewSet, self).retrieve(*args, **kwargs)
-
-    def list(self, *args, **kwargs):
-        """
-        __Method__: GET
-
-        __URL__: $LINK:product-list$
-
-        __Query params__:
-
-        %(FILTERS)s
-
-        __Response__: a paged list of following objects
-
-        %(SERIALIZER)s
-        """
-        return super(ProductViewSet, self).list(*args, **kwargs)
-
     def update(self, request, *args, **kwargs):
         """
-        __Method__: PUT, PATCH
-
-        __URL__: $LINK:product-detail:short$
-
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
-
         Please note that if you update the `short` field, the URL of this
         product will change. The change of short name is *not* propagated to
         product versions nor releases.
 
         Changing `allowed_push_targets` field also affects this field in
         child product versions, releases and variants.
-
-        __Response__:
-
-        %(SERIALIZER)s
         """
         obj = self.get_object()
         signals.product_pre_update.send(sender=obj.__class__, product=obj, request=request)
@@ -236,53 +183,21 @@ class ProductVersionViewSet(NotificationMixin,
 
     def create(self, *args, **kwargs):
         """
-        __Method__: POST
-
-        __URL__: $LINK:productversion-list$
-
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
-
         If `short` is not specified, the short name of associated product will
         be used.
 
         Field `allowed_push_targets` must be subset of parent product.
-
-        __Response__:
-
-        %(SERIALIZER)s
         """
         return super(ProductVersionViewSet, self).create(*args, **kwargs)
 
     def retrieve(self, *args, **kwargs):
         """
-        __Method__: GET
-
-        __URL__: $LINK:productversion-detail:product_version_id$
-
-        __Response__:
-
-        %(SERIALIZER)s
-
         The list of releases is ordered by short and version.
         """
         return super(ProductVersionViewSet, self).retrieve(*args, **kwargs)
 
     def list(self, *args, **kwargs):
         """
-        __Method__: GET
-
-        __URL__: $LINK:productversion-list$
-
-        __Query params__:
-
-        %(FILTERS)s
-
-        __Response__: a paged list of following objects
-
-        %(SERIALIZER)s
-
         The list of releases for each product version is ordered by short and
         version.
         """
@@ -290,14 +205,6 @@ class ProductVersionViewSet(NotificationMixin,
 
     def update(self, *args, **kwargs):
         """
-        __Method__: PUT, PATCH
-
-        __URL__: $LINK:productversion-detail:product_version_id$
-
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
-
         Please note that if you change the `short` or `version` field, the
         `product_version_id` will be modified accordingly, and the URL of the
         object will be changed. All changes are local to the updated model and
@@ -307,10 +214,6 @@ class ProductVersionViewSet(NotificationMixin,
 
         Changing `allowed_push_targets` field also affects this field in
         child releases and variants.
-
-        __Response__:
-
-        %(SERIALIZER)s
         """
         return super(ProductVersionViewSet, self).update(*args, **kwargs)
 
@@ -365,21 +268,9 @@ class ReleaseViewSet(NotificationMixin,
         using the $LINK:releaseclone-list$ API that will clone an existing
         release with its variants and components.
 
-        __Method__: POST
-
-        __URL__: $LINK:release-list$
-
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
-
         Field `allowed_push_targets` must be subset of parent product version.
 
         *release_type*: $LINK:releasetype-list$
-
-        __Response__:
-
-        %(SERIALIZER)s
         """
         response = super(ReleaseViewSet, self).create(request, *args, **kwargs)
         if response.status_code == status.HTTP_201_CREATED:
@@ -390,14 +281,6 @@ class ReleaseViewSet(NotificationMixin,
 
     def retrieve(self, *args, **kwargs):
         """
-        __Method__: GET
-
-        __URL__: $LINK:release-detail:release_id$
-
-        __Response__:
-
-        %(SERIALIZER)s
-
         The list of composes is ordered by their date, type and respin (even
         though those fields are not directly visible here).
         """
@@ -405,18 +288,6 @@ class ReleaseViewSet(NotificationMixin,
 
     def list(self, request, *args, **kwargs):
         """
-        __Method__: GET
-
-        __URL__: $LINK:release-list$
-
-        __Query params__:
-
-        %(FILTERS)s
-
-        __Response__: a paged list of following objects
-
-        %(SERIALIZER)s
-
         The list of composes for each release is ordered by their date, type,
         and respin (even though those fields are not directly visible here).
 
@@ -429,20 +300,10 @@ class ReleaseViewSet(NotificationMixin,
 
     def update(self, request, *args, **kwargs):
         """
-        This end-point allows updating a release.
-
         %(PUT_OPTIONAL_PARAM_WARNING)s
 
         This applies also to Bugzilla and DistGit mapping: if it is not specified,
         it will be cleared.
-
-        __Method__: PUT, PATCH
-
-        __URL__: $LINK:release-detail:release_id$
-
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
 
         Please note that if you change the `short`, `version`, `release_type`
         or `base_product` fields, the `release_id` will be updated and the URL
@@ -452,10 +313,6 @@ class ReleaseViewSet(NotificationMixin,
 
         Changing `allowed_push_targets` field also affects this field in
         child variants.
-
-        __Response__:
-
-        %(SERIALIZER)s
         """
         object = self.get_object()
         signals.release_pre_update.send(sender=object.__class__, release=object, request=request)
@@ -530,66 +387,6 @@ class BaseProductViewSet(NotificationMixin,
     lookup_field = 'base_product_id'
     lookup_value_regex = '[^/]+'
     filter_class = filters.BaseProductFilter
-
-    def create(self, *args, **kwargs):
-        """
-        __Method__: POST
-
-        __URL__: $LINK:baseproduct-list$
-
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
-
-        __Response__:
-
-        %(SERIALIZER)s
-        """
-        return super(BaseProductViewSet, self).create(*args, **kwargs)
-
-    def retrieve(self, *args, **kwargs):
-        """
-        __Method__: GET
-
-        __URL__: $LINK:baseproduct-detail:base_product_id$
-
-        __Response__:
-
-        %(SERIALIZER)s
-        """
-        return super(BaseProductViewSet, self).retrieve(*args, **kwargs)
-
-    def list(self, *args, **kwargs):
-        """
-        __Method__: GET
-
-        __URL__: $LINK:baseproduct-list$
-
-        __Query params__:
-
-        %(FILTERS)s
-
-        __Response__: a paged list of following objects
-
-        %(SERIALIZER)s
-        """
-        return super(BaseProductViewSet, self).list(*args, **kwargs)
-
-    def update(self, *args, **kwargs):
-        """
-        __Method__: PUT, PATCH
-
-        __URL__: $LINK:baseproduct-detail:base_product_id$
-
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
-
-        __Response__:
-
-        %(SERIALIZER)s
-        """
-        return super(BaseProductViewSet, self).update(*args, **kwargs)
 
 
 class ProductVersionListView(PageSizeMixin, SearchView):
@@ -846,55 +643,10 @@ class ReleaseRPMMappingView(StrictQueryParamMixin, viewsets.GenericViewSet):
 class ReleaseTypeViewSet(StrictQueryParamMixin,
                          mixins.ListModelMixin,
                          viewsets.GenericViewSet):
-    """
-    ##Overview##
-
-    This page shows the usage of the **Release Types API**, please see the
-    following for more details.
-
-    ##Test tools##
-
-    You can use ``curl`` in terminal, with -X _method_ (GET|POST|PUT|PATCH|DELETE),
-    -d _data_ (a json string). or GUI plugins for
-    browsers, such as ``RESTClient``, ``RESTConsole``.
-    """
     queryset = models.ReleaseType.objects.all()
     serializer_class = ReleaseTypeSerializer
     filter_class = filters.ReleaseTypeFilter
     permission_classes = (APIPermission,)
-
-    def list(self, request, *args, **kwargs):
-        """
-        __Method__: `GET`
-
-        __URL__: $LINK:releasetype-list$
-
-        __Query params__:
-
-        %(FILTERS)s
-
-        __Response__: a paged list of following objects
-
-        %(SERIALIZER)s
-
-        __Example__:
-
-            $ curl "$URL:releasetype-list$"
-            {
-                "previous": null,
-                "next": null,
-                "count": 6,
-                "results": [
-                    {
-                        "short": "ga",
-                        "name": "Release",
-                        "suffix": ""
-                    },
-                    ......
-                ]
-            }
-        """
-        return super(ReleaseTypeViewSet, self).list(request, *args, **kwargs)
 
 
 class ReleaseVariantViewSet(NotificationMixin,
@@ -918,129 +670,47 @@ class ReleaseVariantViewSet(NotificationMixin,
 
     def create(self, *args, **kwargs):
         """
-        __Method__: `POST`
-
-        __URL__: $LINK:variant-list$
-
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
-
         The required architectures must already be present in PDC.
 
         Field `allowed_push_targets` must be subset of parent release.
-
-        *type*: $LINK:releasevarianttype-list$
-
-        __Response__:
-
-        %(SERIALIZER)s
         """
         return super(ReleaseVariantViewSet, self).create(*args, **kwargs)
 
     def update(self, *args, **kwargs):
         """
-        __Method__: `PUT`
-
-        __URL__: $LINK:variant-detail:release_id}/{variant_uid$
-
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
-
-        All attributes are required. The specified architectures will be set
-        for this release. Also note that if you change the `uid`, the url for
-        this variant will change.
+        The specified architectures will be set for this release. Also note
+        that if you change the `uid`, the url for this variant will change.
 
         Changing the architectures may involve deleting some. Note that
         repositories are connected to some Variant.Arch pair and it is not
         possible to remove an arch with any repositories..
 
         Field `allowed_push_targets` must be subset of parent release.
-
-        *type*: $LINK:releasevarianttype-list$
-
-        __Response__:
-
-        %(SERIALIZER)s
         """
         return super(ReleaseVariantViewSet, self).update(*args, **kwargs)
 
     def partial_update(self, *args, **kwargs):
         """
-        __Method__: `PATCH`
-
-        __URL__: $LINK:variant-detail:release_id}/{variant_uid$
-
-        __Data__:
-
-            {
-                "release": string,
-                "id": string,
-                "uid": string,
-                "name": string,
-                "type": string,
-                "arches": [string],
-                "add_arches": [string],
-                "remove_arches": [string]
-            }
-
-        All attributes are optional. If an attribute is not specified, that
-        property of a variant will not change. The `arches` key can be used to
-        set architectures associated with the variant. The `add_arches` key can
-        list architectures to be added to current ones, with `remove_arches`
-        some can be removed. While it is possible to combine `add_arches` with
-        `remove_arches`, the `arches` attribute must not be combined with any
-        other arch manipulation.
+        If an attribute is not specified, that property of a variant will not
+        change. The `arches` key can be used to set architectures associated
+        with the variant. The `add_arches` key can list architectures to be
+        added to current ones, with `remove_arches` some can be removed.
+        While it is possible to combine `add_arches` with `remove_arches`,
+        the `arches` attribute must not be combined with any other arch
+        manipulation.
 
         If you try to remove architectures with associated repositories, the
         request will fail to do anything.
 
         Field `allowed_push_targets` must be subset of parent release.
-
-        __Response__:
-
-        %(SERIALIZER)s
         """
         return super(ReleaseVariantViewSet, self).partial_update(*args, **kwargs)
-
-    def list(self, *args, **kwargs):
-        """
-        __Method__: `GET`
-
-        __URL__: $LINK:variant-list$
-
-        __Query params__:
-
-        %(FILTERS)s
-
-        __Response__: a paged list of following objects
-
-        %(SERIALIZER)s
-        """
-        return super(ReleaseVariantViewSet, self).list(*args, **kwargs)
-
-    def retrieve(self, *args, **kwargs):
-        """
-        __Method__: `GET`
-
-        __URL__: $LINK:variant-detail:release_id}/{variant_uid$
-
-        __Response__:
-
-        %(SERIALIZER)s
-        """
-        return super(ReleaseVariantViewSet, self).retrieve(*args, **kwargs)
 
     def destroy(self, *args, **kwargs):
         """
         This call will delete selected variant with all its arches. Please note
         that if there are any repositories filed under this variant, you will
         get an error `409 CONFLICT`.
-
-        __Method__: `DELETE`
-
-        __URL__: $LINK:variant-detail:release_id}/{variant_uid$
         """
         return super(ReleaseVariantViewSet, self).destroy(*args, **kwargs)
 
@@ -1061,79 +731,6 @@ class CPEViewSet(PDCModelViewSet):
     filter_class = filters.CPEFilter
     permission_classes = (APIPermission,)
 
-    def create(self, request, *args, **kwargs):
-        """
-        __Method__: POST
-
-        __URL__: $LINK:cpe-list$
-
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
-
-        __Response__:
-
-        %(SERIALIZER)s
-        """
-
-        return super(CPEViewSet, self).create(request, *args, **kwargs)
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        __Method__: GET
-
-        __URL__: $LINK:cpe-detail:instance_pk$
-
-        __Response__:
-
-        %(SERIALIZER)s
-        """
-        return super(CPEViewSet, self).retrieve(request, *args, **kwargs)
-
-    def list(self, *args, **kwargs):
-        """
-        __Method__: GET
-
-        __URL__: $LINK:cpe-list$
-
-        __Query params__:
-
-        %(FILTERS)s
-
-        __Response__: a paged list of following objects
-
-        %(SERIALIZER)s
-        """
-        return super(CPEViewSet, self).list(*args, **kwargs)
-
-    def update(self, request, *args, **kwargs):
-        """
-        __Method__: PUT, PATCH
-
-        __URL__: $LINK:cpe-detail:instance_pk$
-
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
-
-        __Response__:
-
-        %(SERIALIZER)s
-        """
-        return super(CPEViewSet, self).update(request, *args, **kwargs)
-
-    def destroy(self, *args, **kwargs):
-        """
-        __Method__: `DELETE`
-
-        __URL__: $LINK:cpe-detail:instance_pk$
-
-        __Response__:
-
-        On success, HTTP status code is 204 and the response has no content.
-        """
-        return super(CPEViewSet, self).destroy(*args, **kwargs)
-
 
 class ReleaseVariantCPEViewSet(PDCModelViewSet):
     """
@@ -1144,79 +741,6 @@ class ReleaseVariantCPEViewSet(PDCModelViewSet):
     serializer_class = ReleaseVariantCPESerializer
     filter_class = filters.ReleaseVariantCPEFilter
     permission_classes = (APIPermission,)
-
-    def create(self, request, *args, **kwargs):
-        """
-        __Method__: POST
-
-        __URL__: $LINK:variantcpe-list$
-
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
-
-        __Response__:
-
-        %(SERIALIZER)s
-        """
-
-        return super(ReleaseVariantCPEViewSet, self).create(request, *args, **kwargs)
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        __Method__: GET
-
-        __URL__: $LINK:variantcpe-detail:instance-pk$
-
-        __Response__:
-
-        %(SERIALIZER)s
-        """
-        return super(ReleaseVariantCPEViewSet, self).retrieve(request, *args, **kwargs)
-
-    def list(self, *args, **kwargs):
-        """
-        __Method__: GET
-
-        __URL__: $LINK:variantcpe-list$
-
-        __Query params__:
-
-        %(FILTERS)s
-
-        __Response__: a paged list of following objects
-
-        %(SERIALIZER)s
-        """
-        return super(ReleaseVariantCPEViewSet, self).list(*args, **kwargs)
-
-    def update(self, request, *args, **kwargs):
-        """
-        __Method__: PUT, PATCH
-
-        __URL__: $LINK:variantcpe-detail:instance-pk$
-
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
-
-        __Response__:
-
-        %(SERIALIZER)s
-        """
-        return super(ReleaseVariantCPEViewSet, self).update(request, *args, **kwargs)
-
-    def destroy(self, *args, **kwargs):
-        """
-        __Method__: `DELETE`
-
-        __URL__: $LINK:variantcpe-detail:instance-pk$
-
-        __Response__:
-
-        On success, HTTP status code is 204 and the response has no content.
-        """
-        return super(ReleaseVariantCPEViewSet, self).destroy(*args, **kwargs)
 
 
 class VariantTypeViewSet(StrictQueryParamMixin,
@@ -1244,18 +768,6 @@ class ReleaseVariantTypeViewSet(StrictQueryParamMixin,
     queryset = models.VariantType.objects.all()
     permission_classes = (APIPermission,)
 
-    def list(self, request, *args, **kwargs):
-        """
-        __Method__: GET
-
-        __URL__: $LINK:releasevarianttype-list$
-
-        __Response__:
-
-        %(SERIALIZER)s
-        """
-        return super(ReleaseVariantTypeViewSet, self).list(request, *args, **kwargs)
-
 
 class ReleaseGroupsViewSet(ChangeSetModelMixin,
                            StrictQueryParamMixin,
@@ -1271,76 +783,3 @@ class ReleaseGroupsViewSet(ChangeSetModelMixin,
     lookup_value_regex = '[^/]+'
     filter_class = filters.ReleaseGroupFilter
     permission_classes = (APIPermission,)
-
-    def create(self, request, *args, **kwargs):
-        """
-        __Method__: POST
-
-        __URL__: $LINK:releasegroups-list$
-
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
-
-        __Response__:
-
-        %(SERIALIZER)s
-        """
-
-        return super(ReleaseGroupsViewSet, self).create(request, *args, **kwargs)
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        __Method__: GET
-
-        __URL__: $LINK:releasegroups-detail:name$
-
-        __Response__:
-
-        %(SERIALIZER)s
-        """
-        return super(ReleaseGroupsViewSet, self).retrieve(request, *args, **kwargs)
-
-    def list(self, *args, **kwargs):
-        """
-        __Method__: GET
-
-        __URL__: $LINK:releasegroups-list$
-
-        __Query params__:
-
-        %(FILTERS)s
-
-        __Response__: a paged list of following objects
-
-        %(SERIALIZER)s
-        """
-        return super(ReleaseGroupsViewSet, self).list(*args, **kwargs)
-
-    def update(self, request, *args, **kwargs):
-        """
-        __Method__: PUT, PATCH
-
-        __URL__: $LINK:releasegroups-detail:name$
-
-        __Data__:
-
-        %(WRITABLE_SERIALIZER)s
-
-        __Response__:
-
-        %(SERIALIZER)s
-        """
-        return super(ReleaseGroupsViewSet, self).update(request, *args, **kwargs)
-
-    def destroy(self, *args, **kwargs):
-        """
-        __Method__: `DELETE`
-
-        __URL__: $LINK:releasegroups-detail:name$
-
-        __Response__:
-
-        On success, HTTP status code is 204 and the response has no content.
-        """
-        return super(ReleaseGroupsViewSet, self).destroy(*args, **kwargs)

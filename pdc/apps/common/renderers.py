@@ -80,6 +80,146 @@ response time faster. Format is list or single value
  * `exclude_fields`: (list | string) Fields *NOT* to display (overrules `fields`).
 """
 
+DEFAULT_DESCRIPTION = {
+    "list": """
+        __Method__: `GET`
+
+        __URL__: $LINK:%(URL)s$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+        __Response__:
+
+        Paged list of following objects.
+
+        %(SERIALIZER)s
+        """,
+
+    "retrieve": """
+        __Method__: `GET`
+
+        __URL__: $LINK:%(DETAIL_URL)s$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """,
+
+    "create": """
+        __Method__: `POST`
+
+        __URL__: $LINK:%(URL)s$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """,
+
+    "bulk_create": """
+        __Method__: `POST`
+
+        __URL__: $LINK:%(URL)s$
+
+        __Data__:
+
+            [ <Item Data>, ... ]
+
+        __Item Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        List of following objects.
+
+        %(SERIALIZER)s
+        """,
+
+    "destroy": """
+        __Method__: `DELETE`
+
+        __URL__: $LINK:%(DETAIL_URL)s$
+
+        __Response__:
+
+        On success, HTTP status code is `204 NO CONTENT`.
+        """,
+
+    "bulk_destroy": """
+        __Method__: `DELETE`
+
+        __URL__: $LINK:%(URL)s$
+
+        __Data__:
+
+            [ "%(ID)s", ... ]
+
+        __Response__:
+
+        On success, HTTP status code is `204 NO CONTENT`.
+        """,
+
+    "update": """
+        __Method__: `PUT`
+
+        __URL__: $LINK:%(DETAIL_URL)s$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """,
+
+    "bulk_update": """
+        __Method__: `PUT`, `PATCH`
+
+        __URL__: $LINK:%(URL)s$
+
+        __Data__:
+
+            { "%(ID)s": <Item Data>, ... }
+
+        __Item Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        All fields are required for `PUT` and optional for `PATCH`.
+
+        __Response__:
+
+        List of following objects.
+
+        %(SERIALIZER)s
+        """,
+
+    "partial_update": """
+        __Method__: `PATCH`
+
+        __URL__: $LINK:%(DETAIL_URL)s$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        All fields are optional.
+
+        __Response__:
+
+        List of following objects.
+
+        %(SERIALIZER)s
+        """,
+}
+
 
 def cached_by_argument_class(method):
     """
@@ -156,9 +296,9 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
     @cached_by_argument_class
     def get_overview(self, view):
         if view.__class__.__name__ == 'APIRoot':
-            return self.format_docstring(None, None, PDC_APIROOT_DOC)
+            return self.format_description(None, None, PDC_APIROOT_DOC)
         overview = view.__doc__ or ''
-        return self.format_docstring(view, '<overview>', overview)
+        return self.format_description(view, '<overview>', overview)
 
     @cached_by_argument_class
     def get_description(self, view, *args):
@@ -168,15 +308,20 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
         description = OrderedDict()
         for method in self.methods_mapping:
             func = getattr(view, method, None)
-            docstring = func and func.__doc__ or ''
-            if docstring:
-                description[method] = self.format_docstring(view, method, docstring)
+            if func:
+                docstring = func.__doc__ or ''
+                if '__Method__' in docstring:
+                    description[method] = self.format_description(view, method, docstring)
+                elif method in DEFAULT_DESCRIPTION:
+                    description[method] = self.format_description(view, method, docstring) + \
+                        self.format_description(view, method, DEFAULT_DESCRIPTION[method])
 
         return description
 
-    def format_docstring(self, view, method, docstring):
+    def format_description(self, view, method, description):
         macros = settings.BROWSABLE_DOCUMENT_MACROS
         if view:
+            id_template = get_id_template(view)
             macros['FILTERS'] = get_filters(view)
             # If the API has the LIST method, show ordering field info.
             if 'list' == method and view.serializer_class:
@@ -184,13 +329,19 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
                 # Show fields info if applicable.
                 if issubclass(view.serializer_class, drf_introspection.serializers.DynamicFieldsSerializerMixin):
                     macros['FILTERS'] += FIELDS_STRING
-            if '%(SERIALIZER)s' in docstring:
+            if '%(SERIALIZER)s' in description:
                 macros['SERIALIZER'] = get_serializer(view, include_read_only=True)
-            if '%(WRITABLE_SERIALIZER)s' in docstring:
+            if '%(WRITABLE_SERIALIZER)s' in description:
                 macros['WRITABLE_SERIALIZER'] = get_serializer(view, include_read_only=False)
+            if '%(URL)s' in description:
+                macros['URL'] = get_list_url(view)
+            if '%(DETAIL_URL)s' in description:
+                macros['DETAIL_URL'] = get_detail_url(view, id_template)
+            if '%(ID)s' in description:
+                macros['ID'] = '{%s}' % id_template
             if hasattr(view, 'docstring_macros'):
                 macros.update(view.docstring_macros)
-        string = formatting.dedent(docstring)
+        string = formatting.dedent(description)
         formatted = string % macros
         formatted = self.substitute_urls(view, method, formatted)
         string = smart_text(formatted)
@@ -413,3 +564,24 @@ def get_serializer(view, include_read_only):
             pass
 
     return None
+
+
+def get_base_name(view):
+    from pdc.apps.utils.SortedRouter import router
+    return router.get_default_base_name(view)
+
+
+def get_id_template(view):
+    if hasattr(view, 'lookup_fields'):
+        lookup_fields = [field for field, _ in view.lookup_fields]
+        return '}/{'.join(lookup_fields)
+
+    return view.lookup_field
+
+
+def get_list_url(view):
+    return '%s-list' % get_base_name(view)
+
+
+def get_detail_url(view, id_template):
+    return '%s-detail:%s' % (get_base_name(view), id_template)

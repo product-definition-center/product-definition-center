@@ -37,7 +37,7 @@
                     {% for method, docstring in description.items %}
                     <div class="tab-pane {% if forloop.first %}active{% endif %}"
                          id="tab_{{ method }}">
-                        <p>{{docstring}}</p>
+                        <p>{{docstring|safe}}</p>
                     </div>
                     {% endfor %}
                 </div>

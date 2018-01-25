@@ -807,9 +807,9 @@ class ComposeRPMView(StrictQueryParamMixin, CheckParametersMixin, viewsets.Gener
 
     def retrieve(self, request, **kwargs):
         """
-        **Method**: `GET`
+        __Method__: `GET`
 
-        **URL**: $LINK:composerpm-detail:compose_id$
+        __URL__: $LINK:composerpm-detail:compose_id$
 
         This API end-point allows retrieving RPM manifest for a given compose.
         It will return the exact same data as was imported.
