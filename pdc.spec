@@ -19,8 +19,6 @@ Requires:       django-rest-framework < 3.3
 Requires:       django-mptt >= 0.7.1
 Requires:       kobo >= 0.4.2
 Requires:       kobo-django
-Requires:       kobo-rpmlib
-Requires:       koji
 Requires:       patternfly1 == 1.3.0
 Requires:       productmd >= 1.1
 Requires:       python-django-filter >= 0.9.2

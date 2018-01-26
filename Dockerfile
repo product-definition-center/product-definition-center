@@ -58,7 +58,6 @@ RUN dnf -y upgrade && \
         swig \
         openldap-devel \
         krb5-devel \
-        koji \
         patternfly1 \
         vim-enhanced \
         'graphviz*' \

@@ -15,7 +15,6 @@ from django.dispatch import receiver
 from django.db.backends.signals import connection_created
 from django.db.models.signals import post_migrate
 
-from kobo.rpmlib import parse_nvra
 from productmd import images
 
 from pdc.apps.common.models import get_cached_id
@@ -26,6 +25,7 @@ from pdc.apps.release.models import Release
 from pdc.apps.compose.models import ComposeAcceptanceTestingState
 from pdc.apps.package.apps import PackageConfig
 from pdc.apps.repository.models import Repo
+from pdc.apps.utils.rpm import parse_nvra
 from django.utils import timezone
 
 

@@ -15,6 +15,8 @@ from rest_framework import status
 
 from .templatetags.epochformat import epochformat
 
+from .rpm import parse_nvr, parse_nvra
+
 
 class EpochFormatTest(TestCase):
 
@@ -36,6 +38,59 @@ class EpochFormatTest(TestCase):
             # In Python 2.7 there is a method for this. Jenkins however uses Python 2.6.
             total_seconds = returned.seconds + returned.days * 24 * 3600
             self.assertEqual(ts, total_seconds)
+
+
+class TestRpmParseNvr(TestCase):
+    def test_valid_nvr(self):
+        self.assertEqual(parse_nvr("net-snmp-5.3.2.2-5.el5"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch=""))
+        self.assertEqual(parse_nvr("1:net-snmp-5.3.2.2-5.el5"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1"))
+        self.assertEqual(parse_nvr("net-snmp-1:5.3.2.2-5.el5"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1"))
+        self.assertEqual(parse_nvr("net-snmp-5.3.2.2-5.el5:1"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1"))
+        self.assertEqual(parse_nvr("/net-snmp-5.3.2.2-5.el5:1"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1"))
+        self.assertEqual(parse_nvr("/1:net-snmp-5.3.2.2-5.el5"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1"))
+        self.assertEqual(parse_nvr("foo/net-snmp-5.3.2.2-5.el5:1"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1"))
+        self.assertEqual(parse_nvr("foo/1:net-snmp-5.3.2.2-5.el5"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1"))
+        self.assertEqual(parse_nvr("/foo/bar/net-snmp-5.3.2.2-5.el5:1"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1"))
+        self.assertEqual(parse_nvr("/foo/bar/1:net-snmp-5.3.2.2-5.el5"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1"))
+
+        # test for name which contains the version number and a dash
+        self.assertEqual(parse_nvr("openmpi-1.10-1.10.2-2.el6"), dict(name="openmpi-1.10", version="1.10.2", release="2.el6", epoch=""))
+
+    def test_invalid_nvr(self):
+        self.assertRaises(ValueError, parse_nvr, "net-snmp")
+        self.assertRaises(ValueError, parse_nvr, "net-snmp-5.3.2.2-1:5.el5")
+        self.assertRaises(ValueError, parse_nvr, "1:net-snmp-5.3.2.2-5.el5:1")
+        self.assertRaises(ValueError, parse_nvr, "1:net-snmp-1:5.3.2.2-5.el5")
+        self.assertRaises(ValueError, parse_nvr, "net-snmp-1:5.3.2.2-5.el5:1")
+        self.assertRaises(ValueError, parse_nvr, "1:net-snmp-1:5.3.2.2-5.el5:1")
+
+
+class TestRpmParseNvra(TestCase):
+    def test_valid_nvra(self):
+        self.assertEqual(parse_nvra("net-snmp-5.3.2.2-5.el5.i386"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="", arch="i386", src=False))
+        self.assertEqual(parse_nvra("net-snmp-5.3.2.2-5.el5.i386.rpm"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="", arch="i386", src=False))
+        self.assertEqual(parse_nvra("net-snmp-5.3.2.2-5.el5.src.rpm"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="", arch="src", src=True))
+
+        self.assertEqual(parse_nvra("/net-snmp-5.3.2.2-5.el5.src.rpm:1"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1", arch="src", src=True))
+        self.assertEqual(parse_nvra("/1:net-snmp-5.3.2.2-5.el5.src.rpm"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1", arch="src", src=True))
+        self.assertEqual(parse_nvra("foo/net-snmp-5.3.2.2-5.el5.src.rpm:1"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1", arch="src", src=True))
+        self.assertEqual(parse_nvra("foo/1:net-snmp-5.3.2.2-5.el5.src.rpm"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1", arch="src", src=True))
+        self.assertEqual(parse_nvra("/foo/bar/net-snmp-5.3.2.2-5.el5.src.rpm:1"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1", arch="src", src=True))
+        self.assertEqual(parse_nvra("/foo/bar/1:net-snmp-5.3.2.2-5.el5.src.rpm"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1", arch="src", src=True))
+
+        self.assertEqual(parse_nvra("/foo/bar/net-snmp-devel-5.7.3-27.el8+5.x86_64.rpm"), dict(name="net-snmp-devel", version="5.7.3", release="27.el8+5", epoch="", arch="x86_64", src=False))
+        self.assertEqual(parse_nvra("/foo/bar/net-snmp-devel-2:5.7.3-27.el8+5.x86_64.rpm"), dict(name="net-snmp-devel", version="5.7.3", release="27.el8+5", epoch="2", arch="x86_64", src=False))
+
+        self.assertEqual(parse_nvra("net-snmp-devel-5.7.3-27.el8+5.x86_64:2"), dict(name="net-snmp-devel", version="5.7.3", release="27.el8+5", epoch="2", arch="x86_64", src=False))
+        self.assertEqual(parse_nvra("net-snmp-devel-2:5.7.3-27.el8+5.x86_64"), dict(name="net-snmp-devel", version="5.7.3", release="27.el8+5", epoch="2", arch="x86_64", src=False))
+        self.assertEqual(parse_nvra("2:net-snmp-devel-5.7.3-27.el8+5.x86_64"), dict(name="net-snmp-devel", version="5.7.3", release="27.el8+5", epoch="2", arch="x86_64", src=False))
+        self.assertEqual(parse_nvra("net-snmp-devel-5.7.3-27.el8+5:2.x86_64"), dict(name="net-snmp-devel", version="5.7.3", release="27.el8+5", epoch="2", arch="x86_64", src=False))
+        self.assertEqual(parse_nvra("net-snmp-devel-5.7.3-27.el8+5:2.x86_64.rpm"), dict(name="net-snmp-devel", version="5.7.3", release="27.el8+5", epoch="2", arch="x86_64", src=False))
+
+    def test_invalid_nvra(self):
+        self.assertEqual(parse_nvra("net-snmp-5.3.2.2-5.el5.i386.rpm:1"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1", arch="i386", src=False))
+        self.assertEqual(parse_nvra("net-snmp-5.3.2.2-5.el5.i386:1.rpm"), dict(name="net-snmp", version="5.3.2.2", release="5.el5", epoch="1", arch="i386", src=False))
+        self.assertRaises(ValueError, parse_nvra, "net-snmp-5.3.2.2-5")
 
 
 class APIRootTestCase(APITestCase):

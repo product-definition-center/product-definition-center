@@ -28,9 +28,7 @@ For development purposes, install following dependencies:
 * python-requests-kerberos
 * python-mock
 * kobo >= 0.4.2
-* kobo-rpmlib
 * kobo-django
-* koji
 * djangorestframework>=3.1
 * django-mptt >= 0.7.1
 * Markdown
@@ -47,21 +45,14 @@ For development purposes, install following dependencies:
 Option 2: Start it on virtualenv
 ````````````````````````````````
 
-* Koji is not available on PyPI. You must install the `koji` package to your
-  system via ``yum`` before creating a virtualenv. ::
-
-    $ sudo yum install koji
-
-* After that, run ::
+* Install virtualenvwrapper ::
 
     $ pip install virtualenvwrapper
 
   and setup according to 'Setup' steps in ``/usr/bin/virtualenvwrapper.sh``.
-  Then run ::
+  Then create virtual environment ::
 
-    $ mkvirtualenv pdc --system-site-packages
-
-  to include `koji` into your *pdc* virtualenv.
+    $ mkvirtualenv pdc
 
 * Run the following ::
 

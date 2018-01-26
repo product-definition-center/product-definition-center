@@ -8,7 +8,6 @@
 import os
 import json
 
-import kobo
 import productmd
 from productmd.rpms import Rpms
 
@@ -28,6 +27,7 @@ from pdc.apps.compose.serializers import ComposeTreeSerializer
 from pdc.apps.release.models import Release
 from pdc.apps.component.models import ReleaseComponent
 from pdc.apps.repository.models import ContentCategory
+from pdc.apps.utils.rpm import parse_nvr
 
 
 def _maybe_raise_inconsistency_error(composeinfo, manifest, name):
@@ -367,7 +367,7 @@ def _find_composes_srpm_name_with_rpm_nvr(nvr):
     Filter composes and SRPM's name with rpm nvr
     """
     try:
-        nvr = kobo.rpmlib.parse_nvr(nvr)
+        nvr = parse_nvr(nvr)
     except ValueError:
         raise ValueError("Invalid NVR: %s" % nvr)
     q = Q()
