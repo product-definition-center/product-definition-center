@@ -45,26 +45,28 @@
             {% endif %}
             {% endblock %}
 
-            {% if paginator %}
-                <nav style="float: right">
-                {% get_pagination_html paginator %}
-                </nav>
-            {% endif %}
+            {% if response.status_code != 405 %}
+                {% if paginator %}
+                    <nav style="float: right">
+                    {% get_pagination_html paginator %}
+                    </nav>
+                {% endif %}
 
-            <h3 id="browsable">Browsable GET</h3>
-            <div class="request-info" style="clear: both" >
-                <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
-            </div>
-            <div class="response-info">
-            <pre class="prettyprint"><span class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
+                <h3 id="browsable">Browsable GET</h3>
+                <div class="request-info" style="clear: both" >
+                    <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
+                </div>
+                <div class="response-info">
+                <pre class="prettyprint"><span class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
 {% for key, val in response_headers.items %}<b>{{ key }}:</b> <span class="lit">{{ val|break_long_headers|urlize_quoted_links }}</span>
 {% endfor %}
 </span>{{ content|urlize_quoted_links }}</pre>{% endautoescape %}
-            </div>
-            {% if paginator %}
-                <nav style="float: right">
-                {% get_pagination_html paginator %}
-                </nav>
+                </div>
+                {% if paginator %}
+                    <nav style="float: right">
+                    {% get_pagination_html paginator %}
+                    </nav>
+                {% endif %}
             {% endif %}
         </div>
 
