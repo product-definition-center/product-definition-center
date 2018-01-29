@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015 Red Hat
+# Copyright (c) 2018 Red Hat
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
@@ -7,17 +7,10 @@
 import django_filters
 
 from pdc.apps.common.filters import CaseInsensitiveBooleanFilter, MultiValueFilter
-from .models import UnreleasedVariant
+from pdc.apps.module.models import Module
 
 
-class UnreleasedVariantFilter(django_filters.FilterSet):
-    variant_id          = django_filters.CharFilter(name='variant_id', lookup_type='iexact')
-    variant_uid         = django_filters.CharFilter(name='variant_uid', lookup_type='iexact')
-    variant_name        = django_filters.CharFilter(name='variant_name', lookup_type='iexact')
-    variant_type        = django_filters.CharFilter(name='variant_type', lookup_type='iexact')
-    variant_version     = django_filters.CharFilter(name='variant_version', lookup_type='iexact')
-    variant_release     = django_filters.CharFilter(name='variant_release', lookup_type='iexact')
-    variant_context     = django_filters.CharFilter(name='variant_context', lookup_type='iexact')
+class ModuleFilterBase(django_filters.FilterSet):
     active              = CaseInsensitiveBooleanFilter()
     koji_tag            = django_filters.CharFilter(name='koji_tag', lookup_type='iexact')
     runtime_dep_name    = MultiValueFilter(name='runtime_deps__dependency', distinct=True)
@@ -27,10 +20,16 @@ class UnreleasedVariantFilter(django_filters.FilterSet):
     component_name      = MultiValueFilter(name='rpms__srpm_name', distinct=True)
     component_branch    = MultiValueFilter(name='rpms__srpm_commit_branch', distinct=True)
 
+
+class ModuleFilter(ModuleFilterBase):
+    uid                 = django_filters.CharFilter(name='uid', lookup_type='iexact')
+    name                = django_filters.CharFilter(name='name', lookup_type='iexact')
+    stream              = django_filters.CharFilter(name='stream', lookup_type='iexact')
+    version             = django_filters.CharFilter(name='version', lookup_type='iexact')
+    context             = django_filters.CharFilter(name='context', lookup_type='iexact')
+
     class Meta:
-        model = UnreleasedVariant
-        fields = ('variant_id', 'variant_uid', 'variant_name', 'variant_type',
-                  'variant_version', 'variant_release', 'variant_context', 'koji_tag',
-                  'modulemd', 'runtime_dep_name', 'runtime_dep_stream',
-                  'build_dep_name', 'build_dep_stream', 'component_name',
-                  'component_branch')
+        model = Module
+        fields = ('uid', 'name', 'stream', 'version', 'context', 'active', 'koji_tag',
+                  'runtime_dep_name', 'runtime_dep_stream', 'build_dep_name', 'build_dep_stream',
+                  'component_name', 'component_branch')

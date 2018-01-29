@@ -3,6 +3,4 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
-from pdc.apps.common.register_to_admin import register
-
-register('module')
+default_app_config = 'pdc.apps.unreleasedvariant.apps.UnreleasedVariantConfig'

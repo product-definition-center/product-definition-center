@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2015 Red Hat
+# Copyright (c) 2018 Red Hat
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
-import json
-
 from django.core.urlresolvers import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 
 from pdc.apps.common.test_utils import TestCaseWithChangeSetMixin
-from pdc.apps.module.models import UnreleasedVariant
+from pdc.apps.module.models import Module
 
 
 class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
@@ -19,282 +17,348 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         'pdc/apps/module/fixtures/test/rpm.json',
     ]
 
-    def test_create_unreleasedvariant1(self):
-        url = reverse('unreleasedvariant-list')
-        data = {
-            'variant_id': "core", 'variant_uid': "Core",
-            'variant_name': "Core", 'variant_version': "0",
-            'variant_release': "1", 'variant_type': 'module',
-            'variant_context': '12345678', 'koji_tag': "module-core-0-1",
-            'modulemd': 'foobar'
+    def setUp(self):
+        self.data = {
+            'name': 'testmodule',
+            'stream': 'f27',
+            'version': '23456789',
+            'context': '12345678',
+            'koji_tag': 'some_tag_f27',
+            'modulemd': 'modulemd',
+            'active': True
         }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    def test_create_unreleasedvariant2(self):
-        url = reverse('unreleasedvariant-list')
-        data = {
-            'variant_id': "shells", 'variant_uid': "Shells",
-            'variant_name': "Shells", 'variant_version': "0",
-            'variant_release': "1", 'variant_type': 'module',
-            'variant_context': '12345678', 'koji_tag': "module-shells-0-1",
-            'modulemd': 'foobar'}
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    def test_create_two_variants_query_by_active(self):
-        url = reverse('unreleasedvariant-list')
-        data = {
-            'variant_id': "core", 'variant_uid': "Core",
-            'variant_name': "Core", 'variant_version': "0",
-            'variant_release': "1", 'variant_type': 'module',
-            'variant_context': '12345678', 'koji_tag': "module-core-0-1",
-            'modulemd': 'foobar', 'active': False,
+        self.expected = {
+            'active': True,
+            'build_deps': [],
+            'context': '12345678',
+            'koji_tag': 'some_tag_f27',
+            'modulemd': 'modulemd',
+            'name': 'testmodule',
+            'rpms': [],
+            'runtime_deps': [],
+            'stream': 'f27',
+            'uid': 'testmodule:f27:23456789:12345678',
+            'version': '23456789'
         }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        data = {
-            'variant_id': "core", 'variant_uid': "Core2",
-            'variant_name': "Core", 'variant_version': "0",
-            'variant_release': "2", 'variant_type': 'module',
-            'variant_context': '12345678', 'koji_tag': "module-core-0-2",
-            'modulemd': 'foobar', 'active': True,
-        }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    @staticmethod
+    def create_module(version='23456789', stream='f27', active=True):
+        obj = Module()
+        obj.name = 'testmodule'
+        obj.stream = stream
+        obj.version = version
+        obj.context = '12345678'
+        obj.koji_tag = 'some_tag_{0}'.format(obj.stream)
+        obj.modulemd = 'modulemd'
+        obj.active = active
+        obj.uid = ':'.join([obj.name, obj.stream, obj.version, obj.context])
+        obj.variant_id = obj.name
+        obj.save()
 
-        data = {'active': True}
-        response = self.client.get(url, data, format='json')
+    def test_create_module(self):
+        url = reverse('modules-list')
+        response = self.client.post(url, self.data, format='json')
+        # Check the response
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data, self.expected)
+        # Check the database
+        module_db = Module.objects.filter(uid='testmodule:f27:23456789:12345678').first()
+        self.assertTrue(module_db.active)
+        self.assertEqual(module_db.build_deps.count(), 0)
+        self.assertEqual(module_db.context, '12345678')
+        self.assertEqual(module_db.koji_tag, 'some_tag_f27')
+        self.assertEqual(module_db.modulemd, 'modulemd')
+        self.assertEqual(module_db.name, 'testmodule')
+        self.assertEqual(module_db.rpms.count(), 0)
+        self.assertEqual(module_db.runtime_deps.count(), 0)
+        self.assertEqual(module_db.stream, 'f27')
+        self.assertEqual(module_db.uid, 'testmodule:f27:23456789:12345678')
+        self.assertEqual(module_db.version, '23456789')
+        # Backwards compatibility checks
+        self.assertEqual(module_db.variant_id, 'testmodule')
+        self.assertEqual(module_db.type, 'module')
+
+    def test_create_module_no_context_error(self):
+        url = reverse('modules-list')
+        self.data.pop('context')
+        response = self.client.post(url, self.data, format='json')
+        # In the "unreleasedvariants" API, we had a default context of '00000000', but in the
+        # "modules" API, it is now a required field
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {'context': ['This field is required.']})
+
+    def test_create_and_get_module_with_rpms(self):
+        uid_one = self.expected['uid']
+        uid_two = 'testmodule:f27:56789012:12345678'
+        url = reverse('modules-list')
+        self.data['rpms'] = [{
+            'name': 'foobar',
+            'epoch': 0,
+            'version': '1.0.0',
+            'release': '1',
+            'arch': 'src',
+            'srpm_name': 'foobar',
+            'srpm_commit_branch': 'master'
+        }]
+        response = self.client.post(url, self.data, format='json')
+        # Check the response
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.expected['rpms'] = ['foobar-0:1.0.0-1.src.rpm']
+        self.assertEqual(response.data, self.expected)
+        # Check it appears properly with a GET request
+        url_two = reverse('modules-detail', args=[uid_one])
+        response_two = self.client.get(url_two, format='json')
+        self.assertEqual(response_two.data, self.expected)
+        # Create another module
+        self.data['version'] = '56789012'
+        self.data['rpms'] = [{
+            'name': 'foobar',
+            'epoch': 0,
+            'version': '2.0.0',
+            'release': '1',
+            'arch': 'src',
+            'srpm_name': 'foobar',
+            'srpm_commit_branch': 'f27'
+        }]
+        response_three = self.client.post(url, self.data, format='json')
+        # Check the response
+        self.assertEqual(response_three.status_code, status.HTTP_201_CREATED)
+        self.expected['rpms'] = ['foobar-0:2.0.0-1.src.rpm']
+        self.expected['version'] = '56789012'
+        self.expected['uid'] = uid_two
+        self.assertEqual(response_three.data, self.expected)
+
+        # Check that the filters work
+        response_four = self.client.get(url, data={'component_name': 'foobar'}, format='json')
+        self.assertEqual(response_four.data['count'], 2)
+        response_five = self.client.get(
+            url, data={'component_name': 'foobar', 'component_branch': 'master'}, format='json')
+        self.assertEqual(response_five.data['count'], 1)
+        self.assertEqual(response_five.data['results'][0]['uid'], uid_one)
+        response_six = self.client.get(
+            url, data={'component_name': 'foobar', 'component_branch': 'f27'}, format='json')
+        self.assertEqual(response_six.data['count'], 1)
+        self.assertEqual(response_six.data['results'][0]['uid'], uid_two)
+        response_seven = self.client.get(url, data={'component_name': 'python'}, format='json')
+        self.assertEqual(response_seven.data['count'], 0)
+
+    def test_create_and_get_module_with_exist_rpms(self):
+        url = reverse('modules-list')
+        self.data['rpms'] = [{
+            'name': 'bash-doc',
+            'epoch': 0,
+            'version': '1.2.3',
+            'release': '4.b2',
+            'arch': 'x86_64',
+            'srpm_name': 'bash',
+            'srpm_nevra': 'bash-0:1.2.3-4.b2.src'
+        }]
+        response = self.client.post(url, self.data, format='json')
+        # Check the response
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.expected['rpms'] = ['bash-doc-0:1.2.3-4.b2.x86_64.rpm']
+        self.assertEqual(response.data, self.expected)
+        # Check it appears properly with a GET request
+        url_two = reverse('modules-detail', args=['testmodule:f27:23456789:12345678'])
+        response_two = self.client.get(url_two, format='json')
+        self.assertEqual(response_two.data, self.expected)
+
+    def test_create_and_get_module_with_deps(self):
+        self.version = 56789012
+
+        def _increment_version():
+            self.version += 1
+            self.data['version'] = str(self.version)
+            self.expected['version'] = str(self.version)
+            self.expected['uid'] = 'testmodule:f27:{0}:12345678'.format(self.version)
+
+        # Test both build_deps and runtime_deps
+        for dep_type in ('build_deps', 'runtime_deps'):
+            # Reset the dictionaries
+            self.setUp()
+            _increment_version()
+            uid_one = 'testmodule:f27:{0}:12345678'.format(self.version)
+
+            # Create the first module
+            url = reverse('modules-list')
+            self.data[dep_type] = [{'dependency': 'platform', 'stream': 'master'}]
+            response = self.client.post(url, self.data, format='json')
+            # Check the response
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            self.expected[dep_type] = [{'dependency': 'platform', 'stream': 'master'}]
+            self.assertEqual(response.data, self.expected)
+            # Check it appears properly with a GET request
+            url_two = reverse('modules-detail', args=[uid_one])
+            response_two = self.client.get(url_two, format='json')
+            self.assertEqual(response_two.data, self.expected)
+            # Create another module
+            _increment_version()
+            uid_two = 'testmodule:f27:{0}:12345678'.format(self.version)
+            self.data[dep_type] = [{'dependency': 'python', 'stream': 'f27'}]
+            response_three = self.client.post(url, self.data, format='json')
+            self.assertEqual(response_three.status_code, status.HTTP_201_CREATED)
+            self.expected[dep_type] = [{'dependency': 'python', 'stream': 'f27'}]
+            self.assertEqual(response_three.data, self.expected)
+
+            # Test filtering and first start by query for the "unknown" dep
+            dep_key = '{0}_name'.format(dep_type[:-1])
+            response_four = self.client.get(url, {dep_key: 'unknown'}, format='json')
+            self.assertEqual(response_four.status_code, status.HTTP_200_OK)
+            self.assertEqual(response_four.data['count'], 0)
+            # Query for platform
+            response_five = self.client.get(url, data={dep_key: 'platform'}, format='json')
+            self.assertEqual(response_five.status_code, status.HTTP_200_OK)
+            self.assertEqual(response_five.data['count'], 1)
+            self.assertEqual(response_five.data['results'][0]['uid'], uid_one)
+            # Query for python:f27
+            query = {
+                dep_key: 'python',
+                '{0}_stream'.format(dep_type[:-1]): 'f27'
+            }
+            response_six = self.client.get(url, data=query, format='json')
+            self.assertEqual(response_six.status_code, status.HTTP_200_OK)
+            self.assertEqual(response_six.data['count'], 1)
+            self.assertEqual(response_six.data['results'][0]['uid'], uid_two)
+
+    def test_delete_module(self):
+        self.create_module()
+        url = reverse('modules-detail', args=['testmodule:f27:23456789:12345678'])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        # Check the database
+        module_count = Module.objects.filter(uid='testmodule:f27:23456789:12345678').count()
+        self.assertEqual(module_count, 0)
+
+    def test_patch_module(self):
+        self.create_module()
+        old_uid = 'testmodule:f27:23456789:12345678'
+        new_version = '04191775'
+        new_uid = 'testmodule:f27:{0}:12345678'.format(new_version)
+        url = reverse('modules-detail', args=[old_uid])
+        response = self.client.patch(url, data={'version': new_version}, format='json')
+        self.expected['uid'] = new_uid
+        self.expected['version'] = new_version
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        results = json.loads(response.content)
-        self.assertEqual(results['count'], 1)
-        self.assertEqual(results['results'][0]['koji_tag'], 'module-core-0-2')
+        self.assertEqual(response.data, self.expected)
+        # Make sure the UID changed
+        module_obj = Module.objects.filter(uid=new_uid).first()
+        self.assertEqual(module_obj.version, new_version)
+        # Make sure the old UID isn't in the database anymore
+        self.assertEqual(Module.objects.filter(uid=old_uid).count(), 0)
 
-    def test_filter_build_deps(self):
-        url = reverse('unreleasedvariant-list')
-
-        # Add variant with 'base-runtime-master' build-dep.
-        data = {
-            'variant_id': "core", 'variant_uid': "Core",
-            'variant_name': "Core", 'variant_version': "0",
-            'variant_release': "1", 'variant_type': 'module',
-            'variant_context': '12345678', 'koji_tag': "module-core-0-1",
-            'modulemd': 'foobar', 'build_deps': [
-                {'dependency': 'base-runtime', 'stream': 'master'}]
-        }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        # Add variant with 'base-runtime-f26' build-dep.
-        data = {
-            'variant_id': "core3", 'variant_uid': "Core3",
-            'variant_name': "Core3", 'variant_version': "0",
-            'variant_release': "1", 'variant_type': 'module',
-            'variant_context': '12345678', 'koji_tag': "module-core3-0-1",
-            'modulemd': 'foobar', 'build_deps': [
-                {'dependency': 'base-runtime', 'stream': 'f26'}]
-        }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        # Add variant with 'bootstrap-master' build-dep.
-        data = {
-            'variant_id': "core2", 'variant_uid': "Core2",
-            'variant_name': "Core2", 'variant_version': "0",
-            'variant_release': "1", 'variant_type': 'module',
-            'variant_context': '12345678', 'koji_tag': "module-core2-0-1",
-            'modulemd': 'foobar', 'build_deps': [
-                {'dependency': 'bootstrap', 'stream': 'master'}]
-        }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        # Try to get unknown build-dep
-        data = {'build_dep_name': "unknown"}
-        response = self.client.get(url, data, format='json')
+    def test_put_module(self):
+        self.create_module()
+        old_uid = 'testmodule:f27:23456789:12345678'
+        new_version = '04191775'
+        new_uid = 'testmodule:f27:{0}:12345678'.format(new_version)
+        url = reverse('modules-detail', args=[old_uid])
+        self.data['version'] = new_version
+        response = self.client.put(url, data=self.data, format='json')
+        self.expected['uid'] = new_uid
+        self.expected['version'] = new_version
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 0)
+        self.assertEqual(response.data, self.expected)
+        # Make sure the UID changed
+        module_obj = Module.objects.filter(uid=new_uid).first()
+        self.assertEqual(module_obj.version, new_version)
+        # Make sure the old UID isn't in the database anymore
+        self.assertEqual(Module.objects.filter(uid=old_uid).count(), 0)
 
-        # Try to get base-runtime build-dep
-        data = {'build_dep_name': "base-runtime"}
-        response = self.client.get(url, data, format='json')
-
+    def test_get_modules(self):
+        self.create_module(version='23456789', active=True)
+        self.create_module(version='89012345', active=False)
+        url = reverse('modules-list')
+        response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 2)
-
-        # Try to get base-runtime-master build-dep
-        data = {'build_dep_name': "base-runtime",
-                'build_dep_stream': "master"}
-        response = self.client.get(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 1)
-        self.assertEqual(response.data['results'][0]["variant_uid"], "Core")
-
-    def test_create_with_new_rpms(self):
-        url = reverse('unreleasedvariant-list')
-        data = {
-            'variant_id': "core", 'variant_uid': "Core",
-            'variant_name': "Core", 'variant_version': "0",
-            'variant_release': "1", 'variant_type': 'module',
-            'variant_context': '12345678', 'koji_tag': "module-core-0-1",
-            'modulemd': 'foobar', 'active': False,
-            'rpms': [{'name': 'new_rpm', 'epoch': 0, 'version': '1.0.0',
-                        'release': '1', 'arch': 'src', 'srpm_name': 'new_srpm'}]
+        expected_results = {
+            'count': 2,
+            'next': None,
+            'previous': None,
+            'results': [
+                self.expected,
+                {
+                    'active': False,
+                    'build_deps': [],
+                    'context': '12345678',
+                    'koji_tag': 'some_tag_f27',
+                    'modulemd': 'modulemd',
+                    'name': 'testmodule',
+                    'rpms': [],
+                    'runtime_deps': [],
+                    'stream': 'f27',
+                    'uid': 'testmodule:f27:89012345:12345678',
+                    'version': '89012345'
+                }
+            ]
         }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertNumChanges([2])
-        self.assertIn('new_rpm', response.content)
+        self.assertEqual(response.data, expected_results)
 
-    def test_create_and_delete_unreleasedvariant(self):
-        url = reverse('unreleasedvariant-list')
-        data = {
-            'variant_id': 'core', 'variant_uid': 'core-test-123',
-            'variant_name': 'core', 'variant_version': '0',
-            'variant_release': '1', 'variant_type': 'module',
-            'variant_context': '12345678', 'koji_tag': 'module-core-0-1',
-            'modulemd': 'foobar', 'active': False
+    def test_filter_modules(self):
+        self.create_module(version='23456789', stream='f27', active=True)
+        self.create_module(version='89012345', stream='master', active=False)
+        url = reverse('modules-list')
+        expected_results_f27 = {
+            'count': 1,
+            'next': None,
+            'previous': None,
+            'results': [self.expected]
         }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        url_two = reverse('unreleasedvariant-detail', args=['core-test-123'])
-        response_two = self.client.delete(url_two)
-        self.assertEqual(response_two.status_code, status.HTTP_204_NO_CONTENT)
-
-    def test_filter_by_rpms(self):
-        url = reverse('unreleasedvariant-list')
-        # add a variant with rpm 'foobar' from branch 'master'
-        data = {
-            'variant_id': "core", 'variant_uid': "Core",
-            'variant_name': "Core", 'variant_version': "0",
-            'variant_release': "1", 'variant_type': 'module',
-            'variant_context': '12345678', 'koji_tag': "module-core-0-1",
-            'modulemd': 'foobar', 'active': True,
-            'rpms': [{'name': 'foobar', 'epoch': 0, 'version': '1.0.0',
-                      'release': '1', 'arch': 'src', 'srpm_name': 'foobar',
-                      'srpm_commit_branch': 'master'}]
+        expected_results_master = {
+            'count': 1,
+            'next': None,
+            'previous': None,
+            'results': [{
+                'active': False,
+                'build_deps': [],
+                'context': '12345678',
+                'koji_tag': 'some_tag_master',
+                'modulemd': 'modulemd',
+                'name': 'testmodule',
+                'rpms': [],
+                'runtime_deps': [],
+                'stream': 'master',
+                'uid': 'testmodule:master:89012345:12345678',
+                'version': '89012345'
+            }]
         }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertIn('foobar', response.content)
-
-        # add another variant with rpm 'foobar' from branch 'rawhide'
-        data = {
-            'variant_id': "core2", 'variant_uid': "Core2",
-            'variant_name': "Core2", 'variant_version': "0",
-            'variant_release': "1", 'variant_type': 'module',
-            'variant_context': '12345678', 'koji_tag': "module-core2-0-1",
-            'modulemd': 'foobar', 'active': True,
-            'rpms': [{'name': 'foobar', 'epoch': 0, 'version': '2.0.0',
-                      'release': '1', 'arch': 'src', 'srpm_name': 'foobar',
-                      'srpm_commit_branch': 'rawhide'}]
+        expected_results_both = {
+            'count': 2,
+            'next': None,
+            'previous': None,
+            'results': [
+                expected_results_f27['results'][0],
+                expected_results_master['results'][0]
+            ]
         }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertIn('foobar', response.content)
-
-        # query modules with rpm name
-        data = {'component_name': 'foobar'}
-        response = self.client.get(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 2)
-        self.assertIn("Core", [x['variant_uid'] for x in response.data['results']])
-        self.assertIn("Core2", [x['variant_uid'] for x in response.data['results']])
-
-        # query modules with rpm name and branch
-        data = {'component_name': 'foobar', 'component_branch': 'master'}
-        response = self.client.get(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 1)
-        self.assertIn("Core", [x['variant_uid'] for x in response.data['results']])
-        self.assertNotIn("Core2", [x['variant_uid'] for x in response.data['results']])
-
-        data = {'component_name': 'foobar', 'component_branch': 'rawhide'}
-        response = self.client.get(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 1)
-        self.assertNotIn("Core", [x['variant_uid'] for x in response.data['results']])
-        self.assertIn("Core2", [x['variant_uid'] for x in response.data['results']])
-
-    def test_create_with_exist_rpms(self):
-        url = reverse('unreleasedvariant-list')
-        data = {
-            'variant_id': "core", 'variant_uid': "Core",
-            'variant_name': "Core", 'variant_version': "0",
-            'variant_release': "1", 'variant_type': 'module',
-            'variant_context': '12345678', 'koji_tag': "module-core-0-1",
-            'modulemd': 'foobar', 'active': False,
-            'rpms': [{
-                "name": "bash-doc",
-                "epoch": 0,
-                "version": "1.2.3",
-                "release": "4.b2",
-                "arch": "x86_64",
-                "srpm_name": "bash",
-                "srpm_nevra": "bash-0:1.2.3-4.b2.src"}]
+        filters = {
+            'f27': [
+                {'stream': 'f27'},
+                {'active': True},
+                {'koji_tag': 'some_tag_f27'},
+                {'uid': 'testmodule:f27:23456789:12345678'},
+                {'stream': 'f27', 'active': True}
+            ],
+            'both': [
+                {'context': '12345678'},
+                {'name': 'testmodule'},
+            ],
+            'master': [
+                {'active': False},
+                {'koji_tag': 'some_tag_master'},
+                {'uid': 'testmodule:master:89012345:12345678'},
+                {'stream': 'master', 'active': False}
+            ],
         }
-
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertNumChanges([1])
-        self.assertIn('bash-doc', response.content)
-
-        # Try to get the module with component "bash".
-        response = self.client.get(url + '?component_name=bash', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get('count'), 1)
-        self.assertEqual(response.data['results'][0]["variant_uid"], "Core")
-
-        # Try to get a module with unknown component.
-        response = self.client.get(url + '?component_name=unknown', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get('count'), 0)
-
-    def test_create_and_update_unreleasedvariant(self):
-        url = reverse('unreleasedvariant-list')
-        data = {
-            'variant_id': "core", 'variant_uid': "coretest123",
-            'variant_name': "core", 'variant_version': "0",
-            'variant_release': "1", 'variant_type': 'module',
-            'variant_context': '12345678', 'koji_tag': "module-core-0-1",
-            'modulemd': 'foobar', 'active': False
-        }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        url_two = reverse('unreleasedvariant-detail', args=['coretest123'])
-        data_two = {'active': True}
-        response_two = self.client.patch(url_two, data_two, format='json')
-        self.assertEqual(response_two.status_code, status.HTTP_200_OK)
-        uv = UnreleasedVariant.objects.filter(
-            variant_uid='coretest123').first()
-        self.assertTrue(uv.active)
-
-    def test_create_unreleasedvariant_default_context(self):
-        url = reverse('unreleasedvariant-list')
-        data = {
-            'variant_id': "core", 'variant_uid': "coretest123",
-            'variant_name': "Core", 'variant_version': "0",
-            'variant_release': "1", 'variant_type': 'module',
-            'koji_tag': "module-core-0-1", 'modulemd': 'foobar'
-        }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        uv = UnreleasedVariant.objects.filter(
-            variant_uid='coretest123').first()
-        self.assertEqual(uv.variant_context, '00000000')
-
-    def test_create_unreleasedvariant_not_default_context(self):
-        url = reverse('unreleasedvariant-list')
-        data = {
-            'variant_id': "core", 'variant_uid': "coretest123",
-            'variant_name': "Core", 'variant_version': "0",
-            'variant_release': "1", 'variant_type': 'module',
-            'variant_context': 'a23d56a8', 'koji_tag': "module-core-0-1",
-            'modulemd': 'foobar'
-        }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        uv = UnreleasedVariant.objects.filter(
-            variant_uid='coretest123').first()
-        self.assertEqual(uv.variant_context, 'a23d56a8')
+        for expected, item_filters in filters.items():
+            if expected == 'f27':
+                expected = expected_results_f27
+            elif expected == 'master':
+                expected = expected_results_master
+            elif expected == 'both':
+                expected = expected_results_both
+            else:
+                raise ValueError('"{0}" is an invalid value'.format(expected))
+            for item_filter in item_filters:
+                response = self.client.get(url, data=item_filter, format='json')
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                self.assertEqual(response.data, expected)
