@@ -511,6 +511,7 @@ class ReleaseImportView(StrictQueryParamMixin, viewsets.GenericViewSet):
 
 class BaseProductViewSet(ChangeSetCreateModelMixin,
                          ChangeSetUpdateModelMixin,
+                         ConditionalProcessingMixin,
                          StrictQueryParamMixin,
                          mixins.ListModelMixin,
                          mixins.RetrieveModelMixin,
