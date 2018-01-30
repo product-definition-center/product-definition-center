@@ -11,3 +11,6 @@ pdc.egg-info/
 .eggs/
 build/
 dist/
+node_modules/
+static/
+package-lock.json
