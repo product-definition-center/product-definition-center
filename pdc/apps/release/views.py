@@ -667,9 +667,9 @@ class ReleaseCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
         old_release_id = data.pop('old_release_id')
         old_release = get_object_or_404(models.Release, release_id=old_release_id)
 
-        old_data = ReleaseSerializer(instance=old_release).data
+        old_data = ReleaseViewSet.serializer_class(instance=old_release).data
 
-        for (field_name, field) in ReleaseSerializer().fields.iteritems():
+        for (field_name, field) in ReleaseViewSet.serializer_class().fields.iteritems():
             if not field.read_only and field_name not in data:
                 value = old_data.get(field_name, None)
                 if value:
@@ -679,10 +679,12 @@ class ReleaseCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
             if data[key] is None:
                 data.pop(key)
 
-        serializer = ReleaseSerializer(data=data,
-                                       extra_fields=['include_trees',
-                                                     'include_inactive',
-                                                     'component_dist_git_branch'])
+        serializer = ReleaseViewSet.serializer_class(
+            data=data,
+            extra_fields=[
+                'include_trees',
+                'include_inactive',
+                'component_dist_git_branch'])
         serializer.is_valid(raise_exception=True)
 
         new_release = serializer.save()

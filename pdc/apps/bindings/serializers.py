@@ -126,32 +126,37 @@ def srpm_post_update(sender, release_component, **kwargs):
         release_component.srpmnamemapping.save()
 
 
-def add_field(serializer, field_name, field):
-    """Add field to a serializer."""
-    serializer._declared_fields[field_name] = field
-    if hasattr(serializer, 'Meta') and hasattr(serializer.Meta, 'fields'):
-        serializer.Meta.fields = serializer.Meta.fields + (field_name, )
+def extend_release_serializer(release_view):
+    serializer_class = release_view.serializer_class
+
+    class ExtendedReleaseSerializer(serializer_class):
+        bugzilla = ReleaseBugzillaMappingNestedSerializer(
+            source='releasebugzillamapping',
+            required=False,
+            allow_null=True,
+            default=None)
+        dist_git = ReleaseDistGitMappingNestedSerializer(
+            source='releasedistgitmapping',
+            required=False,
+            allow_null=True,
+            default=None)
+
+        class Meta(serializer_class.Meta):
+            fields = serializer_class.Meta.fields + ('bugzilla', 'dist_git')
+
+    release_view.serializer_class = ExtendedReleaseSerializer
 
 
-def extend_release_serializer(release_serializer):
-    add_field(release_serializer,
-              'bugzilla',
-              ReleaseBugzillaMappingNestedSerializer(source='releasebugzillamapping',
-                                                     required=False,
-                                                     allow_null=True,
-                                                     default=None))
-    add_field(release_serializer,
-              'dist_git',
-              ReleaseDistGitMappingNestedSerializer(source='releasedistgitmapping',
-                                                    required=False,
-                                                    allow_null=True,
-                                                    default=None))
+def extend_release_component_serializer(release_component_view):
+    serializer_class = release_component_view.serializer_class
 
+    class ExtendedReleaseComponentSerializer(serializer_class):
+        srpm = ReleaseComponentSRPMNameMappingNestedSerializer(
+            source='srpmnamemapping',
+            required=False,
+            allow_null=True)
 
-def extend_release_component_serializer(release_component_serializer):
-    add_field(release_component_serializer,
-              'srpm',
-              ReleaseComponentSRPMNameMappingNestedSerializer(
-                  source='srpmnamemapping',
-                  required=False,
-                  allow_null=True))
+        class Meta(serializer_class.Meta):
+            fields = serializer_class.Meta.fields + ('srpm',)
+
+    release_component_view.serializer_class = ExtendedReleaseComponentSerializer

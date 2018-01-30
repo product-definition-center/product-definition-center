@@ -24,14 +24,18 @@ class BindingsConfig(AppConfig):
 
     def _extend_filters(self):
         from . import filters
-        from pdc.apps.release import filters as release_filters
-        filters.extend_release_filter(release_filters.ReleaseFilter)
-        from pdc.apps.component import filters as component_filters
-        filters.extend_release_component_filter(component_filters.ReleaseComponentFilter)
+
+        from pdc.apps.release.views import ReleaseViewSet
+        filters.extend_release_filter(ReleaseViewSet)
+
+        from pdc.apps.component.views import ReleaseComponentViewSet
+        filters.extend_release_component_filter(ReleaseComponentViewSet)
 
     def _extend_serializers(self):
         from . import serializers
-        from pdc.apps.release import serializers as release_serializers
-        serializers.extend_release_serializer(release_serializers.ReleaseSerializer)
-        from pdc.apps.component import serializers as component_serializers
-        serializers.extend_release_component_serializer(component_serializers.ReleaseComponentSerializer)
+
+        from pdc.apps.release.views import ReleaseViewSet
+        serializers.extend_release_serializer(ReleaseViewSet)
+
+        from pdc.apps.component.views import ReleaseComponentViewSet
+        serializers.extend_release_component_serializer(ReleaseComponentViewSet)

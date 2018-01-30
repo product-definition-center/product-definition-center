@@ -8,19 +8,26 @@
 from pdc.apps.common.filters import NullableCharFilter
 
 
-def add_filter(filter_class, field_name, field):
-    filter_class.base_filters[field_name] = field
-    if hasattr(filter_class, 'Meta') and hasattr(filter_class.Meta, 'fields'):
-        filter_class.Meta.fields = filter_class.Meta.fields + (field_name, )
+def extend_release_filter(release_view):
+    filter_class = release_view.filter_class
+
+    class ExtendedReleaseFilter(filter_class):
+        bugzilla_product = NullableCharFilter(name='releasebugzillamapping__bugzilla_product')
+        dist_git_branch = NullableCharFilter(name='releasedistgitmapping__dist_git_branch')
+
+        class Meta(filter_class.Meta):
+            fields = filter_class.Meta.fields + ('bugzilla_product', 'dist_git_branch',)
+
+    release_view.filter_class = ExtendedReleaseFilter
 
 
-def extend_release_filter(release_filter):
-    add_filter(release_filter, 'bugzilla_product',
-               NullableCharFilter(name='releasebugzillamapping__bugzilla_product'))
-    add_filter(release_filter, 'dist_git_branch',
-               NullableCharFilter(name='releasedistgitmapping__dist_git_branch'))
+def extend_release_component_filter(release_component_view):
+    filter_class = release_component_view.filter_class
 
+    class ExtendedReleaseComponentFilter(filter_class):
+        srpm_name = NullableCharFilter(name='srpmnamemapping__srpm_name')
 
-def extend_release_component_filter(release_component_filter):
-    add_filter(release_component_filter, 'srpm_name',
-               NullableCharFilter(name='srpmnamemapping__srpm_name'))
+        class Meta(filter_class.Meta):
+            fields = filter_class.Meta.fields + ('srpm_name',)
+
+    release_component_view.filter_class = ExtendedReleaseComponentFilter
