@@ -427,10 +427,12 @@ class VariantCPE(models.Model):
 
     Multiple release variants can have same CPE.
 
+    One release-variant can have multi CPEs.
+
     CPE field is not part of release variant data model so there can be
     separate permissions for assigning CPE.
     """
-    variant = models.OneToOneField(Variant)
+    variant = models.ForeignKey(Variant, null=False, blank=False)
 
     cpe = models.ForeignKey(CPE, null=False, blank=False, db_index=True, on_delete=models.PROTECT)
 

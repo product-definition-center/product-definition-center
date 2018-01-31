@@ -2053,8 +2053,16 @@ class VariantCPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response.data,
-            {'detail': ['CPE binding for variant "release-1.0/Server-UID" already exists.']})
+            {'detail': ['CPE(cpe:test1) binding for variant "release-1.0/Server-UID" already exists.']})
         self.assertNumChanges([1])
+
+        # Add another cpe with same variant
+        args['cpe'] = 'cpe:test2'
+        response = self.client.post(reverse('variantcpe-list'), args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        del response.data['id']
+        self.assertEqual(args, response.data)
+        self.assertNumChanges([1, 1])
 
     def test_missing_cpe(self):
         args = {
