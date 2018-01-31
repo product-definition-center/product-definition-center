@@ -160,17 +160,6 @@ class ReleaseSerializer(StrictSerializerMixin, serializers.ModelSerializer):
         if hasattr(instance, 'pk'):
             # reload to make sure changes in mapping are reflected
             obj = Release.objects.get(pk=obj.pk)
-        # By default, PUT does not erase optional field if not specified. This
-        # loops over all optional fields and resets them manually.
-        if not self.partial:
-            for field_name, field in self.fields.iteritems():
-                if not field.read_only and field_name not in validated_data:
-                    attr = field.source or field_name
-                    try:
-                        if hasattr(obj, attr):
-                            setattr(obj, attr, None)
-                    except ValueError:
-                        pass
         obj.save()
         return obj
 
