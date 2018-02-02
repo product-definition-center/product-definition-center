@@ -25,6 +25,13 @@ import pdc.apps.common.models as common_models
 from . import models
 
 
+def _delete_compose(compose_id):
+    """Helper function to mark a compose as deleted."""
+    c = models.Compose.objects.get(compose_id=compose_id)
+    c.deleted = True
+    c.save()
+
+
 class ComposeModelTestCase(TestCase):
     fixtures = [
         "pdc/apps/common/fixtures/test/sigkey.json",
@@ -74,12 +81,29 @@ class FindComposeByReleaseRPMTestCase(APITestCase):
                           {'compose': 'compose-2', 'packages': ['bash-0:1.2.3-4.b1.x86_64.rpm']},
                           {'compose': 'compose-3', 'packages': ['bash-0:5.6.7-8.x86_64.rpm']}])
 
+    def test_get_for_release_exclude_deleted(self):
+        _delete_compose('compose-1')
+        url = reverse('findcomposebyrr-list', kwargs={'rpm_name': 'bash', 'release_id': 'release-1.0'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data,
+                         [{'compose': 'compose-2', 'packages': ['bash-0:1.2.3-4.b1.x86_64.rpm']},
+                          {'compose': 'compose-3', 'packages': ['bash-0:5.6.7-8.x86_64.rpm']}])
+
     def test_get_for_release_with_latest(self):
         url = reverse('findcomposebyrr-list', kwargs={'rpm_name': 'bash', 'release_id': 'release-1.0'})
         response = self.client.get(url, {'latest': 'True'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data,
                          [{'compose': 'compose-3', 'packages': ['bash-0:5.6.7-8.x86_64.rpm']}])
+
+    def test_get_for_release_with_latest_exclude_deleted(self):
+        _delete_compose('compose-3')
+        url = reverse('findcomposebyrr-list', kwargs={'rpm_name': 'bash', 'release_id': 'release-1.0'})
+        response = self.client.get(url, {'latest': 'True'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data,
+                         [{'compose': 'compose-2', 'packages': ['bash-0:1.2.3-4.b1.x86_64.rpm']}])
 
     def test_get_for_release_to_dict(self):
         url = reverse('findcomposebyrr-list', kwargs={'rpm_name': 'bash', 'release_id': 'release-1.0'})
@@ -151,6 +175,14 @@ class FindOlderComposeByComposeRPMTestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('compose'), "compose-2")
+        self.assertEqual(response.data.get('packages'), ["bash-0:1.2.3-4.b1.x86_64.rpm"])
+
+    def test_previous_compose_has_older_rpm_but_is_deleted(self):
+        _delete_compose('compose-2')
+        url = reverse('findoldercomposebycr-list', kwargs={'compose_id': 'compose-3', 'rpm_name': 'bash'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('compose'), "compose-1")
         self.assertEqual(response.data.get('packages'), ["bash-0:1.2.3-4.b1.x86_64.rpm"])
 
     def test_previous_compose_has_older_rpm_with_to_dict(self):
@@ -228,6 +260,14 @@ class FindCompoeByProductVersionRPMTestCase(APITestCase):
         self.assertEqual(response.data,
                          [{'compose': 'compose-1', 'packages': ['bash-0:1.2.3-4.b1.x86_64.rpm']},
                           {'compose': 'compose-2', 'packages': ['bash-0:1.2.3-4.b1.x86_64.rpm']},
+                          {'compose': 'compose-3', 'packages': ['bash-0:5.6.7-8.x86_64.rpm']}])
+
+    def test_get_for_product_version_skip_deleted(self):
+        _delete_compose('compose-1')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data,
+                         [{'compose': 'compose-2', 'packages': ['bash-0:1.2.3-4.b1.x86_64.rpm']},
                           {'compose': 'compose-3', 'packages': ['bash-0:5.6.7-8.x86_64.rpm']}])
 
     def test_get_for_product_version_with_latest(self):
@@ -418,6 +458,10 @@ class ComposeAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(reverse('compose-detail', args=["compose-1"]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['deleted'], True)
+
+        # Test the compose no longer shows up for the release.
+        response = self.client.get(reverse('release-detail', args=['release-1.0']))
+        self.assertNotIn('compose-1', response.data['compose_set'])
 
     def test_delete_deleted_compose(self):
         self.client.delete(reverse('compose-detail', args=["compose-1"]))

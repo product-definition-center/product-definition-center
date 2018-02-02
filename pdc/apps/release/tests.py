@@ -1445,6 +1445,23 @@ class ReleaseLatestComposeTestCase(APITestCase):
         latest = self.release.get_latest_compose()
         self.assertEqual(latest.compose_id, 'compose-1')
 
+    def test_exclude_deleted(self):
+        compose_models.Compose.objects.create(compose_respin=0,
+                                              compose_date='2015-02-09',
+                                              compose_type=self.ct_prod,
+                                              compose_id='compose-1',
+                                              release=self.release,
+                                              acceptance_testing=self.untested,
+                                              deleted=True)
+        compose_models.Compose.objects.create(compose_respin=0,
+                                              compose_date='2015-02-09',
+                                              compose_type=self.ct_test,
+                                              compose_id='compose-2',
+                                              release=self.release,
+                                              acceptance_testing=self.untested)
+        latest = self.release.get_latest_compose()
+        self.assertEqual(latest.compose_id, 'compose-2')
+
 
 class ReleaseComposeLinkingTestCase(APITestCase):
     fixtures = [
@@ -1464,6 +1481,19 @@ class ReleaseComposeLinkingTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertItemsEqual(response.data.get('compose_set'),
                               ['compose-1', 'compose-2'])
+
+    def test_deleted_compose_does_not_show_up(self):
+        c = compose_models.Compose.objects.get(compose_id='compose-1')
+        c.deleted = True
+        c.save()
+
+        response = self.client.get(reverse('release-detail', args=['product-1.0-eus']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual(response.data.get('compose_set'), [])
+
+        response = self.client.get(reverse('release-detail', args=['product-1.0-updates']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual(response.data.get('compose_set'), ['compose-2'])
 
     def test_linking_visible_in_web_ui(self):
         client = Client()

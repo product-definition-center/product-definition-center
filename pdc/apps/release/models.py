@@ -281,7 +281,7 @@ class Release(AllowedPushTargetsModel):
         """
         Return a set of all composes built for this release or linked to it.
         """
-        return set(self.compose_set.all()) | set(self.linked_composes.all())
+        return set(self.compose_set.filter(deleted=False)) | set(self.linked_composes.filter(deleted=False))
 
     def get_latest_compose(self):
         """
