@@ -22,6 +22,8 @@ from rest_framework.utils import formatting
 from rest_framework.reverse import reverse
 from rest_framework import serializers, relations, fields
 
+from cgi import escape
+
 from pdc.apps.utils.utils import urldecode
 
 """
@@ -79,6 +81,8 @@ response time faster. Format is list or single value
  * `fields` (list | string) Fields to display (other fields will be hidden).
  * `exclude_fields`: (list | string) Fields *NOT* to display (overrules `fields`).
 """
+
+JSON_CODE_BLOCK = '<pre><code class=serializer-data>%s</code></pre>'
 
 DEFAULT_DESCRIPTION = {
     "list": """
@@ -522,29 +526,86 @@ def describe_serializer(serializer, include_read_only):
     logged.
     """
     data = {}
+
     if hasattr(serializer, 'get_fields'):
         for field_name, field in serializer.get_fields().iteritems():
-            notes = []
-            if field.read_only:
-                notes.append('read-only')
-                if not include_read_only:
-                    continue
-            elif not field.required:
-                notes.append('optional')
-                default = json.dumps(get_default_value(serializer, field_name, field))
-                if not (default is None and field.allow_null):
-                    notes.append('default=%s' % default)
-            if field.allow_null:
-                notes.append('nullable')
-            notes = ' (%s)' % ', '.join(notes) if notes else ''
-            data[field_name + notes] = get_field_type(serializer, field_name, field, include_read_only)
+            if not field.read_only or include_read_only:
+                data_key = serializer_field_key(serializer, field_name, field, include_read_only)
+                data[data_key] = serializer_field_value(serializer, field_name, field, include_read_only)
+
         return data
-    elif hasattr(serializer.__class__, 'doc_format'):
+
+    if hasattr(serializer.__class__, 'doc_format'):
         return serializer.doc_format
-    else:
-        logger = logging.getLogger(__name__)
-        logger.error('Failed to get details for serializer %s' % serializer)
-        return 'data'
+
+    logger = logging.getLogger(__name__)
+    logger.error('Failed to get details for serializer %s' % serializer)
+    return 'data'
+
+
+def serializer_field_key(serializer, field_name, field, include_read_only):
+    """
+    Returns key for serializer JSON data description.
+    """
+    key = '<span class=serializer-field-name>%s</span>' % escape(field_name)
+    details = ''
+
+    if not include_read_only:
+        tags = serializer_field_tags(serializer, field_name, field)
+        if tags:
+            details += ' <span class=serializer-field-tags>%s</span> ' % ', '.join(tags)
+
+    description = serializer_field_help_text(serializer, field_name, field)
+    if description:
+        details += ' <span class=serializer-field-help>%s</span> ' % description
+
+    if details:
+        return '%s<span class=serializer-field-details>%s</span>' % (key, details)
+
+    return key
+
+
+def serializer_field_value(serializer, field_name, field, include_read_only):
+    """
+    Returns value for serializer JSON data description (recursive).
+    """
+    return get_field_type(serializer, field_name, field, include_read_only)
+
+
+def serializer_field_tags(serializer, field_name, field):
+    """
+    Returns list of tags for serializer field.
+
+    A tag can be one of: optional, nullable, default=VALUE
+    """
+    tags = []
+
+    if not field.required:
+        tags.append('optional')
+        default = json.dumps(get_default_value(serializer, field_name, field))
+        if not (default is None and field.allow_null):
+            tags.append('default=%s' % escape(default))
+
+    if field.allow_null:
+        tags.append('nullable')
+
+    return tags
+
+
+def serializer_field_help_text(serializer, field_name, field):
+    description = field_help_text(field)
+    if description:
+        return description
+
+    try:
+        model_field = serializer.Meta.model._meta.get_field(field_name)
+        return field_help_text(model_field)
+    except FieldDoesNotExist:
+        return ''
+
+
+def field_help_text(field):
+    return getattr(field, 'help_text', None) or ''
 
 
 def get_serializer(view, include_read_only):
@@ -556,9 +617,8 @@ def get_serializer(view, include_read_only):
     if hasattr(view, 'get_serializer'):
         try:
             serializer = view.get_serializer()
-            desc = json.dumps(describe_serializer(serializer, include_read_only),
-                              indent=4, sort_keys=True)
-            return '\n'.join('    %s' % line for line in desc.split('\n'))
+            serializer_json = describe_serializer(serializer, include_read_only)
+            return JSON_CODE_BLOCK % json.dumps(serializer_json, indent=4, sort_keys=True)
         except AssertionError:
             # Even when `get_serializer` is present, it may raise exception.
             pass
