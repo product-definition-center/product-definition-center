@@ -41,7 +41,7 @@ def _get_arg_value(arg_name):
 class PDCRouter(bulk_operations.BulkRouter):
     """ Order the api url  """
 
-    def get_api_root_view(self):
+    def get_api_root_view(self, api_urls=None):
         """
         Return a view to use as the API root.
         """

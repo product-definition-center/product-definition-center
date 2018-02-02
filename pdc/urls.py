@@ -32,7 +32,7 @@ urlpatterns = [
     url(r'^auth/saml2login$', auth_views.remoteuserlogin, name='auth/saml2login'),
     url(r'^auth/logout$', auth_views.logout, name='auth/logout'),
 
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^auth/profile/$', auth_views.user_profile, name='auth/profile'),
     url(r'^auth/refresh-ldap/$', auth_views.refresh_ldap_groups,
         name='auth/refresh_ldap'),
