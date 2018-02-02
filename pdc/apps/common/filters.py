@@ -26,27 +26,36 @@ SelectMultiple = widgets.SelectMultiple
 
 def value_is_not_empty(func):
     @functools.wraps(func)
-    def _decorator(self, qs, value):
+    def _decorator(self, qs, name, value):
         if not value:
             return qs
         else:
             if value == ['']:
                 value = []
-            return func(self, qs, value)
+            return func(self, qs, name, value)
 
     return _decorator
 
 
-class MultiValueFilter(django_filters.MethodFilter):
+class MultiValueField(forms.CharField):
+    def to_python(self, value):
+        return value
+
+
+# FIXME: Use MultipleChoiceFilter base class instead.
+class MultiValueFilter(django_filters.CharFilter):
     """
     Filter that allows multiple terms to be present and treats them as
     alternatives, i.e. it performs OR search.
     """
-    def __init__(self, name=None, distinct=False):
-        super(MultiValueFilter, self).__init__(action='filter', widget=SelectMultiple, name=name, distinct=distinct)
+    field_class = MultiValueField
+
+    def __init__(self, name=None, distinct=False, **kwargs):
+        kwargs.setdefault('method', self._filter)
+        super(MultiValueFilter, self).__init__(widget=SelectMultiple, name=name, distinct=distinct, **kwargs)
 
     @value_is_not_empty
-    def filter(self, qs, value):
+    def _filter(self, qs, name, value):
         qs = qs.filter(**{self.name + '__in': value})
         if self.distinct:
             qs = qs.distinct()
@@ -59,7 +68,7 @@ class MultiValueCaseInsensitiveFilter(MultiValueFilter):
     alternatives, i.e. it performs OR search.
     """
     @value_is_not_empty
-    def filter(self, qs, value):
+    def _filter(self, qs, name, value):
         if value:
             condition_list = []
             for val in value:
@@ -79,7 +88,7 @@ class MultiValueRegexFilter(MultiValueFilter):
     i.e. it performs OR search.
     """
     @value_is_not_empty
-    def filter(self, qs, value):
+    def _filter(self, qs, name, value):
         if value:
             for i in value:
                 if not is_valid_regexp(i):
@@ -111,7 +120,7 @@ class MultiIntFilter(MultiValueFilter):
         raise ValueError('Filter not defined in parent')
 
     @value_is_not_empty
-    def filter(self, qs, value):
+    def _filter(self, qs, name, value):
         # This can't actually call to parent method, as double invocation of
         # @value_is_not_empty would cause the filter with empty value to be
         # ignored.
@@ -244,10 +253,14 @@ class SigKeyFilter(FilterSet):
 class NullableCharFilter(django_filters.CharFilter):
     NULL_STRINGS = ('Null', 'NULL', 'null', 'None')
 
+    def __init__(self, name=None, distinct=False, **kwargs):
+        kwargs.setdefault('method', self._filter)
+        super(NullableCharFilter, self).__init__(name=name, distinct=distinct, **kwargs)
+
     """
     Wrapper around CharFilter that allows filtering items with empty value.
     """
-    def filter(self, qs, value):
+    def _filter(self, qs, name, value):
         if value in self.NULL_STRINGS:
             args = {self.name + '__isnull': True}
             return qs.filter(**args)
@@ -264,11 +277,15 @@ class CaseInsensitiveBooleanFilter(django_filters.CharFilter):
     TRUE_STRINGS = ('true', 't', '1')
     FALSE_STRINGS = ('false', 'f', '0')
 
+    def __init__(self, name=None, distinct=False, **kwargs):
+        kwargs.setdefault('method', self._filter)
+        super(CaseInsensitiveBooleanFilter, self).__init__(name=name, distinct=distinct, **kwargs)
+
     def _validate_boolean(self, value):
         if value.lower() not in self.TRUE_STRINGS + self.FALSE_STRINGS:
             raise ValueError('%s is not a valid boolean value' % value)
 
-    def filter(self, qs, value):
+    def _filter(self, qs, name, value):
         if not value:
             return qs
         self._validate_boolean(value)

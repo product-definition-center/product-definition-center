@@ -19,8 +19,8 @@ class ComposeFilter(django_filters.FilterSet):
     compose_id          = MultiValueCaseInsensitiveFilter(name='compose_id')
     compose_type        = MultiValueCaseInsensitiveFilter(name='compose_type__name')
     acceptance_testing  = MultiValueFilter(name='acceptance_testing__name')
-    rpm_nvr             = django_filters.MethodFilter(action="filter_nvr")
-    rpm_nvra            = django_filters.MethodFilter(action="filter_nvra")
+    rpm_nvr             = django_filters.CharFilter(method="filter_nvr")
+    rpm_nvra            = django_filters.CharFilter(method="filter_nvra")
     deleted             = CaseInsensitiveBooleanFilter()
     compose_date        = MultiValueFilter(name='compose_date')
     compose_respin      = MultiValueFilter(name='compose_respin')
@@ -28,7 +28,7 @@ class ComposeFilter(django_filters.FilterSet):
     # TODO: return only latest compose
 
     @value_is_not_empty
-    def filter_nvr(self, qs, value):
+    def filter_nvr(self, qs, name, value):
         try:
             nvr = parse_nvr(value)
         except ValueError:
@@ -41,7 +41,7 @@ class ComposeFilter(django_filters.FilterSet):
         return qs.filter(q).distinct()
 
     @value_is_not_empty
-    def filter_nvra(self, qs, value):
+    def filter_nvra(self, qs, name, value):
         try:
             nvra = parse_nvra(value)
         except ValueError:

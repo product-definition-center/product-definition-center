@@ -60,13 +60,13 @@ class ResourcePermissionFilter(django_filters.FilterSet):
 
 
 class ResourceFilter(MultiValueFilter):
-    def filter(self, qs, value):
+    def _filter(self, qs, name, value):
         for resource_name in value:
             regex = re.sub(r'{.*?}', r'(.*?)', resource_name)
             if regex != resource_name:
                 qs = qs.filter(**{self.name + '__regex': regex})
             else:
-                qs = super(ResourceFilter, self).filter(qs, value)
+                qs = super(ResourceFilter, self)._filter(qs, name, value)
         return qs
 
 

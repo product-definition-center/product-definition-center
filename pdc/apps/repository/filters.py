@@ -4,7 +4,6 @@
 # http://opensource.org/licenses/MIT
 #
 import django_filters as filters
-from django.forms import SelectMultiple
 
 from pdc.apps.common.filters import MultiValueFilter, MultiIntFilter, CaseInsensitiveBooleanFilter, value_is_not_empty
 from pdc.apps.contact.models import Person
@@ -56,11 +55,11 @@ class MultiDestinationFilter(filters.FilterSet):
     destination_repo_name = MultiValueFilter(name='destination_repo__name')
     origin_repo_release_id = MultiValueFilter(name='origin_repo__variant_arch__variant__release__release_id')
     destination_repo_release_id = MultiValueFilter(name='destination_repo__variant_arch__variant__release__release_id')
-    subscribers = filters.MethodFilter(action='filter_by_subscribers', widget=SelectMultiple)
+    subscribers = MultiValueFilter(method='filter_by_subscribers')
     active = CaseInsensitiveBooleanFilter()
 
     @value_is_not_empty
-    def filter_by_subscribers(self, qs, value):
+    def filter_by_subscribers(self, qs, name, value):
         people = Person.objects.filter(username__in=value)
         return qs.filter(subscribers__in=people)
 

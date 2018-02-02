@@ -6,7 +6,6 @@
 from functools import partial
 
 from django.conf import settings
-from django.forms import SelectMultiple
 from django.core.exceptions import FieldError
 
 import django_filters
@@ -56,7 +55,7 @@ def dependency_predicate(op, version):
     raise FieldError('Unrecognized operator "{}" for {}'.format(op, type))
 
 
-def dependency_filter(type, queryset, value):
+def dependency_filter(type, queryset, name, value):
     m = models.Dependency.DEPENDENCY_PARSER.match(value)
     if not m:
         raise FieldError('Unrecognized value for filter for {}'.format(type))
@@ -98,18 +97,18 @@ class RPMFilter(django_filters.FilterSet):
     srpm_commit_branch = MultiValueFilter()
     linked_release = MultiValueFilter(name='linked_releases__release_id', distinct=True)
     built_for_release = MultiValueFilter(name='built_for_release__release_id', distinct=True)
-    provides = django_filters.MethodFilter(action=partial(dependency_filter,
-                                                          models.Dependency.PROVIDES))
-    requires = django_filters.MethodFilter(action=partial(dependency_filter,
-                                                          models.Dependency.REQUIRES))
-    obsoletes = django_filters.MethodFilter(action=partial(dependency_filter,
-                                                           models.Dependency.OBSOLETES))
-    conflicts = django_filters.MethodFilter(action=partial(dependency_filter,
-                                                           models.Dependency.CONFLICTS))
-    recommends = django_filters.MethodFilter(action=partial(dependency_filter,
-                                                            models.Dependency.RECOMMENDS))
-    suggests = django_filters.MethodFilter(action=partial(dependency_filter,
-                                                          models.Dependency.SUGGESTS))
+    provides = django_filters.CharFilter(method=partial(dependency_filter,
+                                                        models.Dependency.PROVIDES))
+    requires = django_filters.CharFilter(method=partial(dependency_filter,
+                                                        models.Dependency.REQUIRES))
+    obsoletes = django_filters.CharFilter(method=partial(dependency_filter,
+                                                         models.Dependency.OBSOLETES))
+    conflicts = django_filters.CharFilter(method=partial(dependency_filter,
+                                                         models.Dependency.CONFLICTS))
+    recommends = django_filters.CharFilter(method=partial(dependency_filter,
+                                                          models.Dependency.RECOMMENDS))
+    suggests = django_filters.CharFilter(method=partial(dependency_filter,
+                                                        models.Dependency.SUGGESTS))
     has_no_deps = CaseInsensitiveBooleanFilter(name='dependency__isnull', distinct=True)
 
     class Meta:
@@ -148,8 +147,7 @@ class ImageFilter(django_filters.FilterSet):
 
 class BuildImageFilter(django_filters.FilterSet):
     if settings.WITH_BINDINGS:
-        component_name      = django_filters.MethodFilter(action='filter_by_component_name',
-                                                          widget=SelectMultiple)
+        component_name      = MultiValueFilter(method='filter_by_component_name')
     else:
         component_name      = MultiValueFilter(name='rpms__srpm_name', distinct=True)
     rpm_version                 = MultiValueFilter(name='rpms__version', distinct=True)
@@ -165,7 +163,7 @@ class BuildImageFilter(django_filters.FilterSet):
     archive_md5             = MultiValueFilter(name='archives__md5', distinct=True)
     release_id              = MultiValueFilter(name='releases__release_id', distinct=True)
 
-    def filter_by_component_name(self, queryset, value):
+    def filter_by_component_name(self, queryset, name, value):
         from pdc.apps.bindings import models as binding_models
         srpm_names = binding_models.ReleaseComponentSRPMNameMapping.objects.filter(
             release_component__name__in=value).distinct().values_list('srpm_name')

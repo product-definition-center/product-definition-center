@@ -14,7 +14,7 @@ from pdc.apps.componentbranch.models import (
     ComponentBranch, SLA, SLAToComponentBranch)
 
 
-def filter_active(queryset, value):
+def filter_active(queryset, name, value):
     if not value:
         return queryset
     try:
@@ -45,7 +45,7 @@ def filter_active(queryset, value):
             .extra(where=[where_extra_sql]).distinct()
 
 
-def filter_active_sla_to_branch(queryset, value):
+def filter_active_sla_to_branch(queryset, name, value):
     if not value:
         return queryset
     try:
@@ -82,7 +82,7 @@ class ComponentBranchFilter(django_filters.FilterSet):
         name='global_component__name', lookup_expr='exact')
     type = django_filters.CharFilter(
         name='type__name', lookup_expr='exact')
-    active = CaseInsensitiveBooleanFilter(action=filter_active)
+    active = CaseInsensitiveBooleanFilter(method=filter_active)
     critical_path = CaseInsensitiveBooleanFilter()
 
     class Meta:
@@ -103,7 +103,7 @@ class SLAToComponentBranchFilter(django_filters.FilterSet):
     branch = django_filters.CharFilter(name='branch__name', lookup_expr='exact')
     global_component = django_filters.CharFilter(name='branch__global_component__name', lookup_expr='exact')
     branch_type = django_filters.CharFilter(name='branch__type__name', lookup_expr='exact')
-    branch_active = CaseInsensitiveBooleanFilter(name='branch__active', action=filter_active_sla_to_branch)
+    branch_active = CaseInsensitiveBooleanFilter(name='branch__active', method=filter_active_sla_to_branch)
     branch_critical_path = CaseInsensitiveBooleanFilter(name='branch__critical_path', lookup_expr='iexact')
     eol_after = django_filters.DateFilter(name="eol", lookup_expr='gte')
     eol_before = django_filters.DateFilter(name="eol", lookup_expr='lte')

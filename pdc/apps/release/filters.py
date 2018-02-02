@@ -17,7 +17,7 @@ class ActiveReleasesFilter(filters.CaseInsensitiveBooleanFilter):
     The `name` argument to __init__ should specify how to get to relases from
     the object.
     """
-    def filter(self, qs, value):
+    def _filter(self, qs, name, value):
         if not value:
             return qs
         self._validate_boolean(value)
@@ -34,7 +34,7 @@ class AllowedPushTargetsFilter(filters.MultiValueFilter):
         self.parent_names = parent_names
 
     @filters.value_is_not_empty
-    def filter(self, qs, value):
+    def _filter(self, qs, name, value):
         qs = qs.exclude(**{'masked_push_targets__name__in': value})
         prefix = ''
         for parent_name in self.parent_names:
@@ -46,7 +46,7 @@ class AllowedPushTargetsFilter(filters.MultiValueFilter):
 class ReleaseFilter(django_filters.FilterSet):
     release_id = filters.MultiValueFilter(name='release_id')
     base_product = filters.MultiValueFilter(name='base_product__base_product_id')
-    has_base_product = django_filters.MethodFilter(action='find_has_base_product')
+    has_base_product = django_filters.CharFilter(method='find_has_base_product')
     release_type = filters.MultiValueFilter(name='release_type__short')
     product_version = filters.MultiValueFilter(name='product_version__product_version_id')
     integrated_with = filters.NullableCharFilter(name='integrated_with__release_id')
@@ -66,7 +66,7 @@ class ReleaseFilter(django_filters.FilterSet):
                   'sigkey', 'allow_buildroot_push', 'allowed_debuginfo_services',
                   'allowed_push_targets')
 
-    def find_has_base_product(self, queryset, value, *args, **kwargs):
+    def find_has_base_product(self, queryset, name, value, *args, **kwargs):
         """
         Make it possible to filter releases if base_product is null or not.
         """
