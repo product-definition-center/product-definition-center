@@ -51,6 +51,20 @@ class CPEField(serializers.CharField):
         return verified_data
 
 
+def allowed_push_targets_field(parent_key):
+    if parent_key:
+        help_text = 'Allowed push targets (subset from parent %s)' % parent_key
+    else:
+        help_text = 'Allowed push targets'
+
+    return serializers.SlugRelatedField(
+        many=True,
+        slug_field='name',
+        queryset=PushTarget.objects.all(),
+        default=[],
+        help_text=help_text)
+
+
 class ProductSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     product_versions = serializers.SlugRelatedField(
         many=True,
@@ -59,8 +73,7 @@ class ProductSerializer(StrictSerializerMixin, serializers.ModelSerializer):
         slug_field='product_version_id'
     )
     active = serializers.BooleanField(read_only=True)
-    allowed_push_targets = serializers.SlugRelatedField(
-        many=True, slug_field='name', queryset=PushTarget.objects.all(), default=[])
+    allowed_push_targets = allowed_push_targets_field(parent_key=None)
 
     class Meta:
         model = Product
@@ -73,8 +86,7 @@ class ProductVersionSerializer(StrictSerializerMixin, serializers.ModelSerialize
     releases = serializers.SerializerMethodField()
     product = serializers.SlugRelatedField(slug_field='short',
                                            queryset=Product.objects.all())
-    allowed_push_targets = serializers.SlugRelatedField(
-        many=True, slug_field='name', queryset=PushTarget.objects.all(), default=[])
+    allowed_push_targets = allowed_push_targets_field(parent_key='product')
 
     class Meta:
         model = ProductVersion
@@ -87,7 +99,7 @@ class ProductVersionSerializer(StrictSerializerMixin, serializers.ModelSerialize
         return super(ProductVersionSerializer, self).to_internal_value(data)
 
     def get_releases(self, obj):
-        """[release_id]"""
+        """["Release.release_id"]"""
         return [x.release_id for x in sorted(obj.release_set.all(), key=Release.version_sort_key)]
 
     def validate(self, data):
@@ -125,8 +137,7 @@ class ReleaseSerializer(StrictSerializerMixin, serializers.ModelSerializer):
     allowed_debuginfo_services = ChoiceSlugField(slug_field='name',
                                                  many=True, queryset=Service.objects.all(),
                                                  required=False, default=[])
-    allowed_push_targets = serializers.SlugRelatedField(
-        many=True, slug_field='name', queryset=PushTarget.objects.all(), default=[])
+    allowed_push_targets = allowed_push_targets_field(parent_key='product version')
 
     class Meta:
         model = Release
@@ -142,7 +153,7 @@ class ReleaseSerializer(StrictSerializerMixin, serializers.ModelSerializer):
         return validated_data
 
     def get_compose_set(self, obj):
-        """[Compose.compose_id]"""
+        """["Compose.compose_id"]"""
         return [compose.compose_id for compose in sorted(obj.get_all_composes())]
 
     def create(self, validated_data):
@@ -213,8 +224,7 @@ class ReleaseVariantSerializer(StrictSerializerMixin, serializers.ModelSerialize
                                           many=True)
     variant_version = serializers.CharField(allow_null=True, required=False)
     variant_release = serializers.CharField(allow_null=True, required=False)
-    allowed_push_targets = serializers.SlugRelatedField(
-        many=True, slug_field='name', queryset=PushTarget.objects.all(), default=[])
+    allowed_push_targets = allowed_push_targets_field(parent_key='release')
 
     key_combination_error = 'add_arches/remove_arches can not be combined with arches.'
 

@@ -99,6 +99,7 @@ tbody tr.deleted td:before {  /* this adds the line to cross out the row */
     background-color: rgb(63, 156, 53);
 }
 
+/* JSON data from serializers */
 .serializer-field-name {
     color: #c7254e;
     background-color: #f9f2f4;
@@ -110,15 +111,17 @@ tbody tr.deleted td:before {  /* this adds the line to cross out the row */
 }
 .serializer-field-tags {
     font-style: italic;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
 }
 .serializer-field-help {
     font-family: "sans";
+    padding-left: 0.5em;
+    padding-right: 0.5em;
 }
 
-/* Serializer field description right of the data */
-.serializer-data {
-    display: inline-block;
-}
-.serializer-field-details {
-    float: right;
+/* Highligh field referenced in URL (i.e. ".../#field-name") */
+.serializer-field:target .serializer-field-name {
+    font-weight: bold;
+    background-color: rgba(255, 255, 0, 0.2);
 }

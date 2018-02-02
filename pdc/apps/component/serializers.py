@@ -137,7 +137,7 @@ class BugzillaComponentSerializer(StrictSerializerMixin,
     extra_fields = ['parent_pk']
 
     def get_subcomponents(self, obj):
-        """[string]"""
+        """["string"]"""
         return obj.get_subcomponents()
 
     class Meta:

@@ -185,8 +185,6 @@ class ProductVersionViewSet(NotificationMixin,
         """
         If `short` is not specified, the short name of associated product will
         be used.
-
-        Field `allowed_push_targets` must be subset of parent product.
         """
         return super(ProductVersionViewSet, self).create(*args, **kwargs)
 
@@ -209,8 +207,6 @@ class ProductVersionViewSet(NotificationMixin,
         `product_version_id` will be modified accordingly, and the URL of the
         object will be changed. All changes are local to the updated model and
         are not propagated to associated releases.
-
-        Field `allowed_push_targets` must be subset of parent product.
 
         Changing `allowed_push_targets` field also affects this field in
         child releases and variants.
@@ -268,8 +264,6 @@ class ReleaseViewSet(NotificationMixin,
         using the $LINK:releaseclone-list$ API that will clone an existing
         release with its variants and components.
 
-        Field `allowed_push_targets` must be subset of parent product version.
-
         *release_type*: $LINK:releasetype-list$
         """
         response = super(ReleaseViewSet, self).create(request, *args, **kwargs)
@@ -308,8 +302,6 @@ class ReleaseViewSet(NotificationMixin,
         Please note that if you change the `short`, `version`, `release_type`
         or `base_product` fields, the `release_id` will be updated and the URL
         of this release will change.
-
-        Field `allowed_push_targets` must be subset of parent product version.
 
         Changing `allowed_push_targets` field also affects this field in
         child variants.
@@ -671,8 +663,6 @@ class ReleaseVariantViewSet(NotificationMixin,
     def create(self, *args, **kwargs):
         """
         The required architectures must already be present in PDC.
-
-        Field `allowed_push_targets` must be subset of parent release.
         """
         return super(ReleaseVariantViewSet, self).create(*args, **kwargs)
 
@@ -684,8 +674,6 @@ class ReleaseVariantViewSet(NotificationMixin,
         Changing the architectures may involve deleting some. Note that
         repositories are connected to some Variant.Arch pair and it is not
         possible to remove an arch with any repositories..
-
-        Field `allowed_push_targets` must be subset of parent release.
         """
         return super(ReleaseVariantViewSet, self).update(*args, **kwargs)
 
@@ -701,8 +689,6 @@ class ReleaseVariantViewSet(NotificationMixin,
 
         If you try to remove architectures with associated repositories, the
         request will fail to do anything.
-
-        Field `allowed_push_targets` must be subset of parent release.
         """
         return super(ReleaseVariantViewSet, self).partial_update(*args, **kwargs)
 

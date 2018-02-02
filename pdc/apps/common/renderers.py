@@ -8,6 +8,7 @@ import logging
 import re
 import sys
 import json
+import inspect
 
 from django.conf import settings
 from django.utils.encoding import smart_text
@@ -17,6 +18,7 @@ from contrib import drf_introspection
 from django.db.models.fields import NOT_PROVIDED
 from django.urls import NoReverseMatch
 from django.core.exceptions import FieldDoesNotExist
+from django_filters import NumberFilter
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.utils import formatting
 from rest_framework.reverse import reverse
@@ -47,6 +49,105 @@ These features are available to simplify writing the comments:
 When the URL specification can not be resolve, "BAD URL" will be displayed on
 the page and details about the error will be logged to the error log.
 """
+
+SERIALIZER_DATA_INDENTATION = '    '
+MODEL_FIELD_REFERENCE_RE = re.compile(r'(^[A-Z][a-zA-Z]+)\.([a-z_]+)$')
+
+
+class _SerializerFieldData(object):
+    def __init__(self, values):
+        self.values = values
+
+
+def _serializer_field_attribute_to_string(css_class, field_data):
+    return '<span class="serializer-field-%s">%s</span>' % (css_class, field_data)
+
+
+def _serializer_field_link(text, field_name, base_name):
+    return '<a href="%s#field-%s">%s</a>' % (reverse(base_name + '-list'), field_name, text)
+
+
+def _serializer_field_data_to_string(field_data, parent_fields):
+    value = field_data.values.pop('value')
+    value = _serializer_data_to_string(value, parent_fields)
+    value = _serializer_field_attribute_to_string('value', value)
+
+    detail_items = []
+    for key in ['tags', 'help']:
+        if key in field_data.values:
+            detail_items.append(_serializer_field_attribute_to_string(key, field_data.values[key]))
+
+    if detail_items:
+        value += ' ' + _serializer_field_attribute_to_string('details', ' '.join(detail_items))
+
+    return value
+
+
+def _indented_text(text):
+    return text.replace('\n', '\n' + SERIALIZER_DATA_INDENTATION)
+
+
+def _serializer_field_to_string(items, container_format):
+    result = ','.join(['\n' + SERIALIZER_DATA_INDENTATION + item for item in items])
+    return container_format % (result + '\n')
+
+
+def _serializer_field_dict_to_string(field, parent_fields):
+    items = []
+    for field_name, field_data in sorted(field.iteritems()):
+        key = _serializer_field_attribute_to_string('name', '"%s"' % field_name)
+        parent_fields.append(field_name)
+        value = _serializer_data_to_string(field_data, parent_fields)
+        field_id = 'field-' + '__'.join(parent_fields)
+        parent_fields.pop()
+        html = '<span class="serializer-field" id="%s">%s: %s</span>' % (field_id, key, _indented_text(value))
+        items.append(html)
+
+    return _serializer_field_to_string(items, '{%s}')
+
+
+def _serializer_field_list_to_string(field, parent_fields):
+    items = []
+    for field_data in field:
+        value = _serializer_data_to_string(field_data, parent_fields)
+        items.append(_indented_text(value))
+
+    if len(items) == 1:
+        return '[ %s, &hellip; ]' % items[0]
+
+    return _serializer_field_to_string(items, '[%s]')
+
+
+def _model_field_reference_to_string(data):
+    match = MODEL_FIELD_REFERENCE_RE.match(data)
+    if match is not None:
+        model_name = match.group(1)
+        field_name = match.group(2)
+
+        for model_class, base_name in _models_and_base_names():
+            if model_class.__name__ == model_name:
+                return _serializer_field_link(data, field_name, base_name)
+
+    return data
+
+
+def _serializer_data_to_string(data, parent_fields=None):
+    if parent_fields is None:
+        parent_fields = []
+
+    if isinstance(data, _SerializerFieldData):
+        return _serializer_field_data_to_string(data, parent_fields)
+
+    if isinstance(data, dict):
+        return _serializer_field_dict_to_string(data, parent_fields)
+
+    if isinstance(data, list):
+        return _serializer_field_list_to_string(data, parent_fields)
+
+    if isinstance(data, str) or isinstance(data, unicode):
+        return _model_field_reference_to_string(data)
+
+    return escape(json.dumps(data))
 
 
 PDC_APIROOT_DOC = """
@@ -88,7 +189,7 @@ DEFAULT_DESCRIPTION = {
     "list": """
         __Method__: `GET`
 
-        __URL__: $LINK:%(URL)s$
+        __URL__: %(URL)s
 
         __Query params__:
 
@@ -104,7 +205,7 @@ DEFAULT_DESCRIPTION = {
     "retrieve": """
         __Method__: `GET`
 
-        __URL__: $LINK:%(DETAIL_URL)s$
+        __URL__: %(DETAIL_URL)s
 
         __Response__:
 
@@ -114,7 +215,7 @@ DEFAULT_DESCRIPTION = {
     "create": """
         __Method__: `POST`
 
-        __URL__: $LINK:%(URL)s$
+        __URL__: %(URL)s
 
         __Data__:
 
@@ -128,15 +229,11 @@ DEFAULT_DESCRIPTION = {
     "bulk_create": """
         __Method__: `POST`
 
-        __URL__: $LINK:%(URL)s$
+        __URL__: %(URL)s
 
-        __Data__:
+        __Data__: <code>[ <b>{Item Data}</b>, &hellip; ]</code>
 
-            [ <Item Data>, ... ]
-
-        __Item Data__:
-
-        %(WRITABLE_SERIALIZER)s
+        __Item Data__: %(WRITABLE_SERIALIZER)s
 
         __Response__:
 
@@ -148,7 +245,7 @@ DEFAULT_DESCRIPTION = {
     "destroy": """
         __Method__: `DELETE`
 
-        __URL__: $LINK:%(DETAIL_URL)s$
+        __URL__: %(DETAIL_URL)s
 
         __Response__:
 
@@ -158,11 +255,9 @@ DEFAULT_DESCRIPTION = {
     "bulk_destroy": """
         __Method__: `DELETE`
 
-        __URL__: $LINK:%(URL)s$
+        __URL__: %(URL)s
 
-        __Data__:
-
-            [ "%(ID)s", ... ]
+        __Data__: <code>[ %(ID)s, &hellip; ]</code>
 
         __Response__:
 
@@ -172,7 +267,7 @@ DEFAULT_DESCRIPTION = {
     "update": """
         __Method__: `PUT`
 
-        __URL__: $LINK:%(DETAIL_URL)s$
+        __URL__: %(DETAIL_URL)s
 
         __Data__:
 
@@ -186,11 +281,9 @@ DEFAULT_DESCRIPTION = {
     "bulk_update": """
         __Method__: `PUT`, `PATCH`
 
-        __URL__: $LINK:%(URL)s$
+        __URL__: %(URL)s
 
-        __Data__:
-
-            { "%(ID)s": <Item Data>, ... }
+        __Data__: <code>{ "%(ID)s": <b>{Item Data}</b>, &hellip; }</code>
 
         __Item Data__:
 
@@ -208,7 +301,7 @@ DEFAULT_DESCRIPTION = {
     "partial_update": """
         __Method__: `PATCH`
 
-        __URL__: $LINK:%(DETAIL_URL)s$
+        __URL__: %(DETAIL_URL)s
 
         __Data__:
 
@@ -313,22 +406,21 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
         for method in self.methods_mapping:
             func = getattr(view, method, None)
             if func:
-                docstring = func.__doc__ or ''
-                if '__Method__' in docstring:
-                    description[method] = self.format_description(view, method, docstring)
-                elif method in DEFAULT_DESCRIPTION:
-                    description[method] = self.format_description(view, method, docstring) + \
-                        self.format_description(view, method, DEFAULT_DESCRIPTION[method])
+                docstring = inspect.cleandoc(func.__doc__ or '')
+                if method in DEFAULT_DESCRIPTION \
+                   and '__URL__' not in docstring \
+                   and '__Method__' not in docstring:
+                    docstring += '\n\n' + inspect.cleandoc(DEFAULT_DESCRIPTION[method])
+                description[method] = self.format_description(view, method, docstring)
 
         return description
 
     def format_description(self, view, method, description):
         macros = settings.BROWSABLE_DOCUMENT_MACROS
         if view:
-            id_template = get_id_template(view)
             macros['FILTERS'] = get_filters(view)
             # If the API has the LIST method, show ordering field info.
-            if 'list' == method and view.serializer_class:
+            if 'list' == method and getattr(view, 'serializer_class', None) is not None:
                 macros['FILTERS'] += ORDERING_STRING
                 # Show fields info if applicable.
                 if issubclass(view.serializer_class, drf_introspection.serializers.DynamicFieldsSerializerMixin):
@@ -336,13 +428,13 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
             if '%(SERIALIZER)s' in description:
                 macros['SERIALIZER'] = get_serializer(view, include_read_only=True)
             if '%(WRITABLE_SERIALIZER)s' in description:
-                macros['WRITABLE_SERIALIZER'] = get_serializer(view, include_read_only=False)
+                macros['WRITABLE_SERIALIZER'] = get_writable_serializer(view, method)
             if '%(URL)s' in description:
-                macros['URL'] = get_list_url(view)
+                macros['URL'] = get_url(view, 'list')
             if '%(DETAIL_URL)s' in description:
-                macros['DETAIL_URL'] = get_detail_url(view, id_template)
+                macros['DETAIL_URL'] = get_url(view, 'detail')
             if '%(ID)s' in description:
-                macros['ID'] = '{%s}' % id_template
+                macros['ID'] = '{%s}' % get_id_template(view)
             if hasattr(view, 'docstring_macros'):
                 macros.update(view.docstring_macros)
         string = formatting.dedent(description)
@@ -375,16 +467,6 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
         return URL_SPEC_RE.sub(replace_url, text)
 
 
-FILTER_DEFS = {
-    'CharFilter': 'string',
-    'NullableCharFilter': 'string | null',
-    'BooleanFilter': 'bool',
-    'CaseInsensitiveBooleanFilter': 'bool',
-    'ActiveReleasesFilter': 'bool',
-    'NumberFilter': 'int',
-    'MultiIntFilter': 'int',
-    'MultiValueRegexFilter': 'regular expression'
-}
 LOOKUP_TYPES = {
     'icontains': 'case insensitive, substring match',
     'contains': 'substring match',
@@ -410,11 +492,7 @@ def get_filters(view):
         if key in filterset_fields:
             # filter defined in FilterSet
             filter = filterset_fields.get(key)
-            filter_type = FILTER_DEFS.get(filter.__class__.__name__, 'string')
-            lookup_type = LOOKUP_TYPES.get(filter.lookup_expr)
-            if lookup_type:
-                lookup_type = ', %s' % lookup_type
-            filters.append(' * `%s` (%s%s)' % (key, filter_type, lookup_type or ''))
+            filters.append(get_filter(key, filter))
         elif key in filter_fields or key in extra_query_params:
             # filter defined in viewset directly; type depends on model, not easily available
             filters.append(' * `%s`' % key)
@@ -422,6 +500,28 @@ def get_filters(view):
         # serializer or pagination settings).
 
     return '\n'.join(filters)
+
+
+def get_filter_option(filter, option_name):
+    value = getattr(filter, option_name, '') or filter.extra.get(option_name, '')
+    return value.rstrip()
+
+
+def get_filter(filter_name, filter):
+    filter_type = get_filter_option(filter, 'doc_format')
+    if not filter_type:
+        if isinstance(filter, NumberFilter):
+            filter_type = 'int'
+        else:
+            filter_type = 'string'
+
+    lookup_type = LOOKUP_TYPES.get(filter.lookup_expr)
+    if lookup_type:
+        lookup_type = ', %s' % lookup_type
+
+    help_text = get_filter_option(filter, 'help_text')
+
+    return ' * `%s` (%s%s) %s' % (filter_name, filter_type, lookup_type or '', help_text)
 
 
 SERIALIZER_DEFS = {
@@ -454,16 +554,36 @@ def _get_type_from_str(str, default=None):
     return default if default is not None else str
 
 
+def _models_and_base_names():
+    from pdc.apps.utils.SortedRouter import router
+    for _, viewset, base_name in router.registry:
+        serializer_class = getattr(viewset, 'serializer_class', None)
+        meta = getattr(serializer_class, 'Meta', None)
+        serializer_model_class = getattr(meta, 'model', None)
+        if serializer_model_class:
+            yield serializer_model_class, base_name
+
+
 def _get_details_for_slug(serializer, field_name, field):
     """
     For slug field, we ideally want to get Model.field format. However, in some
     cases getting the model name is not possible, and only field name is
     displayed.
+
+    Tries to guess the model from "source" or "queryset" attributes.
     """
-    model = ''
-    if hasattr(field, 'queryset') and field.queryset:
-        model = field.queryset.model.__name__ + '.'
-    return '%s%s' % (model, field.slug_field)
+    if getattr(field, 'source', None) is not None and field.source.endswith('_set'):
+        model_name = field.source[:-4].lower()
+        for model_class, base_name in _models_and_base_names():
+            if model_class.__name__.lower() == model_name:
+                return '%s.%s' % (model_class.__name__, field.slug_field)
+
+    if getattr(field, 'queryset', None) is not None:
+        model = field.queryset.model
+        if model:
+            return '%s.%s' % (model.__name__, field.slug_field)
+
+    return field.slug_field
 
 
 def get_field_type(serializer, field_name, field, include_read_only):
@@ -525,13 +645,11 @@ def describe_serializer(serializer, include_read_only):
     `doc_format` class attribute (if present). If all fails, an error is
     logged.
     """
-    data = {}
-
     if hasattr(serializer, 'get_fields'):
+        data = {}
         for field_name, field in serializer.get_fields().iteritems():
             if not field.read_only or include_read_only:
-                data_key = serializer_field_key(serializer, field_name, field, include_read_only)
-                data[data_key] = serializer_field_value(serializer, field_name, field, include_read_only)
+                data[field_name] = serializer_field_data(serializer, field_name, field, include_read_only)
 
         return data
 
@@ -543,26 +661,23 @@ def describe_serializer(serializer, include_read_only):
     return 'data'
 
 
-def serializer_field_key(serializer, field_name, field, include_read_only):
+def serializer_field_data(serializer, field_name, field, include_read_only):
     """
     Returns key for serializer JSON data description.
     """
-    key = '<span class=serializer-field-name>%s</span>' % escape(field_name)
-    details = ''
+    key = {}
+    key['value'] = serializer_field_value(serializer, field_name, field, include_read_only)
 
     if not include_read_only:
         tags = serializer_field_tags(serializer, field_name, field)
         if tags:
-            details += ' <span class=serializer-field-tags>%s</span> ' % ', '.join(tags)
+            key['tags'] = ', '.join(tags)
 
     description = serializer_field_help_text(serializer, field_name, field)
     if description:
-        details += ' <span class=serializer-field-help>%s</span> ' % description
+        key['help'] = description
 
-    if details:
-        return '%s<span class=serializer-field-details>%s</span>' % (key, details)
-
-    return key
+    return _SerializerFieldData(key)
 
 
 def serializer_field_value(serializer, field_name, field, include_read_only):
@@ -582,12 +697,23 @@ def serializer_field_tags(serializer, field_name, field):
 
     if not field.required:
         tags.append('optional')
-        default = json.dumps(get_default_value(serializer, field_name, field))
-        if not (default is None and field.allow_null):
-            tags.append('default=%s' % escape(default))
+
+        try:
+            default = json.dumps(get_default_value(serializer, field_name, field))
+            if not (default is None and field.allow_null):
+                tags.append('default=%s' % escape(default))
+        except TypeError:
+            pass
 
     if field.allow_null:
         tags.append('nullable')
+
+    try:
+        model_field = serializer.Meta.model._meta.get_field(field_name)
+        if model_field.unique:
+            tags.append('unique')
+    except (AttributeError, FieldDoesNotExist):
+        return ''
 
     return tags
 
@@ -600,12 +726,22 @@ def serializer_field_help_text(serializer, field_name, field):
     try:
         model_field = serializer.Meta.model._meta.get_field(field_name)
         return field_help_text(model_field)
-    except FieldDoesNotExist:
+    except (AttributeError, FieldDoesNotExist):
         return ''
 
 
 def field_help_text(field):
     return getattr(field, 'help_text', None) or ''
+
+
+def get_writable_serializer(view, method):
+    serializers = get_serializer(view, include_read_only=False)
+
+    if not serializers and method.startswith('bulk_'):
+        nonbulk_method = method[5:].upper()
+        return 'Same data as for %s.' % nonbulk_method
+
+    return serializers
 
 
 def get_serializer(view, include_read_only):
@@ -618,7 +754,7 @@ def get_serializer(view, include_read_only):
         try:
             serializer = view.get_serializer()
             serializer_json = describe_serializer(serializer, include_read_only)
-            return JSON_CODE_BLOCK % json.dumps(serializer_json, indent=4, sort_keys=True)
+            return JSON_CODE_BLOCK % _serializer_data_to_string(serializer_json)
         except AssertionError:
             # Even when `get_serializer` is present, it may raise exception.
             pass
@@ -626,22 +762,24 @@ def get_serializer(view, include_read_only):
     return None
 
 
-def get_base_name(view):
-    from pdc.apps.utils.SortedRouter import router
-    return router.get_default_base_name(view)
-
-
 def get_id_template(view):
     if hasattr(view, 'lookup_fields'):
         lookup_fields = [field for field, _ in view.lookup_fields]
         return '}/{'.join(lookup_fields)
 
-    return view.lookup_field
+    if hasattr(view, 'lookup_field'):
+        return view.lookup_field
+
+    return ''
 
 
-def get_list_url(view):
-    return '%s-list' % get_base_name(view)
-
-
-def get_detail_url(view, id_template):
-    return '%s-detail:%s' % (get_base_name(view), id_template)
+def get_url(view, detail_or_list):
+    from django.urls import get_resolver
+    resolver = get_resolver(None)
+    viewname = '%s-%s' % (view.basename, detail_or_list)
+    url_template, args = resolver.reverse_dict.getlist(viewname)[1][0][0]
+    if len(args) == 1 and args[0] == 'composite_field':
+        url = url_template % {'composite_field': '{%s}' % get_id_template(view)}
+    else:
+        url = url_template % {arg: '{%s}' % arg for arg in args}
+    return '<a href="/%s">/%s</a>' % (url, url)

@@ -17,6 +17,12 @@ class ActiveReleasesFilter(filters.CaseInsensitiveBooleanFilter):
     The `name` argument to __init__ should specify how to get to relases from
     the object.
     """
+
+    help_text = """
+    - If "true", show objects with at least one active release.
+    - If "false", show objects with no active releases.
+    """
+
     def _filter(self, qs, name, value):
         if not value:
             return qs

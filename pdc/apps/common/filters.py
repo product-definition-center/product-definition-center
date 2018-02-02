@@ -87,6 +87,9 @@ class MultiValueRegexFilter(MultiValueFilter):
     alternatives with  regular expression match,
     i.e. it performs OR search.
     """
+
+    doc_format = 'regular expression'
+
     @value_is_not_empty
     def _filter(self, qs, name, value):
         if value:
@@ -108,6 +111,9 @@ class MultiIntFilter(MultiValueFilter):
     """
     MultiValueFilter that reports error when input is not a number.
     """
+
+    doc_format = 'int'
+
     @property
     def display_name(self):
         """
@@ -253,6 +259,8 @@ class SigKeyFilter(FilterSet):
 class NullableCharFilter(django_filters.CharFilter):
     NULL_STRINGS = ('Null', 'NULL', 'null', 'None')
 
+    doc_format = 'string | null'
+
     def __init__(self, name=None, distinct=False, **kwargs):
         kwargs.setdefault('method', self._filter)
         super(NullableCharFilter, self).__init__(name=name, distinct=distinct, **kwargs)
@@ -276,6 +284,8 @@ class CaseInsensitiveBooleanFilter(django_filters.CharFilter):
     """
     TRUE_STRINGS = ('true', 't', '1')
     FALSE_STRINGS = ('false', 'f', '0')
+
+    doc_format = 'bool'
 
     def __init__(self, name=None, distinct=False, **kwargs):
         kwargs.setdefault('method', self._filter)
