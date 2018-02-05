@@ -264,6 +264,12 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         # Make sure the old UID isn't in the database anymore
         self.assertEqual(Module.objects.filter(uid=old_uid).count(), 0)
 
+    def test_get_module_with_dot_in_uid(self):
+        self.create_module(version='1.2')
+        url = reverse('modules-detail', args=['testmodule:f27:1.2:12345678'])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_get_modules(self):
         self.create_module(version='23456789', active=True)
         self.create_module(version='89012345', active=False)

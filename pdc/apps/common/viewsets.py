@@ -248,7 +248,11 @@ class PDCModelViewSet(StrictQueryParamMixin,
     PDC common ModelViewSet.
     With `StrictQueryParam`, `ProtectOnDelete` and `ChangeSetModel`
     """
-    pass
+
+    # The field used in URL can not contain a . character by default. This
+    # attribute changes that so that we can use anything in URL as long as
+    # there is no slash.
+    lookup_value_regex = r'[^/]+'
 
 
 class MultiLookupFieldMixin(object):

@@ -296,6 +296,20 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         uv = Module.objects.filter(uid='coretest123').first()
         self.assertEqual(uv.context, 'a23d56a8')
 
+    def test_unreleasedvariant_with_dot_in_uid(self):
+        url = reverse('unreleasedvariants-list')
+        data = {
+            'variant_id': "core", 'variant_uid': "coretest1.23",
+            'variant_name': "Core", 'variant_version': "1.23",
+            'variant_release': "1", 'variant_type': 'module',
+            'variant_context': 'a23d56a8', 'koji_tag': "module-core-0-1",
+            'modulemd': 'foobar'
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.client.get(reverse('unreleasedvariants-detail', args=['coretest1.23']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_v2_compatibility_unreleasedvariant(self):
         data = {
             'name': 'testmodule',
