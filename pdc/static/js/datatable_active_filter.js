@@ -2,7 +2,7 @@
     "use strict";
     $(document).ready(function() {
         if ($('select').is('#active_filter')){
-            var page_size = parseInt($('select').attr("value"));
+            var page_size = parseInt($('select').attr("value"), 10);
             var table = $('table').dataTable(
                 {   "pageLength" : page_size,
                     "search": {
