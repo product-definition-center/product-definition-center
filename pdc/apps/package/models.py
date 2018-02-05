@@ -5,14 +5,12 @@
 #
 import logging
 import re
-import sys
 
 from django.db import models, connection, transaction
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 from django.forms.models import model_to_dict
 from django.dispatch import receiver
-from django.db.backends.signals import connection_created
 from django.db.models.signals import post_migrate
 
 from productmd import images
@@ -364,13 +362,6 @@ def sync_image_formats_and_types():
     for image_type in missing_image_types:
         ImageType.objects.create(name=image_type)
         logger.info("Created image type %s" % image_type)
-
-
-@receiver(connection_created)
-def sync_image_formats_and_types_when_connection_created(sender, **kwargs):
-    if 'test' in sys.argv or 'migrate' in sys.argv:
-        return
-    sync_image_formats_and_types()
 
 
 @receiver(post_migrate)
