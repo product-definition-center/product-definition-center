@@ -24,6 +24,10 @@
 # checks, uncomment this line, set DISABLE_RESOURCE_PERMISSION_CHECK with True.
 #     DISABLE_RESOURCE_PERMISSION_CHECK = True
 #
+# Example 3: when you insert a release into database without a sigkey data, the sigkey
+# will be null by default, you can also choose if set the key_id as default, this default
+# key_id will be added into the data when insert a release into database without a sigkey.
+#     RELEASE_DEFAULT_SIGKEY = "Sigkey's key_id"
 
 
 

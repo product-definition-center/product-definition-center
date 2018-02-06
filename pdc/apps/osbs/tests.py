@@ -14,6 +14,7 @@ from pdc.apps.component import models as component_models
 
 class OSBSRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
+        "pdc/apps/common/fixtures/test/sigkey.json",
         'pdc/apps/release/fixtures/tests/release.json',
         'pdc/apps/component/fixtures/tests/upstream.json',
         'pdc/apps/component/fixtures/tests/global_component.json',
