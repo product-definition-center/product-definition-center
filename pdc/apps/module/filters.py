@@ -19,6 +19,7 @@ class ModuleFilterBase(django_filters.FilterSet):
     build_dep_stream    = MultiValueFilter(name='build_deps__stream', distinct=True)
     component_name      = MultiValueFilter(name='rpms__srpm_name', distinct=True)
     component_branch    = MultiValueFilter(name='rpms__srpm_commit_branch', distinct=True)
+    rpm_filename        = MultiValueFilter(name='rpms__filename', distinct=True)
 
 
 class ModuleFilter(ModuleFilterBase):

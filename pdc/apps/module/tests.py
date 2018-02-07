@@ -142,6 +142,16 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         response_seven = self.client.get(url, data={'component_name': 'python'}, format='json')
         self.assertEqual(response_seven.data['count'], 0)
 
+        # Filtering by RPM filename
+        response_eight = self.client.get(url,
+                                         data={'rpm_filename': 'foobar-2.0.0-1.src.rpm'},
+                                         format='json')
+        self.assertEqual(response_eight.data['count'], 1)
+        response_nine = self.client.get(url,
+                                        data={'rpm_filename': 'python-2.7.12-1.el7.noarch.rpm'},
+                                        format='json')
+        self.assertEqual(response_nine.data['count'], 0)
+
     def test_create_and_get_module_with_exist_rpms(self):
         url = reverse('modules-list')
         self.data['rpms'] = [{
