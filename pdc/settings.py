@@ -19,5 +19,5 @@ except ImportError:
 if DEBUG and DEBUG_TOOLBAR:
     INTERNAL_IPS = ('127.0.0.1',)
     # Profiling panel requires debug toolbar to be the first middleware class.
-    MIDDLEWARE_CLASSES = ['debug_toolbar.middleware.DebugToolbarMiddleware',] + MIDDLEWARE_CLASSES
+    MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware',] + MIDDLEWARE
     INSTALLED_APPS += ('debug_toolbar',)
