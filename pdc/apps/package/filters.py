@@ -83,7 +83,11 @@ def dependency_filter(type, queryset, name, value):
 
 
 class RPMFilter(django_filters.FilterSet):
-    name        = MultiValueRegexFilter()
+    name        = MultiValueRegexFilter(
+        help_text="""
+            Multiple values will be OR-ed. Preferably use OR inside the regexp.
+            """
+    )
     version     = MultiValueFilter()
     epoch       = MultiIntFilter()
     release     = MultiValueFilter()
@@ -109,7 +113,14 @@ class RPMFilter(django_filters.FilterSet):
                                                           models.Dependency.RECOMMENDS))
     suggests = django_filters.CharFilter(method=partial(dependency_filter,
                                                         models.Dependency.SUGGESTS))
-    has_no_deps = CaseInsensitiveBooleanFilter(name='dependency__isnull', distinct=True)
+    has_no_deps = CaseInsensitiveBooleanFilter(
+        name='dependency__isnull',
+        distinct=True,
+        help_text="""
+    - If "true", lists only RPMs which do not have any dependencies.
+    - If "false", lists only RPMs which have at least one dependency.
+    """
+    )
 
     class Meta:
         model = models.RPM

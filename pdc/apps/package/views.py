@@ -33,17 +33,6 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
 
     def list(self, *args, **kwargs):
         """
-        __Method__: GET
-
-        __URL__: $LINK:rpms-list$
-
-        __Query params__:
-
-        %(FILTERS)s
-
-        If the `has_no_deps` filter is used, the output will only contain RPMs
-        which have some or do not have any dependencies.
-
         All the dependency filters use the same data format.
 
         The simpler option is just name of the dependency. In that case it will
@@ -66,12 +55,6 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
         If dependency doesn't include version, it is satisfied by any filter.
 
         Only single filter for each dependency type is allowed.
-
-        Multiple `name` regular expressions which will be OR-ed. Preferably use OR inside the regexp.
-
-        __Response__: a paged list of following objects
-
-        %(SERIALIZER)s
         """
         return super(RPMViewSet, self).list(*args, **kwargs)
 
