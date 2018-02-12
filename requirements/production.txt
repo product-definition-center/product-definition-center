@@ -2,9 +2,9 @@ Django >= 1.11.0, < 2.0
 kobo>=0.4.3
 # requires: openldap-devel
 python-ldap
-djangorestframework >= 3.5
+djangorestframework >= 3.5.4
 Markdown
 django-filter >= 1.0.2
-django-mptt>=0.7.1
-django-cors-headers
+django-mptt >= 0.8.6
+django-cors-headers >= 2.0.0
 djangorestframework-composed-permissions

@@ -22,23 +22,20 @@ Option 1: Start it on RPM
 For development purposes, install following dependencies:
 
 * python = 2.7
-* python-django = 1.8.1
+* python-django = 1.11
 * python-ldap
 * python-requests
 * python-requests-kerberos
 * python-mock
-* kobo >= 0.4.2
+* kobo >= 0.4.3
 * kobo-django
-* djangorestframework>=3.1
-* django-mptt >= 0.7.1
+* djangorestframework >= 3.5.4
+* django-mptt >= 0.8.6
 * Markdown
-* beanbag >= 1.9.2
-* django-cors-headers
-* productmd
-  REPOs: https://github.com/release-engineering/productmd.git
-* patternfly1
-  REPOs: https://copr.fedoraproject.org/coprs/patternfly/patternfly1/
-* django-filter >= 0.9.2
+* django-cors-headers >= 2.0.0
+* [productmd](https://github.com/release-engineering/productmd.git)
+* [patternfly1](https://copr.fedoraproject.org/coprs/patternfly/patternfly1/)
+* django-filter >= 1.0.2
 * python-qpid-proton
 
 

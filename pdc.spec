@@ -13,21 +13,20 @@ Source0:        %{name}-%{version}.tar.gz
 BuildArch:      noarch
 BuildRequires:  python-setuptools
 BuildRequires:  python-sphinx
-Requires:       Django >= 1.8.1, Django < 1.9.0
-Requires:       django-rest-framework >= 3.2
-Requires:       django-rest-framework < 3.3
-Requires:       django-mptt >= 0.7.1
-Requires:       kobo >= 0.4.2
+Requires:       Django >= 1.11.0, Django < 2.0.0
+Requires:       django-rest-framework >= 3.5.4
+Requires:       kobo >= 0.4.3
 Requires:       kobo-django
 Requires:       patternfly1 == 1.3.0
 Requires:       productmd >= 1.1
-Requires:       python-django-filter >= 0.9.2
+Requires:       python-django-cors-headers >= 2.0.0
+Requires:       python-django-filter >= 1.0.2
+Requires:       python-django-mptt >= 0.8.6
+Requires:       python-django-rest-framework-composed-permissions
 Requires:       python-ldap
 Requires:       python-markdown
 Requires:       python-mock
 Requires:       python-psycopg2
-Requires:       python-django-cors-headers
-Requires:       python-django-rest-framework-composed-permissions
 
 %description
 The Product Definition Center, at its core, is a database that defines every Red Hat products, and their relationships with several important entities.
