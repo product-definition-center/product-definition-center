@@ -18,7 +18,7 @@ run:
 all_tests: test api_doc_test verify_migrations
 
 test:
-	python manage.py test --settings pdc.settings_test pdc contrib
+	python manage.py test --settings pdc.settings_test --parallel -- pdc contrib
 
 cover_test:
 	coverage run --parallel-mode manage.py test --settings pdc.settings_test pdc contrib
