@@ -393,9 +393,10 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
     @cached_by_argument_class
     def get_overview(self, view):
         if view.__class__.__name__ == 'APIRoot':
-            return self.format_description(None, None, PDC_APIROOT_DOC)
-        overview = view.__doc__ or ''
-        return self.format_description(view, '<overview>', overview)
+            overview = PDC_APIROOT_DOC
+        else:
+            overview = view.__doc__ or ''
+        return self.format_description(view, None, overview)
 
     @cached_by_argument_class
     def get_description(self, view, *args):
@@ -417,7 +418,8 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
 
     def format_description(self, view, method, description):
         macros = settings.BROWSABLE_DOCUMENT_MACROS
-        if view:
+
+        if '%(FILTERS)s' in description:
             macros['FILTERS'] = get_filters(view)
             # If the API has the LIST method, show ordering field info.
             if 'list' == method and getattr(view, 'serializer_class', None) is not None:
@@ -425,23 +427,24 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
                 # Show fields info if applicable.
                 if issubclass(view.serializer_class, drf_introspection.serializers.DynamicFieldsSerializerMixin):
                     macros['FILTERS'] += FIELDS_STRING
-            if '%(SERIALIZER)s' in description:
-                macros['SERIALIZER'] = get_serializer(view, include_read_only=True)
-            if '%(WRITABLE_SERIALIZER)s' in description:
-                macros['WRITABLE_SERIALIZER'] = get_writable_serializer(view, method)
-            if '%(URL)s' in description:
-                macros['URL'] = get_url(view, 'list')
-            if '%(DETAIL_URL)s' in description:
-                macros['DETAIL_URL'] = get_url(view, 'detail')
-            if '%(ID)s' in description:
-                macros['ID'] = '{%s}' % get_id_template(view)
-            if hasattr(view, 'docstring_macros'):
-                macros.update(view.docstring_macros)
-        string = formatting.dedent(description)
-        formatted = string % macros
-        formatted = self.substitute_urls(view, method, formatted)
-        string = smart_text(formatted)
-        doc = formatting.markup_description(string)
+        if '%(SERIALIZER)s' in description:
+            macros['SERIALIZER'] = get_serializer(view, include_read_only=True)
+        if '%(WRITABLE_SERIALIZER)s' in description:
+            macros['WRITABLE_SERIALIZER'] = get_writable_serializer(view, method)
+        if '%(URL)s' in description:
+            macros['URL'] = get_url(view, 'list')
+        if '%(DETAIL_URL)s' in description:
+            macros['DETAIL_URL'] = get_url(view, 'detail')
+        if '%(ID)s' in description:
+            macros['ID'] = '{%s}' % get_id_template(view)
+        if hasattr(view, 'docstring_macros'):
+            macros.update(view.docstring_macros)
+
+        doc = formatting.dedent(description)
+        doc = doc % macros
+        doc = self.substitute_urls(view, method, doc)
+        doc = smart_text(doc)
+        doc = formatting.markup_description(doc)
 
         return doc
 
