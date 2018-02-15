@@ -15,7 +15,7 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from . import backends
+from . import backends, signals
 from .models import Resource, ResourcePermission, GroupResourcePermission, ActionPermission
 from pdc.apps.common.test_utils import TestCaseWithChangeSetMixin
 
@@ -309,7 +309,7 @@ class CurrentUserTestCase(APITestCase):
 
         group = Group.objects.get(pk=1)
         for per in ResourcePermission.objects.all():
-                GroupResourcePermission.objects.create(group=group, resource_permission=per)
+            GroupResourcePermission.objects.create(group=group, resource_permission=per)
 
         self.group = group.user_set.add(self.user)
         response = self.client.get(reverse('currentuser-list'), format='json')
@@ -915,3 +915,40 @@ class OrderBySerializedNameTestCase(APITestCase):
         self.assertEqual(results[2].get('permission'), results[3].get('permission'))
         self.assertEqual(results[2].get('resource'), 'resource2')
         self.assertEqual(results[3].get('resource'), 'resource1')
+
+
+@override_settings(SKIP_RESOURCE_CREATION=False)
+class ResourceCreationSignalTestCase(TestCase):
+    def test_creates_known_resources(self):
+        signals.update_resources(None)
+
+        resources = {
+            'releases': ['read', 'create', 'update'],
+            'global-components': ['read', 'create', 'update', 'delete'],
+        }
+
+        for resource, actions in resources.iteritems():
+            for action in actions:
+                try:
+                    ResourcePermission.objects.get(resource__name=resource,
+                                                   permission__name=action)
+                except ResourcePermission.DoesNotExist:
+                    self.fail('%r permission for %s does not exist' % (action, resource))
+
+    def test_does_not_create_known_missing_combination(self):
+        signals.update_resources(None)
+
+        try:
+            ResourcePermission.objects.get(resource__name='releases',
+                                           permission__name='delete')
+            self.fail('delete permission for releases should not exist')
+        except ResourcePermission.DoesNotExist:
+            pass
+
+    def test_can_rename_resource(self):
+        Resource.objects.create(name='unreleasedvariants', view='Old class name')
+
+        signals.update_resources(None)
+
+        r = Resource.objects.get(name='unreleasedvariants')
+        self.assertIn('pdc.apps.unreleasedvariant.views.UnreleasedVariantViewSet', r.view)
