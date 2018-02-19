@@ -71,8 +71,13 @@ ORDERING_STRING = """
     - Use double underscores for nested field names (e.g. `parent__child` for `{"parent": {"child": ...}}`).
 """
 FIELDS_STRING = """
- * `fields` (string) Comma separated list of fields to display (can be faster than requesting all fields).
- * `exclude_fields`: (string) Comma separated list of fields *NOT* to display (overrules `fields`).
+
+Following filters can be used to show only specific fields. This can make
+response time faster. Format is list or single value
+(JSON: `{"fields": ["a","b"]}` or `{"fields": "a"}`, in URL: `?fields=a&fields=b`).
+
+ * `fields` (list | string) Fields to display (other fields will be hidden).
+ * `exclude_fields`: (list | string) Fields *NOT* to display (overrules `fields`).
 """
 
 
