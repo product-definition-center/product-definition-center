@@ -104,7 +104,7 @@ class TreeForeignKeyField(serializers.Field):
             if len_components == 1:
                 try:
                     bc = BugzillaComponent.objects.get(name=components[0], parent_component=None)
-                except:
+                except Exception:
                     raise serializers.ValidationError({'bugzilla_component': ("Bugzilla component with name %s does not exist."
                                                                               % data)})
             # Not only bugzilla Component, but also its ancestors exist.

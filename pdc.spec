@@ -3,8 +3,8 @@
 %define srcname pdc
 
 Name:           python-%{srcname}
-Version:        1.8.0
-Release:        1%{?dist}
+Version:        1.9.0
+Release:        2%{?dist}
 Summary:        Product Definition Center
 Group:          Development/Libraries
 License:        MIT
@@ -14,13 +14,11 @@ BuildArch:      noarch
 BuildRequires:  python-setuptools
 BuildRequires:  python-sphinx
 Requires:       Django >= 1.8.1, Django < 1.9.0
-Requires:       django-rest-framework >= 3.1
+Requires:       django-rest-framework >= 3.2
 Requires:       django-rest-framework < 3.3
 Requires:       django-mptt >= 0.7.1
 Requires:       kobo >= 0.4.2
 Requires:       kobo-django
-Requires:       kobo-rpmlib
-Requires:       koji
 Requires:       patternfly1 == 1.3.0
 Requires:       productmd >= 1.1
 Requires:       python-django-filter >= 0.9.2
@@ -80,6 +78,30 @@ fi
 
 
 %changelog
+* Wed Nov 15 2017 Chuang Cao <chcao@redhat.com> 1.9.0-2
+- Fix checking arch for multi-destinations API (lholecek@redhat.com)
+
+* Fri Nov 10 2017 Chuang Cao <chcao@redhat.com> 1.9.0-1
+- Add release-files endpoint (chcao@redhat.com)
+- Allow filter multi-destinations by repo names (lholecek@redhat.com)
+- Fix filtering by subscribers for mutli-destinations (lholecek@redhat.com)
+- Use numerical ID to refer to variant-cpes (lholecek@redhat.com)
+- Fix filter type of IDs in docs (lholecek@redhat.com)
+- Ignore files created by setuptools (lholecek@redhat.com)
+- Support OneToOneRel in RelatedNestedOrderingFilter (chuzhang@redhat.com)
+- Fix reporting some validation errors (lholecek@redhat.com)
+- Remove "trailing slash" hint from errors (lholecek@redhat.com)
+- Fix partial update of variant-cpes (lholecek@redhat.com)
+- Fix flake8 warnings (lholecek@redhat.com)
+- Restrict djangorestframework's version (chcao@redhat.com)
+- Fix the URL format in the unreleasedvariants documentation
+  (matthew.prahl@outlook.com)
+- Remove unused 'lookup_regex' variable (matthew.prahl@outlook.com)
+- Add a delete test for the unreleasedvariants API (matthew.prahl@outlook.com)
+- Fix the PATCH API in unreleasedvariants (matthew.prahl@outlook.com)
+- Filter multi-destinations by repo release_id (lholecek@redhat.com)
+- Add multi-destinations (multi-product) endpoint (lholecek@redhat.com)
+
 * Tue Oct 17 2017 Lukas Holecek <lholecek@redhat.com> 1.8.0-1
 - Add push-targets endpoint and allowed_push_targets fields
 - Add allowed_debuginfos for release (chcao@redhat.com)

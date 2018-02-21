@@ -8,7 +8,7 @@ from django.conf import settings
 
 
 class ResourceUsage(models.Model):
-    user        = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
+    user        = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     resource    = models.CharField(max_length=300)
     method      = models.CharField(max_length=10)
     time        = models.DateTimeField()

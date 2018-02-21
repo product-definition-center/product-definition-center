@@ -866,7 +866,17 @@ class ResourceApiUrlsTestCase(APITestCase):
         data = {'resource': 'auth/groups', 'url': 'https://www.example.com/pdc/auth/groups-new'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data, ['The API URL for given resource already exists.'])
+        self.assertEqual(response.data, {'detail': 'The API URL for given resource already exists.'})
+
+    def test_bulk_create_again_fails(self):
+        url = reverse('resourceapiurls-list')
+        data = [
+            {'resource': 'auth/groups', 'url': 'https://www.example.com/pdc/auth/groups-new'},
+            {'resource': 'auth/permissions', 'url': 'https://www.example.com/pdc/auth/permissions-new'},
+        ]
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data.get('detail'), 'The API URL for given resource already exists.')
 
 
 class OrderBySerializedNameTestCase(APITestCase):

@@ -686,7 +686,7 @@ class VariantUpdateTestCase(APITestCase):
         response = self.client.delete(reverse('variant-detail', args=['release-1.0/Server-UID']))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(models.Repo.objects.count(), 1)
-        self.assertEqual(release_models.Variant.objects.count(), 2)
+        self.assertEqual(release_models.Variant.objects.count(), 3)
         self.assertEqual(release_models.VariantArch.objects.count(), 4)
 
     def test_changing_variants_with_repos_fails(self):
@@ -817,4 +817,172 @@ class PushTargetRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response.data, {'service': ["'rhnx' is not allowed value. Use one of 'rhn', 'pulp', 'ftp'."]})
+        self.assertNumChanges([])
+
+
+class MultiDestinationRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
+    fixtures = [
+        'pdc/apps/release/fixtures/tests/release.json',
+        'pdc/apps/release/fixtures/tests/variant.json',
+        'pdc/apps/repository/fixtures/tests/multi_destination.json',
+    ]
+
+    def test_list(self):
+        response = self.client.get(reverse('multidestination-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+        result = response.data.get('results')[0]
+        self.assertEqual(result.get('origin_repo', {}).get('id'), 1)
+        self.assertEqual(result.get('destination_repo', {}).get('id'), 2)
+        del result['origin_repo']
+        del result['destination_repo']
+        self.assertEqual(
+            result,
+            {
+                'id': 1,
+                'global_component': 'ruby',
+                'subscribers': ['person1', 'person2'],
+                'active': True,
+            }
+        )
+
+    def test_filter(self):
+        response = self.client.get(reverse('multidestination-list'), {'global_component': 'ruby'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+        result = response.data.get('results')[0]
+        self.assertEqual(result['global_component'], 'ruby')
+
+        response = self.client.get(reverse('multidestination-list'), {'global_component': 'java'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 0)
+
+    def test_filter_by_repo_name(self):
+        for repo in ['origin_repo', 'destination_repo']:
+            response = self.client.get(reverse('multidestination-list'), {repo + '_name': 'test_repo'})
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.data.get('count'), 1)
+            result = response.data.get('results')[0]
+            self.assertEqual(result[repo]['name'], 'test_repo')
+
+            response = self.client.get(reverse('multidestination-list'), {repo + '_name': 'test_repo_with_different_arch'})
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.data.get('count'), 0)
+
+    def test_filter_by_release_id(self):
+        for repo in ['origin_repo', 'destination_repo']:
+            response = self.client.get(reverse('multidestination-list'), {repo + '_release_id': 'release-1.0'})
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.data.get('count'), 1)
+            result = response.data.get('results')[0]
+            self.assertEqual(result[repo]['release_id'], 'release-1.0')
+
+            response = self.client.get(reverse('multidestination-list'), {repo + '_release_id': 'release-2.0'})
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.data.get('count'), 0)
+
+    def test_filter_by_subscribers(self):
+        response = self.client.get(reverse('multidestination-list'), {'subscribers': 'person1'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+        response = self.client.get(reverse('multidestination-list'), {'subscribers': 'person3'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 0)
+
+        response = self.client.get(reverse('multidestination-list'), {'subscribers': ['person2', 'person3']})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('count'), 1)
+
+    def test_add(self):
+        data = {
+            'global_component': 'python',
+            'origin_repo': {'id': 1},
+            'destination_repo': {'id': 2},
+            'subscribers': ['person1', 'person2'],
+            'active': True,
+        }
+        response = self.client.post(reverse('multidestination-list'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNumChanges([1])
+
+    def test_add_only_required_fields(self):
+        data = {
+            'global_component': 'python',
+            'origin_repo': {'id': 1},
+            'destination_repo': {'id': 2},
+        }
+        response = self.client.post(reverse('multidestination-list'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNumChanges([1])
+
+    def test_add_non_unique(self):
+        data = {
+            'global_component': 'ruby',
+            'origin_repo': {'id': 1},
+            'destination_repo': {'id': 2},
+        }
+        response = self.client.post(reverse('multidestination-list'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {'detail': ['The fields global_component, origin_repo, destination_repo must make a unique set.']})
+        self.assertNumChanges([])
+
+    def test_add_missing_required_field(self):
+        data = {
+            'global_component': 'python',
+            'origin_repo': {'id': 1},
+            'destination_repo': {'id': 2},
+        }
+        for missing_field in data.keys():
+            bad_data = {field: value for field, value in data.iteritems() if field != missing_field}
+            response = self.client.post(reverse('multidestination-list'), bad_data, format='json')
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertEqual(response.data, {missing_field: ['This field is required.']})
+            self.assertNumChanges([])
+
+    def test_add_same_origin_and_destination(self):
+        data = {
+            'global_component': 'python',
+            'origin_repo': {'id': 1},
+            'destination_repo': {'id': 1},
+        }
+        response = self.client.post(reverse('multidestination-list'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {'detail': ['Origin and destination repositories must differ.']})
+        self.assertNumChanges([])
+
+    def test_add_origin_and_destination_with_different_arch(self):
+        data = {
+            'global_component': 'python',
+            'origin_repo': {'id': 1},
+            'destination_repo': {'id': 3},
+        }
+        response = self.client.post(reverse('multidestination-list'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {'detail': ['Architecture for origin and destination repositories must NOT differ.']})
+        self.assertNumChanges([])
+
+    def test_add_origin_and_destination_with_different_service(self):
+        data = {
+            'global_component': 'python',
+            'origin_repo': {'id': 1},
+            'destination_repo': {'id': 4},
+        }
+        response = self.client.post(reverse('multidestination-list'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {'detail': ['Service for origin and destination repositories must NOT differ.']})
+        self.assertNumChanges([])
+
+    def test_add_inactive_username(self):
+        data = {
+            'global_component': 'python',
+            'origin_repo': {'id': 1},
+            'destination_repo': {'id': 2},
+            'subscribers': ['person3'],
+        }
+        response = self.client.post(reverse('multidestination-list'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data,
+            {'subscribers': ["'person3' is not allowed value. Use one of 'person1', 'person2'."]})
         self.assertNumChanges([])

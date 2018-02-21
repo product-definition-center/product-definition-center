@@ -36,6 +36,9 @@ class ReleaseType(models.Model):
     name                = models.CharField(max_length=255, blank=False, unique=True)
     suffix              = models.CharField(max_length=255, blank=True, unique=True)
 
+    class Meta:
+        ordering = ('short', 'name', 'suffix')
+
     def __unicode__(self):
         return u"%s" % self.short
 
@@ -47,7 +50,7 @@ class BaseProduct(models.Model):
         RegexValidator(regex=RELEASE_SHORT_RE.pattern, message='Only accept lowercase letters, numbers or -')])
     version             = models.CharField(max_length=200)
     name                = models.CharField(max_length=255)
-    release_type        = models.ForeignKey(ReleaseType, blank=False, db_index=True)
+    release_type        = models.ForeignKey(ReleaseType, blank=False, db_index=True, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (
@@ -159,7 +162,7 @@ class ProductVersion(AllowedPushTargetsModel):
         RegexValidator(regex=RELEASE_SHORT_RE.pattern, message='Only accept lowercase letters, numbers or -')])
     version             = models.CharField(max_length=200, validators=[
         RegexValidator(regex=RELEASE_VERSION_RE.pattern, message='Only accept comma separated numbers or any text')])
-    product             = models.ForeignKey(Product)
+    product             = models.ForeignKey(Product, on_delete=models.CASCADE)
     product_version_id  = models.CharField(max_length=200)
 
     class Meta:
@@ -211,14 +214,15 @@ class Release(AllowedPushTargetsModel):
     version             = models.CharField(max_length=200, blank=False, validators=[
         RegexValidator(regex=RELEASE_VERSION_RE.pattern, message='Only accept comma separated numbers or any text')])
     name                = models.CharField(max_length=255, blank=False)
-    release_type        = models.ForeignKey(ReleaseType, blank=False, db_index=True)
-    base_product        = models.ForeignKey(BaseProduct, null=True, blank=True)
+    release_type        = models.ForeignKey(ReleaseType, blank=False, db_index=True, on_delete=models.CASCADE)
+    base_product        = models.ForeignKey(BaseProduct, null=True, blank=True, on_delete=models.CASCADE)
     active              = models.BooleanField(default=True)
-    product_version     = models.ForeignKey(ProductVersion, blank=True, null=True)
+    product_version     = models.ForeignKey(ProductVersion, blank=True, null=True, on_delete=models.CASCADE)
     integrated_with     = models.ForeignKey('self',
                                             null=True,
                                             blank=True,
-                                            related_name='integrated_releases')
+                                            related_name='integrated_releases',
+                                            on_delete=models.CASCADE)
 
     sigkey              = models.ForeignKey(SigKey, blank=True, null=True)
     allow_buildroot_push = models.BooleanField(default=False)
@@ -277,7 +281,7 @@ class Release(AllowedPushTargetsModel):
         """
         Return a set of all composes built for this release or linked to it.
         """
-        return set(self.compose_set.all()) | set(self.linked_composes.all())
+        return set(self.compose_set.filter(deleted=False)) | set(self.linked_composes.filter(deleted=False))
 
     def get_latest_compose(self):
         """
@@ -344,11 +348,11 @@ class VariantType(models.Model):
 
 
 class Variant(AllowedPushTargetsModel):
-    release             = models.ForeignKey(Release)
+    release             = models.ForeignKey(Release, on_delete=models.CASCADE)
     variant_id          = models.CharField(max_length=100, blank=False)
     variant_uid         = models.CharField(max_length=200, blank=False)
     variant_name        = models.CharField(max_length=300, blank=False)
-    variant_type        = models.ForeignKey(VariantType)
+    variant_type        = models.ForeignKey(VariantType, on_delete=models.CASCADE)
     deleted             = models.BooleanField(default=False)
     # These are to optionally override variant_version/_release in
     # tree.UnreleasedVariant. They are _not_ distribution versions/releases.
@@ -410,6 +414,9 @@ class CPE(models.Model):
 
     description = models.CharField(max_length=300, blank=True)
 
+    class Meta:
+        ordering = ("cpe",)
+
     def __unicode__(self):
         return u"%s" % self.cpe
 
@@ -426,12 +433,17 @@ class VariantCPE(models.Model):
 
     Multiple release variants can have same CPE.
 
+    One release-variant can have multi CPEs.
+
     CPE field is not part of release variant data model so there can be
     separate permissions for assigning CPE.
     """
-    variant = models.OneToOneField(Variant)
+    variant = models.ForeignKey(Variant, null=False, blank=False)
 
     cpe = models.ForeignKey(CPE, null=False, blank=False, db_index=True, on_delete=models.PROTECT)
+
+    class Meta:
+        ordering = ('variant', 'cpe')
 
     def __unicode__(self):
         return u"%s-%s %s" % (self.variant.release.release_id, self.variant.variant_uid, self.cpe.cpe)
@@ -483,8 +495,8 @@ def clone_variants(sender, request, original_release, release, **kwargs):
 
 
 class VariantArch(models.Model):
-    variant             = models.ForeignKey(Variant)
-    arch                = models.ForeignKey("common.Arch")
+    variant             = models.ForeignKey(Variant, on_delete=models.CASCADE)
+    arch                = models.ForeignKey("common.Arch", on_delete=models.CASCADE)
     deleted             = models.BooleanField(default=False)
 
     class Meta:
@@ -507,7 +519,7 @@ class ReleaseGroupType(models.Model):
 class ReleaseGroup(models.Model):
     name                = models.CharField(max_length=255, blank=False, unique=True)
     description         = models.CharField(max_length=255, blank=False)
-    type                = models.ForeignKey(ReleaseGroupType)
+    type                = models.ForeignKey(ReleaseGroupType, on_delete=models.CASCADE)
     releases            = models.ManyToManyField(Release, blank=True)
     active              = models.BooleanField(default=True)
 

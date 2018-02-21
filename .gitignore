@@ -1,5 +1,6 @@
 *.py[co]
 *.sqlite3
+*.sqlite3-journal
 *.swp
 settings_local.py
 .tito/copr_user.conf
@@ -7,4 +8,9 @@ settings_local.py
 .tox
 pdc.egg-info/
 .vscode
-
+.eggs/
+build/
+dist/
+node_modules/
+static/
+package-lock.json

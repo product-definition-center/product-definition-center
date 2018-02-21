@@ -426,15 +426,58 @@ class SigKeyRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertNumChanges([1])
 
 
-class FilterDocumentingTestCase(TestCase):
-    def test_result_is_cached(self):
-        viewset = mock.Mock(spec=[])
-        with mock.patch('contrib.drf_introspection.get_allowed_query_params') as func:
-            res1 = renderers.get_filters(viewset)
-            res2 = renderers.get_filters(viewset)
-            self.assertEqual(res1, res2)
-            func.assert_called_once_with(viewset)
+class CachedByArgumentClassTestCase(TestCase):
+    @renderers.cached_by_argument_class
+    def cached(self, arg, call_id):
+        return (arg, call_id)
 
+    def test_same_argument(self):
+        class A:
+            pass
+
+        a = A()
+        self.assertEqual(self.cached(a, 1), (a, 1))
+        self.assertEqual(self.cached(a, 2), (a, 1))
+
+    def test_different_instances_same_class(self):
+        class A:
+            pass
+
+        a1 = A()
+        a2 = A()
+        self.assertEqual(self.cached(a1, 1), (a1, 1))
+        self.assertEqual(self.cached(a2, 2), (a1, 1))
+
+    def test_different_class(self):
+        class A:
+            pass
+
+        class B:
+            pass
+
+        a = A()
+        b = B()
+        self.assertEqual(self.cached(a, 1), (a, 1))
+        self.assertEqual(self.cached(b, 2), (b, 2))
+
+    def test_different_instances_and_classes(self):
+        class A:
+            pass
+
+        class B:
+            pass
+
+        a1 = A()
+        a2 = A()
+        b1 = B()
+        b2 = B()
+        self.assertEqual(self.cached(a1, 1), (a1, 1))
+        self.assertEqual(self.cached(b1, 2), (b1, 2))
+        self.assertEqual(self.cached(a2, 3), (a1, 1))
+        self.assertEqual(self.cached(b2, 4), (b1, 2))
+
+
+class FilterDocumentingTestCase(TestCase):
     def test_filter_fields_have_no_type(self):
         class TestViewset(object):
             filter_fields = ('c', 'b', 'a')
@@ -458,27 +501,6 @@ class FilterDocumentingTestCase(TestCase):
 
 
 class SerializerDocumentingTestCase(TestCase):
-    def test_result_is_cached(self):
-        serializer = mock.Mock(spec=[])
-        viewset = mock.Mock(spec=[])
-        viewset.get_serializer = lambda: serializer
-        with mock.patch('pdc.apps.common.renderers.describe_serializer') as func:
-            func.return_value = 'result'
-            renderers.get_serializer(viewset, True)
-            renderers.get_serializer(viewset, True)
-            func.assert_called_once_with(serializer, True)
-
-    def test_result_is_cached_separately_for_different_args(self):
-        serializer = mock.Mock(spec=[])
-        viewset = mock.Mock(spec=[])
-        viewset.get_serializer = lambda: serializer
-        with mock.patch('pdc.apps.common.renderers.describe_serializer') as func:
-            func.return_value = 'result'
-            renderers.get_serializer(viewset, True)
-            renderers.get_serializer(viewset, False)
-            func.assert_has_calls([mock.call(serializer, True),
-                                   mock.call(serializer, False)])
-
     def test_describe_by_class_attr(self):
         class DummySerializer(object):
             doc_format = {"foo": "bar"}

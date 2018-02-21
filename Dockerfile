@@ -40,7 +40,6 @@ LABEL Version = "0.5"
 
 # patternfly1
 RUN curl -L https://copr.fedorainfracloud.org/coprs/patternfly/patternfly1/repo/fedora-26/patternfly-patternfly1-fedora-26.repo > /etc/yum.repos.d/patternfly-patternfly1-fedora-26.repo
-RUN curl -L http://www.graphviz.org/graphviz-rhel.repo > /etc/yum.repos.d/graphviz-rhel.repo
 
 # solve dependencies
 RUN dnf -y upgrade && \
@@ -59,7 +58,6 @@ RUN dnf -y upgrade && \
         swig \
         openldap-devel \
         krb5-devel \
-        koji \
         patternfly1 \
         vim-enhanced \
         'graphviz*' \

@@ -34,9 +34,16 @@ class ChangesetMiddleware(object):
                 len(changeset.tmp_changes) < settings.CHANGESET_SIZE_ANNOUNCE):
             return
 
+        author = str(changeset.author)
+        whitelist = getattr(settings, 'BIG_CHANGE_AUTHORS_WHITELIST', set())
+
+        # Skip whitelisted authors.
+        if author in whitelist:
+            return
+
         end_point = request.path.replace("%s%s/" % (settings.REST_API_URL, settings.REST_API_VERSION), '').strip('/')
         params_dict = {
-            'author': str(changeset.author),
+            'author': author,
             'author_email': changeset.author.email if changeset.author else '',
             'end_point': end_point,
             'url': request.build_absolute_uri(reverse('changeset/detail', kwargs={'id': changeset.id})),
@@ -94,7 +101,7 @@ class ChangesetMiddleware(object):
                     else:
                         request.changeset.commit()
                         self._may_announce_big_change(request.changeset, request)
-            except:
+            except Exception:
                 # NOTE: catch all errors that were raised by view.
                 # And log the trace back to the file.
                 logger.error('View Function Error: %s', request.path,

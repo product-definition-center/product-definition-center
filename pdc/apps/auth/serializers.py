@@ -141,7 +141,8 @@ class ResourceApiUrlSerializer(StrictSerializerMixin, serializers.ModelSerialize
 
     def create(self, validated_data):
         if ResourceApiUrl.objects.filter(resource=validated_data['resource']).exists():
-            raise serializers.ValidationError('The API URL for given resource already exists.')
+            raise serializers.ValidationError(
+                {'detail': 'The API URL for given resource already exists.'})
         return super(ResourceApiUrlSerializer, self).create(validated_data)
 
     class Meta:

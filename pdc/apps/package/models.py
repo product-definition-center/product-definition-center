@@ -15,7 +15,6 @@ from django.dispatch import receiver
 from django.db.backends.signals import connection_created
 from django.db.models.signals import post_migrate
 
-from kobo.rpmlib import parse_nvra
 from productmd import images
 
 from pdc.apps.common.models import get_cached_id
@@ -25,6 +24,9 @@ from pdc.apps.common.constants import ARCH_SRC
 from pdc.apps.release.models import Release
 from pdc.apps.compose.models import ComposeAcceptanceTestingState
 from pdc.apps.package.apps import PackageConfig
+from pdc.apps.repository.models import Repo
+from pdc.apps.utils.rpm import parse_nvra
+from django.utils import timezone
 
 
 class RPM(models.Model):
@@ -34,7 +36,7 @@ class RPM(models.Model):
     release             = models.CharField(max_length=200, db_index=True)
     arch                = models.CharField(max_length=200, db_index=True)  # nosrc
     srpm_name           = models.CharField(max_length=200, db_index=True)  # package (name of srpm)
-    built_for_release   = models.ForeignKey('release.Release', null=True, blank=True)
+    built_for_release   = models.ForeignKey('release.Release', null=True, blank=True, on_delete=models.CASCADE)
     srpm_nevra          = models.CharField(max_length=200, null=True, blank=True, db_index=True)
     # Well behaved filenames are unique, but that is enforced by having unique NVRA.
     filename            = models.CharField(max_length=4096)
@@ -43,6 +45,7 @@ class RPM(models.Model):
     srpm_commit_branch  = models.CharField(max_length=200, db_index=True, null=True, blank=True)
 
     class Meta:
+        ordering = ("name", "epoch", "version", "release", "arch")
         unique_together = (
             ("name", "epoch", "version", "release", "arch"),
         )
@@ -167,7 +170,7 @@ class Dependency(models.Model):
     name = models.CharField(max_length=200)
     version = models.CharField(max_length=200, blank=True, null=True)
     comparison = models.CharField(max_length=50, blank=True, null=True)
-    rpm = models.ForeignKey(RPM)
+    rpm = models.ForeignKey(RPM, on_delete=models.CASCADE)
 
     def __unicode__(self):
         base_str = self.name
@@ -189,47 +192,8 @@ class Dependency(models.Model):
     @property
     def parsed_version(self):
         if not hasattr(self, '_version'):
-            self._version = parse_epoch_version(self.version)
+            self._version = parse_epoch_version(self.version) if self.version else None
         return self._version
-
-    def is_satisfied_by(self, other):
-        """
-        Check if other version satisfies this dependency.
-
-        :paramtype other: string
-        """
-        funcs = {
-            '=': lambda x: x == self.parsed_version,
-            '<': lambda x: x < self.parsed_version,
-            '<=': lambda x: x <= self.parsed_version,
-            '>': lambda x: x > self.parsed_version,
-            '>=': lambda x: x >= self.parsed_version,
-        }
-        return funcs[self.comparison](parse_epoch_version(other))
-
-    def is_equal(self, other):
-        """
-        Return true if the other version is equal to version in this dep.
-
-        :paramtype other: string
-        """
-        return self.parsed_version == parse_epoch_version(other)
-
-    def is_higher(self, other):
-        """
-        Return true if version in this dep is higher than the other version.
-
-        :paramtype other: string
-        """
-        return self.parsed_version > parse_epoch_version(other)
-
-    def is_lower(self, other):
-        """
-        Return true if version in this dep is lower than the other version.
-
-        :paramtype other: string
-        """
-        return self.parsed_version < parse_epoch_version(other)
 
 
 class ImageFormat(models.Model):
@@ -262,8 +226,8 @@ class ImageType(models.Model):
 
 class Image(models.Model):
     file_name           = models.CharField(max_length=200, db_index=True)
-    image_format        = models.ForeignKey(ImageFormat)
-    image_type          = models.ForeignKey(ImageType)
+    image_format        = models.ForeignKey(ImageFormat, on_delete=models.CASCADE)
+    image_type          = models.ForeignKey(ImageType, on_delete=models.CASCADE)
     disc_number         = models.PositiveIntegerField()
     disc_count          = models.PositiveIntegerField()
     arch                = models.CharField(max_length=200, db_index=True)
@@ -317,14 +281,15 @@ class Archive(models.Model):
 
 class BuildImage(models.Model):
     image_id            = models.CharField(max_length=200)
-    image_format        = models.ForeignKey(ImageFormat)
+    image_format        = models.ForeignKey(ImageFormat, on_delete=models.CASCADE)
     md5                 = models.CharField(max_length=32, validators=[validate_md5])
 
     rpms                = models.ManyToManyField(RPM)
     archives            = models.ManyToManyField(Archive)
     releases            = models.ManyToManyField(Release)
     test_result         = models.ForeignKey(ComposeAcceptanceTestingState,
-                                            default=ComposeAcceptanceTestingState.get_untested)
+                                            default=ComposeAcceptanceTestingState.get_untested,
+                                            on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (
@@ -354,6 +319,37 @@ class BuildImage(models.Model):
                 for obj in objects:
                     result[field].append(obj.export())
 
+        return result
+
+
+class ReleasedFiles(models.Model):
+    file_primary_key = models.IntegerField(blank=False, default=0)
+    repo             = models.ForeignKey(Repo)
+    released_date    = models.DateField(blank=True, null=True)
+    release_date     = models.DateField()
+    created_at       = models.DateTimeField(default=timezone.now)
+    updated_at       = models.DateTimeField(auto_now=True)
+    # 0 day release
+    zero_day_release = models.BooleanField(default=False)
+    obsolete         = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = (
+            ('file_primary_key', 'repo'),
+        )
+
+    def __unicode__(self):
+        return u"%s" % self.build
+
+    def export(self, fields=None):
+        _fields = (set(['file_primary_key', 'repo',
+                        'released_date', 'release_date', 'created_at',
+                        'updated_at', 'zero_day_release', 'obsolete'])
+                   if fields is None else set(fields))
+        result = model_to_dict(self, fields=_fields)
+        for k in ["release_date", "released_date", "created_at", "updated_at"]:
+            if k in result:
+                result[k] = str(result[k])
         return result
 
 

@@ -27,3 +27,5 @@ router.register(r'content-delivery-services', views.ServiceViewSet,
                 base_name='contentdeliveryservice')
 router.register(r'push-targets', views.PushTargetViewSet,
                 base_name='pushtarget')
+router.register(r'multi-destinations', views.MultiDestinationViewSet,
+                base_name='multidestination')

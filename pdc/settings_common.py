@@ -79,6 +79,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
@@ -98,6 +99,7 @@ INSTALLED_APPS = (
     'pdc.apps.usage',
     'pdc.apps.osbs',
     'pdc.apps.componentbranch',
+    'pdc.apps.unreleasedvariant',
 
     'mptt',
 )
@@ -292,9 +294,6 @@ BROWSABLE_DOCUMENT_MACROS = {
 
 EMPTY_PATCH_ERROR_RESPONSE = {
     'detail': 'Partial update with no changes does not make much sense.',
-    'hint': ' '.join(['Please make sure the URL includes the trailing slash.',
-                      'Some software may automatically redirect you the the',
-                      'correct URL but not forward the request body.'])
 }
 
 INTERNAL_SERVER_ERROR_RESPONSE = {

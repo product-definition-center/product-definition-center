@@ -441,3 +441,88 @@ class PushTargetViewSet(PDCModelViewSet):
         On success, HTTP status code is 204 and the response has no content.
         """
         return super(PushTargetViewSet, self).destroy(*args, **kwargs)
+
+
+class MultiDestinationViewSet(PDCModelViewSet):
+    """
+    Multi-destinations (multi-product) for mapping global component files
+    from an origin repository to a destination repository.
+    """
+
+    queryset = models.MultiDestination.objects.all().select_related()
+    serializer_class = serializers.MultiDestinationSerializer
+    filter_class = filters.MultiDestinationFilter
+    permission_classes = (APIPermission,)
+
+    def create(self, request, *args, **kwargs):
+        """
+        __Method__: POST
+
+        __URL__: $LINK:multidestination-list$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+
+        return super(MultiDestinationViewSet, self).create(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:multidestination-detail:instance_pk$
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(MultiDestinationViewSet, self).retrieve(request, *args, **kwargs)
+
+    def list(self, *args, **kwargs):
+        """
+        __Method__: GET
+
+        __URL__: $LINK:multidestination-list$
+
+        __Query params__:
+
+        %(FILTERS)s
+
+        __Response__: a paged list of following objects
+
+        %(SERIALIZER)s
+        """
+        return super(MultiDestinationViewSet, self).list(*args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__: PUT, PATCH
+
+        __URL__: $LINK:multidestination-detail:instance_pk$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+        """
+        return super(MultiDestinationViewSet, self).update(request, *args, **kwargs)
+
+    def destroy(self, *args, **kwargs):
+        """
+        __Method__: `DELETE`
+
+        __URL__: $LINK:multidestination-detail:instance_pk$
+
+        __Response__:
+
+        On success, HTTP status code is 204 and the response has no content.
+        """
+        return super(MultiDestinationViewSet, self).destroy(*args, **kwargs)

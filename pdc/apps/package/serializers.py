@@ -12,6 +12,7 @@ from . import models
 from pdc.apps.compose.models import ComposeAcceptanceTestingState
 from pdc.apps.common.fields import ChoiceSlugField
 from pdc.apps.common.serializers import StrictSerializerMixin
+from pdc.apps.repository.serializers import RepoField
 
 
 class DefaultFilenameGenerator(object):
@@ -221,3 +222,45 @@ class BuildImageRTTTestsSerializer(StrictSerializerMixin, serializers.ModelSeria
     class Meta:
         model = models.BuildImage
         fields = ('id', 'build_nvr', 'format', 'test_result')
+
+
+class ReleasedFilesSerializer(StrictSerializerMixin, serializers.ModelSerializer):
+    file_primary_key = serializers.IntegerField(allow_null=False)
+    repo = RepoField()
+    released_date = serializers.DateField(required=False)
+    release_date = serializers.DateField()
+    created_at = serializers.DateTimeField(required=False, read_only=True)
+    updated_at = serializers.DateTimeField(required=False, read_only=True)
+    zero_day_release = serializers.BooleanField(required=False, default=False)
+    obsolete = serializers.BooleanField(required=False, default=False)
+
+    class Meta:
+        model = models.ReleasedFiles
+        fields = ('id', 'file_primary_key', 'repo', 'released_date',
+                  'release_date', 'created_at', 'updated_at',
+                  'zero_day_release', 'obsolete')
+
+    def validate(self, data):
+        if "repo" in data:
+            repo_format = data["repo"].content_format
+            repo_name = data["repo"].name
+            if str(repo_format) != "rpm":
+                raise serializers.ValidationError(
+                    {'detail': 'Currently we '
+                               'just support rpm type of repo, the type of %s is %s ' % (repo_name, repo_format)})
+
+        # if there are other types support, should add codes check if the primary key in right table
+
+        return data
+
+    def to_representation(self, value):
+        rep_data = super(ReleasedFilesSerializer, self).to_representation(value)
+
+        if "file_primary_key" in rep_data and "repo" in rep_data:
+            if rep_data["repo"]["content_format"] == "rpm":
+                d = models.RPM.objects.get(id=rep_data["file_primary_key"])
+                rep_data["build"] = "%s-%s-%s" % (d.srpm_name, d.version, d.arch)
+                rep_data["package"] = d.srpm_name
+                rep_data["file"] = d.filename
+
+        return rep_data

@@ -45,9 +45,13 @@ There are a few exceptions to the above stability promise. Specifically:
 Authentication
 --------------
 
-By default, all the API calls require authentication. While the web UI is
-authenticated using an external system such as Kerberos or SAML2, the API uses
-a custom authentication for performance reasons.
+By default, all the API calls, except GET requests, require authentication,
+though this depends on PDC server settings. If you're logged in, you can list
+permissions and group you're in at ``/rest_api/v1/auth/current-user/``. To see
+who has which permissions see table at ``/rest_api/perms/``.
+
+While the web UI is authenticated using an external system such as Kerberos or
+SAML2, the API uses a custom authentication for performance reasons.
 
 The expected workflow is as follows:
 

@@ -4,8 +4,10 @@
 # http://opensource.org/licenses/MIT
 #
 import django_filters as filters
+from django.forms import SelectMultiple
 
-from pdc.apps.common.filters import MultiValueFilter, MultiIntFilter, CaseInsensitiveBooleanFilter
+from pdc.apps.common.filters import MultiValueFilter, MultiIntFilter, CaseInsensitiveBooleanFilter, value_is_not_empty
+from pdc.apps.contact.models import Person
 from . import models
 
 
@@ -44,3 +46,35 @@ class PushTargetFilter(filters.FilterSet):
     class Meta:
         model = models.PushTarget
         fields = ('name', 'description', 'service', 'host')
+
+
+class MultiDestinationFilter(filters.FilterSet):
+    global_component = MultiValueFilter(name='global_component__name')
+    origin_repo = MultiIntFilter()
+    destination_repo = MultiIntFilter()
+    origin_repo_name = MultiValueFilter(name='origin_repo__name')
+    destination_repo_name = MultiValueFilter(name='destination_repo__name')
+    origin_repo_release_id = MultiValueFilter(name='origin_repo__variant_arch__variant__release__release_id')
+    destination_repo_release_id = MultiValueFilter(name='destination_repo__variant_arch__variant__release__release_id')
+    subscribers = filters.MethodFilter(action='filter_by_subscribers', widget=SelectMultiple)
+    active = CaseInsensitiveBooleanFilter()
+
+    @value_is_not_empty
+    def filter_by_subscribers(self, qs, value):
+        people = Person.objects.filter(username__in=value)
+        return qs.filter(subscribers__in=people)
+
+    class Meta:
+        model = models.MultiDestination
+        fields = (
+            'id',
+            'global_component',
+            'origin_repo',
+            'destination_repo',
+            'origin_repo_name',
+            'destination_repo_name',
+            'origin_repo_release_id',
+            'destination_repo_release_id',
+            'subscribers',
+            'active',
+        )

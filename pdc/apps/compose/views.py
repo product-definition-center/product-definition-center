@@ -624,7 +624,12 @@ class ComposeViewSet(StrictQueryParamMixin,
                             data={'detail': 'Only these properties can be updated: %s'
                                   % ', '.join(updatable_keys)})
 
-        arch_testing_status = as_dict(request.data.pop('rtt_tested_architectures', {}),
+        # Omit changing request data if immutable.
+        try:
+            rtt_tested_architectures = request.data.pop('rtt_tested_architectures', {})
+        except AttributeError:
+            rtt_tested_architectures = request.data.get('rtt_tested_architectures', {})
+        arch_testing_status = as_dict(rtt_tested_architectures,
                                       name='rtt_tested_architectures')
         self.update_arch_testing_status(arch_testing_status)
 
@@ -1521,7 +1526,7 @@ class FindComposeMixin(object):
 
     def _get_composes_for_release(self):
         result = []
-        composes = Compose.objects.filter(release__release_id=self.release_id)
+        composes = Compose.objects.filter(release__release_id=self.release_id, deleted=False)
         composes = self._filter_by_compose_type(composes)
         result = self._get_result(composes, result)
         return result
@@ -1531,7 +1536,7 @@ class FindComposeMixin(object):
         all_composes = []
         releases = Release.objects.filter(product_version__product_version_id=self.product_version)
         for release in releases:
-            composes = Compose.objects.filter(release=release)
+            composes = Compose.objects.filter(release=release, deleted=False)
             composes = self._filter_by_compose_type(composes)
             all_composes.extend(composes)
         result = self._get_result(all_composes, result)
@@ -1575,6 +1580,7 @@ class FindComposeMixin(object):
         current_rpms = set(r.sort_key for r in compose.get_rpms(self.rpm_name))
         # Find older composes for same release (not including this one)
         composes = (Compose.objects
+                    .exclude(deleted=True)
                     # Get only older composes
                     .exclude(compose_date__gt=compose.compose_date)
                     # Only composes in the same product

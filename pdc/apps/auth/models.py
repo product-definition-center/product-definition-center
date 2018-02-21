@@ -116,8 +116,8 @@ class ActionPermission(models.Model):
 
 
 class ResourcePermission(models.Model):
-    resource = models.ForeignKey(Resource)
-    permission = models.ForeignKey(ActionPermission)
+    resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
+    permission = models.ForeignKey(ActionPermission, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ("resource__name", "permission__name")
@@ -136,8 +136,8 @@ class ResourcePermission(models.Model):
 
 
 class GroupResourcePermission(models.Model):
-    resource_permission = models.ForeignKey(ResourcePermission)
-    group = models.ForeignKey(Group)
+    resource_permission = models.ForeignKey(ResourcePermission, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ("group__name", "resource_permission__resource__name", "resource_permission__permission__name")

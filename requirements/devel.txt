@@ -8,7 +8,7 @@ ipython<6.0
 setuptools>=18.5
 coverage>=3.7.1
 mock>=1.0.1
-productmd==1.2
+productmd>=1.2
 # requires: libxml2-devel libxslt-devel
 lxml
 # model graph

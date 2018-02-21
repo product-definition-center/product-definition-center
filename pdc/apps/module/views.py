@@ -1,169 +1,88 @@
 #
-# Copyright (c) 2015 Red Hat
+# Copyright (c) 2018 Red Hat
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
 
 from pdc.apps.common import viewsets
-from .models import UnreleasedVariant
-from .serializers import UnreleasedVariantSerializer
-from .filters import UnreleasedVariantFilter
+from pdc.apps.module.models import Module
+from pdc.apps.module.serializers import ModuleSerializer
+from pdc.apps.module.filters import ModuleFilter
 
 
-class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
+class ModuleViewSet(viewsets.PDCModelViewSet):
     """
     ##Overview##
 
-    This page shows the usage of the **Module API**, please see the
-    following for more details.
-
-    ##Test tools##
-
-    You can use ``curl`` in terminal, with -X _method_ (GET|POST|PUT|DELETE),
-    -d _data_ (a json string). or GUI plugins for
-    browsers, such as ``RESTClient``, ``RESTConsole``.
-
+    This page shows the usage of the **Module API**, please see the following for more details.
     """
-    model = UnreleasedVariant
-    queryset = UnreleasedVariant.objects.all().order_by('variant_uid')
-    serializer_class = UnreleasedVariantSerializer
-    filter_class = UnreleasedVariantFilter
-    lookup_field = 'variant_uid'
-    lookup_regex = '[^/]+'
+    model = Module
+    # Only show the items in the database of type 'module'. The type in the "unreleasedvariants"
+    # API is a freeform text field but in this API, the type field is not exposed and just defaults
+    # to 'module' in the database for backwards-compatibility.
+    queryset = Module.objects.filter(type='module').order_by('uid')
+    filter_class = ModuleFilter
+    serializer_class = ModuleSerializer
+    lookup_field = 'uid'
 
     def list(self, request, *args, **kwargs):
         """
         __Method__:
         GET
 
-        __URL__: $LINK:unreleasedvariant-list$
+        __URL__: $LINK:modules-list$
 
         __Query Params__:
 
         %(FILTERS)s
 
-        __Response__:
+        __Paged Response__:
 
-            # paged lists
-            {
-                "count": int,
-                "next": url,
-                "previous": url,
-                "results": [
-                    {
-                        "variant_id": string,
-                        "variant_uid": string,
-                        "variant_name": string,
-                        "variant_type": string,
-                        "variant_version": string,
-                        "variant_release": string,
-                        "koji_tag": string,
-                        "modulemd": string,
-                        "active": bool,
-                        "runtime_deps": [{"dependency": string, "stream": string}, ... ],
-                        "build_deps": [{"dependency": string, "stream": string}, ... ],
-                        "rpms": [string, ... ]
-                    },
-                    ...
-                ]
-            }
+        %(SERIALIZER)s
         """
-        return super(UnreleasedVariantViewSet, self).list(request, *args, **kwargs)
+        return super(ModuleViewSet, self).list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
         """
         __Method__:
         GET
 
-        __URL__: $LINK:unreleasedvariant-detail:variant_id$
+        __URL__: $LINK:modules-detail:uid$
 
         __Response__:
 
-            {
-                "variant_id": string,
-                "variant_uid": string,
-                "variant_name": string,
-                "variant_type": string,
-                "variant_version": string,
-                "variant_release": string,
-                "koji_tag": string,
-                "modulemd": string,
-                "active": bool,
-                "runtime_deps": [{"dependency": string, "stream": string}, ... ],
-                "build_deps": [{"dependency": string, "stream": string}, ... ],
-                "rpms": [string, ... ]
-            }
+        %(SERIALIZER)s
         """
-        return super(UnreleasedVariantViewSet, self).retrieve(request, *args, **kwargs)
+        return super(ModuleViewSet, self).retrieve(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         """
         __Method__:
         POST
 
-        __URL__: $LINK:unreleasedvariant-list$
+        __URL__: $LINK:modules-list$
 
         __Data__:
 
-            {
-                "variant_id": string,     # required
-                "variant_uid": string,    # required
-                "variant_name": string,   # required
-                "variant_type": string,   # required
-                "variant_version": string,# version of this particular variant
-                "variant_release": string,# release of this particular variant
-                "koji_tag": string,       # required
-                "modulemd": string,       # required
-                "active": bool,           # required
-                "runtime_deps": [{"dependency": string, "stream": string}, ... ],
-                "build_deps": [{"dependency": string, "stream": string}, ... ],
-                "rpms": [string, ... ]
-            }
+        %(WRITABLE_SERIALIZER)s
 
         __Response__:
 
-            {
-                "variant_id": string,
-                "variant_uid": string,
-                "variant_name": string,
-                "variant_type": string,
-                "variant_version": string,
-                "variant_release": string,
-                "koji_tag": string,
-                "modulemd": string,
-                "active": bool,
-                "runtime_deps": [{"dependency": string, "stream": string}, ... ],
-                "build_deps": [{"dependency": string, "stream": string}, ... ],
-                "rpms": [string, ... ]
-            }
+        %(SERIALIZER)s
 
         __Example__:
 
-            curl -X POST -H "Content-Type: application/json" $URL:unreleasedvariant-list$ \\
-                    -d '{ "variant_id": "core", "variant_uid": "Core", "variant_name": "Minimalistic Core", "variant_type": "module", "variant_version": "master", "variant_release": "20170101", "koji_tag": "foobar", "active": false }'
-            # output
-            {
-                "variant_id": "core",
-                "variant_uid": "Core",
-                "variant_name": "Minimalistic Core",
-                "variant_type": "module",
-                "variant_version": "master",
-                "variant_release": "20170101",
-                "koji_tag": "foobar",
-                "active": false,
-                "runtime_deps": [],
-                "build_deps": [],
-                "rpms": [],
-            }
+            curl -X POST -H "Content-Type: application/json" $URL:modules-list$ \\
+                -d '{ "name": "testmodule", "stream": "f28", "version": "20180123171544", "context": "2f345c78", "koji_tag": "module-ce2adf69caf0e1b5", "modulemd": "data here" }'
         """
-        return super(UnreleasedVariantViewSet, self).create(request, **kwargs)
+        return super(ModuleViewSet, self).create(request, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         """
         __Method__:
         DELETE
 
-        __URL__: $LINK:unreleasedvariant-detail:variant_id$
+        __URL__: $LINK:modules-detail:uid$
 
         __Response__:
 
@@ -171,6 +90,28 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
 
         __Example__:
 
-            curl -X DELETE -H "Content-Type: application/json" $URL:unreleasedvariant-detail:4181$
+            curl -X DELETE -H "Content-Type: application/json" $URL:modules-detail:uid_here$
         """
-        return super(UnreleasedVariantViewSet, self).destroy(request, **kwargs)
+        return super(ModuleViewSet, self).destroy(request, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        __Method__:
+        PUT/PATCH
+
+        __URL__: $LINK:modules-detail:uid$
+
+        __Data__:
+
+        %(WRITABLE_SERIALIZER)s
+
+        __Response__:
+
+        %(SERIALIZER)s
+
+        __Example__:
+
+            curl -X PATCH -d '{ "active": true }' -H "Content-Type: application/json" \\
+                $URL:modules-detail:uid_here$
+        """
+        return super(ModuleViewSet, self).update(request, *args, **kwargs)

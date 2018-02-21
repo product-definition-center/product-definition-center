@@ -71,9 +71,36 @@ ORDERING_STRING = """
     - Use double underscores for nested field names (e.g. `parent__child` for `{"parent": {"child": ...}}`).
 """
 FIELDS_STRING = """
- * `fields` (string) Comma separated list of fields to display (can be faster than requesting all fields).
- * `exclude_fields`: (string) Comma separated list of fields *NOT* to display (overrules `fields`).
+
+Following filters can be used to show only specific fields. This can make
+response time faster. Format is list or single value
+(JSON: `{"fields": ["a","b"]}` or `{"fields": "a"}`, in URL: `?fields=a&fields=b`).
+
+ * `fields` (list | string) Fields to display (other fields will be hidden).
+ * `exclude_fields`: (list | string) Fields *NOT* to display (overrules `fields`).
 """
+
+
+def cached_by_argument_class(method):
+    """
+    Decorator which caches result of method call by class of the first
+    argument.
+
+    Subsequent calls with same class of the first argument just return the
+    cached result.
+    """
+    cache = {}
+
+    def wrapper(self, arg, *args, **kwargs):
+        cache_key = arg.__class__
+        if cache_key in cache:
+            return cache[cache_key]
+
+        result = method(self, arg, *args, **kwargs)
+        cache[cache_key] = result
+        return result
+
+    return wrapper
 
 
 class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
@@ -126,12 +153,14 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
 
         return super_retval
 
+    @cached_by_argument_class
     def get_overview(self, view):
         if view.__class__.__name__ == 'APIRoot':
             return self.format_docstring(None, None, PDC_APIROOT_DOC)
         overview = view.__doc__ or ''
         return self.format_docstring(view, '<overview>', overview)
 
+    @cached_by_argument_class
     def get_description(self, view, *args):
         if view.__class__.__name__ == 'APIRoot':
             return ''
@@ -165,7 +194,9 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
         formatted = string % macros
         formatted = self.substitute_urls(view, method, formatted)
         string = smart_text(formatted)
-        return formatting.markup_description(string)
+        doc = formatting.markup_description(string)
+
+        return doc
 
     def substitute_urls(self, view, method, text):
         def replace_url(match):
@@ -189,13 +220,13 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
         return URL_SPEC_RE.sub(replace_url, text)
 
 
-FILTERS_CACHE = {}
 FILTER_DEFS = {
     'CharFilter': 'string',
     'NullableCharFilter': 'string | null',
     'BooleanFilter': 'bool',
     'CaseInsensitiveBooleanFilter': 'bool',
     'ActiveReleasesFilter': 'bool',
+    'NumberFilter': 'int',
     'MultiIntFilter': 'int',
     'MultiValueRegexFilter': 'regular expression'
 }
@@ -212,9 +243,6 @@ def get_filters(view):
     Markdown formatted list. The list does not include query filters specified
     on serializer or query arguments used for paging.
     """
-    if view in FILTERS_CACHE:
-        return FILTERS_CACHE[view]
-
     allowed_keys = drf_introspection.get_allowed_query_params(view)
     filter_class = getattr(view, 'filter_class', None)
     filterset = filter_class() if filter_class is not None else None
@@ -237,12 +265,10 @@ def get_filters(view):
             filters.append(' * `%s`' % key)
         # else filter defined somewhere else and not relevant here (e.g.
         # serializer or pagination settings).
-    filters = '\n'.join(filters)
-    FILTERS_CACHE[view] = filters
-    return filters
+
+    return '\n'.join(filters)
 
 
-SERIALIZERS_CACHE = {}
 SERIALIZER_DEFS = {
     'BooleanField': 'boolean',
     'NullBooleanField': 'boolean',
@@ -376,17 +402,14 @@ def get_serializer(view, include_read_only):
     serializer. If `include_read_only` is `False`, only writable fields will be
     included.
     """
-    if (view, include_read_only) in SERIALIZERS_CACHE:
-        return SERIALIZERS_CACHE[(view, include_read_only)]
-    if not hasattr(view, 'get_serializer'):
-        return None
-    try:
-        serializer = view.get_serializer()
-        desc = json.dumps(describe_serializer(serializer, include_read_only),
-                          indent=4, sort_keys=True)
-        doc = '\n'.join('    %s' % line for line in desc.split('\n'))
-    except AssertionError:
-        # Even when `get_serializer` is present, it may raise exception.
-        doc = None
-    SERIALIZERS_CACHE[(view, include_read_only)] = doc
-    return doc
+    if hasattr(view, 'get_serializer'):
+        try:
+            serializer = view.get_serializer()
+            desc = json.dumps(describe_serializer(serializer, include_read_only),
+                              indent=4, sort_keys=True)
+            return '\n'.join('    %s' % line for line in desc.split('\n'))
+        except AssertionError:
+            # Even when `get_serializer` is present, it may raise exception.
+            pass
+
+    return None

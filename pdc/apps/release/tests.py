@@ -1445,6 +1445,23 @@ class ReleaseLatestComposeTestCase(APITestCase):
         latest = self.release.get_latest_compose()
         self.assertEqual(latest.compose_id, 'compose-1')
 
+    def test_exclude_deleted(self):
+        compose_models.Compose.objects.create(compose_respin=0,
+                                              compose_date='2015-02-09',
+                                              compose_type=self.ct_prod,
+                                              compose_id='compose-1',
+                                              release=self.release,
+                                              acceptance_testing=self.untested,
+                                              deleted=True)
+        compose_models.Compose.objects.create(compose_respin=0,
+                                              compose_date='2015-02-09',
+                                              compose_type=self.ct_test,
+                                              compose_id='compose-2',
+                                              release=self.release,
+                                              acceptance_testing=self.untested)
+        latest = self.release.get_latest_compose()
+        self.assertEqual(latest.compose_id, 'compose-2')
+
 
 class ReleaseComposeLinkingTestCase(APITestCase):
     fixtures = [
@@ -1464,6 +1481,19 @@ class ReleaseComposeLinkingTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertItemsEqual(response.data.get('compose_set'),
                               ['compose-1', 'compose-2'])
+
+    def test_deleted_compose_does_not_show_up(self):
+        c = compose_models.Compose.objects.get(compose_id='compose-1')
+        c.deleted = True
+        c.save()
+
+        response = self.client.get(reverse('release-detail', args=['product-1.0-eus']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual(response.data.get('compose_set'), [])
+
+        response = self.client.get(reverse('release-detail', args=['product-1.0-updates']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertItemsEqual(response.data.get('compose_set'), ['compose-2'])
 
     def test_linking_visible_in_web_ui(self):
         client = Client()
@@ -1637,7 +1667,7 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         })
         self.assertEqual(response.data, expected)
         self.assertNumChanges([1])
-        self.assertEqual(models.Variant.objects.count(), 3)
+        self.assertEqual(models.Variant.objects.count(), 4)
         self.assertEqual(models.VariantArch.objects.count(), 5)
 
     def test_create_missing_fields(self):
@@ -1649,7 +1679,7 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(reverse('variant-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertNumChanges([])
-        self.assertEqual(models.Variant.objects.count(), 2)
+        self.assertEqual(models.Variant.objects.count(), 3)
         self.assertEqual(models.VariantArch.objects.count(), 4)
 
     def test_create_bad_release(self):
@@ -1664,7 +1694,7 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(reverse('variant-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertNumChanges([])
-        self.assertEqual(models.Variant.objects.count(), 2)
+        self.assertEqual(models.Variant.objects.count(), 3)
         self.assertEqual(models.VariantArch.objects.count(), 4)
 
     def test_create_bad_variant_type(self):
@@ -1679,7 +1709,7 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(reverse('variant-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertNumChanges([])
-        self.assertEqual(models.Variant.objects.count(), 2)
+        self.assertEqual(models.Variant.objects.count(), 3)
         self.assertEqual(models.VariantArch.objects.count(), 4)
 
     def test_create_duplicit(self):
@@ -1694,7 +1724,7 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(reverse('variant-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertNumChanges([])
-        self.assertEqual(models.Variant.objects.count(), 2)
+        self.assertEqual(models.Variant.objects.count(), 3)
         self.assertEqual(models.VariantArch.objects.count(), 4)
 
     def test_create_extra_fields(self):
@@ -1711,13 +1741,13 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertNumChanges([])
         self.assertEqual(response.data.get('detail'), 'Unknown fields: "foo".')
-        self.assertEqual(models.Variant.objects.count(), 2)
+        self.assertEqual(models.Variant.objects.count(), 3)
         self.assertEqual(models.VariantArch.objects.count(), 4)
 
     def test_list(self):
         response = self.client.get(reverse('variant-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 2)
+        self.assertEqual(response.data['count'], 3)
 
     def test_filter_id(self):
         response = self.client.get(reverse('variant-list'), {'id': 'Server'})
@@ -1899,7 +1929,7 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def test_delete(self):
         response = self.client.delete(reverse('variant-detail', args=['release-1.0/Server-UID']))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(models.Variant.objects.count(), 1)
+        self.assertEqual(models.Variant.objects.count(), 2)
         self.assertNumChanges([1])
 
     def test_delete_non_existing(self):
@@ -1913,7 +1943,7 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                                       ['release-1.0/Client-UID', 'release-1.0/Server-UID'],
                                       format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(models.Variant.objects.count(), 0)
+        self.assertEqual(models.Variant.objects.count(), 1)
         self.assertNumChanges([2])
 
     def test_bulk_delete_bad_identifier(self):
@@ -1924,7 +1954,7 @@ class VariantRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data,
                          {'detail': 'Not found.',
                           'id_of_invalid_data': '/release-1.0/Client-UID'})
-        self.assertEqual(models.Variant.objects.count(), 2)
+        self.assertEqual(models.Variant.objects.count(), 3)
         self.assertNumChanges([])
 
     def test_bulk_partial_update_empty_data(self):
@@ -2011,11 +2041,12 @@ class VariantCPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     def test_detail(self):
         data = {
+            'id': 1,
             'release': 'release-1.0',
             'variant_uid': 'Client-UID',
             'cpe': 'cpe:test1',
         }
-        response = self.client.get(reverse('variantcpe-detail', args=['release-1.0/Client-UID']))
+        response = self.client.get(reverse('variantcpe-detail', args=[1]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, data)
 
@@ -2043,6 +2074,7 @@ class VariantCPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         }
         response = self.client.post(reverse('variantcpe-list'), args, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        del response.data['id']
         self.assertEqual(args, response.data)
         self.assertNumChanges([1])
 
@@ -2051,8 +2083,16 @@ class VariantCPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response.data,
-            {'detail': ['CPE binding for variant "release-1.0/Server-UID" already exists.']})
+            {'detail': ['CPE(cpe:test1) binding for variant "release-1.0/Server-UID" already exists.']})
         self.assertNumChanges([1])
+
+        # Add another cpe with same variant
+        args['cpe'] = 'cpe:test2'
+        response = self.client.post(reverse('variantcpe-list'), args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        del response.data['id']
+        self.assertEqual(args, response.data)
+        self.assertNumChanges([1, 1])
 
     def test_missing_cpe(self):
         args = {
@@ -2083,6 +2123,54 @@ class VariantCPERESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(models.VariantCPE.objects.count(), 1)
         self.assertEqual(models.CPE.objects.count(), 2)
+        self.assertNumChanges([])
+
+    def test_patch_release(self):
+        url = reverse('variantcpe-detail', args=[1])
+        args = {'release': 'release2-1.0'}
+        response = self.client.patch(url, args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        args = {
+            'id': 1,
+            'release': 'release2-1.0',
+            'variant_uid': 'Client-UID',
+            'cpe': 'cpe:test1',
+        }
+        self.assertEqual(args, response.data)
+        self.assertNumChanges([1])
+
+    def test_patch_variant_uid(self):
+        url = reverse('variantcpe-detail', args=[1])
+        args = {'variant_uid': 'Server-UID'}
+        response = self.client.patch(url, args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        args = {
+            'id': 1,
+            'release': 'release-1.0',
+            'variant_uid': 'Server-UID',
+            'cpe': 'cpe:test1',
+        }
+        self.assertEqual(args, response.data)
+        self.assertNumChanges([1])
+
+    def test_patch_non_existing_release(self):
+        url = reverse('variantcpe-detail', args=[1])
+        args = {'release': 'bad_release'}
+        response = self.client.patch(url, args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data,
+            {'detail': 'variant (release=bad_release, uid=Client-UID) does not exist'})
+        self.assertNumChanges([])
+
+    def test_patch_non_existing_variant(self):
+        url = reverse('variantcpe-detail', args=[1])
+        args = {'variant_uid': 'BAD-UID'}
+        response = self.client.patch(url, args, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data,
+            {'detail': 'variant (release=release-1.0, uid=BAD-UID) does not exist'})
         self.assertNumChanges([])
 
 

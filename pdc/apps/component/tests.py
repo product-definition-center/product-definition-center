@@ -379,7 +379,6 @@ class ReleaseComponentModelTestCase(unittest.TestCase):
 class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
     fixtures = [
-        "pdc/apps/release/fixtures/release_type.json",
         "pdc/apps/release/fixtures/tests/release.json",
         "pdc/apps/release/fixtures/tests/product.json",
         "pdc/apps/component/fixtures/tests/upstream.json",
@@ -1232,7 +1231,6 @@ class BugzillaComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         "pdc/apps/component/fixtures/tests/upstream.json",
         "pdc/apps/component/fixtures/tests/bugzilla_component.json",
         "pdc/apps/component/fixtures/tests/global_component.json",
-        "pdc/apps/release/fixtures/release_type.json",
         "pdc/apps/release/fixtures/tests/release.json",
     ]
 

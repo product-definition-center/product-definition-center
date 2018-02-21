@@ -7,6 +7,7 @@
 
 
 from django.db import models
+from django.core.exceptions import ValidationError
 
 from pdc.apps.common.models import get_cached_id
 
@@ -36,6 +37,7 @@ class Service(models.Model):
 class ContentFormat(models.Model):
     # rpm, kickstart, iso
     name          = models.CharField(max_length=50, unique=True)
+    pdc_endpoint = models.CharField(max_length=200, null=True)
     description   = models.CharField(max_length=200)
 
     def __unicode__(self):
@@ -79,10 +81,10 @@ class Repo(models.Model):
     variant_arch        = models.ForeignKey("release.VariantArch",
                                             related_name="repos",
                                             on_delete=models.PROTECT)
-    service             = models.ForeignKey(Service)
-    repo_family         = models.ForeignKey(RepoFamily)
-    content_format      = models.ForeignKey(ContentFormat)
-    content_category    = models.ForeignKey(ContentCategory)
+    service             = models.ForeignKey(Service, on_delete=models.CASCADE)
+    repo_family         = models.ForeignKey(RepoFamily, on_delete=models.CASCADE)
+    content_format      = models.ForeignKey(ContentFormat, on_delete=models.CASCADE)
+    content_category    = models.ForeignKey(ContentCategory, on_delete=models.CASCADE)
     shadow              = models.BooleanField(default=False)
     name                = models.CharField(max_length=2000, db_index=True)
     # Store engineering product ID which is used to identify products shipped via CDN
@@ -138,3 +140,37 @@ class PushTarget(models.Model):
             "host": self.host,
             "service": self.service.name,
         }
+
+
+class MultiDestination(models.Model):
+    global_component = models.ForeignKey('component.GlobalComponent')
+    origin_repo = models.ForeignKey(Repo, related_name='origin_repo')
+    destination_repo = models.ForeignKey(Repo, related_name='destination_repo')
+    subscribers = models.ManyToManyField('contact.Person', blank=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ('global_component', 'origin_repo', 'destination_repo')
+        ordering = ['global_component']
+
+    def __unicode__(self):
+        return u"%s, %s -> %s" % (
+            self.global_component.name, self.origin_repo.name, self.destination_repo.name)
+
+    def export(self):
+        return {
+            "global_component": self.global_component.name,
+            "origin_repo_id": self.origin_repo.id,
+            "destination_repo_id": self.destination_repo.id,
+            "subscribers": [subscriber.username for subscriber in self.subscribers.all()],
+            "active": self.active,
+        }
+
+    def clean(self):
+        if self.origin_repo == self.destination_repo:
+            raise ValidationError('Origin and destination repositories must differ.')
+        if self.origin_repo.variant_arch.arch != self.destination_repo.variant_arch.arch:
+            raise ValidationError('Architecture for origin and destination repositories must NOT differ.')
+        if self.origin_repo.service != self.destination_repo.service:
+            raise ValidationError('Service for origin and destination repositories must NOT differ.')
+        super(MultiDestination, self).clean()

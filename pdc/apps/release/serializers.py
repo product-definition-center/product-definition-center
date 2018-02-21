@@ -80,6 +80,7 @@ class ProductVersionSerializer(StrictSerializerMixin, serializers.ModelSerialize
         fields = ('name', 'short', 'version', 'active', 'product_version_id', 'product', 'releases', 'allowed_push_targets')
 
     def to_internal_value(self, data):
+        data = data.copy()
         if not self.partial and 'short' not in data:
             data['short'] = data.get('product')
         return super(ProductVersionSerializer, self).to_internal_value(data)
@@ -234,23 +235,16 @@ class ReleaseVariantSerializer(StrictSerializerMixin, serializers.ModelSerialize
         self.remove_arches = data.get('remove_arches', None)
         return super(ReleaseVariantSerializer, self).to_internal_value(data)
 
+    def create(self, validated_data):
+        arches = validated_data.pop('variantarch_set', [])
+        instance = super(ReleaseVariantSerializer, self).create(validated_data)
+        self._add_arches(instance, arches)
+        return instance
+
     def update(self, instance, validated_data):
         arches = validated_data.pop('variantarch_set', [])
         instance = super(ReleaseVariantSerializer, self).update(instance, validated_data)
-        if arches:
-            if self.add_arches or self.remove_arches:
-                raise FieldError(self.key_combination_error)
-            # If arches were completely specified, try first to remove unwanted
-            # arches, then create new ones.
-            requested = dict([(x.arch.name, x) for x in arches])
-            for variant in instance.variantarch_set.all():
-                if variant.arch.name in requested:
-                    del requested[variant.arch.name]
-                else:
-                    variant.delete()
-            for arch in requested.values():
-                arch.variant = instance
-                arch.save()
+        self._add_arches(instance, arches)
 
         # These loops can only do something on partial update: when doing PUT,
         # "arches" is required and if any of the other arch modifications were
@@ -268,6 +262,22 @@ class ReleaseVariantSerializer(StrictSerializerMixin, serializers.ModelSerialize
     def validate(self, data):
         convert_push_targets_to_mask(data, self.instance, 'release')
         return data
+
+    def _add_arches(self, instance, arches):
+        if arches:
+            if self.add_arches or self.remove_arches:
+                raise FieldError(self.key_combination_error)
+            # If arches were completely specified, try first to remove unwanted
+            # arches, then create new ones.
+            requested = dict([(x.arch.name, x) for x in arches])
+            for variant in instance.variantarch_set.all():
+                if variant.arch.name in requested:
+                    del requested[variant.arch.name]
+                else:
+                    variant.delete()
+            for arch in requested.values():
+                arch.variant = instance
+                arch.save()
 
 
 class CPESerializer(StrictSerializerMixin, serializers.ModelSerializer):
@@ -292,13 +302,14 @@ class ReleaseVariantCPESerializer(StrictSerializerMixin, serializers.ModelSerial
 
     class Meta:
         model = VariantCPE
-        fields = ('release', 'variant_uid', 'cpe')
+        fields = ('id', 'release', 'variant_uid', 'cpe')
 
     def create(self, validated_data):
         variant = validated_data['variant']
-        if VariantCPE.objects.filter(variant=variant).exists():
+        cpe = validated_data['cpe']
+        if VariantCPE.objects.filter(variant=variant, cpe=cpe).exists():
             raise serializers.ValidationError(
-                {'detail': ['CPE binding for variant "%s" already exists.' % variant]})
+                {'detail': ['CPE(%s) binding for variant "%s" already exists.' % (cpe, variant)]})
         return super(ReleaseVariantCPESerializer, self).create(validated_data)
 
     def to_internal_value(self, data):
@@ -306,8 +317,16 @@ class ReleaseVariantCPESerializer(StrictSerializerMixin, serializers.ModelSerial
 
         variant = verified_data.get('variant')
         if variant is not None:
-            release_id = variant['release']['release_id']
-            variant_uid = variant['variant_uid']
+            if 'release' in variant:
+                release_id = variant['release']['release_id']
+            else:
+                release_id = self.instance.variant.release.release_id
+
+            if 'variant_uid' in variant:
+                variant_uid = variant['variant_uid']
+            else:
+                variant_uid = self.instance.variant.variant_uid
+
             try:
                 verified_data['variant'] = Variant.objects.get(release__release_id=release_id, variant_uid=variant_uid)
             except Variant.DoesNotExist:

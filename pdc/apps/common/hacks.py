@@ -86,7 +86,7 @@ def convert_str_to_int(value, name=None):
     """
     try:
         value = int(value)
-    except:
+    except Exception:
         ident = ' of %s' % name if name else ''
         raise ValidationError('Value [%s]%s is not an integer' % (value, ident))
     else:

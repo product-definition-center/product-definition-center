@@ -746,7 +746,13 @@ class ResourcePermissionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         for prefix, view_set, basename in router.registry:
             if prefix in self.API_WITH_NO_PERMISSION_CONTROL:
                 continue
-            resource_obj, created = Resource.objects.get_or_create(name=prefix, view=str(view_set))
+            view_name = str(view_set)
+            resource_obj, created = Resource.objects.get_or_create(name=prefix,
+                                                                   defaults={'view': view_name})
+            if not created and resource_obj.view != view_name:
+                # Update the name of the View class
+                resource_obj.view = view_name
+                resource_obj.save()
             for name, method in inspect.getmembers(view_set, predicate=inspect.ismethod):
                 if name.lower() in ['update', 'create', 'destroy', 'list', 'partial_update', 'retrieve']:
                     action_permission = action_to_obj_dict[convert_method_to_action(name.lower())]

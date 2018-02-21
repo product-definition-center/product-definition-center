@@ -52,8 +52,9 @@ class HelpPopoverNode(template.Node):
     def render(self, context):
         t = get_template('help_popover.html')
         output = self.nodelist.render(context)
-        context['content'] = output
-        return t.render(context)
+        context_dict = context.flatten()
+        context_dict['content'] = output
+        return t.render(context_dict)
 
 
 register = template.Library()

@@ -12,6 +12,8 @@ from django.core.exceptions import FieldError
 from django.http import Http404
 from django.conf import settings
 from django.views.decorators.http import condition
+from django.core import serializers
+from django.db import models
 
 from contrib import drf_introspection
 
@@ -21,6 +23,17 @@ from rest_framework.response import Response
 from pdc.apps.auth.permissions import APIPermission
 from pdc.apps.utils.utils import generate_warning_header_dict, get_model_name_from_obj_or_cls
 from pdc.apps.changeset.models import Change
+
+
+class JSONModelEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, models.Model):
+            return serializers.serialize('json', [obj])
+        return json.JSONEncoder.default(self, obj)
+
+
+def _dumps_json(obj):
+    return json.dumps(obj, cls=JSONModelEncoder)
 
 
 class NoSetattrInPreSaveMixin(object):
@@ -47,7 +60,7 @@ class ChangeSetCreateModelMixin(mixins.CreateModelMixin):
             self.request.changeset.add(model_name,
                                        item.id,
                                        'null',
-                                       json.dumps(item.export()))
+                                       _dumps_json(item.export()))
 
 
 class NoEmptyPatchMixin(object):
@@ -103,8 +116,8 @@ class ChangeSetUpdateModelMixin(NoSetattrInPreSaveMixin,
         model_name = get_model_name_from_obj_or_cls(obj)
         self.request.changeset.add(model_name,
                                    obj.id,
-                                   json.dumps(self.origin_obj),
-                                   json.dumps(obj.export()))
+                                   _dumps_json(self.origin_obj),
+                                   _dumps_json(obj.export()))
         del self.origin_obj
 
 
@@ -115,7 +128,7 @@ class ChangeSetDestroyModelMixin(mixins.DestroyModelMixin):
     def perform_destroy(self, obj):
         model_name = get_model_name_from_obj_or_cls(obj)
         obj_id = obj.id
-        obj_content = json.dumps(obj.export())
+        obj_content = _dumps_json(obj.export())
         super(ChangeSetDestroyModelMixin, self).perform_destroy(obj)
         self.request.changeset.add(model_name,
                                    obj_id,
@@ -204,7 +217,7 @@ class StrictQueryParamMixin(object):
         model_fields = [field.name for field in self.queryset.model._meta.fields]
         serializer_fields = self._get_fields_from_serializer_class()
         valid_fields = list(set(model_fields).union(set(serializer_fields)))
-        valid_fields += self.queryset.query.aggregates.keys()
+        valid_fields += self.queryset.query.annotations.keys()
         # If there is a nested ordering with '__', check if it is valid in the RelatedNestedOrderingFilter
         tmp_list = [param.strip().lstrip('-') for param in ordering_keys.split(',') if '__' not in param]
         invalid_fields = set(tmp_list) - set(valid_fields)
@@ -235,7 +248,11 @@ class PDCModelViewSet(StrictQueryParamMixin,
     PDC common ModelViewSet.
     With `StrictQueryParam`, `ProtectOnDelete` and `ChangeSetModel`
     """
-    pass
+
+    # The field used in URL can not contain a . character by default. This
+    # attribute changes that so that we can use anything in URL as long as
+    # there is no slash.
+    lookup_value_regex = r'[^/]+'
 
 
 class MultiLookupFieldMixin(object):

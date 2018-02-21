@@ -3,7 +3,7 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
-import kobo.rpmlib
+from pdc.apps.utils.rpm import parse_nvr, parse_nvra
 
 import django_filters
 from django.db.models import Q
@@ -30,7 +30,7 @@ class ComposeFilter(django_filters.FilterSet):
     @value_is_not_empty
     def filter_nvr(self, qs, value):
         try:
-            nvr = kobo.rpmlib.parse_nvr(value)
+            nvr = parse_nvr(value)
         except ValueError:
             raise ValidationError("Invalid NVR: %s" % value)
 
@@ -43,7 +43,7 @@ class ComposeFilter(django_filters.FilterSet):
     @value_is_not_empty
     def filter_nvra(self, qs, value):
         try:
-            nvra = kobo.rpmlib.parse_nvra(value)
+            nvra = parse_nvra(value)
         except ValueError:
             raise ValidationError("Invalid NVRA: %s" % value)
 

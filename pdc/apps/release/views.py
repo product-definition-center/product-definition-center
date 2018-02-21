@@ -333,7 +333,7 @@ class ReleaseViewSet(ChangeSetCreateModelMixin,
     """
     queryset = models.Release.objects \
                      .select_related('product_version', 'release_type', 'base_product') \
-                     .prefetch_related('compose_set').order_by('id')
+                     .order_by('id')
     serializer_class = ReleaseSerializer
     lookup_field = 'release_id'
     lookup_value_regex = '[^/]+'
@@ -511,6 +511,7 @@ class ReleaseImportView(StrictQueryParamMixin, viewsets.GenericViewSet):
 
 class BaseProductViewSet(ChangeSetCreateModelMixin,
                          ChangeSetUpdateModelMixin,
+                         ConditionalProcessingMixin,
                          StrictQueryParamMixin,
                          mixins.ListModelMixin,
                          mixins.RetrieveModelMixin,
@@ -667,9 +668,9 @@ class ReleaseCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
         old_release_id = data.pop('old_release_id')
         old_release = get_object_or_404(models.Release, release_id=old_release_id)
 
-        old_data = ReleaseSerializer(instance=old_release).data
+        old_data = ReleaseViewSet.serializer_class(instance=old_release).data
 
-        for (field_name, field) in ReleaseSerializer().fields.iteritems():
+        for (field_name, field) in ReleaseViewSet.serializer_class().fields.iteritems():
             if not field.read_only and field_name not in data:
                 value = old_data.get(field_name, None)
                 if value:
@@ -679,10 +680,12 @@ class ReleaseCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
             if data[key] is None:
                 data.pop(key)
 
-        serializer = ReleaseSerializer(data=data,
-                                       extra_fields=['include_trees',
-                                                     'include_inactive',
-                                                     'component_dist_git_branch'])
+        serializer = ReleaseViewSet.serializer_class(
+            data=data,
+            extra_fields=[
+                'include_trees',
+                'include_inactive',
+                'component_dist_git_branch'])
         serializer.is_valid(raise_exception=True)
 
         new_release = serializer.save()
@@ -1126,11 +1129,7 @@ class CPEViewSet(PDCModelViewSet):
         return super(CPEViewSet, self).destroy(*args, **kwargs)
 
 
-class ReleaseVariantCPEViewSet(ChangeSetModelMixin,
-                               ConditionalProcessingMixin,
-                               StrictQueryParamMixin,
-                               MultiLookupFieldMixin,
-                               viewsets.GenericViewSet):
+class ReleaseVariantCPEViewSet(PDCModelViewSet):
     """
     Links each variant ($LINK:variant-list$) with CPE ($LINK:cpe-list$).
     """
@@ -1139,7 +1138,6 @@ class ReleaseVariantCPEViewSet(ChangeSetModelMixin,
     serializer_class = ReleaseVariantCPESerializer
     filter_class = filters.ReleaseVariantCPEFilter
     permission_classes = (APIPermission,)
-    lookup_fields = (('variant__release__release_id', r'[^/]+'), ('variant__variant_uid', r'[^/]+'))
 
     def create(self, request, *args, **kwargs):
         """
@@ -1162,7 +1160,7 @@ class ReleaseVariantCPEViewSet(ChangeSetModelMixin,
         """
         __Method__: GET
 
-        __URL__: $LINK:variantcpe-detail:release_id}/{variant_uid$
+        __URL__: $LINK:variantcpe-detail:instance-pk$
 
         __Response__:
 
@@ -1190,7 +1188,7 @@ class ReleaseVariantCPEViewSet(ChangeSetModelMixin,
         """
         __Method__: PUT, PATCH
 
-        __URL__: $LINK:variantcpe-detail:release_id}/{variant_uid$
+        __URL__: $LINK:variantcpe-detail:instance-pk$
 
         __Data__:
 
@@ -1206,7 +1204,7 @@ class ReleaseVariantCPEViewSet(ChangeSetModelMixin,
         """
         __Method__: `DELETE`
 
-        __URL__: $LINK:variantcpe-detail:release_id}/{variant_uid$
+        __URL__: $LINK:variantcpe-detail:instance-pk$
 
         __Response__:
 

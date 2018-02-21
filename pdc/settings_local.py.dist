@@ -81,6 +81,9 @@ EMAIL_HOST = 'smtp.example.com'
 SERVER_EMAIL = 'noreply@example.com'
 EMAIL_SUBJECT_PREFIX = '[PDC]'
 
+# Omit sending e-mails about big data change when author is in this whitelist.
+#BIG_CHANGE_AUTHORS_WHITELIST = ('some_user',)
+
 # un-comment below 4 lines if enable email notification as meet any error
 # get_setting('LOGGING').get('loggers').update({'pdc.apps.common.handlers': {
 #     'handlers': ['mail_admins'],

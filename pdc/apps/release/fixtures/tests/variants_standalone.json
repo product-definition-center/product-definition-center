@@ -16,6 +16,21 @@
   },
   {
     "fields": {
+      "release_type": 1,
+      "base_product": null,
+      "release_id": "release2-1.0",
+      "name": "Test2",
+      "product_version": null,
+      "short": "release2",
+      "integrated_with": null,
+      "version": "1.0",
+      "active": true
+    },
+    "model": "release.release",
+    "pk": 2
+  },
+  {
+    "fields": {
       "name": "variant"
     },
     "model": "release.varianttype",
@@ -51,6 +66,18 @@
     },
     "model": "release.variant",
     "pk": 2
+  },
+  {
+    "fields": {
+      "release": 2,
+      "variant_id": "Client",
+      "variant_type": 2,
+      "deleted": false,
+      "variant_name": "Client name",
+      "variant_uid": "Client-UID"
+    },
+    "model": "release.variant",
+    "pk": 3
   },
   {
     "fields": {

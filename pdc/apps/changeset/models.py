@@ -14,7 +14,7 @@ class Changeset(models.Model):
     method is called. That is done in the middleware, therefore there is no
     need to actually commit from any other method.
     """
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     requested_on = models.DateTimeField()
     committed_on = models.DateTimeField(auto_now_add=True)
     comment = models.TextField(null=True, blank=True)
@@ -63,7 +63,7 @@ class Changeset(models.Model):
 
 
 class Change(models.Model):
-    changeset = models.ForeignKey(Changeset)
+    changeset = models.ForeignKey(Changeset, on_delete=models.CASCADE)
     target_class = models.CharField(max_length=200, db_index=True)
     target_id = models.PositiveIntegerField()
     old_value = models.TextField()

@@ -8,17 +8,12 @@ addons:
             - swig
             - libldap2-dev
             - graphviz
-# The sed command is a terrible hack: we can't easily install koji on Ubuntu.
-# PDC does not need it, it is a dependency of kobo. However, PDC does not use
-# any part of kobo that would actively use koji, se we just delete the
-# offending import.
 install:
     - git config --global user.name  "Travis CI"
     - git config --global user.email "pdc@product-definition-center.com"
     - export REPO_URL_GITHUB="https://$GH_TOKEN@github.com/$GH_REPO.git"
     - pip install -U pip wheel coveralls
     - pip install -r requirements/devel.txt
-    - sed -i -E '/import (koji|rpm)/d' $(python -vc 'import kobo.rpmlib' 2>&1 | grep 'import kobo.rpmlib' | awk '{print$NF}' | sed 's/pyc$/py/')
 script:
     - coverage run --source=contrib,pdc --omit='*tests.py,*/migrations/*,pdc/settings*' manage.py test --settings pdc.settings_test contrib pdc
     - make flake8

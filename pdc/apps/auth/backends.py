@@ -50,12 +50,12 @@ def update_user_from_ldap(user, conn=None):
         return
 
     try:
-        l = conn or ldap.initialize(settings.LDAP_URI)
-        user_data = get_ldap_user(l, user.username)
-        groups = get_ldap_groups(l, user.username)
+        ldap_object = conn or ldap.initialize(settings.LDAP_URI)
+        user_data = get_ldap_user(ldap_object, user.username)
+        groups = get_ldap_groups(ldap_object, user.username)
     finally:
         if not conn:
-            l.unbind()
+            ldap_object.unbind()
 
     if user_data:
         user.full_name = user_data["full_name"]
