@@ -3,8 +3,8 @@
 %define srcname pdc
 
 Name:           python-%{srcname}
-Version:        1.9.0
-Release:        2%{?dist}
+Version:        1.10.0
+Release:        1%{?dist}
 Summary:        Product Definition Center
 Group:          Development/Libraries
 License:        MIT
@@ -78,6 +78,60 @@ fi
 
 
 %changelog
+* Wed Feb 21 2018 Lukas Holecek <lholecek@redhat.com> 1.10.0-1
+- Fix cache for filters and serializers (lholecek@redhat.com)
+- Fix "fields" filter documentation (lholecek@redhat.com)
+- Update resources when needed (lsedlar@redhat.com)
+- Fix authentication documentation (lholecek@redhat.com)
+- Filter modules by RPM filename (lsedlar@redhat.com)
+- Fix access to modules with dot in UID (lsedlar@redhat.com)
+- Include radix in parseInt call (lsedlar@redhat.com)
+- Allow new productmd in devel requirements (lsedlar@redhat.com)
+- Fix displaying deleted composes (lsedlar@redhat.com)
+- Fix creating arches for new release-variant (lholecek@redhat.com)
+- Fix base-products caching (lholecek@redhat.com)
+- Simpler extending of serializers and filters (lholecek@redhat.com)
+- Add django_filters to INSTALLED_APPS (lholecek@redhat.com)
+- Make migrations for added ordering fields (lholecek@redhat.com)
+- Fix unordered results warning (lholecek@redhat.com)
+- Add npm files to .gitignore (lholecek@redhat.com)
+- Add multi CPEs for one variant (chcao@redhat.com)
+- Show Browsable GET section on API web page only if supported
+  (lholecek@redhat.com)
+- Replace kobo-rpm dependency with own functions (lholecek@redhat.com)
+- Fix jquery path (lholecek@redhat.com)
+- Change the Copyright year to 2018 on the module API
+  (matthew.prahl@outlook.com)
+- Add v2 of the "unreleasedvariants" API called "module" and correct the docs
+  in "unreleasedvariants" (matthew.prahl@outlook.com)
+- Drop contact browser from examples (lsedlar@redhat.com)
+- Container build throws 404 error on graphviz repo (rmarshall@redhat.com)
+- Fix passing correct argument type to Template.render() (lholecek@redhat.com)
+- Fix modifying immutable request data (lholecek@redhat.com)
+- Ignore SQLite journal file (lholecek@redhat.com)
+- Fix serializing Permissions model to JSON (lholecek@redhat.com)
+- Always set Meta.fields or Meta.exclude with Meta.model (lholecek@redhat.com)
+- Use queryset.query.annotations instead queryset.query.aggregates
+  (lholecek@redhat.com)
+- Fix ComposeTree update test (lholecek@redhat.com)
+- Set on_delete parameter for foreign keys (lholecek@redhat.com)
+- Remove reference to non-existing test fixture (lholecek@redhat.com)
+- Remove dead code (lholecek@redhat.com)
+- Make the "variant_uid" field unique in the unreleasedvariants API
+  (matthew.prahl@outlook.com)
+- Add the "variant_context" field to the unreleasedvariants API
+  (matthew.prahl@outlook.com)
+- Remove unused custom fields in pdc.apps.modules.serializers
+  (matthew.prahl@outlook.com)
+- Clarify docs for RPM dependency filtering (lholecek@redhat.com)
+- Omit sending "big data change" e-mails for whitelisted authors
+  (lholecek@redhat.com)
+- Refactor dependency filtering and add simple tests (lholecek@redhat.com)
+- Fix filtering dependencies without any version (lholecek@redhat.com)
+- Fix long SQL query for releases (lholecek@redhat.com)
+- Bump uglify-js version in example (lholecek@redhat.com)
+- Add documentation link in README file (lholecek@redhat.com)
+
 * Wed Nov 15 2017 Chuang Cao <chcao@redhat.com> 1.9.0-2
 - Fix checking arch for multi-destinations API (lholecek@redhat.com)
 
