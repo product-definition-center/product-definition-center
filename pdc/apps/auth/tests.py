@@ -6,11 +6,10 @@
 #
 import mock
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -319,10 +318,6 @@ class CurrentUserTestCase(APITestCase):
                          'permission': 'create'} in response.data['resource_permissions'])
 
     def test_resource_permission_all_read_permissions_on(self):
-        temp = False
-        if hasattr(settings, 'ALLOW_ALL_USER_READ'):
-            temp = settings.ALLOW_ALL_USER_READ
-
         self.client.force_authenticate(user=self.user)
         for permission in Permission.objects.all():
             self.user.user_permissions.add(permission)
@@ -337,17 +332,17 @@ class CurrentUserTestCase(APITestCase):
             for permission in ActionPermission.objects.all():
                 ResourcePermission.objects.create(resource=resource, permission=permission)
 
-        settings.ALLOW_ALL_USER_READ = False
-        response = self.client.get(reverse('currentuser-list'), format='json')
+        with self.settings(ALLOW_ALL_USER_READ=False):
+            response = self.client.get(reverse('currentuser-list'), format='json')
         self.assertEqual(len(response.data['resource_permissions']), 0)
 
-        settings.ALLOW_ALL_USER_READ = True
-        response = self.client.get(reverse('currentuser-list'), format='json')
+        with self.settings(ALLOW_ALL_USER_READ=True):
+            response = self.client.get(reverse('currentuser-list'), format='json')
         self.assertEqual(len(response.data['resource_permissions']), 3)
 
-        settings.ALLOW_ALL_USER_READ = temp
 
-
+@override_settings(ALLOW_ALL_USER_READ=False)
+@override_settings(DISABLE_RESOURCE_PERMISSION_CHECK=False)
 class GroupResourcePermissionsTestCase(APITestCase):
     fixtures = [
         'pdc/apps/auth/fixtures/tests/groups.json',
@@ -360,12 +355,6 @@ class GroupResourcePermissionsTestCase(APITestCase):
         self.token.save()
         self.client.force_authenticate(user=self.user)
         self.group = Group.objects.all().first()
-        if hasattr(settings, 'ALLOW_ALL_USER_READ'):
-            self.ALLOW_ALL_USER_READ = settings.ALLOW_ALL_USER_READ
-            settings.ALLOW_ALL_USER_READ = False
-        if hasattr(settings, 'DISABLE_RESOURCE_PERMISSION_CHECK'):
-            self.DISABLE_RESOURCE_PERMISSION_CHECK = settings.DISABLE_RESOURCE_PERMISSION_CHECK
-            settings.DISABLE_RESOURCE_PERMISSION_CHECK = False
 
         for permission in Permission.objects.all():
             self.user.user_permissions.add(permission)
@@ -387,12 +376,6 @@ class GroupResourcePermissionsTestCase(APITestCase):
             for per in group_resource_permissions:
                 GroupResourcePermission.objects.create(group=group, resource_permission=per)
         self.group.user_set.add(self.user)
-
-    def tearDown(self):
-        if hasattr(settings, 'ALLOW_ALL_USER_READ'):
-            settings.ALLOW_ALL_USER_READ = self.ALLOW_ALL_USER_READ
-        if hasattr(settings, 'DISABLE_RESOURCE_PERMISSION_CHECK'):
-            settings.DISABLE_RESOURCE_PERMISSION_CHECK = self.DISABLE_RESOURCE_PERMISSION_CHECK
 
     def test_control_read_permission(self):
         url = reverse('releasecomponent-list')
@@ -598,8 +581,7 @@ class GroupResourcePermissionsTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_enable_all_permissions_flag(self):
-        if hasattr(settings, 'DISABLE_RESOURCE_PERMISSION_CHECK'):
-            settings.DISABLE_RESOURCE_PERMISSION_CHECK = True
+        with self.settings(DISABLE_RESOURCE_PERMISSION_CHECK=True):
             # automatically have permission
             url = reverse('findcomposebyrr-list', kwargs={'rpm_name': 'bash', 'release_id': 'release-1.0'})
             response = self.client.get(url, format='json')
