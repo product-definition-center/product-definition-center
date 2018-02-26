@@ -11,7 +11,6 @@ from pdc.apps.componentbranch.models import SLA
 from pdc.apps.common.fields import ChoiceSlugField
 from contrib.drf_introspection.serializers import StrictSerializerMixin
 from .models import ReleaseSchedule
-from . import signals
 
 
 class ReleaseScheduleSerializer(StrictSerializerMixin,
@@ -35,21 +34,6 @@ class ReleaseScheduleSerializer(StrictSerializerMixin,
         read_only=True,
         view_name='sla-detail',
     )
-
-    def update(self, instance, validated_data):
-        signals.releaseschedule_serializer_extract_data.send(sender=self, validated_data=validated_data)
-        instance = super(ReleaseScheduleSerializer, self).update(instance, validated_data)
-        signals.releaseschedule_serializer_post_update.send(sender=self, release_schedule=instance)
-        if hasattr(instance, 'pk'):
-            # reload to make sure changes in mapping are reflected
-            instance = ReleaseSchedule.objects.get(pk=instance.pk)
-        return instance
-
-    def create(self, validated_data):
-        signals.releaseschedule_serializer_extract_data.send(sender=self, validated_data=validated_data)
-        instance = super(ReleaseScheduleSerializer, self).create(validated_data)
-        signals.releaseschedule_serializer_post_create.send(sender=self, release_schedule=instance)
-        return instance
 
     class Meta:
         model = ReleaseSchedule

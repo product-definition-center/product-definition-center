@@ -3,7 +3,6 @@
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
-from rest_framework import status
 from pdc.apps.auth.permissions import APIPermission
 from pdc.apps.common import viewsets
 from pdc.apps.common.constants import PUT_OPTIONAL_PARAM_WARNING
@@ -12,7 +11,6 @@ from pdc.apps.componentbranch.models import SLA
 from .models import ReleaseSchedule
 from .serializers import ReleaseScheduleSerializer
 from .filters import ReleaseScheduleFilter
-from . import signals
 
 
 class ReleaseScheduleViewSet(viewsets.PDCModelViewSet):
@@ -130,17 +128,7 @@ class ReleaseScheduleViewSet(viewsets.PDCModelViewSet):
                 "sla_url": string,
             }
         """
-        obj = self.get_object()
-        signals.releaseschedule_pre_update.send(
-            sender=obj.__class__,
-            release_schedule=obj,
-            request=request)
-        response = super(ReleaseScheduleViewSet, self).update(request, *args, **kwargs)
-        signals.releaseschedule_post_update.send(
-            sender=self.object.__class__,
-            release_schedule=self.object,
-            request=request)
-        return response
+        return super(ReleaseScheduleViewSet, self).update(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         """
@@ -172,14 +160,7 @@ class ReleaseScheduleViewSet(viewsets.PDCModelViewSet):
             }
 
         """
-        response = super(ReleaseScheduleViewSet, self).create(request, *args, **kwargs)
-
-        if response.status_code == status.HTTP_201_CREATED:
-            signals.releaseschedule_post_update.send(
-                sender=self.object.__class__,
-                release_schedule=self.object,
-                request=request)
-        return response
+        return super(ReleaseScheduleViewSet, self).create(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         """
