@@ -22,6 +22,7 @@ from pdc.apps.component.models import (ReleaseComponent,
                                        BugzillaComponent)
 import pdc.apps.release.models as release_models
 import pdc.apps.common.models as common_models
+from pdc.apps.utils import messenger
 from . import models
 
 
@@ -755,6 +756,33 @@ class ComposeUpdateTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['detail'], 'The parameters\' format for updating is wrong. '
                                                   'Please read API documentation')
+
+
+class ComposeUpdateMessagingTestCase(APITestCase):
+    fixtures = [
+        "pdc/apps/release/fixtures/tests/release.json",
+        "pdc/apps/compose/fixtures/tests/variant.json",
+        "pdc/apps/compose/fixtures/tests/variant_arch.json",
+        "pdc/apps/compose/fixtures/tests/compose.json",
+        "pdc/apps/compose/fixtures/tests/more_releases.json",
+    ]
+
+    def test_update_testing_status_on_arch(self):
+        with messenger.listen() as messages:
+            response = self.client.patch(
+                reverse('compose-detail', args=['compose-1']),
+                {'acceptance_testing': 'passed'})
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+            self.assertEqual(len(messages), 1)
+
+            topic, msg = messages[0]
+            self.assertEqual(topic, '.compose')
+            data = json.loads(msg)
+            self.assertEqual(data['action'], 'update')
+            self.assertEqual(data['compose_id'], 'compose-1')
+            self.assertEqual(data['to']['acceptance_testing'], 'passed')
+            self.assertEqual(data['from']['acceptance_testing'], 'untested')
 
 
 class OverridesRPMAPITestCase(TestCaseWithChangeSetMixin, APITestCase):

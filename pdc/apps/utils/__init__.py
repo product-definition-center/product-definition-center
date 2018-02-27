@@ -5,16 +5,16 @@
 #
 from django.conf import settings
 
-from .messaging import (DummyMessenger, KombuMessenger, FedmsgMessenger,
-                        ProtonMessenger, StompMessenger)
+import messaging
 
 
 MESSENGERS = {
-    'kombu': KombuMessenger,
-    'fedmsg': FedmsgMessenger,
-    'proton': ProtonMessenger,
-    'stomp': StompMessenger,
+    'kombu': messaging.KombuMessenger,
+    'fedmsg': messaging.FedmsgMessenger,
+    'proton': messaging.ProtonMessenger,
+    'stomp': messaging.StompMessenger,
+    'test': messaging.TestMessenger,
 }
 
 # init messenger
-messenger = MESSENGERS.get(settings.MESSAGE_BUS['MLP'], DummyMessenger)()
+messenger = MESSENGERS.get(settings.MESSAGE_BUS['MLP'], messaging.DummyMessenger)()
