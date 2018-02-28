@@ -13,11 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 class DummyMessenger(object):
-    def __init__(self):
-        pass
 
     def send_message(self, topic, msg):
-        pass
+        logger.info('Sending to %s:\n%s' % (topic, json.dumps(msg, sort_keys=True, indent=2)))
 
 
 class KombuMessenger(object):
