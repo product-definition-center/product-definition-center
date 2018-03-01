@@ -28,8 +28,6 @@ class ReleaseSearchForm(forms.Form):
             query |= Q(name__icontains=search)
             query |= Q(release_id__icontains=search)
 
-        # TODO: disabled
-
         return query
 
 
@@ -46,8 +44,6 @@ class BaseProductSearchForm(forms.Form):
             query |= Q(name__icontains=search)
             query |= Q(base_product_id__icontains=search)
             query |= Q(release_type__short__icontains=search)
-
-        # TODO: disabled
 
         return query
 
