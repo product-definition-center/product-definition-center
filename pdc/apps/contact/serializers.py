@@ -80,8 +80,7 @@ class ContactField(serializers.DictField):
         serializer_cls = self.class_to_serializer.get(
             type(leaf_value).__name__, None)
         if serializer_cls:
-            leaf_serializer = serializer_cls(exclude_fields=['url'],
-                                             context=self.context)
+            leaf_serializer = serializer_cls(context=self.context)
             return leaf_serializer.to_representation(leaf_value)
         else:
             raise serializers.ValidationError("Unsupported Contact: %s" % value)
