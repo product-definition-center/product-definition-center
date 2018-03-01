@@ -32,7 +32,8 @@ from pdc.apps.common.viewsets import (ChangeSetModelMixin,
                                       MultiLookupFieldMixin,
                                       StrictQueryParamMixin,
                                       ConditionalProcessingMixin,
-                                      PDCModelViewSet)
+                                      PDCModelViewSet,
+                                      NotificationMixin)
 from pdc.apps.auth.permissions import APIPermission
 from . import lib
 
@@ -112,7 +113,8 @@ class ProductDetailView(PageSizeMixin, DetailView):
     context_object_name = "product"
 
 
-class ProductViewSet(ChangeSetCreateModelMixin,
+class ProductViewSet(NotificationMixin,
+                     ChangeSetCreateModelMixin,
                      ChangeSetUpdateModelMixin,
                      ConditionalProcessingMixin,
                      StrictQueryParamMixin,
@@ -211,7 +213,8 @@ class ProductViewSet(ChangeSetCreateModelMixin,
         return response
 
 
-class ProductVersionViewSet(ChangeSetCreateModelMixin,
+class ProductVersionViewSet(NotificationMixin,
+                            ChangeSetCreateModelMixin,
                             ChangeSetUpdateModelMixin,
                             StrictQueryParamMixin,
                             mixins.RetrieveModelMixin,
@@ -312,7 +315,8 @@ class ProductVersionViewSet(ChangeSetCreateModelMixin,
         return super(ProductVersionViewSet, self).update(*args, **kwargs)
 
 
-class ReleaseViewSet(ChangeSetCreateModelMixin,
+class ReleaseViewSet(NotificationMixin,
+                     ChangeSetCreateModelMixin,
                      ChangeSetUpdateModelMixin,
                      ConditionalProcessingMixin,
                      StrictQueryParamMixin,
@@ -509,7 +513,8 @@ class ReleaseImportView(StrictQueryParamMixin, viewsets.GenericViewSet):
         return Response({'url': url}, status=status.HTTP_201_CREATED)
 
 
-class BaseProductViewSet(ChangeSetCreateModelMixin,
+class BaseProductViewSet(NotificationMixin,
+                         ChangeSetCreateModelMixin,
                          ChangeSetUpdateModelMixin,
                          ConditionalProcessingMixin,
                          StrictQueryParamMixin,
@@ -892,7 +897,8 @@ class ReleaseTypeViewSet(StrictQueryParamMixin,
         return super(ReleaseTypeViewSet, self).list(request, *args, **kwargs)
 
 
-class ReleaseVariantViewSet(ChangeSetModelMixin,
+class ReleaseVariantViewSet(NotificationMixin,
+                            ChangeSetModelMixin,
                             ConditionalProcessingMixin,
                             StrictQueryParamMixin,
                             MultiLookupFieldMixin,

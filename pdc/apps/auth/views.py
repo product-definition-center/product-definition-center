@@ -31,7 +31,7 @@ from . import serializers
 from . import models
 from pdc.apps.auth.models import ResourceApiUrl
 from pdc.apps.auth.permissions import APIPermission
-from pdc.apps.common.viewsets import StrictQueryParamMixin, ChangeSetUpdateModelMixin
+from pdc.apps.common.viewsets import StrictQueryParamMixin, ChangeSetUpdateModelMixin, NotificationMixin
 from pdc.apps.common import viewsets as common_viewsets
 from pdc.apps.utils.SortedRouter import router, URL_ARG_RE
 from pdc.apps.utils.utils import (group_obj_export,
@@ -471,7 +471,8 @@ class PermissionViewSet(StrictQueryParamMixin,
     filter_class = filters.PermissionFilter
 
 
-class GroupViewSet(ChangeSetUpdateModelMixin,
+class GroupViewSet(NotificationMixin,
+                   ChangeSetUpdateModelMixin,
                    StrictQueryParamMixin,
                    mixins.ListModelMixin,
                    mixins.RetrieveModelMixin,

@@ -14,28 +14,20 @@ from . import serializers
 from . import filters
 from pdc.apps.auth.permissions import APIPermission
 from pdc.apps.common.constants import PUT_OPTIONAL_PARAM_WARNING
-from pdc.apps.common.viewsets import (ChangeSetCreateModelMixin, StrictQueryParamMixin,
-                                      ChangeSetUpdateModelMixin, ChangeSetDestroyModelMixin,
+from pdc.apps.common.viewsets import (StrictQueryParamMixin,
                                       PDCModelViewSet)
 from pdc.apps.release.models import Release
 from pdc.apps.common import hacks
 from pdc.apps.common.serializers import StrictSerializerMixin
 
 
-class RepoViewSet(ChangeSetCreateModelMixin,
-                  ChangeSetUpdateModelMixin,
-                  ChangeSetDestroyModelMixin,
-                  StrictQueryParamMixin,
-                  mixins.ListModelMixin,
-                  mixins.RetrieveModelMixin,
-                  viewsets.GenericViewSet):
+class RepoViewSet(PDCModelViewSet):
     """
     An API endpoint providing access to content delivery repositories.
     """
     queryset = models.Repo.objects.all().select_related().order_by('id')
     serializer_class = serializers.RepoSerializer
     filter_class = filters.RepoFilter
-    permission_classes = (APIPermission,)
     docstring_macros = PUT_OPTIONAL_PARAM_WARNING
 
     def create(self, *args, **kwargs):

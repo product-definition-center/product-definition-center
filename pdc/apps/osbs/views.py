@@ -13,7 +13,8 @@ from . import models
 from . import serializers
 
 
-class OSBSViewSet(common_viewsets.StrictQueryParamMixin,
+class OSBSViewSet(common_viewsets.NotificationMixin,
+                  common_viewsets.StrictQueryParamMixin,
                   common_viewsets.ChangeSetUpdateModelMixin,
                   mixins.ListModelMixin,
                   common_viewsets.MultiLookupFieldMixin,

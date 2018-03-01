@@ -282,6 +282,7 @@ class ArchViewSet(pdc_viewsets.ChangeSetCreateModelMixin,
 
 
 class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
+                    pdc_viewsets.NotificationMixin,
                     mixins.ListModelMixin,
                     mixins.RetrieveModelMixin,
                     pdc_viewsets.ChangeSetCreateModelMixin,

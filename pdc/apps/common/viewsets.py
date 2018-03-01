@@ -323,6 +323,7 @@ class PermissionMixin(object):
 
 
 class PDCModelViewSet(StrictQueryParamMixin,
+                      NotificationMixin,
                       ChangeSetModelMixin,
                       PermissionMixin,
                       viewsets.GenericViewSet):

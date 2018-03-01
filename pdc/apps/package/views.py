@@ -16,6 +16,7 @@ from . import filters
 
 
 class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
+                 pdc_viewsets.NotificationMixin,
                  pdc_viewsets.ChangeSetCreateModelMixin,
                  pdc_viewsets.ChangeSetUpdateModelMixin,
                  mixins.RetrieveModelMixin,
@@ -432,6 +433,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
 
 
 class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
+                                pdc_viewsets.NotificationMixin,
                                 pdc_viewsets.ChangeSetUpdateModelMixin,
                                 pdc_viewsets.MultiLookupFieldMixin,
                                 mixins.RetrieveModelMixin,

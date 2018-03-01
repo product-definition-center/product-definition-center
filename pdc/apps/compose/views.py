@@ -34,6 +34,7 @@ from pdc.apps.common.viewsets import (ChangeSetCreateModelMixin,
                                       ChangeSetDestroyModelMixin,
                                       ChangeSetModelMixin,
                                       MultiLookupFieldMixin,
+                                      NotificationMixin,
                                       ChangeSetUpdateModelMixin)
 
 from pdc.apps.release.models import Release
@@ -1774,7 +1775,8 @@ class FindComposeByProductVersionRPMViewSet(StrictQueryParamMixin, FindComposeMi
         return Response(self._get_composes_for_product_version())
 
 
-class ComposeImageRTTTestViewSet(ChangeSetUpdateModelMixin,
+class ComposeImageRTTTestViewSet(NotificationMixin,
+                                 ChangeSetUpdateModelMixin,
                                  mixins.ListModelMixin,
                                  mixins.RetrieveModelMixin,
                                  StrictQueryParamMixin,
@@ -1876,7 +1878,8 @@ class ComposeImageRTTTestViewSet(ChangeSetUpdateModelMixin,
         return self.update(request, *args, **kwargs)
 
 
-class ComposeTreeViewSet(ChangeSetModelMixin,
+class ComposeTreeViewSet(NotificationMixin,
+                         ChangeSetModelMixin,
                          StrictQueryParamMixin,
                          MultiLookupFieldMixin,
                          viewsets.GenericViewSet):
@@ -2032,7 +2035,8 @@ class ComposeTreeViewSet(ChangeSetModelMixin,
         return super(ComposeTreeViewSet, self).destroy(request, *args, **kwargs)
 
 
-class ComposeTreeRTTTestViewSet(ChangeSetUpdateModelMixin,
+class ComposeTreeRTTTestViewSet(NotificationMixin,
+                                ChangeSetUpdateModelMixin,
                                 mixins.ListModelMixin,
                                 mixins.RetrieveModelMixin,
                                 StrictQueryParamMixin,
