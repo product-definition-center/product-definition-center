@@ -643,10 +643,10 @@ class ComposeViewSet(StrictQueryParamMixin,
                                   json.dumps({'linked_releases': old_data['linked_releases']}),
                                   json.dumps({'linked_releases': response.data['linked_releases']}))
             # Add message
-            self._add_messaging_info(request, json.dumps({'action': 'update',
-                                                          'compose_id': self.object.compose_id,
-                                                          'from': old_data,
-                                                          'to': response.data}))
+            self._add_messaging_info(request, {'action': 'update',
+                                               'compose_id': self.object.compose_id,
+                                               'from': old_data,
+                                               'to': response.data})
         return response
 
     def perform_update(self, serializer):

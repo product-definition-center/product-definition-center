@@ -778,11 +778,10 @@ class ComposeUpdateMessagingTestCase(APITestCase):
 
             topic, msg = messages[0]
             self.assertEqual(topic, '.compose')
-            data = json.loads(msg)
-            self.assertEqual(data['action'], 'update')
-            self.assertEqual(data['compose_id'], 'compose-1')
-            self.assertEqual(data['to']['acceptance_testing'], 'passed')
-            self.assertEqual(data['from']['acceptance_testing'], 'untested')
+            self.assertEqual(msg['action'], 'update')
+            self.assertEqual(msg['compose_id'], 'compose-1')
+            self.assertEqual(msg['to']['acceptance_testing'], 'passed')
+            self.assertEqual(msg['from']['acceptance_testing'], 'untested')
 
 
 class OverridesRPMAPITestCase(TestCaseWithChangeSetMixin, APITestCase):

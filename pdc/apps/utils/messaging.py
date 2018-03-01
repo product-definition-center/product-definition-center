@@ -6,7 +6,6 @@
 import json
 
 from django.conf import settings
-from django.utils import six
 
 import logging
 
@@ -30,7 +29,7 @@ class KombuMessenger(object):
         self.messenger = self.conn.Producer()
 
     def send_message(self, topic, msg):
-        self.messenger.publish(msg, exchange=self.exchange, routing_key=topic)
+        self.messenger.publish(json.dumps(msg), exchange=self.exchange, routing_key=topic)
 
 
 class FedmsgMessenger(object):
@@ -40,8 +39,6 @@ class FedmsgMessenger(object):
 
     def send_message(self, topic, msg):
         topic = topic.strip('.')
-        if isinstance(msg, six.string_types):
-            msg = json.loads(msg)
         self.messenger.publish(topic=topic, msg=msg)
 
 
@@ -56,7 +53,7 @@ class ProtonMessenger(object):
 
     def send_message(self, topic, msg):
         self.message.address = settings.MESSAGE_BUS['URL'] + topic
-        self.message.body = msg
+        self.message.body = json.dumps(msg)
         self.messenger.put(self.message)
         self.messenger.send()
 
@@ -85,7 +82,7 @@ class StompMessenger(object):
         address = '/topic/' + settings.MESSAGE_BUS['TOPIC'] + str(topic)
         if self.connected or self.do_connect():
             try:
-                self.connection.send(body=msg, destination=address,
+                self.connection.send(body=json.dumps(msg), destination=address,
                                      headers={'persistent': 'true'},
                                      auto='true')
             except Exception, e:

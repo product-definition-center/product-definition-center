@@ -86,7 +86,7 @@ def _add_compose_create_msg(request, compose_obj):
            'compose_date': compose_obj.compose_date.isoformat(),
            'compose_type': compose_obj.compose_type.name,
            'compose_respin': compose_obj.compose_respin}
-    request._request._messagings.append(('.compose', json.dumps(msg)))
+    request._request._messagings.append(('.compose', msg))
 
 
 def _add_import_msg(request, compose_obj, attribute, count):
@@ -103,7 +103,7 @@ def _add_import_msg(request, compose_obj, attribute, count):
            'compose_date': compose_obj.compose_date.isoformat(),
            'compose_type': compose_obj.compose_type.name,
            'compose_respin': compose_obj.compose_respin}
-    request._request._messagings.append(('.' + attribute, json.dumps(msg)))
+    request._request._messagings.append(('.' + attribute, msg))
 
 
 def _store_relative_path_for_compose(compose_obj, variants_info, variant, variant_obj, add_to_changelog):
