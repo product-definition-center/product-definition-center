@@ -43,9 +43,9 @@ class BaseProductSearchForm(forms.Form):
         query = Q()
 
         if search:
-            query |= Q(short__icontains=search)
-            query |= Q(version__icontains=search)
             query |= Q(name__icontains=search)
+            query |= Q(base_product_id__icontains=search)
+            query |= Q(release_type__short__icontains=search)
 
         # TODO: disabled
 
