@@ -79,7 +79,6 @@ class ProductVersionSearchForm(forms.Form):
 
         if search:
             query |= Q(name__icontains=search)
-            query |= Q(short__icontains=search)
-            query |= Q(version__icontains=search)
+            query |= Q(product_version_id__icontains=search)
 
         return query
