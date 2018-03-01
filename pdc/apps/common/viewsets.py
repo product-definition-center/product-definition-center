@@ -19,10 +19,12 @@ from contrib import drf_introspection
 
 from rest_framework import mixins, status, viewsets
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
 from pdc.apps.auth.permissions import APIPermission
 from pdc.apps.utils.utils import generate_warning_header_dict, get_model_name_from_obj_or_cls
 from pdc.apps.changeset.models import Change
+from pdc.apps.utils.SortedRouter import router
 
 
 class JSONModelEncoder(json.JSONEncoder):
@@ -61,6 +63,86 @@ class ChangeSetCreateModelMixin(mixins.CreateModelMixin):
                                        item.id,
                                        'null',
                                        _dumps_json(item.export()))
+
+
+def get_related_attr(obj, spec):
+    fields = spec.split('__')
+    for f in fields:
+        obj = getattr(obj, f)
+    return obj
+
+
+class NotificationMixin(object):
+    """
+    Mixin for announcing changes to resources to message bus.
+
+    This class only works for reasonably simple viewsets. If the viewset has
+    some custom logic or complicated URL routing, this mixin will probably not
+    work.
+
+    The general idea is to hook into code saving the model object, use
+    serializer to generate a representation similar to what's in the API and
+    send that.
+    """
+
+    def get_object(self):
+        obj = super(NotificationMixin, self).get_object()
+        serializer_class = self.get_serializer_class()
+        # This is the status of the object before modification or deletion.
+        self.initial_status = serializer_class(instance=obj,
+                                               context={'request': self.request}).data
+        return obj
+
+    def _get_url(self, obj):
+        if hasattr(self, 'lookup_fields'):
+            lookup_field_values = [get_related_attr(obj, f) for f, _ in self.lookup_fields]
+            # This is a little simplistic, but should cover all the simple
+            # cases. This mixin is not really usable for more complex workflows
+            # anyway.
+            lookup_field = '/'.join(lookup_field_values)
+        else:
+            lookup_field = getattr(obj, self.lookup_field)
+        rel_url = reverse('%s-detail' % self.basename, args=[lookup_field])
+        return self.request.build_absolute_uri(rel_url)
+
+    def _send_message(self, action, msg, obj=None):
+        for resource, cls, basename in router.registry:
+            if basename == self.basename:
+                break
+        else:
+            # This should never happen: when the viewset is called, the request
+            # needs the mapping in router to actually make it to the current
+            # viewset.
+            raise RuntimeError('Viewset %r not exposed in router.' % self)
+        topic = '.%s.%s' % (resource, action)
+        msg.update({
+            'url': self._get_url(obj) if obj else None,
+            'author': self.request.user.username,
+            'comment': self.request.META.get("HTTP_PDC_CHANGE_COMMENT", None),
+        })
+
+        self.request._request._messagings.append((topic, msg))
+
+    def perform_create(self, serializer):
+        super(NotificationMixin, self).perform_create(serializer)
+
+        self._send_message('added',
+                           {'new_value': serializer.data},
+                           obj=serializer.instance)
+
+    def perform_destroy(self, obj):
+        super(NotificationMixin, self).perform_destroy(obj)
+
+        self._send_message('removed', {'old_value': self.initial_status})
+
+    def perform_update(self, serializer):
+        super(NotificationMixin, self).perform_update(serializer)
+
+        if self.initial_status != serializer.data:
+            self._send_message('changed',
+                               {'old_value': self.initial_status,
+                                'new_value': serializer.data},
+                               obj=serializer.instance)
 
 
 class NoEmptyPatchMixin(object):

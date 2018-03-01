@@ -5,21 +5,24 @@
 #
 import mock
 import json
+from io import BytesIO
 
 from django.test import TestCase
 from django.core.exceptions import FieldError, ValidationError
 from django.utils.datastructures import MultiValueDict
 from django.urls import reverse
+import django.http
 
 from rest_framework.test import APITestCase
-from rest_framework import status
+from rest_framework import status, mixins
 from rest_framework import serializers
+from rest_framework.viewsets import GenericViewSet
 
 from contrib.drf_introspection.serializers import DynamicFieldsSerializerMixin
 from .models import Label, SigKey
 from pdc.apps.common import validators
 from .test_utils import TestCaseWithChangeSetMixin
-from . import renderers, views
+from . import renderers, views, viewsets
 
 
 class ValidatorTestCase(TestCase):
@@ -673,3 +676,119 @@ class OrderingTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertTrue('Unknown query key' in response.data.get('detail'))
         self.assertTrue('name_' in response.data.get('detail'))
+
+
+class NotificationMixinTestCase(TestCase):
+
+    def setUp(self):
+
+        class DummySerializer(serializers.Serializer):
+            nickname = serializers.CharField()
+            color = serializers.CharField()
+
+            def create(self, validated_data):
+                return mock.Mock(pk=2, **validated_data)
+
+            def update(self, obj, validated_data):
+                return mock.Mock(pk=obj.pk, **validated_data)
+
+        class GetDogMixin(object):
+            def get_object(self):
+                return mock.Mock(pk=1, nickname='Spot', color='black')
+
+        class DummyView(viewsets.NotificationMixin,
+                        mixins.CreateModelMixin,
+                        mixins.UpdateModelMixin,
+                        mixins.DestroyModelMixin,
+                        GetDogMixin,
+                        GenericViewSet):
+            serializer_class = DummySerializer
+
+        mapping = {
+            'post': 'create',
+            'put': 'update',
+            'delete': 'destroy',
+        }
+        self.view = DummyView.as_view(mapping, basename='dummy')
+
+    def _make_request(self, method, data=None, comment=None):
+        request = django.http.HttpRequest()
+        request.method = method
+        request._messagings = []
+        request.META = {'HTTP_PDC_CHANGE_COMMENT': comment, 'SERVER_NAME': '0.0.0.0', 'SERVER_PORT': 80}
+        if data:
+            data = json.dumps(data)
+            request._read_started = False
+            request.META.update({'CONTENT_LENGTH': len(data), 'CONTENT_TYPE': 'application/json'})
+            request._stream = BytesIO(data)
+        return request
+
+    @mock.patch('pdc.apps.common.viewsets.router')
+    @mock.patch('pdc.apps.common.viewsets.reverse')
+    def test_create_notification(self, mock_reverse, mock_router):
+        request = self._make_request('POST', {'nickname': 'Rover', 'color': 'brown'},
+                                     comment='Sit!')
+        mock_reverse.return_value = '/dogs/2/'
+        mock_router.registry = [('dogs', None, 'dummy')]
+
+        response = self.view(request)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(request._messagings,
+                         [('.dogs.added', {
+                             'url': 'http://0.0.0.0/dogs/2/',
+                             'new_value': {
+                                 'color': 'brown',
+                                 'nickname': 'Rover'
+                             },
+                             'author': '',
+                             'comment': 'Sit!',
+                         })])
+        self.assertEqual(mock_reverse.call_args_list,
+                         [mock.call('dummy-detail', args=[2])])
+
+    @mock.patch('pdc.apps.common.viewsets.router')
+    @mock.patch('pdc.apps.common.viewsets.reverse')
+    def test_update_notification(self, mock_reverse, mock_router):
+        request = self._make_request('PUT', {'nickname': 'Fido', 'color': 'golden'})
+        mock_reverse.return_value = '/dogs/1/'
+        mock_router.registry = [('dogs', None, 'dummy')]
+
+        response = self.view(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(request._messagings,
+                         [('.dogs.changed', {
+                             'url': 'http://0.0.0.0/dogs/1/',
+                             'new_value': {
+                                 'color': 'golden',
+                                 'nickname': 'Fido'
+                             },
+                             'old_value': {
+                                 'color': 'black',
+                                 'nickname': 'Spot'
+                             },
+                             'author': '',
+                             'comment': None,
+                         })])
+        self.assertEqual(mock_reverse.call_args_list,
+                         [mock.call('dummy-detail', args=[1])])
+
+    @mock.patch('pdc.apps.common.viewsets.router')
+    def test_delete_notification(self, mock_router):
+        request = self._make_request('DELETE', comment='Go')
+        mock_router.registry = [('dogs', None, 'dummy')]
+
+        response = self.view(request, pk=1)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(request._messagings,
+                         [('.dogs.removed', {
+                             'url': None,
+                             'old_value': {
+                                 'color': 'black',
+                                 'nickname': 'Spot'
+                             },
+                             'author': '',
+                             'comment': 'Go',
+                         })])

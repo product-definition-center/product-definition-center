@@ -55,3 +55,4 @@ MESSAGE_BUS = {
     'MLP': 'test'
 }
 RELEASE_DEFAULT_SIGKEY = "ABCDEF"
+ALLOWED_HOSTS = ['*']
