@@ -20,6 +20,14 @@ def _error_with_fields(message, fields):
     return message % ', '.join('"%s"' % f for f in fields)
 
 
+def _verify_field_names(fields, valid_fields, filter_name):
+    if fields:
+        invalid_field_names = set(fields) - valid_fields
+        if invalid_field_names:
+            error = 'Unknown fields in "%s" filter: %s' % (filter_name, ', '.join(invalid_field_names))
+            raise FieldError(error)
+
+
 class IntrospectableSerializerMixin(object):
     """
     Basic mixin for a serializer that supports introspection.
@@ -79,16 +87,19 @@ class DynamicFieldsSerializerMixin(object):
                 fields += request.query_params.getlist('fields', [])
                 exclude_fields += request.query_params.getlist('exclude_fields', [])
 
-        existing = set(self.fields.keys())
+        valid_fields = set(self.fields.keys())
+        _verify_field_names(fields, valid_fields, 'fields')
+        _verify_field_names(exclude_fields, valid_fields, 'exclude_fields')
+
         # ignore nonexistent fields input
-        allowed = set(fields) & existing if fields else None
-        if allowed:
+        if fields:
+            fields = set(fields)
             # exclude_fields *rules* fields
             if exclude_fields:
                 # Drop any fields that are specified in the `exclude_fields` argument.
-                allowed = allowed - set(exclude_fields)
+                fields = fields - set(exclude_fields)
             # Drop any fields that are not specified in the `fields` argument.
-            for field_name in existing - allowed:
+            for field_name in valid_fields - fields:
                 self.fields.pop(field_name)
         elif exclude_fields:
             # Drop any fields that are specified in the `exclude_fields` argument.

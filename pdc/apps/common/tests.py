@@ -7,7 +7,7 @@ import mock
 import json
 
 from django.test import TestCase
-from django.core.exceptions import ValidationError
+from django.core.exceptions import FieldError, ValidationError
 from django.utils.datastructures import MultiValueDict
 from django.core.urlresolvers import reverse
 
@@ -76,14 +76,17 @@ class DynamicFieldsSerializerMixinTestCase(TestCase):
     def test_fields(self):
         serializer = self.serializer(fields=['a', 'b'])
         self.assertEqual(['a', 'b'], serializer.fields.keys())
-        serializer = self.serializer(fields=['a', 'b', 'd'])
-        self.assertEqual(['a', 'b'], serializer.fields.keys())
+
+    def test_bad_fields(self):
+        self.assertRaises(FieldError, self.serializer, fields=['a', 'b', 'd'])
+        self.assertRaises(FieldError, self.serializer, fields=['b', 'd'])
 
     def test_exclude_fields(self):
         serializer = self.serializer(exclude_fields=['b'])
         self.assertEqual(['a', 'c'], serializer.fields.keys())
-        serializer = self.serializer(exclude_fields=['b', 'd'])
-        self.assertEqual(['a', 'c'], serializer.fields.keys())
+
+    def test_exclude_bad_fields(self):
+        self.assertRaises(FieldError, self.serializer, exclude_fields=['b', 'd'])
 
     def test_fields_and_exclude(self):
         serializer = self.serializer(fields=['a', 'c'], exclude_fields=['b'])
@@ -96,24 +99,26 @@ class DynamicFieldsSerializerMixinTestCase(TestCase):
         self.mock_request.query_params = MultiValueDict(param_dict)
         serializer = self.serializer(context=self.context)
         self.assertEqual(['a', 'b'], serializer.fields.keys())
+
+    def test_bad_fields_from_context(self):
         param_dict = {'fields': ['d'], 'exclude_fields': []}
         self.mock_request.query_params = MultiValueDict(param_dict)
-        serializer = self.serializer(context=self.context)
-        self.assertEqual(['a', 'b', 'c'], sorted(serializer.fields.keys()))
+        self.assertRaises(FieldError, self.serializer, context=self.context)
+
         param_dict = {'fields': ['a', 'b', 'd'], 'exclude_fields': []}
         self.mock_request.query_params = MultiValueDict(param_dict)
-        serializer = self.serializer(context=self.context)
-        self.assertEqual(['a', 'b'], serializer.fields.keys())
+        self.assertRaises(FieldError, self.serializer, context=self.context)
 
     def test_exclude_fields_from_context(self):
         param_dict = {'fields': [], 'exclude_fields': ['b']}
         self.mock_request.query_params = MultiValueDict(param_dict)
         serializer = self.serializer(context=self.context)
         self.assertEqual(['a', 'c'], serializer.fields.keys())
+
+    def test_exclude_bad_fields_from_context(self):
         param_dict = {'fields': [], 'exclude_fields': ['b', 'd']}
         self.mock_request.query_params = MultiValueDict(param_dict)
-        serializer = self.serializer(context=self.context)
-        self.assertEqual(['a', 'c'], serializer.fields.keys())
+        self.assertRaises(FieldError, self.serializer, context=self.context)
 
     def test_fields_and_exclude_from_context(self):
         param_dict = {'fields': ['a', 'c'], 'exclude_fields': ['b']}
