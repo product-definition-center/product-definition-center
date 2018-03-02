@@ -5,6 +5,7 @@
 #
 from rest_framework import serializers
 from django.core.exceptions import FieldError
+from django.conf import settings
 
 from pdc.apps.common.fields import ChoiceSlugField
 from pdc.apps.common import models as common_models
@@ -134,18 +135,26 @@ class ReleaseSerializer(StrictSerializerMixin, serializers.ModelSerializer):
                   'compose_set', 'integrated_with', 'sigkey', 'allow_buildroot_push',
                   'allowed_debuginfo_services', 'allowed_push_targets')
 
+    def set_default_sigkey(self, validated_data):
+        if hasattr(settings, 'RELEASE_DEFAULT_SIGKEY'):
+            if "sigkey" in validated_data and not validated_data["sigkey"]:
+                validated_data["sigkey"], _ = SigKey.objects.get_or_create(key_id=settings.RELEASE_DEFAULT_SIGKEY)
+        return validated_data
+
     def get_compose_set(self, obj):
         """[Compose.compose_id]"""
         return [compose.compose_id for compose in sorted(obj.get_all_composes())]
 
     def create(self, validated_data):
         signals.release_serializer_extract_data.send(sender=self, validated_data=validated_data)
+        validated_data = self.set_default_sigkey(validated_data)
         obj = super(ReleaseSerializer, self).create(validated_data)
         signals.release_serializer_post_create.send(sender=self, release=obj)
         return obj
 
     def update(self, instance, validated_data):
         signals.release_serializer_extract_data.send(sender=self, validated_data=validated_data)
+        validated_data = self.set_default_sigkey(validated_data)
         obj = super(ReleaseSerializer, self).update(instance, validated_data)
         signals.release_serializer_post_update.send(sender=self, release=obj)
         if hasattr(instance, 'pk'):

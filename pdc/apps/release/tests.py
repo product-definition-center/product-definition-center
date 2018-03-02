@@ -584,7 +584,7 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args.update({"active": True, 'allow_buildroot_push': False, 'integrated_with': None,
                      'base_product': None, 'product_version': None, 'compose_set': [],
                      'dist_git': None, 'release_id': 'f-20',
-                     'bugzilla': None, 'sigkey': None,
+                     'bugzilla': None, 'sigkey': 'ABCDEF',
                      'allowed_debuginfo_services': [],
                      'allowed_push_targets': []})
         self.assertEqual(1, models.Release.objects.filter(release_id='f-20').count())
@@ -598,7 +598,7 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         args.update({"active": True, 'allow_buildroot_push': False, 'integrated_with': None,
                      'base_product': None, 'product_version': None, 'compose_set': [],
-                     'dist_git': None, 'release_id': u'f-20', 'sigkey': None,
+                     'dist_git': None, 'release_id': u'f-20', 'sigkey': 'ABCDEF',
                      'allowed_debuginfo_services': [],
                      'allowed_push_targets': []})
         self.assertEqual(ReleaseBugzillaMapping.objects.count(), 1)
@@ -613,7 +613,7 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         args.update({"active": True, 'integrated_with': None,
                      'base_product': None, 'product_version': None, 'compose_set': [],
-                     'release_id': 'f-20', 'bugzilla': None, 'sigkey': None, 'allow_buildroot_push': False,
+                     'release_id': 'f-20', 'bugzilla': None, 'sigkey': 'ABCDEF', 'allow_buildroot_push': False,
                      'allowed_debuginfo_services': [],
                      'allowed_push_targets': []})
         self.assertEqual(ReleaseDistGitMapping.objects.count(), 2)
@@ -661,7 +661,7 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args.update({'product_version': 'product-1',
                      'release_id': 'product-1.1', 'active': True, 'base_product': None,
                      'compose_set': [], 'dist_git': None,
-                     'bugzilla': None, 'integrated_with': None, 'sigkey': None,
+                     'bugzilla': None, 'integrated_with': None, 'sigkey': 'ABCDEF',
                      'allow_buildroot_push': False,
                      'allowed_debuginfo_services': [],
                      'allowed_push_targets': []})
@@ -679,7 +679,7 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args.update({'base_product': 'product-1',
                      'active': True, 'compose_set': [], 'dist_git': None,
                      'release_id': 'supp-1.1@product-1', 'product_version': None,
-                     'bugzilla': None, 'integrated_with': None, 'sigkey': None,
+                     'bugzilla': None, 'integrated_with': None, 'sigkey': 'ABCDEF',
                      'allow_buildroot_push': False,
                      'allowed_debuginfo_services': [],
                      'allowed_push_targets': []})
@@ -799,6 +799,15 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(reverse('release-list'), args)
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
+    def test_create_with_default_sigkey(self):
+        args = {"name": "TestSigkey", "short": "supp", "version": "1.1",
+                "release_type": "ga", "base_product": "product-1"}
+        response = self.client.post(reverse('release-list'), args)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        response = self.client.get(reverse('release-list'), {'name': 'TestSigkey'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual("ABCDEF", response.data['results'][0]["sigkey"])
+
     def test_create_list_with_allowed_debuginfo(self):
         args = {"name": "Supplementary", "short": "supp", "version": "1.1",
                 "release_type": "ga", "base_product": "product-1",
@@ -809,7 +818,7 @@ class ReleaseRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         args.update({'base_product': 'product-1',
                      'active': True, 'compose_set': [], 'dist_git': None,
                      'release_id': 'supp-1.1@product-1', 'product_version': None,
-                     'bugzilla': None, 'integrated_with': None, 'sigkey': None, 'allow_buildroot_push': False})
+                     'bugzilla': None, 'integrated_with': None, 'sigkey': 'ABCDEF', 'allow_buildroot_push': False})
         self.assertEqual(args, dict(response.data))
         self.assertNumChanges([1])
         response = self.client.get(reverse('release-list'), {"allowed_debuginfo_services": "ftp"})
@@ -830,7 +839,8 @@ class ReleaseCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
         "pdc/apps/release/fixtures/tests/release.json",
         "pdc/apps/release/fixtures/tests/variant.json",
         "pdc/apps/release/fixtures/tests/variant_arch.json",
-        "pdc/apps/bindings/fixtures/tests/releasedistgitmapping.json"
+        "pdc/apps/bindings/fixtures/tests/releasedistgitmapping.json",
+        "pdc/apps/common/fixtures/test/sigkey.json"
     ]
 
     def test_clone_new_version(self):
@@ -849,7 +859,7 @@ class ReleaseCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
                               'name': 'Test Release', 'dist_git': {'branch': 'release_branch'},
                               'product_version': None, 'base_product': None, 'active': True,
                               'release_id': 'release-1.1', 'compose_set': [],
-                              'bugzilla': None, 'integrated_with': None, 'sigkey': None,
+                              'bugzilla': None, 'integrated_with': None, 'sigkey': 'ABCDEF',
                               'allow_buildroot_push': False,
                               'allowed_debuginfo_services': [],
                               'allowed_push_targets': []})
@@ -956,7 +966,7 @@ class ReleaseCloneTestCase(TestCaseWithChangeSetMixin, APITestCase):
                               'name': 'Test Release', 'dist_git': {'branch': 'release_branch'},
                               'product_version': None, 'base_product': None, 'active': True,
                               'release_id': 'release-1.1', 'compose_set': [],
-                              'bugzilla': None, 'integrated_with': None, 'sigkey': None,
+                              'bugzilla': None, 'integrated_with': None, 'sigkey': 'ABCDEF',
                               'allow_buildroot_push': False,
                               'allowed_debuginfo_services': [],
                               'allowed_push_targets': []})
@@ -1118,9 +1128,9 @@ class ReleaseRPMMappingViewSetTestCase(APITestCase):
 
 class ReleaseUpdateRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
+        "pdc/apps/common/fixtures/test/sigkey.json",
         'pdc/apps/release/fixtures/tests/release.json',
-        "pdc/apps/bindings/fixtures/tests/releasedistgitmapping.json",
-        "pdc/apps/common/fixtures/test/sigkey.json"
+        "pdc/apps/bindings/fixtures/tests/releasedistgitmapping.json"
     ]
 
     def setUp(self):
@@ -1196,7 +1206,7 @@ class ReleaseUpdateRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNone(response.data.get('dist_git'))
         self.assertIsNone(models.Release.objects.get(release_id='release-1.0').dist_git_branch)
-        self.assertNumChanges([1])
+        self.assertNumChanges([2])
 
     def test_update_can_reset_base_product(self):
         release_type = models.ReleaseType.objects.get(short="ga")
@@ -1304,7 +1314,7 @@ class ReleaseUpdateRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(reverse('release-detail', args=['product-1.0']))
         self.assertEqual(response.data.get('bugzilla'), None)
         self.assertEqual(ReleaseBugzillaMapping.objects.filter(release__release_id='product-1.0').count(), 0)
-        self.assertNumChanges([1])
+        self.assertNumChanges([2])
 
     def test_remove_bugzilla_mapping_and_switch_active(self):
         ReleaseBugzillaMapping.objects.create(release=self.release, bugzilla_product='Old product')
@@ -1328,7 +1338,7 @@ class ReleaseUpdateRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.get(reverse('release-detail', args=['product-1.0']))
         self.assertIsNone(response.data.get('bugzilla'))
         self.assertEqual(ReleaseBugzillaMapping.objects.filter(release__release_id='product-1.0').count(), 0)
-        self.assertNumChanges([1])
+        self.assertNumChanges([2])
 
     def test_put_as_create_is_disabled(self):
         response = self.client.put(reverse('release-detail', args=['i-do-not-exist']),
@@ -2369,6 +2379,7 @@ class ReleaseGroupRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
 class ReleaseLastModifiedResponseTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
+        "pdc/apps/common/fixtures/test/sigkey.json",
         "pdc/apps/release/fixtures/tests/release.json",
         "pdc/apps/release/fixtures/tests/product.json",
         "pdc/apps/release/fixtures/tests/base_product.json",
@@ -2437,6 +2448,7 @@ class ReleaseLastModifiedResponseTestCase(TestCaseWithChangeSetMixin, APITestCas
 
 class ProductLastModifiedResponseTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
+        "pdc/apps/common/fixtures/test/sigkey.json",
         "pdc/apps/release/fixtures/tests/product.json",
         "pdc/apps/release/fixtures/tests/base_product.json",
         "pdc/apps/release/fixtures/tests/product_version.json"
@@ -2488,6 +2500,7 @@ class ProductLastModifiedResponseTestCase(TestCaseWithChangeSetMixin, APITestCas
 
 class AllowedPushTargetsRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     fixtures = [
+        "pdc/apps/common/fixtures/test/sigkey.json",
         "pdc/apps/repository/fixtures/tests/push_target.json",
         "pdc/apps/release/fixtures/tests/allowed_push_targets.json",
     ]

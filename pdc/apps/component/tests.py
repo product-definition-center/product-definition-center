@@ -1080,6 +1080,7 @@ class ReleaseCloneWithComponentsTestCase(TestCaseWithChangeSetMixin, APITestCase
     #  * two relationships
 
     fixtures = [
+        "pdc/apps/common/fixtures/test/sigkey.json",
         "pdc/apps/release/fixtures/tests/release.json",
         "pdc/apps/component/fixtures/tests/upstream.json",
         "pdc/apps/component/fixtures/tests/global_component.json",
