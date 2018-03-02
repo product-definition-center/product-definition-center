@@ -95,7 +95,7 @@ class BugzillaComponent(mptt_models.MPTTModel):
 class GlobalComponent(models.Model):
     """Record generic component"""
 
-    name            = models.CharField(max_length=100, unique=True)
+    name            = models.CharField(max_length=200, unique=True)
     dist_git_path   = models.CharField(max_length=200, blank=True, null=True)
     labels          = models.ManyToManyField(Label, blank=True)
     upstream        = models.OneToOneField(Upstream, blank=True, null=True, on_delete=models.CASCADE)
@@ -144,7 +144,7 @@ class ReleaseComponent(models.Model):
     bugzilla_component          = models.ForeignKey(BugzillaComponent, blank=True, null=True, on_delete=models.SET_NULL)
     type                        = models.ForeignKey(ReleaseComponentType, default=1, on_delete=models.SET_DEFAULT,
                                                     related_name='release_components')
-    name                        = models.CharField(max_length=100)
+    name                        = models.CharField(max_length=200)
     dist_git_branch             = models.CharField(max_length=100, blank=True, null=True)
     brew_package = models.CharField(max_length=100, blank=True, null=True)
     active = models.BooleanField(default=True)

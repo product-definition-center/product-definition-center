@@ -71,7 +71,7 @@ class UpstreamRelatedField(serializers.RelatedField):
 class GlobalComponentSerializer(StrictSerializerMixin,
                                 serializers.HyperlinkedModelSerializer):
     name = serializers.CharField(required=True,
-                                 max_length=100)
+                                 max_length=200)
     dist_git_path = serializers.CharField(required=False,
                                           max_length=200,
                                           allow_blank=True)

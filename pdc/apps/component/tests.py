@@ -54,6 +54,14 @@ class GlobalComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         data.update({'upstream': None})
         self.assertEqual(response.data, data)
 
+    def test_create_global_component_with_long_name(self):
+        name = 'Product_Definition_Center_for_Dummies-Using_Product_Definition_Center_to_achieve_eternal_fame_and_glory_and_to_make_the_world_a_better_place-1.0-web-en-US'
+        url = reverse('globalcomponent-list')
+        data = {'name': name}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['name'], name)
+
     def test_create_global_component_extra_fields(self):
         url = reverse('globalcomponent-list')
         data = {'name': 'TestCaseComponent', 'dist_git_path': 'python', 'foo': 'bar'}
@@ -567,6 +575,14 @@ class ReleaseComponentRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertNumChanges([])
+
+    def test_create_release_component_with_long_name(self):
+        url = reverse('releasecomponent-list')
+        name = 'Product_Definition_Center_for_Dummies-Using_Product_Definition_Center_to_achieve_eternal_fame_and_glory_and_to_make_the_world_a_better_place-1.0-web-en-US'
+        data = {'release': 'release-1.0', 'name': name, 'global_component': 'python'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['name'], name)
 
     def test_create_release_component_with_type_extended_unique_together_fields(self):
         # python27 already exists as an rpm, ensure we can add it as container.
