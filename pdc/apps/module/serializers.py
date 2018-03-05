@@ -14,8 +14,10 @@ from pdc.apps.package.models import RPM
 # Inherit from this class so we can override the documentation variables
 class RPMModuleField(RPMRelatedField):
     doc_format = '"string (format: NEVRA.rpm)"'
-    writable_doc_format = ('{"name": "string", "epoch": "string", "version": "string", '
-                           '"release": "string", "arch": "string", "srpm_name": "string"}')
+    writable_doc_format = (
+        '{"name": "string", "epoch": "string", "version": "string", '
+        '"release": "string", "arch": "string", "srpm_name": "string", '
+        '"srpm_nevra": "string (only required and allowed for non-src RPMs)"}')
 
 
 class RuntimeDepSerializer(serializers.ModelSerializer):
