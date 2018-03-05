@@ -240,9 +240,13 @@ REST_API_MAX_PAGE_SIZE = 100
 
 API_HELP_TEMPLATE = "api/help.html"
 
-DIST_GIT_WEB_ROOT_URL = "http://pkgs.example.com/cgit/"
-DIST_GIT_RPM_PATH = 'rpms/'
-DIST_GIT_REPO_FORMAT = DIST_GIT_WEB_ROOT_URL + DIST_GIT_RPM_PATH + "%s"
+# Format string used for URLs in global and release components pointing to
+# Dist-Git server. One value will be substituted into this format string: the
+# name of the package.
+DIST_GIT_REPO_FORMAT = "http://pkgs.example.com/cgit/rpms/%s"
+# URL fragment used to point to a particular branch of a package on Dist-Git.
+# This will be appended to the URL created with DIST_GIT_REPO_FORMAT.
+# The default works for CGit.
 DIST_GIT_BRANCH_FORMAT = "?h=%s"
 
 # ldap settings
