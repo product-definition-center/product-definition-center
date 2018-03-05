@@ -279,7 +279,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                     "image_format":       string,
                     "md5":                string,
                     "rpms": [
-                        "rpm_nevra",      string,
+                        "rpm_nevra.rpm",  string,
                         ...
                     ],
                     "archives": [
