@@ -18,6 +18,8 @@ def _date_time_with_timezone(value):
     date_time = parse_datetime(value)
     if date_time is None:
         return value
+    if timezone.is_aware(date_time):
+        return date_time
     return timezone.make_aware(date_time)
 
 

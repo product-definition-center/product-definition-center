@@ -103,6 +103,13 @@ class ChangesetRESTTestCase(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_query_with_correct_datetimeformat_with_timezone(self):
+        url = reverse('changeset-list')
+        response = self.client.get(url + '?changed_since=2015-02-03T02:55:18Z', format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+
     def test_query_with_pdc_change_comment(self):
         url = reverse('changeset-list')
         response = self.client.get(url + '?comment=change', format='json')
