@@ -103,6 +103,39 @@ to know which one to use and how to configure it as well.
             'MLP': 'fedmsg',
         }
 
+
+#. `RHMsgMessenger`
+
+   This messenger is built on top of ``python-rhmsg`` library and is used to
+   send notification to Red Hat's internal message bus.
+
+   To use it, the configuration should specify a list of message brokers, a
+   path to a certificate used for authentication and a topic prefix to use for
+   all messages. See the example below for details.
+
+   The file pointed to by ``CERTIFICATE`` should contain both the public
+   certificate and the private key in PEM format.
+
+   ::
+
+        MESSAGE_BUS = {
+            'MLP': 'rhmsg',
+            # The brokers will be tried in random order. If connection can not
+            # be made in a given timeout, another URL is tried.
+            'URLS': [
+                'amqps://broker01.example.com:5671',
+                'amqps://broker02.example.com:5671',
+            ],
+            # How long to wait for each broker. The default is 60 seconds.
+            'CONNECTION_TIMEOUT': 5,
+
+            'CERTIFICATE': '/etc/pdc/certificate.pem',
+            'CACERT': '/etc/pdc/authoritycert.crt',
+
+            # This value is prepended to topic of all messages.
+            'TOPIC_PREFIX': 'VirtualTopic.eng.pdc',
+        }
+
 #. `KombuMessenger`
 
    `Kombu` is a messaging library for Python. It supports AMQP(v0.9) and several message server solutions by using
