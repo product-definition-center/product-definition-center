@@ -724,8 +724,8 @@ class ComposeViewSet(StrictQueryParamMixin,
             request.changeset.add('Compose', instance.pk,
                                   json.dumps({'deleted': False}),
                                   json.dumps({'deleted': True}))
-            self._add_messaging_info(request, json.dumps({'action': 'delete',
-                                                          'compose_id': instance.compose_id}))
+            self._add_messaging_info(request, {'action': 'delete',
+                                               'compose_id': instance.compose_id})
 
             return Response(status=status.HTTP_204_NO_CONTENT)
 
