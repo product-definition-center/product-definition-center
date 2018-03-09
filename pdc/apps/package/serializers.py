@@ -7,6 +7,7 @@ import json
 
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 
 from . import models
 from pdc.apps.compose.models import ComposeAcceptanceTestingState
@@ -139,6 +140,16 @@ class RPMRelatedField(serializers.RelatedField):
                                               rpm.id,
                                               'null',
                                               json.dumps(rpm.export()))
+
+                    if request and hasattr(request, '_messagings'):
+                        msg = {
+                            'url': reverse('rpms-detail', args=[rpm.pk], request=request),
+                            'author': request.user.username,
+                            'comment': request.META.get("HTTP_PDC_CHANGE_COMMENT", None),
+                            'new_value': serializer.data,
+                        }
+                        request._messagings.append(('.rpms.added', msg))
+
                     return rpm
                 else:
                     raise serializers.ValidationError(serializer.errors)

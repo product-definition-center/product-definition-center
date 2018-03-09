@@ -10,6 +10,7 @@ from rest_framework import status
 
 from pdc.apps.common.test_utils import TestCaseWithChangeSetMixin
 from pdc.apps.module.models import Module
+from pdc.apps.utils import messenger
 
 
 class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
@@ -100,7 +101,13 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'srpm_name': 'foobar',
             'srpm_commit_branch': 'master'
         }]
-        response = self.client.post(url, self.data, format='json')
+        with messenger.listen() as messages:
+            response = self.client.post(url, self.data, format='json')
+
+            # Check two messages were sent.
+            self.assertEqual([m[0] for m in messages],
+                             ['.rpms.added', '.modules.added'])
+
         # Check the response
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.expected['rpms'] = ['foobar-0:1.0.0-1.src.rpm']
@@ -109,6 +116,7 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         url_two = reverse('modules-detail', args=[uid_one])
         response_two = self.client.get(url_two, format='json')
         self.assertEqual(response_two.data, self.expected)
+
         # Create another module
         self.data['version'] = '56789012'
         self.data['rpms'] = [{

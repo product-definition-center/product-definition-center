@@ -14,6 +14,7 @@ from pdc.apps.common.hacks import parse_epoch_version
 from pdc.apps.common.test_utils import TestCaseWithChangeSetMixin
 from pdc.apps.component import models as component_models
 from pdc.apps.release import models as release_models
+from pdc.apps.utils import messenger
 from . import models
 from .filters import dependency_predicate
 
@@ -1428,7 +1429,12 @@ class BuildImageRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                 'rpms': [{'name': 'new_rpm', 'epoch': 0, 'version': '1.0.0',
                           'release': '1', 'arch': 'src', 'srpm_name': 'new_srpm'}]
                 }
-        response = self.client.post(url, data, format='json')
+        with messenger.listen() as messages:
+            response = self.client.post(url, data, format='json')
+
+            self.assertEqual([m[0] for m in messages],
+                             ['.rpms.added', '.build-images.added'])
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_with_new_incorrect_rpms_1(self):
