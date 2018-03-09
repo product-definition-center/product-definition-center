@@ -115,11 +115,7 @@ class NotificationMixin(object):
             # viewset.
             raise RuntimeError('Viewset %r not exposed in router.' % self)
         topic = '.%s.%s' % (resource, action)
-        msg.update({
-            'url': self._get_url(obj) if obj else None,
-            'author': self.request.user.username,
-            'comment': self.request.META.get("HTTP_PDC_CHANGE_COMMENT", None),
-        })
+        msg['url'] = self._get_url(obj) if obj else None
 
         self.request._request._messagings.append((topic, msg))
 

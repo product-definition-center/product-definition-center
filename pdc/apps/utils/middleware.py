@@ -28,12 +28,15 @@ class MessagingMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
         if not getattr(response, 'exception', 0) and response.status_code < 400:
             if hasattr(request, '_messagings'):
-                extra_fields = {}
+                extra_fields = {
+                    'author': request.user.username,
+                    'comment': request.META.get("HTTP_PDC_CHANGE_COMMENT", None),
+                }
                 if hasattr(request, 'changeset') and request.changeset.pk:
-                    extra_fields = {
+                    extra_fields.update({
                         'changeset_id': request.changeset.pk,
                         'committed_on': str(request.changeset.committed_on),
-                    }
+                    })
                 for topic, msg in request._messagings:
                     msg.update(extra_fields)
                     messenger.send_message(topic=topic, msg=msg)

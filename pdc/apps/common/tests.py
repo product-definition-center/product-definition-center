@@ -711,11 +711,11 @@ class NotificationMixinTestCase(TestCase):
         }
         self.view = DummyView.as_view(mapping, basename='dummy')
 
-    def _make_request(self, method, data=None, comment=None):
+    def _make_request(self, method, data=None):
         request = django.http.HttpRequest()
         request.method = method
         request._messagings = []
-        request.META = {'HTTP_PDC_CHANGE_COMMENT': comment, 'SERVER_NAME': '0.0.0.0', 'SERVER_PORT': 80}
+        request.META = {'SERVER_NAME': '0.0.0.0', 'SERVER_PORT': 80}
         if data:
             data = json.dumps(data)
             request._read_started = False
@@ -726,8 +726,7 @@ class NotificationMixinTestCase(TestCase):
     @mock.patch('pdc.apps.common.viewsets.router')
     @mock.patch('pdc.apps.common.viewsets.reverse')
     def test_create_notification(self, mock_reverse, mock_router):
-        request = self._make_request('POST', {'nickname': 'Rover', 'color': 'brown'},
-                                     comment='Sit!')
+        request = self._make_request('POST', {'nickname': 'Rover', 'color': 'brown'})
         mock_reverse.return_value = '/dogs/2/'
         mock_router.registry = [('dogs', None, 'dummy')]
 
@@ -741,8 +740,6 @@ class NotificationMixinTestCase(TestCase):
                                  'color': 'brown',
                                  'nickname': 'Rover'
                              },
-                             'author': '',
-                             'comment': 'Sit!',
                          })])
         self.assertEqual(mock_reverse.call_args_list,
                          [mock.call('dummy-detail', args=[2])])
@@ -768,15 +765,13 @@ class NotificationMixinTestCase(TestCase):
                                  'color': 'black',
                                  'nickname': 'Spot'
                              },
-                             'author': '',
-                             'comment': None,
                          })])
         self.assertEqual(mock_reverse.call_args_list,
                          [mock.call('dummy-detail', args=[1])])
 
     @mock.patch('pdc.apps.common.viewsets.router')
     def test_delete_notification(self, mock_router):
-        request = self._make_request('DELETE', comment='Go')
+        request = self._make_request('DELETE')
         mock_router.registry = [('dogs', None, 'dummy')]
 
         response = self.view(request, pk=1)
@@ -789,6 +784,4 @@ class NotificationMixinTestCase(TestCase):
                                  'color': 'black',
                                  'nickname': 'Spot'
                              },
-                             'author': '',
-                             'comment': 'Go',
                          })])

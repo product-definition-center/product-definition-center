@@ -142,8 +142,6 @@ def _announce_new_object(request, obj, route, topic, data):
     if request and hasattr(request, '_messagings'):
         msg = {
             'url': reverse(route, args=[obj.pk], request=request),
-            'author': request.user.username,
-            'comment': request.META.get("HTTP_PDC_CHANGE_COMMENT", None),
             'new_value': data,
         }
         request._messagings.append(('.%s.added' % topic, msg))
