@@ -108,57 +108,73 @@ class ImageSerializer(StrictSerializerMixin, serializers.ModelSerializer):
                   'composes', 'subvariant')
 
 
+def _get_fields(data, fields):
+    """
+    Check if all listed fields are present in data and return a dict containing
+    just those.
+
+    When something is missing, ValidationError is raised.
+    """
+    required_data = {}
+    errors = {}
+    for field in fields:
+        try:
+            required_data[field] = data[field]
+        except KeyError:
+            errors[field] = 'This field is required.'
+    if errors:
+        raise serializers.ValidationError(errors)
+    return required_data
+
+
+def _log_new_object(request, obj):
+    """Create a changelog entry for new object."""
+    if request and request.changeset:
+        model_name = ContentType.objects.get_for_model(obj).model
+        request.changeset.add(model_name,
+                              obj.id,
+                              'null',
+                              json.dumps(obj.export()))
+
+
+def _announce_new_object(request, obj, route, topic, data):
+    """Enqueue a message about new object being created."""
+    if request and hasattr(request, '_messagings'):
+        msg = {
+            'url': reverse(route, args=[obj.pk], request=request),
+            'author': request.user.username,
+            'comment': request.META.get("HTTP_PDC_CHANGE_COMMENT", None),
+            'new_value': data,
+        }
+        request._messagings.append(('.%s.added' % topic, msg))
+
+
 class RPMRelatedField(serializers.RelatedField):
     def to_representation(self, value):
         return unicode(value)
 
     def to_internal_value(self, data):
         request = self.context.get('request', None)
-        if isinstance(data, dict):
-            required_data = {}
-            errors = {}
-            for field in ['name', 'epoch', 'version', 'release', 'arch', 'srpm_name']:
-                try:
-                    required_data[field] = data[field]
-                except KeyError:
-                    errors[field] = 'This field is required.'
-            if errors:
-                raise serializers.ValidationError(errors)
-            # NOTE(xchu): pop out fields not in unique_together
-            required_data.pop('srpm_name')
-            try:
-                rpm = models.RPM.objects.get(**required_data)
-            except (models.RPM.DoesNotExist,
-                    models.RPM.MultipleObjectsReturned):
-                serializer = RPMSerializer(data=data,
-                                           context={'request': request})
-                if serializer.is_valid():
-                    rpm = serializer.save()
-                    model_name = ContentType.objects.get_for_model(rpm).model
-                    if request and request.changeset:
-                        request.changeset.add(model_name,
-                                              rpm.id,
-                                              'null',
-                                              json.dumps(rpm.export()))
-
-                    if request and hasattr(request, '_messagings'):
-                        msg = {
-                            'url': reverse('rpms-detail', args=[rpm.pk], request=request),
-                            'author': request.user.username,
-                            'comment': request.META.get("HTTP_PDC_CHANGE_COMMENT", None),
-                            'new_value': serializer.data,
-                        }
-                        request._messagings.append(('.rpms.added', msg))
-
-                    return rpm
-                else:
-                    raise serializers.ValidationError(serializer.errors)
-            except Exception as err:
-                raise serializers.ValidationError("Can not get or create RPM with your input(%s): %s." % (data, err))
-            else:
-                return rpm
-        else:
+        if not isinstance(data, dict):
             raise serializers.ValidationError("Unsupported RPM input.")
+
+        required_data = _get_fields(
+            data, ['name', 'epoch', 'version', 'release', 'arch'])
+        try:
+            return models.RPM.objects.get(**required_data)
+        except (models.RPM.DoesNotExist,
+                models.RPM.MultipleObjectsReturned):
+            serializer = RPMSerializer(data=data,
+                                       context={'request': request})
+            if not serializer.is_valid():
+                raise serializers.ValidationError(serializer.errors)
+
+            rpm = serializer.save()
+            _log_new_object(request, rpm)
+            _announce_new_object(request, rpm, 'rpms-detail', 'rpms', serializer.data)
+            return rpm
+        except Exception as err:
+            raise serializers.ValidationError("Can not get or create RPM with your input(%s): %s." % (data, err))
 
 
 class ArchiveSerializer(StrictSerializerMixin, serializers.ModelSerializer):
@@ -175,42 +191,24 @@ class ArchiveRelatedField(serializers.RelatedField):
 
     def to_internal_value(self, data):
         request = self.context.get('request', None)
-
-        if isinstance(data, dict):
-            required_data = {}
-            errors = {}
-            for field in ['build_nvr', 'name', 'size', 'md5']:
-                try:
-                    required_data[field] = data[field]
-                except KeyError:
-                    errors[field] = 'This field is required.'
-            if errors:
-                raise serializers.ValidationError(errors)
-            # NOTE(xchu): pop out fields not in unique_together
-            required_data.pop('size')
-            try:
-                archive = models.Archive.objects.get(**required_data)
-            except (models.Archive.DoesNotExist,
-                    models.Archive.MultipleObjectsReturned):
-                serializer = ArchiveSerializer(data=data,
-                                               context={'request': request})
-                if serializer.is_valid():
-                    archive = serializer.save()
-                    model_name = ContentType.objects.get_for_model(archive).model
-                    if request and request.changeset:
-                        request.changeset.add(model_name,
-                                              archive.id,
-                                              'null',
-                                              json.dumps(archive.export()))
-                    return archive
-                else:
-                    raise serializers.ValidationError(serializer.errors)
-            except Exception as err:
-                raise serializers.ValidationError("Can not get or create Archive with your input(%s): %s." % (data, err))
-            else:
-                return archive
-        else:
+        if not isinstance(data, dict):
             raise serializers.ValidationError("Unsupported Archive input.")
+
+        required_data = _get_fields(data, ['build_nvr', 'name', 'size'])
+        try:
+            return models.Archive.objects.get(**required_data)
+        except (models.Archive.DoesNotExist,
+                models.Archive.MultipleObjectsReturned):
+            serializer = ArchiveSerializer(data=data,
+                                           context={'request': request})
+            if not serializer.is_valid():
+                raise serializers.ValidationError(serializer.errors)
+
+            archive = serializer.save()
+            _log_new_object(request, archive)
+            return archive
+        except Exception as err:
+            raise serializers.ValidationError("Can not get or create Archive with your input(%s): %s." % (data, err))
 
 
 class BuildImageSerializer(StrictSerializerMixin, serializers.HyperlinkedModelSerializer):

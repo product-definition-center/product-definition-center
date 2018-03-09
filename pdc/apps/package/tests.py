@@ -1581,7 +1581,6 @@ class BuildImageRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertIn('version', response.content)
         self.assertIn('release', response.content)
         self.assertIn('arch', response.content)
-        self.assertIn('srpm_name', response.content)
 
     def test_create_with_new_rpms_missing_fields(self):
         url = reverse('buildimage-list')
@@ -1597,6 +1596,18 @@ class BuildImageRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertIn('version', response.content)
         self.assertIn('release', response.content)
         self.assertIn('arch', response.content)
+
+    def test_create_with_new_rpms_missing_non_unique_fields(self):
+        url = reverse('buildimage-list')
+        data = {'image_id': 'new_build',
+                'image_format': 'docker',
+                'md5': "0123456789abcdef0123456789abcdef",
+                'rpms': [{'name': 'new_rpm', 'epoch': 0, 'version': '1.0',
+                          'release': '1', 'arch': 'x86_64'}],
+                'archives': []}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('rpms', response.content)
         self.assertIn('srpm_name', response.content)
 
     def test_create_with_exist_archives_missing_fields(self):
@@ -1612,7 +1623,6 @@ class BuildImageRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertIn('archives', response.content)
         self.assertIn('name', response.content)
         self.assertIn('size', response.content)
-        self.assertIn('md5', response.content)
 
     def test_create_with_new_archives_missing_fields(self):
         url = reverse('buildimage-list')
@@ -1627,6 +1637,18 @@ class BuildImageRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertIn('archives', response.content)
         self.assertIn('name', response.content)
         self.assertIn('size', response.content)
+
+    def test_create_with_new_archives_missing_non_unique_field(self):
+        url = reverse('buildimage-list')
+        data = {'image_id': 'new_build',
+                'image_format': 'docker',
+                'md5': "0123456789abcdef0123456789abcdef",
+                'rpms': [],
+                'archives': [{'build_nvr': 'new_build', 'name': 'foo', 'size': 125}]
+                }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('archives', response.content)
         self.assertIn('md5', response.content)
 
     def test_get(self):
