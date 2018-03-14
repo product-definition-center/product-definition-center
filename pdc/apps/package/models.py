@@ -20,7 +20,7 @@ from pdc.apps.common.validators import validate_md5, validate_sha1, validate_sha
 from pdc.apps.common.hacks import add_returning, parse_epoch_version
 from pdc.apps.common.constants import ARCH_SRC
 from pdc.apps.release.models import Release
-from pdc.apps.compose.models import ComposeAcceptanceTestingState
+from pdc.apps.compose.models import Compose, ComposeAcceptanceTestingState
 from pdc.apps.package.apps import PackageConfig
 from pdc.apps.repository.models import Repo
 from pdc.apps.utils.rpm import parse_nvra
@@ -42,6 +42,8 @@ class RPM(models.Model):
     srpm_commit_hash    = models.CharField(max_length=200, db_index=True, null=True, blank=True)
     srpm_commit_branch  = models.CharField(max_length=200, db_index=True, null=True, blank=True)
 
+    _active_compose_ids = Compose.objects.only('compose_id').filter(deleted=False)
+
     class Meta:
         ordering = ("name", "epoch", "version", "release", "arch")
         unique_together = (
@@ -52,9 +54,10 @@ class RPM(models.Model):
         return u"%s.rpm" % self.nevra
 
     def linked_composes(self):
-        from pdc.apps.compose.models import Compose
-        """Return a set of all composes that this RPM is linked"""
-        return Compose.objects.filter(variant__variantarch__composerpm__rpm=self).distinct()
+        """Return a set of active composes that this RPM is linked"""
+        return self._active_compose_ids \
+            .filter(variant__variantarch__composerpm__rpm=self) \
+            .distinct()
 
     @property
     def nevra(self):
