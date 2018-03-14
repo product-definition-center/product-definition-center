@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015 Red Hat
+# Copyright (c) 2015,2018 Red Hat
 # Licensed under The MIT License (MIT)
 # http://opensource.org/licenses/MIT
 #
@@ -12,13 +12,34 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class DummyMessenger(object):
+class BaseMessenger(object):
+    """
+    Base class for messengers.
+
+    Children class should implement either `send_message` or `send_messages`.
+    """
+
+    def send_message(self, topic, msg):
+        raise NotImplementedError(
+            'Child class must implement send_message or send_messages method.')
+
+    def send_messages(self, msgs):
+        """
+        Send multiple messages via `send_messages` method.
+
+        Override this method if your messenger can do this more efficiently.
+        """
+        for (topic, msg) in msgs:
+            self.send_message(topic, msg)
+
+
+class DummyMessenger(BaseMessenger):
 
     def send_message(self, topic, msg):
         logger.info('Sending to %s:\n%s' % (topic, json.dumps(msg, sort_keys=True, indent=2)))
 
 
-class KombuMessenger(object):
+class KombuMessenger(BaseMessenger):
     def __init__(self):
         from kombu import Connection, Exchange
         self.conn = Connection(settings.MESSAGE_BUS['URL'],
@@ -30,7 +51,7 @@ class KombuMessenger(object):
         self.messenger.publish(json.dumps(msg), exchange=self.exchange, routing_key=topic)
 
 
-class FedmsgMessenger(object):
+class FedmsgMessenger(BaseMessenger):
     def __init__(self):
         import fedmsg
         self.messenger = fedmsg
@@ -40,7 +61,7 @@ class FedmsgMessenger(object):
         self.messenger.publish(topic=topic, msg=msg)
 
 
-class ProtonMessenger(object):
+class ProtonMessenger(BaseMessenger):
     def __init__(self):
         import proton
         self.messenger = proton.Messenger()
@@ -56,7 +77,7 @@ class ProtonMessenger(object):
         self.messenger.send()
 
 
-class StompMessenger(object):
+class StompMessenger(BaseMessenger):
     def __init__(self):
         import stomp
         self.connection = stomp.Connection(
@@ -105,7 +126,7 @@ class TestListener(object):
         self.messenger.listeners.remove(self)
 
 
-class TestMessenger(object):
+class TestMessenger(BaseMessenger):
     """
     Processes messages from message bus for tests.
 

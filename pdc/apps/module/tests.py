@@ -7,10 +7,10 @@
 from django.core.urlresolvers import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
+from django.apps import apps
 
 from pdc.apps.common.test_utils import TestCaseWithChangeSetMixin
 from pdc.apps.module.models import Module
-from pdc.apps.utils import messenger
 
 
 class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
@@ -101,6 +101,7 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
             'srpm_name': 'foobar',
             'srpm_commit_branch': 'master'
         }]
+        messenger = apps.get_app_config('messaging').messenger
         with messenger.listen() as messages:
             response = self.client.post(url, self.data, format='json')
 

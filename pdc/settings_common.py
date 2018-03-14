@@ -101,6 +101,7 @@ INSTALLED_APPS = (
     'pdc.apps.componentbranch',
     'pdc.apps.unreleasedvariant',
     'pdc.apps.releaseschedule',
+    'pdc.apps.messaging',
 
     'mptt',
 )
@@ -149,7 +150,7 @@ MIDDLEWARE = [
     'pdc.apps.menu.middleware.MenuMiddleware',
     'pdc.apps.usage.middleware.UsageMiddleware',
     'pdc.apps.changeset.middleware.ChangesetMiddleware',
-    'pdc.apps.utils.middleware.MessagingMiddleware',
+    'pdc.apps.messaging.middleware.MessagingMiddleware',
     'pdc.apps.utils.middleware.RestrictAdminMiddleware',
     'django.middleware.cache.FetchFromCacheMiddleware',
 ]

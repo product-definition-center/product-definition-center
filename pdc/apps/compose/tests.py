@@ -13,6 +13,7 @@ from django.test import TestCase
 from django.test.client import Client
 from rest_framework.test import APITestCase
 from rest_framework import status
+from django.apps import apps
 
 from pdc.apps.bindings import models as binding_models
 from pdc.apps.common.test_utils import create_user, TestCaseWithChangeSetMixin
@@ -22,7 +23,6 @@ from pdc.apps.component.models import (ReleaseComponent,
                                        BugzillaComponent)
 import pdc.apps.release.models as release_models
 import pdc.apps.common.models as common_models
-from pdc.apps.utils import messenger
 from . import models
 
 
@@ -768,6 +768,7 @@ class ComposeUpdateMessagingTestCase(APITestCase):
     ]
 
     def test_update_testing_status_on_arch(self):
+        messenger = apps.get_app_config('messaging').messenger
         with messenger.listen() as messages:
             response = self.client.patch(
                 reverse('compose-detail', args=['compose-1']),

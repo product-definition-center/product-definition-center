@@ -8,13 +8,13 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
 from django.core.exceptions import ValidationError
+from django.apps import apps
 
 from pdc.apps.bindings import models as binding_models
 from pdc.apps.common.hacks import parse_epoch_version
 from pdc.apps.common.test_utils import TestCaseWithChangeSetMixin
 from pdc.apps.component import models as component_models
 from pdc.apps.release import models as release_models
-from pdc.apps.utils import messenger
 from . import models
 from .filters import dependency_predicate
 
@@ -1429,6 +1429,7 @@ class BuildImageRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
                 'rpms': [{'name': 'new_rpm', 'epoch': 0, 'version': '1.0.0',
                           'release': '1', 'arch': 'src', 'srpm_name': 'new_srpm'}]
                 }
+        messenger = apps.get_app_config('messaging').messenger
         with messenger.listen() as messages:
             response = self.client.post(url, data, format='json')
 
