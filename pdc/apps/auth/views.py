@@ -411,8 +411,7 @@ class PermissionViewSet(StrictQueryParamMixin,
     """
     permission_classes = (APIPermission,)
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         ### LIST
 
         __Method__:
@@ -463,8 +462,7 @@ class PermissionViewSet(StrictQueryParamMixin,
                 ]
             }
 
-        """
-        return super(PermissionViewSet, self).list(request, *args, **kwargs)
+    """
 
     queryset = Permission.objects.all().order_by("id")
     serializer_class = serializers.PermissionSerializer
@@ -483,8 +481,7 @@ class GroupViewSet(NotificationMixin,
     This page shows the usage of the **Group API**, please see the
     following for more details.
     """
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         ### LIST
 
         __Method__:
@@ -532,11 +529,9 @@ class GroupViewSet(NotificationMixin,
                 ]
             }
 
-        """
-        return super(GroupViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         ### RETRIEVE
 
         __Method__:
@@ -564,11 +559,9 @@ class GroupViewSet(NotificationMixin,
                   }
               ]
             }
-        """
-        return super(GroupViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         ### UPDATE
 
         __Method__:
@@ -666,8 +659,7 @@ class GroupViewSet(NotificationMixin,
               ]
             }
 
-        """
-        return super(GroupViewSet, self).update(request, *args, **kwargs)
+    """
 
     queryset = Group.objects.all().order_by('id')
     serializer_class = serializers.GroupSerializer
@@ -737,8 +729,7 @@ class ResourcePermissionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (APIPermission,)
     filter_class = filters.ResourcePermissionFilter
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         Get information about resource permissions.
 
         __Method__: `GET`
@@ -765,8 +756,7 @@ class ResourcePermissionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 ]
             }
 
-        """
-        return super(ResourcePermissionViewSet, self).list(request, *args, **kwargs)
+    """
 
 
 class GroupResourcePermissionViewSet(common_viewsets.PDCModelViewSet):
@@ -777,8 +767,7 @@ class GroupResourcePermissionViewSet(common_viewsets.PDCModelViewSet):
     serializer_class = serializers.GroupResourcePermissionSerializer
     filter_class = filters.GroupResourcePermissionFilter
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         Get information about group resource permissions.
 
         __Method__: `GET`
@@ -809,11 +798,9 @@ class GroupResourcePermissionViewSet(common_viewsets.PDCModelViewSet):
             }
 
 
-        """
-        return super(GroupResourcePermissionViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__: POST
 
         __URL__: $LINK:groupresourcepermissions-list$
@@ -834,11 +821,9 @@ class GroupResourcePermissionViewSet(common_viewsets.PDCModelViewSet):
                 "resource": string,
                 "permission": string
             }
-        """
-        return super(GroupResourcePermissionViewSet, self).create(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: GET
 
         __URL__: $LINK:groupresourcepermissions-detail:instance_pk$
@@ -851,11 +836,9 @@ class GroupResourcePermissionViewSet(common_viewsets.PDCModelViewSet):
                 "resource": string,
                 "permission": string
             }
-        """
-        return super(GroupResourcePermissionViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         __Method__: PUT, PATCH
 
         __URL__: $LINK:groupresourcepermissions-detail:instance_pk$
@@ -876,11 +859,9 @@ class GroupResourcePermissionViewSet(common_viewsets.PDCModelViewSet):
                 "resource": string,
                 "permission": string
             }
-        """
-        return super(GroupResourcePermissionViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__: DELETE
 
         __URL__: $LINK:groupresourcepermissions-detail:instance_pk$
@@ -888,8 +869,7 @@ class GroupResourcePermissionViewSet(common_viewsets.PDCModelViewSet):
         __Response__:
 
         On success, HTTP status code is 204 and the response has no content.
-        """
-        return super(GroupResourcePermissionViewSet, self).destroy(request, *args, **kwargs)
+    """
 
 
 class ResourceApiUrlViewSet(common_viewsets.PDCModelViewSet):
@@ -900,8 +880,7 @@ class ResourceApiUrlViewSet(common_viewsets.PDCModelViewSet):
     serializer_class = serializers.ResourceApiUrlSerializer
     filter_class = filters.ResourceApiUrlFilter
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         Get information about API documentation URLs.
 
         __Method__: `GET`
@@ -928,11 +907,9 @@ class ResourceApiUrlViewSet(common_viewsets.PDCModelViewSet):
                     ...
                 ]
             }
-        """
-        return super(ResourceApiUrlViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__: POST
 
         __URL__: $LINK:resourceapiurls-list$
@@ -951,11 +928,9 @@ class ResourceApiUrlViewSet(common_viewsets.PDCModelViewSet):
                 "resource": string,
                 "url": string
             }
-        """
-        return super(ResourceApiUrlViewSet, self).create(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: GET
 
         __URL__: $LINK:resourceapiurls-detail:instance_pk$
@@ -967,11 +942,9 @@ class ResourceApiUrlViewSet(common_viewsets.PDCModelViewSet):
                 "resource": string,
                 "url": string
             }
-        """
-        return super(ResourceApiUrlViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         __Method__: PUT, PATCH
 
         __URL__: $LINK:resourceapiurls-detail:instance_pk$
@@ -990,11 +963,9 @@ class ResourceApiUrlViewSet(common_viewsets.PDCModelViewSet):
                 "resource": string,
                 "url": string
             }
-        """
-        return super(ResourceApiUrlViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__: DELETE
 
         __URL__: $LINK:resourceapiurls-detail:instance_pk$
@@ -1002,5 +973,4 @@ class ResourceApiUrlViewSet(common_viewsets.PDCModelViewSet):
         __Response__:
 
         On success, HTTP status code is 204 and the response has no content.
-        """
-        return super(ResourceApiUrlViewSet, self).destroy(request, *args, **kwargs)
+    """

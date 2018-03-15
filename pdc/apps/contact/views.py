@@ -29,8 +29,7 @@ class PersonViewSet(viewsets.PDCModelViewSet):
     browsers, such as ``RESTClient``, ``RESTConsole``.
     """
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         ### CREATE
 
         __Method__:
@@ -51,11 +50,9 @@ class PersonViewSet(viewsets.PDCModelViewSet):
             curl -H "Content-Type: application/json"  -X POST -d '{"username": "test", "email": "test@example.com"}' $URL:person-list$
             # output
             {"id": 1, "username": "test", "email": "test@example.com"}
-        """
-        return super(PersonViewSet, self).create(request, *args, **kwargs)
+    """
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         ### LIST
 
         __Method__:
@@ -70,11 +67,9 @@ class PersonViewSet(viewsets.PDCModelViewSet):
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
-        """
-        return super(PersonViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         ### RETRIEVE
 
         __Method__:
@@ -91,11 +86,9 @@ class PersonViewSet(viewsets.PDCModelViewSet):
             curl -H "Content-Type: application/json" $URL:person-detail:1$
             # output
             {"id": 1, "username": "test", "email": "test@example.com"}
-        """
-        return super(PersonViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         ### UPDATE
 
         __Method__: `PUT`, `PATCH`
@@ -123,11 +116,9 @@ class PersonViewSet(viewsets.PDCModelViewSet):
             curl -X PATCH -d '{"email": "new_email"}' -H "Content-Type: application/json" $URL:person-detail:1$
             # output
             {"id": 1, "username": "name", "email": "new_email"}
-        """
-        return super(PersonViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         ### DELETE
 
         __Method__:
@@ -142,8 +133,7 @@ class PersonViewSet(viewsets.PDCModelViewSet):
         __Example__:
 
             curl -X DELETE -H "Content-Type: application/json" $URL:person-detail:1$
-        """
-        return super(PersonViewSet, self).destroy(request, *args, **kwargs)
+    """
 
     serializer_class = PersonSerializer
     queryset = Person.objects.all().order_by('id')
@@ -164,8 +154,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
     browsers, such as ``RESTClient``, ``RESTConsole``.
     """
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         ### CREATE
 
         __Method__:
@@ -186,11 +175,9 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
             curl -H "Content-Type: application/json"  -X POST -d '{"mail_name": "test", "email": "test@example.com"}' $URL:maillist-list$
             # output
             {"id": 1, "mail_name": "test", "email": "test@example.com"}
-        """
-        return super(MaillistViewSet, self).create(request, *args, **kwargs)
+    """
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         ### LIST
 
         __Method__:
@@ -224,11 +211,9 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
                     }
                 ]
             }
-        """
-        return super(MaillistViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         ### RETRIEVE
 
         __Method__:
@@ -245,11 +230,9 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
             curl -H "Content-Type: application/json" $URL:maillist-detail:1$
             # output
             {"id": 1, "mail_name": "test", "email": "test@example.com"}
-        """
-        return super(MaillistViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         ### UPDATE
 
         __Method__: `PUT`, `PATCH`
@@ -286,11 +269,9 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
             curl -X PATCH -d '{"email": "new_email"}' -H "Content-Type: application/json" $URL:maillist-detail:1$
             # output
             {"id": 1, "mail_name": "name", "email": "new_email"}
-        """
-        return super(MaillistViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         ### DELETE
 
         __Method__:
@@ -305,8 +286,7 @@ class MaillistViewSet(viewsets.PDCModelViewSet):
         __Example__:
 
             curl -X DELETE -H "Content-Type: application/json" $URL:maillist-detail:1$
-        """
-        return super(MaillistViewSet, self).destroy(request, *args, **kwargs)
+    """
 
     serializer_class = MaillistSerializer
     queryset = Maillist.objects.all().order_by('id')
@@ -328,8 +308,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
     """
     docstring_macros = PUT_OPTIONAL_PARAM_WARNING
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         ### CREATE
 
         __Method__:
@@ -350,11 +329,9 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
             curl -H "Content-Type: application/json"  -X POST -d '{"name": "test"}' $URL:contactrole-list$
             # output
             {"name": "test", "count_limit": 1}
-        """
-        return super(ContactRoleViewSet, self).create(request, *args, **kwargs)
+    """
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         ### LIST
 
         __Method__:
@@ -406,11 +383,9 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
                     }
                 ]
             }
-        """
-        return super(ContactRoleViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         ### RETRIEVE
 
         __Method__:
@@ -427,11 +402,9 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
             curl -H "Content-Type: application/json" $URL:contactrole-detail:QE_Leader$
             # output
             {"name": "QE_Leader", "count_limit": 1}
-        """
-        return super(ContactRoleViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         ### UPDATE
         %(PUT_OPTIONAL_PARAM_WARNING)s
 
@@ -460,11 +433,9 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
             curl -X PATCH -d '{"count_limit": "unlimited"}' -H "Content-Type: application/json" $URL:contactrole-detail:QE_Ack$
             # output
             {"name": "new_name", "count_limit": "unlimited"}
-        """
-        return super(ContactRoleViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         ### DELETE
 
         __Method__:
@@ -479,8 +450,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
         __Example__:
 
             curl -X DELETE -H "Content-Type: application/json" $URL:contactrole-detail:QE_Group$
-        """
-        return super(ContactRoleViewSet, self).destroy(request, *args, **kwargs)
+    """
 
     serializer_class = ContactRoleSerializer
     queryset = ContactRole.objects.all().order_by('id')
@@ -490,9 +460,7 @@ class ContactRoleViewSet(viewsets.PDCModelViewSet):
 
 
 class _BaseContactViewSet(viewsets.PDCModelViewSet):
-    @never_cache
-    def list(self, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: `GET`
 
         __URL__: $LINK:%(BASENAME)s-list$
@@ -507,12 +475,9 @@ class _BaseContactViewSet(viewsets.PDCModelViewSet):
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
-        """
-        return super(_BaseContactViewSet, self).list(*args, **kwargs)
+    """
 
-    @never_cache
-    def retrieve(self, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: `GET`
 
         __URL__: $LINK:%(BASENAME)s-detail:pk$
@@ -520,22 +485,18 @@ class _BaseContactViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(_BaseContactViewSet, self).retrieve(*args, **kwargs)
+    """
 
-    def destroy(self, *args, **kwargs):
-        """Remove association between component and contact.
+    doc_destroy = """
 
         __Method__: `DELETE`
 
         __URL__: $LINK:%(BASENAME)s-detail:pk$
 
         __Response__: Nothing on success.
-        """
-        return super(_BaseContactViewSet, self).destroy(*args, **kwargs)
+    """
 
-    def update(self, *args, **kwargs):
-        """Change details about a contact linked to component.
+    doc_update = """
 
         Please note that if you change the `contact` field here, only the single
         updated relationship between contact and component will be updated.
@@ -560,11 +521,9 @@ class _BaseContactViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(_BaseContactViewSet, self).update(*args, **kwargs)
+    """
 
-    def create(self, *args, **kwargs):
-        """Connect contact details with a component.
+    doc_create = """
 
         If the contact does not exist, it will be created automatically.
 
@@ -586,8 +545,15 @@ class _BaseContactViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(_BaseContactViewSet, self).create(*args, **kwargs)
+    """
+
+    @never_cache
+    def list(self, *args, **kwargs):
+        return super(_BaseContactViewSet, self).list(*args, **kwargs)
+
+    @never_cache
+    def retrieve(self, *args, **kwargs):
+        return super(_BaseContactViewSet, self).retrieve(*args, **kwargs)
 
 
 class GlobalComponentContactViewSet(_BaseContactViewSet):

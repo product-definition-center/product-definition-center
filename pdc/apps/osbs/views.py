@@ -43,8 +43,7 @@ class OSBSViewSet(common_viewsets.NotificationMixin,
     lookup_fields = (('component__release__release_id', r'[^/]+'),
                      ('component__name', r'[^/]+'))
 
-    def retrieve(self, request, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: `GET`
 
         __URL__: $LINK:osbs-detail:release_id}/{component_name$
@@ -52,11 +51,9 @@ class OSBSViewSet(common_viewsets.NotificationMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(OSBSViewSet, self).retrieve(request, **kwargs)
+    """
 
-    def list(self, request, **kwargs):
-        """
+    doc_list = """
         __Method__: `GET`
 
         __URL__: $LINK:osbs-list$
@@ -68,11 +65,9 @@ class OSBSViewSet(common_viewsets.NotificationMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(OSBSViewSet, self).list(request, **kwargs)
+    """
 
-    def update(self, request, **kwargs):
-        """
+    doc_update = """
         __Method__: `PUT`
 
         __URL__: $LINK:osbs-detail:release_id}/{component_name$
@@ -84,11 +79,9 @@ class OSBSViewSet(common_viewsets.NotificationMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(OSBSViewSet, self).update(request, **kwargs)
+    """
 
-    def partial_update(self, request, **kwargs):
-        """
+    doc_partial_update = """
         __Method__: `PATCH`
 
         __URL__: $LINK:osbs-detail:release_id}/{component_name$
@@ -100,5 +93,4 @@ class OSBSViewSet(common_viewsets.NotificationMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(OSBSViewSet, self).partial_update(request, **kwargs)
+    """

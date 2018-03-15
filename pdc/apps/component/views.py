@@ -70,8 +70,7 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
     serializer_class = GlobalComponentSerializer
     filter_class = ComponentFilter
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__:
         GET
 
@@ -105,11 +104,9 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
                     },
                     ...
             }
-        """
-        return super(GlobalComponentViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__:
         GET
 
@@ -131,11 +128,9 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
                             "scm_url": string
                         }
             }
-        """
-        return super(GlobalComponentViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__:
         POST
 
@@ -177,11 +172,9 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
                                 "scm_url": string
                             }
             }
-        """
-        return super(GlobalComponentViewSet, self).create(request, *args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         __Method__:
 
         PUT/PATCH: for update
@@ -241,11 +234,9 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
                 "labels": [],
                 "upstream": null
             }
-        """
-        return super(GlobalComponentViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__:
         DELETE
 
@@ -258,8 +249,7 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
         __Example__:
 
             curl -X DELETE -H "Content-Type: application/json" $URL:globalcomponent-detail:4181$
-        """
-        return super(GlobalComponentViewSet, self).destroy(request, *args, **kwargs)
+    """
 
 
 class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
@@ -290,8 +280,7 @@ class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
         labels = gc.labels.all()
         return labels
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: `GET`
 
         __URL__: $LINK:globalcomponentlabel-list:component_id$
@@ -304,11 +293,9 @@ class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
 
         %(SERIALIZER)s
 
-        """
-        return super(GlobalComponentLabelViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: `GET`
 
         __URL__: $LINK:globalcomponentlabel-detail:component_id:label_id$
@@ -316,8 +303,7 @@ class GlobalComponentLabelViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(GlobalComponentLabelViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
     def update(self, request, *args, **kwargs):
         self.http_method_not_allowed(request, *args, **kwargs)
@@ -401,8 +387,7 @@ class ReleaseComponentTypeViewSet(viewsets.StrictQueryParamMixin,
     queryset = ReleaseComponentType.objects.all().order_by('id')
     permission_classes = (APIPermission,)
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:releasecomponenttype-list$
@@ -410,8 +395,7 @@ class ReleaseComponentTypeViewSet(viewsets.StrictQueryParamMixin,
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
-        """
-        return super(ReleaseComponentTypeViewSet, self).list(request, *args, **kwargs)
+    """
 
 
 class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
@@ -444,8 +428,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
             qs = qs.filter(release__active=True)
         return qs
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__:
         GET
 
@@ -493,11 +476,9 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
                     }
                     ...
             }
-        """
-        return super(ReleaseComponentViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__:
         GET
 
@@ -530,10 +511,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
                 } OR null,
                 "type": <string|null>
             }
-
-        """
-
-        return super(ReleaseComponentViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
     def update(self, request, *args, **kwargs):
         """
@@ -694,8 +672,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
                 request=request)
         return response
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__:
         DELETE
 
@@ -708,8 +685,7 @@ class ReleaseComponentViewSet(viewsets.PDCModelViewSet):
         __Example__:
 
             curl -X DELETE -H "Content-Type: application/json" $URL:releasecomponent-detail:1$
-        """
-        return super(ReleaseComponentViewSet, self).destroy(request, *args, **kwargs)
+    """
 
 
 class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
@@ -733,8 +709,7 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
     serializer_class = BugzillaComponentSerializer
     filter_class = BugzillaComponentFilter
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__:
         GET
 
@@ -747,11 +722,9 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
-        """
-        return super(BugzillaComponentViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__:
         GET
 
@@ -760,9 +733,7 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-
-        return super(BugzillaComponentViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
     def update(self, request, *args, **kwargs):
         """
@@ -914,8 +885,7 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK,
                             headers=generate_warning_header_dict("The bugzilla component already exists"))
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__:
         DELETE
 
@@ -932,8 +902,7 @@ class BugzillaComponentViewSet(viewsets.PDCModelViewSet):
         __Example__:
 
             curl -X DELETE -H "Content-Type: application/json" $URL:bugzillacomponent-detail:1$
-        """
-        return super(BugzillaComponentViewSet, self).destroy(request, *args, **kwargs)
+    """
 
     def perform_destroy(self, instance):
         delete_obj_dict = {}
@@ -975,8 +944,7 @@ class GroupTypeViewSet(viewsets.PDCModelViewSet):
     filter_class = GroupTypeFilter
     docstring_macros = PUT_OPTIONAL_PARAM_WARNING
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__: POST
 
         __URL__: $LINK:componentgrouptype-list$
@@ -988,11 +956,9 @@ class GroupTypeViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(GroupTypeViewSet, self).create(request, *args, **kwargs)
+    """
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:componentgrouptype-list$
@@ -1004,11 +970,9 @@ class GroupTypeViewSet(viewsets.PDCModelViewSet):
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
-        """
-        return super(GroupTypeViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: GET
 
         __URL__: $LINK:componentgrouptype-detail:instance_pk$
@@ -1016,11 +980,9 @@ class GroupTypeViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(GroupTypeViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         %(PUT_OPTIONAL_PARAM_WARNING)s
 
         __Method__: PUT, PATCH
@@ -1034,11 +996,9 @@ class GroupTypeViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(GroupTypeViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__: DELETE
 
         __URL__: $LINK:componentgrouptype-detail:instance_pk$
@@ -1046,8 +1006,7 @@ class GroupTypeViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         On success, HTTP status code is 204 and the response has no content.
-        """
-        return super(GroupTypeViewSet, self).destroy(request, *args, **kwargs)
+    """
 
 
 class GroupViewSet(viewsets.PDCModelViewSet):
@@ -1058,8 +1017,7 @@ class GroupViewSet(viewsets.PDCModelViewSet):
     queryset = ReleaseComponentGroup.objects.all().order_by('id')
     filter_class = GroupFilter
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__: POST
 
         __URL__: $LINK:componentgroup-list$
@@ -1085,11 +1043,9 @@ class GroupViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(GroupViewSet, self).create(request, *args, **kwargs)
+    """
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:componentgroup-list$
@@ -1101,11 +1057,9 @@ class GroupViewSet(viewsets.PDCModelViewSet):
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
-        """
-        return super(GroupViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: GET
 
         __URL__: $LINK:componentgroup-detail:instance_pk$
@@ -1113,11 +1067,9 @@ class GroupViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(GroupViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         __Method__: PUT, PATCH
 
         __URL__: $LINK:componentgroup-detail:instance_pk$
@@ -1139,11 +1091,9 @@ class GroupViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(GroupViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__: DELETE
 
         __URL__: $LINK:componentgroup-detail:instance_pk$
@@ -1151,8 +1101,7 @@ class GroupViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         On success, HTTP status code is 204 and the response has no content.
-        """
-        return super(GroupViewSet, self).destroy(request, *args, **kwargs)
+    """
 
 
 class ReleaseComponentRelationshipTypeViewSet(viewsets.PDCModelViewSet):
@@ -1164,8 +1113,7 @@ class ReleaseComponentRelationshipTypeViewSet(viewsets.PDCModelViewSet):
     permission_classes = (APIPermission,)
     filter_class = ReleaseComponentRelationshipTypeFilter
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__: POST
 
         __URL__: $LINK:componentrelationshiptype-list$
@@ -1181,12 +1129,9 @@ class ReleaseComponentRelationshipTypeViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ReleaseComponentRelationshipTypeViewSet, self).create(
-            request, *args, **kwargs)
+    """
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:componentrelationshiptype-list$
@@ -1194,11 +1139,9 @@ class ReleaseComponentRelationshipTypeViewSet(viewsets.PDCModelViewSet):
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
-        """
-        return super(ReleaseComponentRelationshipTypeViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: GET
 
         __URL__: $LINK:componentrelationshiptype-detail:instance_pk$
@@ -1206,12 +1149,9 @@ class ReleaseComponentRelationshipTypeViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ReleaseComponentRelationshipTypeViewSet, self).retrieve(
-            request, *args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         __Method__: PUT, PATCH
 
         __URL__: $LINK:componentrelationshiptype-detail:instance_pk$
@@ -1225,12 +1165,9 @@ class ReleaseComponentRelationshipTypeViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ReleaseComponentRelationshipTypeViewSet, self).update(
-            request, *args, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__: DELETE
 
         __URL__: $LINK:componentrelationshiptype-detail:instance_pk$
@@ -1238,9 +1175,7 @@ class ReleaseComponentRelationshipTypeViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         On success, HTTP status code is 204 and the response has no content.
-        """
-        return super(ReleaseComponentRelationshipTypeViewSet, self).destroy(
-            request, *args, **kwargs)
+    """
 
 
 class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
@@ -1251,8 +1186,7 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
     queryset = ReleaseComponentRelationship.objects.all().order_by('id')
     filter_class = ReleaseComponentRelationshipFilter
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__: POST
 
         __URL__: $LINK:rcrelationship-list$
@@ -1276,11 +1210,9 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ReleaseComponentRelationshipViewSet, self).create(request, *args, **kwargs)
+    """
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:rcrelationship-list$
@@ -1292,11 +1224,9 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
-        """
-        return super(ReleaseComponentRelationshipViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: GET
 
         __URL__: $LINK:rcrelationship-detail:instance_pk$
@@ -1304,11 +1234,9 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ReleaseComponentRelationshipViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         __Method__: PUT, PATCH
 
         __URL__: $LINK:rcrelationship-detail:instance_pk$
@@ -1329,11 +1257,9 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ReleaseComponentRelationshipViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__: DELETE
 
         __URL__: $LINK:rcrelationship-detail:instance_pk$
@@ -1341,5 +1267,4 @@ class ReleaseComponentRelationshipViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         On success, HTTP status code is 204 and the response has no content.
-        """
-        return super(ReleaseComponentRelationshipViewSet, self).destroy(request, *args, **kwargs)
+    """

@@ -31,8 +31,7 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
     permission_classes = (APIPermission,)
     docstring_macros = PUT_OPTIONAL_PARAM_WARNING
 
-    def list(self, *args, **kwargs):
-        """
+    doc_list = """
         All the dependency filters use the same data format.
 
         The simpler option is just name of the dependency. In that case it will
@@ -55,11 +54,9 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
         If dependency doesn't include version, it is satisfied by any filter.
 
         Only single filter for each dependency type is allowed.
-        """
-        return super(RPMViewSet, self).list(*args, **kwargs)
+    """
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__:
         POST
 
@@ -82,11 +79,9 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(RPMViewSet, self).create(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__:
         GET
 
@@ -95,11 +90,9 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(RPMViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         %(PUT_OPTIONAL_PARAM_WARNING)s
 
         __Method__: `PUT`, `PATCH`
@@ -119,8 +112,7 @@ class RPMViewSet(pdc_viewsets.StrictQueryParamMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(RPMViewSet, self).update(request, *args, **kwargs)
+    """
 
 
 class ImageViewSet(pdc_viewsets.StrictQueryParamMixin,
@@ -134,8 +126,7 @@ class ImageViewSet(pdc_viewsets.StrictQueryParamMixin,
     filter_class = filters.ImageFilter
     permission_classes = (APIPermission,)
 
-    def list(self, request):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:image-list$
@@ -152,8 +143,7 @@ class ImageViewSet(pdc_viewsets.StrictQueryParamMixin,
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
-        """
-        return super(ImageViewSet, self).list(request)
+    """
 
 
 class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
@@ -164,8 +154,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
     serializer_class = serializers.BuildImageSerializer
     filter_class = filters.BuildImageFilter
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__:
         POST
 
@@ -233,11 +222,9 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                         ......
                 ]
             }
-        """
-        return super(BuildImageViewSet, self).create(request, *args, **kwargs)
+    """
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:buildimage-list$
@@ -283,11 +270,9 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                 ...
               ]
             }
-        """
-        return super(BuildImageViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__:
         GET
 
@@ -318,11 +303,9 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                         ......
                 ]
             }
-        """
-        return super(BuildImageViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         __Method__:
 
         PUT: for full fields update
@@ -394,11 +377,9 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
                         ......
                 ]
             }
-        """
-        return super(BuildImageViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__:
         DELETE
 
@@ -411,8 +392,7 @@ class BuildImageViewSet(pdc_viewsets.PDCModelViewSet):
         __Example__:
 
             curl -X DELETE -H "Content-Type: application/json" $URL:buildimage-detail:1$
-        """
-        return super(BuildImageViewSet, self).destroy(request, *args, **kwargs)
+    """
 
 
 class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
@@ -432,8 +412,7 @@ class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
     lookup_fields = (('image_id', r'[^/]+'),
                      ('image_format__name', r'[^/]+'))
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:buildimagertttests-list$
@@ -459,11 +438,9 @@ class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
                 ...
               ]
             }
-        """
-        return super(BuildImageRTTTestsViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__:
         GET
 
@@ -477,8 +454,7 @@ class BuildImageRTTTestsViewSet(pdc_viewsets.StrictQueryParamMixin,
                 "id":           int,
                 "test_result":  string
             }
-        """
-        return super(BuildImageRTTTestsViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
     def update(self, request, *args, **kwargs):
         # This method is used by bulk update and partial update, but should not
@@ -537,8 +513,7 @@ class ReleasedFilesViewSet(PDCModelViewSet):
     permission_classes = (APIPermission,)
     docstring_macros = PUT_OPTIONAL_PARAM_WARNING
 
-    def list(self, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:releasedfiles-list$
@@ -555,11 +530,9 @@ class ReleasedFilesViewSet(PDCModelViewSet):
         Please visit $LINK:contentdeliverycontentformat-list$ to get the endpoint's name of file_primary_key
 
         %(SERIALIZER)s
-        """
-        return super(ReleasedFilesViewSet, self).list(*args, **kwargs)
+    """
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__: POST
 
         __URL__: $LINK:releasedfiles-list$
@@ -578,11 +551,9 @@ class ReleasedFilesViewSet(PDCModelViewSet):
         the *file* is *rpm.filename*, the *package* is *rpm.srpm_name*.
 
         %(SERIALIZER)s
-        """
-        return super(ReleasedFilesViewSet, self).create(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: GET
 
         __URL__: $LINK:releasedfiles-detail:instance_pk$
@@ -593,11 +564,9 @@ class ReleasedFilesViewSet(PDCModelViewSet):
         the *file* is *rpm.filename*, the *package* is *rpm.srpm_name*.
 
         %(SERIALIZER)s
-        """
-        return super(ReleasedFilesViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         %(PUT_OPTIONAL_PARAM_WARNING)s
 
         __Method__: `PUT`, `PATCH`
@@ -618,11 +587,9 @@ class ReleasedFilesViewSet(PDCModelViewSet):
         the *file* is *rpm.filename*, the *package* is *rpm.srpm_name*.
 
         %(SERIALIZER)s
-        """
-        return super(ReleasedFilesViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__: DELETE
 
         __URL__: $LINK:releasedfiles-detail:instance_pk$
@@ -634,5 +601,4 @@ class ReleasedFilesViewSet(PDCModelViewSet):
         __Example__:
 
             curl -X DELETE -H "Content-Type: application/json" $URL:releasedfiles-detail:1$
-        """
-        return super(ReleasedFilesViewSet, self).destroy(*args, **kwargs)
+    """

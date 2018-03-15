@@ -44,8 +44,7 @@ class ComponentBranchViewSet(viewsets.PDCModelViewSet):
 
         super(ComponentBranchViewSet, self).__init__(*args, **kwargs)
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__:
         GET
 
@@ -74,11 +73,9 @@ class ComponentBranchViewSet(viewsets.PDCModelViewSet):
                     ...
                 ]
             }
-        """
-        return super(ComponentBranchViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__:
         GET
 
@@ -95,11 +92,9 @@ class ComponentBranchViewSet(viewsets.PDCModelViewSet):
                 "active": boolean,
                 "critical_path": boolean
             }
-        """
-        return super(ComponentBranchViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__: `POST`
 
         __URL__: $LINK:componentbranch-list$
@@ -123,11 +118,9 @@ class ComponentBranchViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ComponentBranchViewSet, self).create(request, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         __Method__:
 
         PUT/PATCH: for update
@@ -191,11 +184,9 @@ class ComponentBranchViewSet(viewsets.PDCModelViewSet):
                 "active": false,
                 "critical_path": false
             }
-        """
-        return super(ComponentBranchViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__:
         DELETE
 
@@ -208,8 +199,7 @@ class ComponentBranchViewSet(viewsets.PDCModelViewSet):
         __Example__:
 
             curl -X DELETE -H "Content-Type: application/json" $URL:componentbranch-detail:1$
-        """
-        return super(ComponentBranchViewSet, self).destroy(request, *args, **kwargs)
+    """
 
 
 class SLAViewSet(viewsets.PDCModelViewSet):
@@ -232,8 +222,7 @@ class SLAViewSet(viewsets.PDCModelViewSet):
     serializer_class = SLASerializer
     filter_class = SLAFilter
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__:
         GET
 
@@ -258,11 +247,9 @@ class SLAViewSet(viewsets.PDCModelViewSet):
                     ...
                 ]
             }
-        """
-        return super(SLAViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__:
         GET
 
@@ -275,11 +262,9 @@ class SLAViewSet(viewsets.PDCModelViewSet):
                 "name": string,
                 "description": string
             }
-        """
-        return super(SLAViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__: `POST`
 
         __URL__: $LINK:sla-list$
@@ -299,11 +284,9 @@ class SLAViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(SLAViewSet, self).create(request, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         __Method__:
 
         PUT/PATCH: for update
@@ -352,11 +335,9 @@ class SLAViewSet(viewsets.PDCModelViewSet):
                 "name": "security_fixes",
                 "description": "A new description"
             }
-        """
-        return super(SLAViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__:
         DELETE
 
@@ -369,8 +350,7 @@ class SLAViewSet(viewsets.PDCModelViewSet):
         __Example__:
 
             curl -X DELETE -H "Content-Type: application/json" $URL:sla-detail:1$
-        """
-        return super(SLAViewSet, self).destroy(request, *args, **kwargs)
+    """
 
 
 class SLAToComponentBranchViewSet(viewsets.PDCModelViewSet):
@@ -403,8 +383,7 @@ class SLAToComponentBranchViewSet(viewsets.PDCModelViewSet):
 
         super(SLAToComponentBranchViewSet, self).__init__(*args, **kwargs)
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__:
         GET
 
@@ -437,11 +416,9 @@ class SLAToComponentBranchViewSet(viewsets.PDCModelViewSet):
                     ...
                 ]
             }
-        """
-        return super(SLAToComponentBranchViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__:
         GET
 
@@ -462,11 +439,9 @@ class SLAToComponentBranchViewSet(viewsets.PDCModelViewSet):
                 },
                 "eol": date
             }
-        """
-        return super(SLAToComponentBranchViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__: `POST`
 
         __URL__: $LINK:slatocomponentbranch-list$
@@ -497,11 +472,9 @@ class SLAToComponentBranchViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(SLAToComponentBranchViewSet, self).create(request, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         __Method__:
 
         PUT/PATCH: for update
@@ -583,11 +556,9 @@ class SLAToComponentBranchViewSet(viewsets.PDCModelViewSet):
                 },
                 "eol": "2022-01-31"
             }
-        """
-        return super(SLAToComponentBranchViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__:
         DELETE
 
@@ -600,5 +571,4 @@ class SLAToComponentBranchViewSet(viewsets.PDCModelViewSet):
         __Example__:
 
             curl -X DELETE -H "Content-Type: application/json" $URL:slatocomponentbranch-detail:1$
-        """
-        return super(SLAToComponentBranchViewSet, self).destroy(request, *args, **kwargs)
+    """

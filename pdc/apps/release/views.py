@@ -265,12 +265,10 @@ class ReleaseViewSet(NotificationMixin,
                                              request=request)
         return response
 
-    def retrieve(self, *args, **kwargs):
-        """
+    doc_retrieve = """
         The list of composes is ordered by their date, type and respin (even
         though those fields are not directly visible here).
-        """
-        return super(ReleaseViewSet, self).retrieve(*args, **kwargs)
+    """
 
     def list(self, request, *args, **kwargs):
         """
@@ -652,25 +650,20 @@ class ReleaseVariantViewSet(NotificationMixin,
     lookup_fields = (('release__release_id', r'[^/]+'), ('variant_uid', r'[^/]+'))
     related_model_classes = (Variant, Release)
 
-    def create(self, *args, **kwargs):
-        """
+    doc_create = """
         The required architectures must already be present in PDC.
-        """
-        return super(ReleaseVariantViewSet, self).create(*args, **kwargs)
+    """
 
-    def update(self, *args, **kwargs):
-        """
+    doc_update = """
         The specified architectures will be set for this release. Also note
         that if you change the `uid`, the url for this variant will change.
 
         Changing the architectures may involve deleting some. Note that
         repositories are connected to some Variant.Arch pair and it is not
         possible to remove an arch with any repositories..
-        """
-        return super(ReleaseVariantViewSet, self).update(*args, **kwargs)
+    """
 
-    def partial_update(self, *args, **kwargs):
-        """
+    doc_partial_update = """
         If an attribute is not specified, that property of a variant will not
         change. The `arches` key can be used to set architectures associated
         with the variant. The `add_arches` key can list architectures to be
@@ -681,16 +674,13 @@ class ReleaseVariantViewSet(NotificationMixin,
 
         If you try to remove architectures with associated repositories, the
         request will fail to do anything.
-        """
-        return super(ReleaseVariantViewSet, self).partial_update(*args, **kwargs)
+    """
 
-    def destroy(self, *args, **kwargs):
-        """
+    doc_destroy = """
         This call will delete selected variant with all its arches. Please note
         that if there are any repositories filed under this variant, you will
         get an error `409 CONFLICT`.
-        """
-        return super(ReleaseVariantViewSet, self).destroy(*args, **kwargs)
+    """
 
 
 class CPEViewSet(PDCModelViewSet):
@@ -729,11 +719,9 @@ class VariantTypeViewSet(StrictQueryParamMixin,
     queryset = models.VariantType.objects.all().order_by('id')
     permission_classes = (APIPermission,)
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         This end-point is deprecated. Use $LINK:releasevarianttype-list$ instead.
-        """
-        return super(VariantTypeViewSet, self).list(request, *args, **kwargs)
+    """
 
 
 class ReleaseVariantTypeViewSet(StrictQueryParamMixin,

@@ -25,8 +25,7 @@ class ModuleViewSet(viewsets.PDCModelViewSet):
     serializer_class = ModuleSerializer
     lookup_field = 'uid'
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__:
         GET
 
@@ -39,11 +38,9 @@ class ModuleViewSet(viewsets.PDCModelViewSet):
         __Paged Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ModuleViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__:
         GET
 
@@ -52,11 +49,9 @@ class ModuleViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ModuleViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__:
         POST
 
@@ -74,11 +69,9 @@ class ModuleViewSet(viewsets.PDCModelViewSet):
 
             curl -X POST -H "Content-Type: application/json" $URL:modules-list$ \\
                 -d '{ "name": "testmodule", "stream": "f28", "version": "20180123171544", "context": "2f345c78", "koji_tag": "module-ce2adf69caf0e1b5", "modulemd": "data here" }'
-        """
-        return super(ModuleViewSet, self).create(request, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__:
         DELETE
 
@@ -91,11 +84,9 @@ class ModuleViewSet(viewsets.PDCModelViewSet):
         __Example__:
 
             curl -X DELETE -H "Content-Type: application/json" $URL:modules-detail:uid_here$
-        """
-        return super(ModuleViewSet, self).destroy(request, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         __Method__:
         PUT/PATCH
 
@@ -113,5 +104,4 @@ class ModuleViewSet(viewsets.PDCModelViewSet):
 
             curl -X PATCH -d '{ "active": true }' -H "Content-Type: application/json" \\
                 $URL:modules-detail:uid_here$
-        """
-        return super(ModuleViewSet, self).update(request, *args, **kwargs)
+    """

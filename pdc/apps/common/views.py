@@ -44,8 +44,7 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
     queryset = Label.objects.all().order_by('id')
     filter_class = LabelFilter
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         ### CREATE
 
         __Method__:
@@ -66,11 +65,9 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
             curl -H "Content-Type: application/json"  -X POST -d '{"name": "label1", "description": "label1 description"}' $URL:label-list$
             # output
             {"url": "$URL:label-detail:1$", "name": "label1", "description": "label1 description"}
-        """
-        return super(LabelViewSet, self).create(request, *args, **kwargs)
+    """
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         ### LIST
 
         __Method__:
@@ -124,11 +121,9 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
                     }
                 ]
             }
-        """
-        return super(LabelViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         ### RETRIEVE
 
         __Method__:
@@ -145,11 +140,9 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
             curl -H "Content-Type: application/json" $URL:label-detail:1$
             # output
             {"url": "$URL:label-detail:1$", "name": "label1", "description": "label1 description"}
-        """
-        return super(LabelViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         ### UPDATE
 
         __Method__: `PUT`, `PATCH`
@@ -177,11 +170,9 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
             curl -X PATCH -d '{"description": "new_description"}' -H "Content-Type: application/json" $URL:label-detail:1$
             # output
             {"url": "$URL:label-detail:1$", "name": "label1", "description": "new_description"}
-        """
-        return super(LabelViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         ### DELETE
 
         __Method__: `DELETE`
@@ -195,8 +186,7 @@ class LabelViewSet(pdc_viewsets.PDCModelViewSet):
         __Example__:
 
             curl -X DELETE -H "Content-Type: application/json" $URL:label-detail:1$
-        """
-        return super(LabelViewSet, self).destroy(request, *args, **kwargs)
+    """
 
 
 class ArchViewSet(pdc_viewsets.ChangeSetCreateModelMixin,
@@ -221,8 +211,7 @@ class ArchViewSet(pdc_viewsets.ChangeSetCreateModelMixin,
     lookup_field = 'name'
     permission_classes = (APIPermission,)
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         ### LIST
 
         __Method__:
@@ -252,11 +241,9 @@ class ArchViewSet(pdc_viewsets.ChangeSetCreateModelMixin,
                     ...
                 ]
             }
-        """
-        return super(ArchViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         ### CREATE
 
         __Method__:
@@ -277,8 +264,7 @@ class ArchViewSet(pdc_viewsets.ChangeSetCreateModelMixin,
             curl -H "Content-Type: application/json" -X POST -d '{"name": "arm"}' $URL:arch-list$
             # output
             {"name": "arm"}
-        """
-        return super(ArchViewSet, self).create(request, *args, **kwargs)
+    """
 
 
 class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
@@ -307,8 +293,7 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
     docstring_macros = PUT_OPTIONAL_PARAM_WARNING
     permission_classes = (APIPermission,)
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         ### LIST
 
         __Method__:
@@ -323,11 +308,9 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
-        """
-        return super(SigKeyViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         ### RETRIEVE
 
         __Method__:
@@ -338,11 +321,9 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(SigKeyViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         ### UPDATE
         %(PUT_OPTIONAL_PARAM_WARNING)s
 
@@ -358,11 +339,9 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(SigKeyViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         ### CREATE
 
         __Method__:
@@ -377,8 +356,7 @@ class SigKeyViewSet(pdc_viewsets.StrictQueryParamMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(SigKeyViewSet, self).create(request, *args, **kwargs)
+    """
 
 
 def home(request):

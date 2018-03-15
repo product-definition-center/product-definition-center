@@ -35,8 +35,7 @@ class ReleaseScheduleViewSet(viewsets.PDCModelViewSet):
     docstring_macros = PUT_OPTIONAL_PARAM_WARNING
     related_model_classes = (ReleaseSchedule, Release, SLA)
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__:
         GET
 
@@ -65,11 +64,9 @@ class ReleaseScheduleViewSet(viewsets.PDCModelViewSet):
                     }
                     ...
             }
-        """
-        return super(ReleaseScheduleViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__:
         GET
 
@@ -86,13 +83,9 @@ class ReleaseScheduleViewSet(viewsets.PDCModelViewSet):
                 "sla": string,
                 "sla_url": string,
             }
+    """
 
-        """
-
-        return super(ReleaseScheduleViewSet, self).retrieve(request, *args, **kwargs)
-
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         %(PUT_OPTIONAL_PARAM_WARNING)s
 
         __Method__:
@@ -116,11 +109,9 @@ class ReleaseScheduleViewSet(viewsets.PDCModelViewSet):
                 "sla": string,
                 "sla_url": string,
             }
-        """
-        return super(ReleaseScheduleViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__:
         POST
 
@@ -148,11 +139,9 @@ class ReleaseScheduleViewSet(viewsets.PDCModelViewSet):
                 "sla_url": string,
             }
 
-        """
-        return super(ReleaseScheduleViewSet, self).create(request, *args, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__:
         DELETE
 
@@ -165,5 +154,4 @@ class ReleaseScheduleViewSet(viewsets.PDCModelViewSet):
         __Example__:
 
             curl -X DELETE -H "Content-Type: application/json" $URL:releaseschedule-detail:1$
-        """
-        return super(ReleaseScheduleViewSet, self).destroy(request, *args, **kwargs)
+    """

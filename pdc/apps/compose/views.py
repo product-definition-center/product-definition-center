@@ -529,8 +529,7 @@ class ComposeViewSet(StrictQueryParamMixin,
         if hasattr(request._request, '_messagings'):
             request._request._messagings.append(('.compose', info))
 
-    def retrieve(self, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: GET
 
         __URL__: $LINK:compose-detail:compose_id$
@@ -538,8 +537,7 @@ class ComposeViewSet(StrictQueryParamMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ComposeViewSet, self).retrieve(*args, **kwargs)
+    """
 
     def list(self, *args, **kwargs):
         """
@@ -1194,8 +1192,7 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
     filter_class = OverrideRPMFilter
     permission_classes = (APIPermission,)
 
-    def create(self, *args, **kwargs):
-        """
+    doc_create = """
         __Method__: POST
 
         __URL__: $LINK:overridesrpm-list$
@@ -1226,11 +1223,9 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
                 "comment": "",
                 "do_not_delete": false
             }
-        """
-        return super(ReleaseOverridesRPMViewSet, self).create(*args, **kwargs)
+    """
 
-    def list(self, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:overridesrpm-list$
@@ -1263,18 +1258,15 @@ class ReleaseOverridesRPMViewSet(StrictQueryParamMixin,
                     "comment": ""
                 }]
             }
-        """
-        return super(ReleaseOverridesRPMViewSet, self).list(*args, **kwargs)
+    """
 
-    def destroy(self, *args, **kwargs):
-        """
+    doc_destroy = """
         Delete a particular override.
 
         __Method__: DELETE
 
         __URL__: $LINK:overridesrpm-detail:id$
-        """
-        return super(ReleaseOverridesRPMViewSet, self).destroy(*args, **kwargs)
+    """
 
     def bulk_destroy(self, *args, **kwargs):
         """
@@ -1803,8 +1795,7 @@ class ComposeImageRTTTestViewSet(NotificationMixin,
         ('image__file_name', r'[^/]+'),
     )
 
-    def list(self, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:composeimagertttests-list$
@@ -1816,11 +1807,9 @@ class ComposeImageRTTTestViewSet(NotificationMixin,
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
-        """
-        return super(ComposeImageRTTTestViewSet, self).list(*args, **kwargs)
+    """
 
-    def retrieve(self, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: GET
 
         __URL__: $LINK:composeimagertttests-detail:compose_id}/{variant_uid}/{arch}/{file_name$
@@ -1828,8 +1817,7 @@ class ComposeImageRTTTestViewSet(NotificationMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ComposeImageRTTTestViewSet, self).retrieve(*args, **kwargs)
+    """
 
     def update(self, request, *args, **kwargs):
         # This method is used by bulk update and partial update, but should not
@@ -1904,8 +1892,7 @@ class ComposeTreeViewSet(NotificationMixin,
         ('scheme__name', r'[^/]+'),
     )
 
-    def list(self, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:composetreelocations-list$
@@ -1917,8 +1904,7 @@ class ComposeTreeViewSet(NotificationMixin,
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
-        """
-        return super(ComposeTreeViewSet, self).list(*args, **kwargs)
+    """
 
     def create(self, request, *args, **kwargs):
         """
@@ -1956,8 +1942,7 @@ class ComposeTreeViewSet(NotificationMixin,
             request.data["synced_content"] = ['binary', 'debug', 'source']
         return super(ComposeTreeViewSet, self).create(request, *args, **kwargs)
 
-    def retrieve(self, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: GET
 
         __URL__: $LINK:composetreelocations-detail:compose_id}/{variant_uid}/{arch}/{location}/{scheme$
@@ -1965,8 +1950,7 @@ class ComposeTreeViewSet(NotificationMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ComposeTreeViewSet, self).retrieve(*args, **kwargs)
+    """
 
     def update(self, request, *args, **kwargs):
         # This method is used by bulk update and partial update, but should not
@@ -2021,8 +2005,7 @@ class ComposeTreeViewSet(NotificationMixin,
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__:
         DELETE
 
@@ -2031,8 +2014,7 @@ class ComposeTreeViewSet(NotificationMixin,
         __Response__:
 
             STATUS: 204 NO CONTENT
-        """
-        return super(ComposeTreeViewSet, self).destroy(request, *args, **kwargs)
+    """
 
 
 class ComposeTreeRTTTestViewSet(NotificationMixin,
@@ -2057,8 +2039,7 @@ class ComposeTreeRTTTestViewSet(NotificationMixin,
         ('arch__name', r'[^/]+'),
     )
 
-    def list(self, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:composetreertttests-list$
@@ -2070,11 +2051,9 @@ class ComposeTreeRTTTestViewSet(NotificationMixin,
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
-        """
-        return super(ComposeTreeRTTTestViewSet, self).list(*args, **kwargs)
+    """
 
-    def retrieve(self, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: GET
 
         __URL__: $LINK:composetreertttests-detail:compose_id}/{variant_uid}/{arch$
@@ -2082,11 +2061,9 @@ class ComposeTreeRTTTestViewSet(NotificationMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ComposeTreeRTTTestViewSet, self).retrieve(*args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         __Method__: PUT, PATCH
 
         __URL__: $LINK:composetreertttests-detail:compose_id}/{variant_uid}/{arch$
@@ -2098,5 +2075,4 @@ class ComposeTreeRTTTestViewSet(NotificationMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ComposeTreeRTTTestViewSet, self).update(request, *args, **kwargs)
+    """

@@ -22,8 +22,7 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
     serializer_class = UnreleasedVariantSerializer
     lookup_field = 'uid'
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__:
         GET
 
@@ -36,11 +35,9 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
         __Paged Response__:
 
         %(SERIALIZER)s
-        """
-        return super(UnreleasedVariantViewSet, self).list(request, *args, **kwargs)
+    """
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__:
         GET
 
@@ -49,11 +46,9 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(UnreleasedVariantViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__:
         POST
 
@@ -71,11 +66,9 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
 
             curl -X POST -H "Content-Type: application/json" $URL:unreleasedvariants-list$ \\
                     -d '{ "variant_id": "core", "variant_uid": "Core", "variant_name": "Minimalistic Core", "variant_type": "module", "variant_version": "master", "variant_release": "20170101", "variant_context": "2f345c78", "koji_tag": "foobar", "active": false }'
-        """
-        return super(UnreleasedVariantViewSet, self).create(request, **kwargs)
+    """
 
-    def destroy(self, request, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__:
         DELETE
 
@@ -88,11 +81,9 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
         __Example__:
 
             curl -X DELETE -H "Content-Type: application/json" $URL:unreleasedvariants-detail:variant_uid$
-        """
-        return super(UnreleasedVariantViewSet, self).destroy(request, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         __Method__:
         PUT/PATCH
 
@@ -110,5 +101,4 @@ class UnreleasedVariantViewSet(viewsets.PDCModelViewSet):
 
             curl -X PATCH -d '{ "active": true}' -H "Content-Type: application/json" \\
                 $URL:unreleasedvariants-detail:testmodule-master-20170301215520$
-        """
-        return super(UnreleasedVariantViewSet, self).update(request, *args, **kwargs)
+    """

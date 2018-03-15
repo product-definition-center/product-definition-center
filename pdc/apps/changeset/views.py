@@ -151,8 +151,7 @@ class ChangesetViewSet(StrictQueryParamMixin,
             return Response({'detail': msg},
                             status=status.HTTP_400_BAD_REQUEST)
 
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__:
         GET
 
@@ -184,8 +183,7 @@ class ChangesetViewSet(StrictQueryParamMixin,
                 ],
                 "comment": "xxx"
             }
-        """
-        return super(ChangesetViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
     serializer_class = ChangesetSerializer
     queryset = models.Changeset.objects.all().order_by('-committed_on')

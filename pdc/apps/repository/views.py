@@ -30,8 +30,7 @@ class RepoViewSet(PDCModelViewSet):
     filter_class = filters.RepoFilter
     docstring_macros = PUT_OPTIONAL_PARAM_WARNING
 
-    def create(self, *args, **kwargs):
-        """
+    doc_create = """
         __Method__: `POST`
 
         __URL__: $LINK:contentdeliveryrepos-list$
@@ -46,11 +45,9 @@ class RepoViewSet(PDCModelViewSet):
          * *service*: $LINK:contentdeliveryservice-list$
 
         __Response__: Same as input data.
-        """
-        return super(RepoViewSet, self).create(*args, **kwargs)
+    """
 
-    def retrieve(self, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: `GET`
 
         __URL__: $LINK:contentdeliveryrepos-detail:id$
@@ -58,11 +55,9 @@ class RepoViewSet(PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(RepoViewSet, self).retrieve(*args, **kwargs)
+    """
 
-    def list(self, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: `GET`
 
         __URL__: $LINK:contentdeliveryrepos-list$
@@ -74,11 +69,9 @@ class RepoViewSet(PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(RepoViewSet, self).list(*args, **kwargs)
+    """
 
-    def update(self, *args, **kwargs):
-        """
+    doc_update = """
         %(PUT_OPTIONAL_PARAM_WARNING)s
 
         __Method__: `PUT`, `PATCH`
@@ -92,16 +85,13 @@ class RepoViewSet(PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(RepoViewSet, self).update(*args, **kwargs)
+    """
 
-    def destroy(self, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__: `DELETE`
 
         __URL__: $LINK:contentdeliveryrepos-detail:id$
-        """
-        return super(RepoViewSet, self).destroy(*args, **kwargs)
+    """
 
 
 class RepoCloneViewSet(StrictQueryParamMixin, viewsets.GenericViewSet):
@@ -242,8 +232,7 @@ class RepoFamilyViewSet(StrictQueryParamMixin,
     filter_class = filters.RepoFamilyFilter
     permission_classes = (APIPermission,)
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: `GET`
 
         __URL__: $LINK:contentdeliveryrepofamily-list$
@@ -278,8 +267,7 @@ class RepoFamilyViewSet(StrictQueryParamMixin,
                     }
                 ]
             }
-        """
-        return super(RepoFamilyViewSet, self).list(request, *args, **kwargs)
+    """
 
 
 class ContentCategoryViewSet(StrictQueryParamMixin,
@@ -292,8 +280,7 @@ class ContentCategoryViewSet(StrictQueryParamMixin,
     queryset = models.ContentCategory.objects.all().order_by('id')
     permission_classes = (APIPermission,)
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:contentdeliverycontentcategory-list$
@@ -301,8 +288,7 @@ class ContentCategoryViewSet(StrictQueryParamMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ContentCategoryViewSet, self).list(request, *args, **kwargs)
+    """
 
 
 class ContentFormatViewSet(StrictQueryParamMixin,
@@ -315,8 +301,7 @@ class ContentFormatViewSet(StrictQueryParamMixin,
     queryset = models.ContentFormat.objects.all().order_by('id')
     permission_classes = (APIPermission,)
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:contentdeliverycontentformat-list$
@@ -324,8 +309,7 @@ class ContentFormatViewSet(StrictQueryParamMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ContentFormatViewSet, self).list(request, *args, **kwargs)
+    """
 
 
 class ServiceViewSet(StrictQueryParamMixin,
@@ -338,8 +322,7 @@ class ServiceViewSet(StrictQueryParamMixin,
     queryset = models.Service.objects.all().order_by('id')
     permission_classes = (APIPermission,)
 
-    def list(self, request, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:contentdeliveryservice-list$
@@ -347,8 +330,7 @@ class ServiceViewSet(StrictQueryParamMixin,
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(ServiceViewSet, self).list(request, *args, **kwargs)
+    """
 
 
 class PushTargetViewSet(PDCModelViewSet):
@@ -361,8 +343,7 @@ class PushTargetViewSet(PDCModelViewSet):
     filter_class = filters.PushTargetFilter
     permission_classes = (APIPermission,)
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__: POST
 
         __URL__: $LINK:pushtarget-list$
@@ -374,12 +355,9 @@ class PushTargetViewSet(PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
+    """
 
-        return super(PushTargetViewSet, self).create(request, *args, **kwargs)
-
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: GET
 
         __URL__: $LINK:pushtarget-detail:instance_pk$
@@ -387,11 +365,9 @@ class PushTargetViewSet(PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(PushTargetViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def list(self, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:pushtarget-list$
@@ -403,11 +379,9 @@ class PushTargetViewSet(PDCModelViewSet):
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
-        """
-        return super(PushTargetViewSet, self).list(*args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         __Method__: PUT, PATCH
 
         __URL__: $LINK:pushtarget-detail:instance_pk$
@@ -419,11 +393,9 @@ class PushTargetViewSet(PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(PushTargetViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__: `DELETE`
 
         __URL__: $LINK:pushtarget-detail:instance_pk$
@@ -431,8 +403,7 @@ class PushTargetViewSet(PDCModelViewSet):
         __Response__:
 
         On success, HTTP status code is 204 and the response has no content.
-        """
-        return super(PushTargetViewSet, self).destroy(*args, **kwargs)
+    """
 
 
 class MultiDestinationViewSet(PDCModelViewSet):
@@ -446,8 +417,7 @@ class MultiDestinationViewSet(PDCModelViewSet):
     filter_class = filters.MultiDestinationFilter
     permission_classes = (APIPermission,)
 
-    def create(self, request, *args, **kwargs):
-        """
+    doc_create = """
         __Method__: POST
 
         __URL__: $LINK:multidestination-list$
@@ -459,12 +429,9 @@ class MultiDestinationViewSet(PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
+    """
 
-        return super(MultiDestinationViewSet, self).create(request, *args, **kwargs)
-
-    def retrieve(self, request, *args, **kwargs):
-        """
+    doc_retrieve = """
         __Method__: GET
 
         __URL__: $LINK:multidestination-detail:instance_pk$
@@ -472,11 +439,9 @@ class MultiDestinationViewSet(PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(MultiDestinationViewSet, self).retrieve(request, *args, **kwargs)
+    """
 
-    def list(self, *args, **kwargs):
-        """
+    doc_list = """
         __Method__: GET
 
         __URL__: $LINK:multidestination-list$
@@ -488,11 +453,9 @@ class MultiDestinationViewSet(PDCModelViewSet):
         __Response__: a paged list of following objects
 
         %(SERIALIZER)s
-        """
-        return super(MultiDestinationViewSet, self).list(*args, **kwargs)
+    """
 
-    def update(self, request, *args, **kwargs):
-        """
+    doc_update = """
         __Method__: PUT, PATCH
 
         __URL__: $LINK:multidestination-detail:instance_pk$
@@ -504,11 +467,9 @@ class MultiDestinationViewSet(PDCModelViewSet):
         __Response__:
 
         %(SERIALIZER)s
-        """
-        return super(MultiDestinationViewSet, self).update(request, *args, **kwargs)
+    """
 
-    def destroy(self, *args, **kwargs):
-        """
+    doc_destroy = """
         __Method__: `DELETE`
 
         __URL__: $LINK:multidestination-detail:instance_pk$
@@ -516,5 +477,4 @@ class MultiDestinationViewSet(PDCModelViewSet):
         __Response__:
 
         On success, HTTP status code is 204 and the response has no content.
-        """
-        return super(MultiDestinationViewSet, self).destroy(*args, **kwargs)
+    """
