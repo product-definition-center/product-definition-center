@@ -5,14 +5,12 @@
 #
 from __future__ import absolute_import
 
+import fedmsg
+
 from . import BaseMessenger
 
 
 class FedmsgMessenger(BaseMessenger):
-    def __init__(self):
-        import fedmsg
-        self.messenger = fedmsg
-
     def send_message(self, topic, msg):
         topic = topic.strip('.')
-        self.messenger.publish(topic=topic, msg=msg)
+        fedmsg.publish(topic=topic, msg=msg)
