@@ -408,10 +408,16 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
             func = getattr(view, method, None)
             if func:
                 docstring = inspect.cleandoc(func.__doc__ or '')
+
+                doc_attribute = getattr(view, 'doc_' + method, None)
+                if doc_attribute:
+                    docstring += '\n\n' + inspect.cleandoc(doc_attribute)
+
                 if method in DEFAULT_DESCRIPTION \
                    and '__URL__' not in docstring \
                    and '__Method__' not in docstring:
                     docstring += '\n\n' + inspect.cleandoc(DEFAULT_DESCRIPTION[method])
+
                 description[method] = self.format_description(view, method, docstring)
 
         return description

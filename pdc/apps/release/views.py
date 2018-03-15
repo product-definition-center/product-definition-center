@@ -181,28 +181,21 @@ class ProductVersionViewSet(NotificationMixin,
     filter_class = filters.ProductVersionFilter
     permission_classes = (APIPermission,)
 
-    def create(self, *args, **kwargs):
-        """
+    doc_create = """
         If `short` is not specified, the short name of associated product will
         be used.
-        """
-        return super(ProductVersionViewSet, self).create(*args, **kwargs)
+    """
 
-    def retrieve(self, *args, **kwargs):
-        """
+    doc_retrieve = """
         The list of releases is ordered by short and version.
-        """
-        return super(ProductVersionViewSet, self).retrieve(*args, **kwargs)
+    """
 
-    def list(self, *args, **kwargs):
-        """
+    doc_list = """
         The list of releases for each product version is ordered by short and
         version.
-        """
-        return super(ProductVersionViewSet, self).list(*args, **kwargs)
+    """
 
-    def update(self, *args, **kwargs):
-        """
+    doc_update = """
         Please note that if you change the `short` or `version` field, the
         `product_version_id` will be modified accordingly, and the URL of the
         object will be changed. All changes are local to the updated model and
@@ -210,8 +203,7 @@ class ProductVersionViewSet(NotificationMixin,
 
         Changing `allowed_push_targets` field also affects this field in
         child releases and variants.
-        """
-        return super(ProductVersionViewSet, self).update(*args, **kwargs)
+    """
 
 
 class ReleaseViewSet(NotificationMixin,
