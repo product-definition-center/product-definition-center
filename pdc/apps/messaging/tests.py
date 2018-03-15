@@ -9,7 +9,7 @@ from django.test import TestCase, override_settings
 
 
 @override_settings(MESSAGE_BUS={
-    'MLP': 'rhmsg',
+    'BACKEND': 'pdc.apps.messaging.backends.rhmsg.RHMsgMessenger',
     'TOPIC_PREFIX': 'eng.pdc',
     'CERTIFICATE': 'foo.pem',
     'CACERT': 'cacert.crt',
@@ -19,10 +19,10 @@ from django.test import TestCase, override_settings
 class ComposeModelTestCase(TestCase):
 
     def setUp(self):
-        from . import messengers
+        from .backends import rhmsg
         with mock.patch('threading.Thread') as t:
             self.t = t
-            self.m = messengers.RHMsgMessenger()
+            self.m = rhmsg.RHMsgMessenger()
 
     def test_put_to_queue(self):
         self.m.send_messages([('.t1', {'a': 'b'})])
@@ -50,8 +50,8 @@ class ComposeModelTestCase(TestCase):
                          ('t2', [('t2', {'c': 'd'})]))
         self.assertTrue(self.m.queue.empty())
 
-    @mock.patch('pdc.apps.messaging.messengers._get_rhmsg_producer')
-    @mock.patch('pdc.apps.messaging.messengers.logger')
+    @mock.patch('pdc.apps.messaging.backends.rhmsg._get_rhmsg_producer')
+    @mock.patch('pdc.apps.messaging.backends.rhmsg.logger')
     def test_send(self, mock_logger, mock_get_producer):
         self.m._send_message('.t1', [('.t1', {'a': 'b'})])
 
@@ -71,8 +71,8 @@ class ComposeModelTestCase(TestCase):
              ]
         )
 
-    @mock.patch('pdc.apps.messaging.messengers._get_rhmsg_producer')
-    @mock.patch('pdc.apps.messaging.messengers.logger')
+    @mock.patch('pdc.apps.messaging.backends.rhmsg._get_rhmsg_producer')
+    @mock.patch('pdc.apps.messaging.backends.rhmsg.logger')
     def test_send_fail(self, mock_logger, mock_get_producer):
         def boom(*args, **kwargs):
             raise Exception('Boom')
@@ -84,8 +84,8 @@ class ComposeModelTestCase(TestCase):
         except Exception:
             self.fail('Unexpected exception was raised')
 
-    @mock.patch('pdc.apps.messaging.messengers._get_rhmsg_producer')
-    @mock.patch('pdc.apps.messaging.messengers.logger')
+    @mock.patch('pdc.apps.messaging.backends.rhmsg._get_rhmsg_producer')
+    @mock.patch('pdc.apps.messaging.backends.rhmsg.logger')
     def test_send_with_headers(self, mock_logger, mock_get_producer):
         self.m._send_message('.t1', [('.t1', {'a': 'b', 'new_value': {'c': 'd'}})])
 

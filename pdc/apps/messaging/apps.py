@@ -5,22 +5,24 @@
 #
 from django.apps import AppConfig
 from django.conf import settings
+from django.utils.module_loading import import_string
 
 
 class MessagingConfig(AppConfig):
     name = 'pdc.apps.messaging'
 
     def ready(self):
-        from . import messengers
+        backend = settings.MESSAGE_BUS.get('BACKEND')
+        if not backend:
+            # Drop this block in next version and instead directly fall on
+            # DummyMessenger.
+            MESSENGERS = {
+                'fedmsg': 'pdc.apps.messaging.backends.fedmsg.FedmsgMessenger',
+                'test': 'pdc.apps.messaging.backends.capture.TestMessenger',
+                'rhmsg': 'pdc.apps.messaging.backends.rhmsg.RHMsgMessenger',
+            }
+            backend = MESSENGERS.get(settings.MESSAGE_BUS['MLP'],
+                                     'pdc.apps.messaging.backends.dummy.DummyMessenger')
 
-        MESSENGERS = {
-            'kombu': messengers.KombuMessenger,
-            'fedmsg': messengers.FedmsgMessenger,
-            'proton': messengers.ProtonMessenger,
-            'stomp': messengers.StompMessenger,
-            'test': messengers.TestMessenger,
-        }
-
-        # init messenger
-        self.messenger = MESSENGERS.get(settings.MESSAGE_BUS['MLP'],
-                                        messengers.DummyMessenger)()
+        cls = import_string(backend)
+        self.messenger = cls()

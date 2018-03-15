@@ -52,7 +52,7 @@ DISABLE_RESOURCE_PERMISSION_CHECK = True
 SKIP_RESOURCE_CREATION = True
 
 MESSAGE_BUS = {
-    'MLP': 'test'
+    'BACKEND': 'pdc.apps.messaging.backends.capture.TestMessenger'
 }
 RELEASE_DEFAULT_SIGKEY = "ABCDEF"
 ALLOWED_HOSTS = ['*']
