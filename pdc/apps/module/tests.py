@@ -161,6 +161,20 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
                                         format='json')
         self.assertEqual(response_nine.data['count'], 0)
 
+        # Filtering by both RPM name and branch ("component" filter)
+        response = self.client.get(url, data={'component': 'foobar'}, format='json')
+        self.assertEqual(response.data['count'], 2)
+        response = self.client.get(
+            url, data={'component': 'foobar/master'}, format='json')
+        self.assertEqual(response.data['count'], 1)
+        self.assertEqual(response.data['results'][0]['uid'], uid_one)
+        response = self.client.get(
+            url, data={'component': 'foobar/f27'}, format='json')
+        self.assertEqual(response.data['count'], 1)
+        self.assertEqual(response.data['results'][0]['uid'], uid_two)
+        response = self.client.get(url, data={'component': 'python'}, format='json')
+        self.assertEqual(response.data['count'], 0)
+
     def test_create_and_get_module_with_exist_rpms(self):
         url = reverse('modules-list')
         self.data['rpms'] = [{
