@@ -140,6 +140,14 @@ class DynamicFieldsSerializerMixinTestCase(TestCase):
                                      context=self.context)
         self.assertEqual(['a', 'c'], serializer.fields.keys())
 
+    def test_fields_comma_separated(self):
+        serializer = self.serializer(fields='a,b')
+        self.assertEqual(['a', 'b'], serializer.fields.keys())
+
+    def test_exclude_fields_comma_separated(self):
+        serializer = self.serializer(exclude_fields='a,b')
+        self.assertEqual(['c'], serializer.fields.keys())
+
 
 class LabelRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def setUp(self):

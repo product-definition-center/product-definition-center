@@ -28,6 +28,13 @@ def _verify_field_names(fields, valid_fields, filter_name):
             raise FieldError(error)
 
 
+def _pop_field_list(args, argument_name):
+    values = args.pop(argument_name, [])
+    if isinstance(values, list):
+        return values
+    return values.split(',')
+
+
 class IntrospectableSerializerMixin(object):
     """
     Basic mixin for a serializer that supports introspection.
@@ -71,8 +78,8 @@ class DynamicFieldsSerializerMixin(object):
     def __init__(self, *args, **kwargs):
         # Accept kwargs in __init__, like:
         # Don't pass the 'fields' arg up to the superclass
-        fields = kwargs.pop('fields', [])
-        exclude_fields = kwargs.pop('exclude_fields', [])
+        fields = _pop_field_list(kwargs, 'fields')
+        exclude_fields = _pop_field_list(kwargs, 'exclude_fields')
 
         # Instantiate the superclass normally
         super(DynamicFieldsSerializerMixin, self).__init__(*args, **kwargs)
