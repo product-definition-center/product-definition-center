@@ -6,6 +6,7 @@
 from collections import OrderedDict
 import logging
 import re
+import six
 import sys
 import json
 import inspect
@@ -144,7 +145,7 @@ def _serializer_data_to_string(data, parent_fields=None):
     if isinstance(data, list):
         return _serializer_field_list_to_string(data, parent_fields)
 
-    if isinstance(data, str) or isinstance(data, unicode):
+    if isinstance(data, six.string_types):
         return _model_field_reference_to_string(data)
 
     return escape(json.dumps(data))
