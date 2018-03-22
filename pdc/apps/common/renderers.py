@@ -528,9 +528,12 @@ def get_filter(filter_name, filter):
     if lookup_type:
         lookup_type = ', %s' % lookup_type
 
+    result = ' * `%s` (%s%s)' % (filter_name, filter_type, lookup_type or '')
     help_text = get_filter_option(filter, 'help_text')
+    if help_text:
+        result += ' ' + help_text
 
-    return ' * `%s` (%s%s) %s' % (filter_name, filter_type, lookup_type or '', help_text)
+    return result
 
 
 SERIALIZER_DEFS = {
@@ -722,7 +725,7 @@ def serializer_field_tags(serializer, field_name, field):
         if model_field.unique:
             tags.append('unique')
     except (AttributeError, FieldDoesNotExist):
-        return ''
+        pass
 
     return tags
 

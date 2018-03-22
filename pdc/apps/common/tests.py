@@ -25,6 +25,19 @@ from .test_utils import TestCaseWithChangeSetMixin
 from . import renderers, views, viewsets
 
 
+def _flatten_field_data(field_data):
+    if isinstance(field_data, renderers._SerializerFieldData):
+        return _flatten_field_data(field_data.values)
+
+    if isinstance(field_data, dict):
+        return {key: _flatten_field_data(value) for key, value in field_data.iteritems()}
+
+    if isinstance(field_data, list):
+        return [_flatten_field_data(value) for value in field_data]
+
+    return field_data
+
+
 class ValidatorTestCase(TestCase):
     def test_generic_validator_fail_wrong_chars(self):
         self.assertRaises(ValidationError, validators._validate_hex_string, "wrong-md5", 9)
@@ -537,7 +550,11 @@ class SerializerDocumentingTestCase(TestCase):
             doc_format = {"foo": "bar"}
 
         instance = DummySerializer()
-        result = renderers.describe_serializer(instance, False)
+
+        result = renderers.describe_serializer(instance, include_read_only=False)
+        self.assertEqual(result, {'foo': 'bar'})
+
+        result = renderers.describe_serializer(instance, include_read_only=True)
         self.assertEqual(result, {'foo': 'bar'})
 
     def test_describe_fields(self):
@@ -546,16 +563,30 @@ class SerializerDocumentingTestCase(TestCase):
             int = serializers.IntegerField()
 
         instance = DummySerializer()
-        result = renderers.describe_serializer(instance, False)
-        self.assertEqual(result, {'str': 'string', 'int': 'int'})
+
+        result = renderers.describe_serializer(instance, include_read_only=False)
+        self.assertEqual(_flatten_field_data(result), {
+            'str': {'value': 'string'},
+            'int': {'value': 'int'}
+        })
+
+        result = renderers.describe_serializer(instance, include_read_only=True)
+        self.assertEqual(_flatten_field_data(result), {
+            'str': {'value': 'string'},
+            'int': {'value': 'int'}
+        })
 
     def test_describe_read_only_field(self):
         class DummySerializer(serializers.Serializer):
             field = serializers.CharField(read_only=True)
 
         instance = DummySerializer()
-        result = renderers.describe_serializer(instance, True)
-        self.assertEqual(result, {'field (read-only)': 'string'})
+
+        result = renderers.describe_serializer(instance, include_read_only=False)
+        self.assertEqual(_flatten_field_data(result), {})
+
+        result = renderers.describe_serializer(instance, include_read_only=True)
+        self.assertEqual(_flatten_field_data(result), {'field': {'value': 'string'}})
 
     def test_describe_read_only_field_can_be_excluded(self):
         class DummySerializer(serializers.Serializer):
@@ -570,20 +601,31 @@ class SerializerDocumentingTestCase(TestCase):
             field = serializers.CharField(allow_null=True)
 
         instance = DummySerializer()
-        result = renderers.describe_serializer(instance, True)
-        self.assertEqual(result, {'field (nullable)': 'string'})
+        result = renderers.describe_serializer(instance, include_read_only=False)
+        self.assertEqual(_flatten_field_data(result), {
+            'field': {'tags': 'nullable', 'value': 'string'}
+        })
+
+        result = renderers.describe_serializer(instance, include_read_only=True)
+        self.assertEqual(_flatten_field_data(result), {'field': {'value': 'string'}})
 
     def test_describe_field_with_default_value(self):
         class DummySerializer(serializers.Serializer):
             field = serializers.CharField(required=False, default='foo')
 
         instance = DummySerializer()
-        result = renderers.describe_serializer(instance, True)
-        self.assertEqual(result, {'field (optional, default="foo")': 'string'})
+        result = renderers.describe_serializer(instance, include_read_only=False)
+        self.assertEqual(_flatten_field_data(result), {
+            'field': {'tags': 'optional, default="foo"', 'value': 'string'}
+        })
+
+        result = renderers.describe_serializer(instance, include_read_only=True)
+        self.assertEqual(_flatten_field_data(result), {'field': {'value': 'string'}})
 
     def test_describe_field_with_default_from_model(self):
         default = mock.Mock()
         default.default = True
+        default.help_text = 'Help text'
         DummyModel = mock.Mock()
         DummyModel._meta.get_field = lambda _: default
 
@@ -594,8 +636,23 @@ class SerializerDocumentingTestCase(TestCase):
                 model = DummyModel
 
         instance = DummySerializer()
-        result = renderers.describe_serializer(instance, True)
-        self.assertEqual(result, {'field (optional, default=true)': 'string'})
+
+        result = renderers.describe_serializer(instance, include_read_only=False)
+        self.assertEqual(_flatten_field_data(result), {
+            'field': {
+                'help': 'Help text',
+                'tags': 'optional, default=true, unique',
+                'value': 'string'
+            }
+        })
+
+        result = renderers.describe_serializer(instance, include_read_only=True)
+        self.assertEqual(_flatten_field_data(result), {
+            'field': {
+                'help': 'Help text',
+                'value': 'string'
+            }
+        })
 
     def test_describe_field_with_complex_default(self):
         class DummyDefault(object):
@@ -605,8 +662,16 @@ class SerializerDocumentingTestCase(TestCase):
             field = serializers.CharField(required=False, default=DummyDefault)
 
         instance = DummySerializer()
-        result = renderers.describe_serializer(instance, True)
-        self.assertEqual(result, {'field (optional, default="some string format")': 'string'})
+        result = renderers.describe_serializer(instance, include_read_only=False)
+        self.assertEqual(_flatten_field_data(result), {
+            'field': {
+                'tags': 'optional, default="some string format"',
+                'value': 'string'
+            }
+        })
+
+        result = renderers.describe_serializer(instance, include_read_only=True)
+        self.assertEqual(_flatten_field_data(result), {'field': {'value': 'string'}})
 
     def test_describe_field_with_custom_type(self):
         class DummyField(serializers.Field):
@@ -617,10 +682,12 @@ class SerializerDocumentingTestCase(TestCase):
             field = DummyField()
 
         instance = DummySerializer()
-        result = renderers.describe_serializer(instance, True)
-        self.assertEqual(result, {'field': {'foo': 'bar'}})
-        result = renderers.describe_serializer(instance, False)
-        self.assertEqual(result, {'field': {'baz': 'quux'}})
+
+        result = renderers.describe_serializer(instance, include_read_only=True)
+        self.assertEqual(_flatten_field_data(result), {'field': {'value': {'foo': 'bar'}}})
+
+        result = renderers.describe_serializer(instance, include_read_only=False)
+        self.assertEqual(_flatten_field_data(result), {'field': {'value': {'baz': 'quux'}}})
 
     def test_describe_nested_serializer(self):
         class DummyNestedSerializer(serializers.Serializer):
@@ -631,7 +698,13 @@ class SerializerDocumentingTestCase(TestCase):
 
         instance = DummySerializer()
         result = renderers.describe_serializer(instance, True)
-        self.assertEqual(result, {'top_level': {'field': 'string'}})
+        self.assertEqual(_flatten_field_data(result), {
+            'top_level': {
+                'value': {
+                    'field': {'value': 'string'}
+                }
+            }
+        })
 
     def test_describe_nested_serializer_many(self):
         class DummyNestedSerializer(serializers.Serializer):
@@ -642,7 +715,13 @@ class SerializerDocumentingTestCase(TestCase):
 
         instance = DummySerializer()
         result = renderers.describe_serializer(instance, True)
-        self.assertEqual(result, {'top_level': [{'field': 'string'}]})
+        self.assertEqual(_flatten_field_data(result), {
+            'top_level': {
+                'value': [{
+                    'field': {'value': 'string'}
+                }]
+            }
+        })
 
 
 class JSONResponseFor404(APITestCase):
