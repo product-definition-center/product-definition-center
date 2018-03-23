@@ -607,7 +607,7 @@ class SerializerDocumentingTestCase(TestCase):
         })
 
         result = renderers.describe_serializer(instance, include_read_only=True)
-        self.assertEqual(_flatten_field_data(result), {'field': {'value': 'string'}})
+        self.assertEqual(_flatten_field_data(result), {'field': {'tags': 'nullable', 'value': 'string'}})
 
     def test_describe_field_with_default_value(self):
         class DummySerializer(serializers.Serializer):

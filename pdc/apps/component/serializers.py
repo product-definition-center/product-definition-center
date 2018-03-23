@@ -38,6 +38,14 @@ class UpstreamSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 
 
 class UpstreamRelatedField(serializers.RelatedField):
+    doc_format = """
+        {
+            "homepage": "url",
+            "scm_type": "string",
+            "scm_url": "url"
+        }
+    """
+
     def to_representation(self, value):
         serializer = UpstreamSerializer(value)
         return serializer.data
@@ -79,7 +87,7 @@ class GlobalComponentSerializer(StrictSerializerMixin,
                                             max_length=200)
 
     labels = LabelSerializer(many=True, required=False, read_only=True)
-    upstream = UpstreamRelatedField(read_only=False, required=False, queryset=Upstream.objects.all())
+    upstream = UpstreamRelatedField(read_only=False, required=False, allow_null=True, queryset=Upstream.objects.all())
 
     class Meta:
         model = GlobalComponent

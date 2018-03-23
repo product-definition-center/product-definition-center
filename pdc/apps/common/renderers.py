@@ -553,18 +553,22 @@ SERIALIZER_DEFS = {
 }
 
 
-def _get_type_from_str(str, default=None):
+def _get_type_from_docstring(value, default=None):
     """
     Convert docstring into object suitable for inclusion as documentation. It
     tries to parse the docstring as JSON, falling back on provided default
     value.
     """
-    if str:
+    if value:
         try:
-            return json.loads(str)
+            return json.loads(value)
         except ValueError:
-            pass
-    return default if default is not None else str
+            return formatting.dedent(str(value))
+
+    if default is not None:
+        return default
+
+    return None
 
 
 def _models_and_base_names():
@@ -620,11 +624,11 @@ def get_field_type(serializer, field_name, field, include_read_only):
         method = getattr(serializer, method_name, None)
         if method:
             docstring = getattr(method, '__doc__')
-            return _get_type_from_str(docstring, docstring or 'method')
+            return _get_type_from_docstring(docstring, docstring or 'method')
     elif not include_read_only and hasattr(field, 'writable_doc_format'):
-        return _get_type_from_str(field.writable_doc_format)
+        return _get_type_from_docstring(field.writable_doc_format)
     elif hasattr(field, 'doc_format'):
-        return _get_type_from_str(field.doc_format)
+        return _get_type_from_docstring(field.doc_format)
     elif isinstance(field, serializers.BaseSerializer):
         return describe_serializer(field, include_read_only)
     logger = logging.getLogger(__name__)
@@ -638,9 +642,7 @@ def get_default_value(serializer, field_name, field):
     """
     value = field.default
     if hasattr(value, 'doc_format'):
-        return (value.doc_format
-                if isinstance(value.doc_format, basestring)
-                else str(value.doc_format))
+        return _get_type_from_docstring(value.doc_format)
     if value == fields.empty:
         # Try to get default from model field.
         try:
@@ -685,6 +687,9 @@ def serializer_field_data(serializer, field_name, field, include_read_only):
         tags = serializer_field_tags(serializer, field_name, field)
         if tags:
             key['tags'] = ', '.join(tags)
+
+    if include_read_only and field.allow_null:
+        key['tags'] = 'nullable'
 
     description = serializer_field_help_text(serializer, field_name, field)
     if description:

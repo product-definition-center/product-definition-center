@@ -52,109 +52,12 @@ from . import signals
 
 
 class GlobalComponentViewSet(viewsets.PDCModelViewSet):
-    """
-    ##Overview##
-
-    This page shows the usage of the **Global Component API**, please see the
-    following for more details.
-
-    ##Test tools##
-
-    You can use ``curl`` in terminal, with -X _method_ (GET|POST|PUT|DELETE),
-    -d _data_ (a json string). or GUI plugins for
-    browsers, such as ``RESTClient``, ``RESTConsole``.
-
-    """
     model = GlobalComponent
     queryset = GlobalComponent.objects.all().order_by('id')
     serializer_class = GlobalComponentSerializer
     filter_class = ComponentFilter
 
-    doc_list = """
-        __Method__:
-        GET
-
-        __URL__: $LINK:globalcomponent-list$
-
-        __Query Params__:
-
-        %(FILTERS)s
-
-        __Response__:
-
-            # paged lists
-            {
-                "count": int,
-                "next": url,
-                "previous": url,
-                "results": [
-                    {
-                        "id": int,
-                        "name": string,
-                        "dist_git_path": <string|null>,
-                        "dist_git_web_url": string,
-                        "labels": [
-                            string, ......
-                        ],
-                        "upstream": null | {
-                                        "homepage": string,
-                                        "scm_type": string,
-                                        "scm_url": string
-                                    }
-                    },
-                    ...
-            }
-    """
-
-    doc_retrieve = """
-        __Method__:
-        GET
-
-        __URL__: $LINK:globalcomponent-detail:instance_pk$
-
-        __Response__:
-
-            {
-                "id": int,
-                "name": string,
-                "dist_git_path": <string|null>,
-                "dist_git_web_url": string,
-                "labels": [
-                    string, ......
-                ],
-                "upstream": null | {
-                            "homepage": string,
-                            "scm_type": string,
-                            "scm_url": string
-                        }
-            }
-    """
-
     doc_create = """
-        __Method__:
-        POST
-
-        __URL__: $LINK:globalcomponent-list$
-
-        __Data__:
-
-            {
-                'name':                string,         # required
-                'dist_git_path':       string,         # optional
-                'upstream':            dict,           # optional
-            }
-
-        __Response__:
-
-            {
-                "id": int,
-                "name": string,
-                "dist_git_path": string,
-                "dist_git_web_url": string,
-                "labels": array,
-                "upstream": dict
-            }
-
         __Example__:
 
             curl -X POST -H "Content-Type: application/json" $URL:globalcomponent-list$ \\
@@ -175,37 +78,6 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
     """
 
     doc_update = """
-        __Method__:
-
-        PUT/PATCH: for update
-
-        __Data__:
-
-            # accept any field(s) from 'name', 'dist_git_path' and 'upstream'
-            {'name': 'new_name',
-             'dist_git_path': 'new_dist_git_path',
-             'upstream': {'homepage': 'homepage',
-                          'scm_type': 'scm-type',
-                          'scm_url': 'url'}
-            }
-
-        __URL__: $LINK:globalcomponent-detail:instance_pk$
-
-        __Response__:
-
-            {
-                "id": int,
-                "name": string,
-                "dist_git_path": string,
-                "dist_git_web_url": string,
-                "labels": array,
-                "upstream": null | {
-                                "homepage": string,
-                                "scm_type": string,
-                                "scm_url": string
-                            }
-            }
-
         __Example__:
 
         PUT:
@@ -237,15 +109,6 @@ class GlobalComponentViewSet(viewsets.PDCModelViewSet):
     """
 
     doc_destroy = """
-        __Method__:
-        DELETE
-
-        __URL__: $LINK:globalcomponent-detail:instance_pk$
-
-        __Response__:
-
-            STATUS: 204 NO CONTENT
-
         __Example__:
 
             curl -X DELETE -H "Content-Type: application/json" $URL:globalcomponent-detail:4181$
