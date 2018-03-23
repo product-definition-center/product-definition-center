@@ -5,6 +5,7 @@
 #
 
 import django_filters
+from django.db.models import Q
 
 from pdc.apps.common.filters import CaseInsensitiveBooleanFilter, MultiValueFilter, value_is_not_empty
 from pdc.apps.module.models import Module
@@ -17,6 +18,8 @@ class ModuleComponentFilter(MultiValueFilter):
     """
     @value_is_not_empty
     def _filter(self, qs, name, values):
+        query = Q()
+
         for value in values:
             try:
                 name, branch = value.split('/', 2)
@@ -25,7 +28,9 @@ class ModuleComponentFilter(MultiValueFilter):
                 filters = {'name': value}
 
             rpms = RPM.objects.filter(**filters)
-            qs = qs.filter(rpms__in=rpms)
+            query |= Q(rpms__in=rpms)
+
+        qs = qs.filter(query)
 
         return qs
 

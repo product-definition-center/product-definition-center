@@ -174,6 +174,9 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
         self.assertEqual(response.data['results'][0]['uid'], uid_two)
         response = self.client.get(url, data={'component': 'python'}, format='json')
         self.assertEqual(response.data['count'], 0)
+        response = self.client.get(
+            url, data={'component': ['foobar/master', 'foobar/f27']}, format='json')
+        self.assertEqual(response.data['count'], 2)
 
     def test_create_and_get_module_with_exist_rpms(self):
         url = reverse('modules-list')
