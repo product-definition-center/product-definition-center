@@ -199,7 +199,7 @@ class ReleaseTypeSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 
 
 class VariantArchNestedSerializer(serializers.BaseSerializer):
-    doc_format = "string"
+    doc_format = "Arch.name"
 
     def to_representation(self, obj):
         return obj.arch.name
