@@ -27,10 +27,10 @@ class ModuleComponentFilter(MultiValueFilter):
             except ValueError:
                 filters = {'name': value}
 
-            rpms = RPM.objects.filter(**filters)
-            query |= Q(rpms__in=rpms)
+            query |= Q(**filters)
 
-        qs = qs.filter(query)
+        rpms = RPM.objects.filter(query)
+        qs = qs.filter(rpms__in=rpms)
 
         return qs
 
