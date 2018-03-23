@@ -16,11 +16,11 @@ class ReleaseSearchForm(forms.Form):
     disabled    = forms.BooleanField(required=False, label=_('Search in disabled releases'))
 
     def get_query(self, request):
-        self.is_valid()
+        query = Q()
+        if not self.is_valid():
+            return query
         search = self.cleaned_data["search"]
         disabled = self.cleaned_data["disabled"]  # noqa
-
-        query = Q()
 
         if search:
             query |= Q(short__icontains=search)
@@ -35,10 +35,10 @@ class BaseProductSearchForm(forms.Form):
     search = forms.CharField(required=False)
 
     def get_query(self, request):
-        self.is_valid()
-        search = self.cleaned_data["search"]
-
         query = Q()
+        if not self.is_valid():
+            return query
+        search = self.cleaned_data["search"]
 
         if search:
             query |= Q(name__icontains=search)
@@ -52,10 +52,10 @@ class ProductSearchForm(forms.Form):
     search = forms.CharField(required=False)
 
     def get_query(self, request):
-        self.is_valid()
-        search = self.cleaned_data["search"]
-
         query = Q()
+        if not self.is_valid():
+            return query
+        search = self.cleaned_data["search"]
 
         if search:
             query |= Q(name__icontains=search)
@@ -68,10 +68,10 @@ class ProductVersionSearchForm(forms.Form):
     search = forms.CharField(required=False)
 
     def get_query(self, request):
-        self.is_valid()
-        search = self.cleaned_data["search"]
-
         query = Q()
+        if not self.is_valid():
+            return query
+        search = self.cleaned_data["search"]
 
         if search:
             query |= Q(name__icontains=search)

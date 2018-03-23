@@ -30,10 +30,10 @@ class ComposeRPMSearchForm(forms.Form):
     search = forms.CharField(required=False)
 
     def get_query(self, request):
-        self.is_valid()
-        search = self.cleaned_data["search"]
-
         query = Q()
+        if not self.is_valid():
+            return query
+        search = self.cleaned_data["search"]
 
         if search:
             query |= Q(rpm__name__icontains=search)
@@ -48,9 +48,10 @@ class ComposeImageSearchForm(forms.Form):
     search = forms.CharField(required=False)
 
     def get_query(self, request):
-        self.is_valid()
-        search = self.cleaned_data["search"]
         query = Q()
+        if not self.is_valid():
+            return query
+        search = self.cleaned_data["search"]
 
         if search:
             query |= Q(image__file_name__icontains=search)
@@ -75,11 +76,12 @@ class ComposeRpmMappingSearchForm(forms.Form):
         self.fields["release"].choices = [(i.pk, str(i)) for i in Release.objects.all()]
 
     def get_query(self, request):
-        self.is_valid()
+        query = Q()
+        if not self.is_valid():
+            return query
+
         package = self.cleaned_data["package"]  # noqa
         release = self.cleaned_data["release"]  # noqa
-
-        query = Q()
 
 #        if package:
 #            package |= Q(compose_id__icontains=search)
