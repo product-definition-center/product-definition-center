@@ -22,11 +22,15 @@ from contrib.drf_introspection.serializers import DynamicFieldsSerializerMixin
 from .models import Label, SigKey
 from pdc.apps.common import validators
 from .test_utils import TestCaseWithChangeSetMixin
-from . import renderers, views, viewsets
+from . import views, viewsets
+
+from .renderers import cached_by_argument_class
+from .renderers_filters import get_filters
+from .renderers_serializers import describe_serializer, SerializerFieldData
 
 
 def _flatten_field_data(field_data):
-    if isinstance(field_data, renderers._SerializerFieldData):
+    if isinstance(field_data, SerializerFieldData):
         return _flatten_field_data(field_data.values)
 
     if isinstance(field_data, dict):
@@ -471,7 +475,7 @@ class SigKeyRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
 
 
 class CachedByArgumentClassTestCase(TestCase):
-    @renderers.cached_by_argument_class
+    @cached_by_argument_class
     def cached(self, arg, call_id):
         return (arg, call_id)
 
@@ -525,17 +529,17 @@ class FilterDocumentingTestCase(TestCase):
     def test_filter_fields_have_no_type(self):
         class TestViewset(object):
             filter_fields = ('c', 'b', 'a')
-        res = renderers.get_filters(TestViewset())
+        res = get_filters(TestViewset())
         self.assertEqual(res, ' * `a`\n * `b`\n * `c`')
 
     def test_filter_extra_query_params_have_no_type(self):
         class TestViewset(object):
             extra_query_params = ('c', 'b', 'a')
-        res = renderers.get_filters(TestViewset())
+        res = get_filters(TestViewset())
         self.assertEqual(res, ' * `a`\n * `b`\n * `c`')
 
     def test_filter_set_has_details(self):
-        res = renderers.get_filters(views.SigKeyViewSet())
+        res = get_filters(views.SigKeyViewSet())
         self.assertEqual(
             res,
             ' * `description` (string, case insensitive, substring match)\n'
@@ -551,10 +555,10 @@ class SerializerDocumentingTestCase(TestCase):
 
         instance = DummySerializer()
 
-        result = renderers.describe_serializer(instance, include_read_only=False)
+        result = describe_serializer(instance, include_read_only=False)
         self.assertEqual(result, {'foo': 'bar'})
 
-        result = renderers.describe_serializer(instance, include_read_only=True)
+        result = describe_serializer(instance, include_read_only=True)
         self.assertEqual(result, {'foo': 'bar'})
 
     def test_describe_fields(self):
@@ -564,13 +568,13 @@ class SerializerDocumentingTestCase(TestCase):
 
         instance = DummySerializer()
 
-        result = renderers.describe_serializer(instance, include_read_only=False)
+        result = describe_serializer(instance, include_read_only=False)
         self.assertEqual(_flatten_field_data(result), {
             'str': {'value': 'string'},
             'int': {'value': 'int'}
         })
 
-        result = renderers.describe_serializer(instance, include_read_only=True)
+        result = describe_serializer(instance, include_read_only=True)
         self.assertEqual(_flatten_field_data(result), {
             'str': {'value': 'string'},
             'int': {'value': 'int'}
@@ -582,10 +586,10 @@ class SerializerDocumentingTestCase(TestCase):
 
         instance = DummySerializer()
 
-        result = renderers.describe_serializer(instance, include_read_only=False)
+        result = describe_serializer(instance, include_read_only=False)
         self.assertEqual(_flatten_field_data(result), {})
 
-        result = renderers.describe_serializer(instance, include_read_only=True)
+        result = describe_serializer(instance, include_read_only=True)
         self.assertEqual(_flatten_field_data(result), {'field': {'value': 'string'}})
 
     def test_describe_read_only_field_can_be_excluded(self):
@@ -593,7 +597,7 @@ class SerializerDocumentingTestCase(TestCase):
             field = serializers.CharField(read_only=True)
 
         instance = DummySerializer()
-        result = renderers.describe_serializer(instance, False)
+        result = describe_serializer(instance, False)
         self.assertEqual(result, {})
 
     def test_describe_nullable_field(self):
@@ -601,12 +605,12 @@ class SerializerDocumentingTestCase(TestCase):
             field = serializers.CharField(allow_null=True)
 
         instance = DummySerializer()
-        result = renderers.describe_serializer(instance, include_read_only=False)
+        result = describe_serializer(instance, include_read_only=False)
         self.assertEqual(_flatten_field_data(result), {
             'field': {'tags': 'nullable', 'value': 'string'}
         })
 
-        result = renderers.describe_serializer(instance, include_read_only=True)
+        result = describe_serializer(instance, include_read_only=True)
         self.assertEqual(_flatten_field_data(result), {'field': {'tags': 'nullable', 'value': 'string'}})
 
     def test_describe_field_with_default_value(self):
@@ -614,12 +618,12 @@ class SerializerDocumentingTestCase(TestCase):
             field = serializers.CharField(required=False, default='foo')
 
         instance = DummySerializer()
-        result = renderers.describe_serializer(instance, include_read_only=False)
+        result = describe_serializer(instance, include_read_only=False)
         self.assertEqual(_flatten_field_data(result), {
             'field': {'tags': 'optional, default="foo"', 'value': 'string'}
         })
 
-        result = renderers.describe_serializer(instance, include_read_only=True)
+        result = describe_serializer(instance, include_read_only=True)
         self.assertEqual(_flatten_field_data(result), {'field': {'value': 'string'}})
 
     def test_describe_field_with_default_from_model(self):
@@ -637,7 +641,7 @@ class SerializerDocumentingTestCase(TestCase):
 
         instance = DummySerializer()
 
-        result = renderers.describe_serializer(instance, include_read_only=False)
+        result = describe_serializer(instance, include_read_only=False)
         self.assertEqual(_flatten_field_data(result), {
             'field': {
                 'help': 'Help text',
@@ -646,7 +650,7 @@ class SerializerDocumentingTestCase(TestCase):
             }
         })
 
-        result = renderers.describe_serializer(instance, include_read_only=True)
+        result = describe_serializer(instance, include_read_only=True)
         self.assertEqual(_flatten_field_data(result), {
             'field': {
                 'help': 'Help text',
@@ -662,7 +666,7 @@ class SerializerDocumentingTestCase(TestCase):
             field = serializers.CharField(required=False, default=DummyDefault)
 
         instance = DummySerializer()
-        result = renderers.describe_serializer(instance, include_read_only=False)
+        result = describe_serializer(instance, include_read_only=False)
         self.assertEqual(_flatten_field_data(result), {
             'field': {
                 'tags': 'optional, default="some string format"',
@@ -670,7 +674,7 @@ class SerializerDocumentingTestCase(TestCase):
             }
         })
 
-        result = renderers.describe_serializer(instance, include_read_only=True)
+        result = describe_serializer(instance, include_read_only=True)
         self.assertEqual(_flatten_field_data(result), {'field': {'value': 'string'}})
 
     def test_describe_field_with_custom_type(self):
@@ -683,10 +687,10 @@ class SerializerDocumentingTestCase(TestCase):
 
         instance = DummySerializer()
 
-        result = renderers.describe_serializer(instance, include_read_only=True)
+        result = describe_serializer(instance, include_read_only=True)
         self.assertEqual(_flatten_field_data(result), {'field': {'value': {'foo': 'bar'}}})
 
-        result = renderers.describe_serializer(instance, include_read_only=False)
+        result = describe_serializer(instance, include_read_only=False)
         self.assertEqual(_flatten_field_data(result), {'field': {'value': {'baz': 'quux'}}})
 
     def test_describe_nested_serializer(self):
@@ -697,7 +701,7 @@ class SerializerDocumentingTestCase(TestCase):
             top_level = DummyNestedSerializer()
 
         instance = DummySerializer()
-        result = renderers.describe_serializer(instance, True)
+        result = describe_serializer(instance, True)
         self.assertEqual(_flatten_field_data(result), {
             'top_level': {
                 'value': {
@@ -714,7 +718,7 @@ class SerializerDocumentingTestCase(TestCase):
             top_level = DummyNestedSerializer(many=True)
 
         instance = DummySerializer()
-        result = renderers.describe_serializer(instance, True)
+        result = describe_serializer(instance, True)
         self.assertEqual(_flatten_field_data(result), {
             'top_level': {
                 'value': [{
