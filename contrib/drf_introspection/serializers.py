@@ -33,29 +33,6 @@ def _verify_field_names(fields, valid_fields, filter_name):
 def _normalized_fields_set(values):
     """
     Returns a set for `fields` and `exclude_fields` arguments.
-
-    >>> _normalized_fields_set("a")
-    set(['a'])
-    >>> _normalized_fields_set(["a"])
-    set(['a'])
-    >>> _normalized_fields_set(["a", "b"]) == set(['a', 'b'])
-    True
-
-    >>> _normalized_fields_set("a,b") == set(['a', 'b'])
-    True
-    >>> _normalized_fields_set(["a,b"]) == set(['a', 'b'])
-    True
-    >>> _normalized_fields_set(["a,b", "c"]) == set(['a', 'b', 'c'])
-    True
-
-    >>> _normalized_fields_set([])
-    set([])
-    >>> _normalized_fields_set([''])
-    set([])
-    >>> _normalized_fields_set(',')
-    set([])
-    >>> _normalized_fields_set('a,')
-    set(['a'])
     """
 
     if not values:
