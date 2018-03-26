@@ -10,6 +10,8 @@ This module defines three mixins intended for use with serializers.
 from rest_framework import serializers
 from django.core.exceptions import FieldError
 
+from itertools import chain
+
 
 def _error_with_fields(message, fields):
     """
@@ -22,17 +24,51 @@ def _error_with_fields(message, fields):
 
 def _verify_field_names(fields, valid_fields, filter_name):
     if fields:
-        invalid_field_names = set(fields) - valid_fields
+        invalid_field_names = fields - valid_fields
         if invalid_field_names:
             error = 'Unknown fields in "%s" filter: %s' % (filter_name, ', '.join(invalid_field_names))
             raise FieldError(error)
 
 
-def _pop_field_list(args, argument_name):
-    values = args.pop(argument_name, [])
+def _normalized_fields_set(values):
+    """
+    Returns a set for `fields` and `exclude_fields` arguments.
+
+    >>> _normalized_fields_set("a")
+    set(['a'])
+    >>> _normalized_fields_set(["a"])
+    set(['a'])
+    >>> _normalized_fields_set(["a", "b"]) == set(['a', 'b'])
+    True
+
+    >>> _normalized_fields_set("a,b") == set(['a', 'b'])
+    True
+    >>> _normalized_fields_set(["a,b"]) == set(['a', 'b'])
+    True
+    >>> _normalized_fields_set(["a,b", "c"]) == set(['a', 'b', 'c'])
+    True
+
+    >>> _normalized_fields_set([])
+    set([])
+    >>> _normalized_fields_set([''])
+    set([])
+    >>> _normalized_fields_set(',')
+    set([])
+    >>> _normalized_fields_set('a,')
+    set(['a'])
+    """
+
+    if not values:
+        return set()
+
     if isinstance(values, list):
-        return values
-    return values.split(',')
+        field_lists = map(lambda value: value.split(','), values)
+        result = set(chain.from_iterable(field_lists))
+    else:
+        result = set(values.split(','))
+
+    result.discard('')
+    return result
 
 
 class IntrospectableSerializerMixin(object):
@@ -76,42 +112,49 @@ class DynamicFieldsSerializerMixin(object):
     query_params = ('fields', 'exclude_fields')
 
     def __init__(self, *args, **kwargs):
-        # Accept kwargs in __init__, like:
+        field_args = {}
+
         # Don't pass the 'fields' arg up to the superclass
-        fields = _pop_field_list(kwargs, 'fields')
-        exclude_fields = _pop_field_list(kwargs, 'exclude_fields')
+        for arg_name in ['fields', 'exclude_fields']:
+            field_args[arg_name] = _normalized_fields_set(kwargs.pop(arg_name, None))
 
         # Instantiate the superclass normally
         super(DynamicFieldsSerializerMixin, self).__init__(*args, **kwargs)
 
         # Accept PARAMS passing from the 'request' in the serializer's context.
+        # The 'fields' and 'exclude_fields" in request should only apply to
+        # top level serializer.
+        request = self._get_top_level_request()
+        if request:
+            for arg_name, fields in field_args.iteritems():
+                fields_param = request.query_params.getlist(arg_name, [])
+                fields.update(_normalized_fields_set(fields_param))
+
+        valid_fields = set(self.fields.keys())
+        for arg_name, fields in field_args.iteritems():
+            _verify_field_names(fields, valid_fields, arg_name)
+
+        fields = field_args['fields']
+        exclude_fields = field_args['exclude_fields']
+
+        # Drop any fields that are not specified in the `fields` argument
+        # BUT only if the arguments is present.
+        if fields:
+            for field_name in valid_fields - fields:
+                self.fields.pop(field_name)
+
+        # Drop any fields that are specified in the `exclude_fields` argument.
+        for field_name in exclude_fields:
+            self.fields.pop(field_name, None)
+
+    def _get_top_level_request(self):
         if hasattr(self, 'context') and isinstance(self.context, dict):
-            request = self.context.get('request', None)
             # The 'fields' and 'exclude_fields" in request should only apply to
             # top level serializer.
             top_level = self.context.get('top_level', True)
-            if request and top_level:
-                fields += request.query_params.getlist('fields', [])
-                exclude_fields += request.query_params.getlist('exclude_fields', [])
-
-        valid_fields = set(self.fields.keys())
-        _verify_field_names(fields, valid_fields, 'fields')
-        _verify_field_names(exclude_fields, valid_fields, 'exclude_fields')
-
-        # ignore nonexistent fields input
-        if fields:
-            fields = set(fields)
-            # exclude_fields *rules* fields
-            if exclude_fields:
-                # Drop any fields that are specified in the `exclude_fields` argument.
-                fields = fields - set(exclude_fields)
-            # Drop any fields that are not specified in the `fields` argument.
-            for field_name in valid_fields - fields:
-                self.fields.pop(field_name)
-        elif exclude_fields:
-            # Drop any fields that are specified in the `exclude_fields` argument.
-            for field_name in set(exclude_fields):
-                self.fields.pop(field_name, None)
+            if top_level:
+                return self.context.get('request', None)
+        return None
 
 
 class StrictSerializerMixin(DynamicFieldsSerializerMixin, IntrospectableSerializerMixin):

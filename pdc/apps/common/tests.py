@@ -148,6 +148,18 @@ class DynamicFieldsSerializerMixinTestCase(TestCase):
         serializer = self.serializer(exclude_fields='a,b')
         self.assertEqual(['c'], serializer.fields.keys())
 
+    def test_fields_comma_separated_from_context(self):
+        param_dict = {'fields': ['a,b']}
+        self.mock_request.query_params = MultiValueDict(param_dict)
+        serializer = self.serializer(context=self.context)
+        self.assertEqual(['a', 'b'], serializer.fields.keys())
+
+    def test_exclude_fields_comma_separated_from_context(self):
+        param_dict = {'exclude_fields': ['a,b']}
+        self.mock_request.query_params = MultiValueDict(param_dict)
+        serializer = self.serializer(context=self.context)
+        self.assertEqual(['c'], serializer.fields.keys())
+
 
 class LabelRESTTestCase(TestCaseWithChangeSetMixin, APITestCase):
     def setUp(self):
