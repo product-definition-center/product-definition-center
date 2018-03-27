@@ -46,22 +46,6 @@ When the URL specification can not be resolve, "BAD URL" will be displayed on
 the page and details about the error will be logged to the error log.
 """
 
-PDC_APIROOT_DOC = """
-The REST APIs make it possible to programmatic access the data in Product Definition Center(a.k.a. PDC).
-
-Create new Product, import rpms and query components with contact informations, and more.
-
-The REST API identifies users using Token which will be generated for all authenticated users.
-
-**Please remember to use your token as HTTP header for every requests that need authentication.**
-
-If you want to record the reason for change, you can add Header (-H "PDC-Change-Comment: reasonforchange") in request.
-
-Responses are available in JSON format.
-
-**NOTE:** in order to use secure HTTPS connections, you'd better to add server's certificate as trusted.
-
-"""
 
 URL_SPEC_RE = re.compile(r'\$(?P<type>URL|LINK):(?P<details>[^$]+)\$')
 ORDERING_STRING = """
@@ -286,17 +270,11 @@ class ReadOnlyBrowsableAPIRenderer(BrowsableAPIRenderer):
 
     @cached_by_argument_class
     def get_overview(self, view):
-        if view.__class__.__name__ == 'APIRoot':
-            overview = PDC_APIROOT_DOC
-        else:
-            overview = view.__doc__ or ''
+        overview = view.__doc__ or ''
         return self.format_description(view, None, overview)
 
     @cached_by_argument_class
     def get_description(self, view, *args):
-        if view.__class__.__name__ == 'APIRoot':
-            return ''
-
         description = OrderedDict()
         for method in self.methods_mapping:
             func = getattr(view, method, None)

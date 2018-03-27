@@ -53,6 +53,22 @@ class PDCRouter(bulk_operations.BulkRouter):
             viewsets[prefix] = viewset
 
         class APIRoot(views.APIView):
+            """
+            The REST APIs make it possible to programmatic access the data in Product Definition Center(a.k.a. PDC).
+
+            Create new Product, import rpms and query components with contact informations, and more.
+
+            The REST API identifies users using Token which will be generated for all authenticated users.
+
+            **Please remember to use your token as HTTP header for every requests that need authentication.**
+
+            If you want to record the reason for change, you can add Header (-H "PDC-Change-Comment: reasonforchange") in request.
+
+            Responses are available in JSON format.
+
+            **NOTE:** in order to use secure HTTPS connections, you'd better to add server's certificate as trusted.
+
+            """
             _ignore_model_permissions = True
 
             def get(self, request, *args, **kwargs):
