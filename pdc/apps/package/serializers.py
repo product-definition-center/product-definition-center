@@ -9,11 +9,31 @@ from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
+from productmd import images
+
 from . import models
 from pdc.apps.compose.models import ComposeAcceptanceTestingState
 from pdc.apps.common.fields import ChoiceSlugField
 from pdc.apps.common.serializers import StrictSerializerMixin
 from pdc.apps.repository.serializers import RepoField
+
+
+class ImageFormatSerializer(serializers.SlugRelatedField):
+    doc_format = " | ".join(images.SUPPORTED_IMAGE_FORMATS)
+
+    def __init__(self):
+        super(ImageFormatSerializer, self).__init__(
+            slug_field='name',
+            queryset=models.ImageFormat.objects.all())
+
+
+class ImageTypeSerializer(serializers.SlugRelatedField):
+    doc_format = " | ".join(images.SUPPORTED_IMAGE_TYPES)
+
+    def __init__(self):
+        super(ImageTypeSerializer, self).__init__(
+            slug_field='name',
+            queryset=models.ImageType.objects.all())
 
 
 class DefaultFilenameGenerator(object):
@@ -94,8 +114,8 @@ class RPMSerializer(StrictSerializerMixin,
 
 
 class ImageSerializer(StrictSerializerMixin, serializers.ModelSerializer):
-    image_format    = serializers.SlugRelatedField(slug_field='name', queryset=models.ImageFormat.objects.all())
-    image_type      = serializers.SlugRelatedField(slug_field='name', queryset=models.ImageType.objects.all())
+    image_format    = ImageFormatSerializer()
+    image_type      = ImageTypeSerializer()
     composes        = serializers.SlugRelatedField(read_only=True,
                                                    slug_field='compose_id',
                                                    many=True)
@@ -148,6 +168,20 @@ def _announce_new_object(request, obj, route, topic, data):
 
 
 class RPMRelatedField(serializers.RelatedField):
+    doc_format = "rpm_nevra.rpm"
+    writable_doc_format = """
+    {
+        "name": "string",
+        "epoch": "int",
+        "version": "string",
+        "release": "string",
+        "arch": "string",
+        "srpm_name": "string",
+        "srpm_nevra": "string (optional, the srpm_nevra field should be empty if and only if arch is 'src')",
+        "filename": "string (optional)"
+    }
+    """
+
     def to_representation(self, value):
         return unicode(value)
 
@@ -183,6 +217,15 @@ class ArchiveSerializer(StrictSerializerMixin, serializers.ModelSerializer):
 
 
 class ArchiveRelatedField(serializers.RelatedField):
+    doc_format = """
+    {
+        "build_nvr": "string",
+        "name": "string",
+        "size": "int",
+        "md5": "string"
+    }
+    """
+
     def to_representation(self, value):
         serializer = ArchiveSerializer(value)
         return serializer.data
@@ -210,7 +253,7 @@ class ArchiveRelatedField(serializers.RelatedField):
 
 
 class BuildImageSerializer(StrictSerializerMixin, serializers.HyperlinkedModelSerializer):
-    image_format = serializers.SlugRelatedField(slug_field='name', queryset=models.ImageFormat.objects.all())
+    image_format = ImageFormatSerializer()
     rpms = RPMRelatedField(many=True, read_only=False, queryset=models.RPM.objects.all(), required=False)
     archives = ArchiveRelatedField(many=True, read_only=False, queryset=models.Archive.objects.all(), required=False)
     releases = serializers.SlugRelatedField(many=True, slug_field='release_id', queryset=models.Release.objects.all(),

@@ -25,6 +25,7 @@ _SERIALIZER_DEFS = {
     'CharField': 'string',
     'IntegerField': 'int',
     'HyperlinkedIdentityField': 'url',
+    'HyperlinkedRelatedField': 'url',
     'DateTimeField': 'datetime',
     'DateField': 'date',
     'StringRelatedField': 'string',
@@ -236,6 +237,12 @@ def _get_field_type(serializer, field_name, field, include_read_only):
     """
     Try to describe a field type.
     """
+    if not include_read_only and hasattr(field, 'writable_doc_format'):
+        return _get_type_from_docstring(field.writable_doc_format)
+
+    if hasattr(field, 'doc_format'):
+        return _get_type_from_docstring(field.doc_format)
+
     if isinstance(field, (relations.ManyRelatedField, serializers.ListSerializer)):
         # Many field, recurse on child and make it a list
         if isinstance(field, relations.ManyRelatedField):
@@ -243,23 +250,24 @@ def _get_field_type(serializer, field_name, field, include_read_only):
         else:
             field = field.child
         return [_get_field_type(serializer, field_name, field, include_read_only)]
+
     if field.__class__.__name__ in _SERIALIZER_DEFS:
         return _SERIALIZER_DEFS[field.__class__.__name__]
-    elif isinstance(field, serializers.SlugRelatedField):
+
+    if isinstance(field, serializers.SlugRelatedField):
         return _get_details_for_slug(serializer, field_name, field)
-    elif isinstance(field, serializers.SerializerMethodField):
+
+    if isinstance(field, serializers.SerializerMethodField):
         # For method fields try to use docstring of the method.
         method_name = field.method_name or 'get_{field_name}'.format(field_name=field_name)
         method = getattr(serializer, method_name, None)
         if method:
             docstring = getattr(method, '__doc__')
             return _get_type_from_docstring(docstring, docstring or 'method')
-    elif not include_read_only and hasattr(field, 'writable_doc_format'):
-        return _get_type_from_docstring(field.writable_doc_format)
-    elif hasattr(field, 'doc_format'):
-        return _get_type_from_docstring(field.doc_format)
-    elif isinstance(field, serializers.BaseSerializer):
+
+    if isinstance(field, serializers.BaseSerializer):
         return describe_serializer(field, include_read_only)
+
     logger = logging.getLogger(__name__)
     logger.error('Undocumented field %s' % field)
     return 'UNKNOWN'

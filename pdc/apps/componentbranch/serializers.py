@@ -39,6 +39,9 @@ class BranchNameField(serializers.Field):
     """
     A serializer field that verifies the branch's name matches policy
     """
+
+    doc_format = "string"
+
     @staticmethod
     def bad_branch_name(branch_name):
         """

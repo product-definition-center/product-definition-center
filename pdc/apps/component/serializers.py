@@ -95,6 +95,15 @@ class GlobalComponentSerializer(StrictSerializerMixin,
 
 
 class TreeForeignKeyField(serializers.Field):
+    doc_format = """
+    {
+        "id": "int",
+        "name": "string",
+        "parent_component": "string",
+        "subcomponents": [ "string" ]
+    }
+    """
+    writable_doc_format = "string"
 
     def to_representation(self, value):
         request = self.context.get("request", None)
