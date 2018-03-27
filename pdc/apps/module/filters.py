@@ -30,7 +30,7 @@ class ModuleComponentFilter(MultiValueFilter):
             query |= Q(**filters)
 
         rpms = RPM.objects.filter(query)
-        qs = qs.filter(rpms__in=rpms)
+        qs = qs.filter(rpms__in=rpms).distinct()
 
         return qs
 

@@ -120,19 +120,21 @@ class ModuleAPITestCase(TestCaseWithChangeSetMixin, APITestCase):
 
         # Create another module
         self.data['version'] = '56789012'
-        self.data['rpms'] = [{
-            'name': 'foobar',
-            'epoch': 0,
-            'version': '2.0.0',
-            'release': '1',
-            'arch': 'src',
-            'srpm_name': 'foobar',
-            'srpm_commit_branch': 'f27'
-        }]
+        self.data['rpms'] = []
+        for version, branch in [('2.0.0', 'f27'), ('3.0.0', 'f28')]:
+            self.data['rpms'].append({
+                'name': 'foobar',
+                'epoch': 0,
+                'version': version,
+                'release': '1',
+                'arch': 'src',
+                'srpm_name': 'foobar',
+                'srpm_commit_branch': branch
+            })
         response_three = self.client.post(url, self.data, format='json')
         # Check the response
         self.assertEqual(response_three.status_code, status.HTTP_201_CREATED)
-        self.expected['rpms'] = ['foobar-0:2.0.0-1.src.rpm']
+        self.expected['rpms'] = ['foobar-0:2.0.0-1.src.rpm', 'foobar-0:3.0.0-1.src.rpm']
         self.expected['version'] = '56789012'
         self.expected['uid'] = uid_two
         self.assertEqual(response_three.data, self.expected)
