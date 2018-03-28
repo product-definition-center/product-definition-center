@@ -75,8 +75,7 @@ class ChangesetMiddleware(MiddlewareMixin):
         else:
             # trap the request and give response when the method is not defined in HTTP/1.1
             if request.method not in ["HEAD", "POST", "PUT", "DELETE", "TRACE", "CONNECT", "PATCH", "OPTIONS"]:
-                logger.error('Wrong method %s specified when calling %s', request.method.decode("utf-8"), request.path,
-                             exc_info=sys.exc_info())
+                logger.error('Wrong method %s specified when calling %s', request.method.decode("utf-8"), request.path)
                 response_data = json.dumps({"detail": 'Method "{method}" not allowed.'.format(method=request.method)},
                                            ensure_ascii=False)
                 response = HttpResponse(response_data, content_type='application/json')
