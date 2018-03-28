@@ -15,4 +15,4 @@ logger = logging.getLogger(__name__)
 class DummyMessenger(BaseMessenger):
 
     def send_message(self, topic, msg):
-        logger.info('Sending to %s:\n%s' % (topic, json.dumps(msg, sort_keys=True, indent=2)))
+        logger.debug('Sending to %s:\n%s' % (topic, json.dumps(msg, sort_keys=True, indent=2)))

@@ -21,3 +21,7 @@ if DEBUG and DEBUG_TOOLBAR:
     # Profiling panel requires debug toolbar to be the first middleware class.
     MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware',] + MIDDLEWARE
     INSTALLED_APPS += ('debug_toolbar',)
+
+# Verbose logging in DEBUG mode.
+if DEBUG:
+    LOGGING['loggers']['pdc']['level'] = 'DEBUG'
